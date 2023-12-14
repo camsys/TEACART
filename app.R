@@ -1423,19 +1423,19 @@ server <- function(input, output, session) {
   scenario_result <- readxl::read_excel("scenario_simplified.xlsx")
   
   observeEvent(input$scenario_indicator,{
-    dat_temp <- scenario_result %>%
-      filter( indicator== input$scenario_indicator, !is.na(mt_reduction)) %>%
-      select(-'value',-'pct_reduction') %>%
-      mutate(year = as.character(year)) %>%
+    dat_temp <- scenario_result |> 
+      filter( indicator== input$scenario_indicator, !is.na(mt_reduction)) |> 
+      select(-'value',-'pct_reduction') |> 
+      mutate(year = as.character(year)) |> 
       pivot_wider(names_from = scenario,
                   values_from = mt_reduction)
     
     output$emission_change_graph <- renderPlotly(
-      dat_temp %>%
+      dat_temp |> 
         plotly::plot_ly(x = ~year,
                         y = ~`Scenario 1`,
                         type = 'bar',
-                        name = 'Scenario 1' ) %>%
+                        name = 'Scenario 1' ) |> 
         add_trace(y = ~ `Scenario 2`, name = 'Scenario 2'))
     
     output$emission_change_tbl <- DT::renderDataTable(
@@ -1448,9 +1448,12 @@ server <- function(input, output, session) {
   
   output$downloadscenario_result <- downloadHandler(
     filename = function(){
-      paste("scenario_results",Sys.Date(), ".csv", sep="")},
+      paste("scenario_results",
+            Sys.Date(),
+            ".csv",
+            sep="")},
     content = function(file) {
-      tbl_out= scenario_result %>%
+      tbl_out= scenario_result |> 
         rename()
       write.csv(tbl_out, file,row.names = F)
     })
