@@ -35,12 +35,15 @@ for (file in c(
 
 read_static_tables <- function(file_name, sheet_names) {
   for (i in seq_along(sheet_names)) {
-    assign(sheet_names[i], read_xlsx(file_name,
-                                     sheet = i,
-                                     skip = 1,
-                                     col_names = TRUE), envir = .GlobalEnv)
+    assign(sheet_names[i],
+           read_xlsx(file_name,
+                     sheet = i,
+                     skip = 1,
+                     col_names = TRUE),
+           envir = .GlobalEnv)
   }
 }
+
 
 
 # render datatable, make editable -----------------------------------------
@@ -55,10 +58,19 @@ create_table = function(data, editable = 'row', server = TRUE, ...) {
            ...)
 }
 
-create_graph <- function(data, indicator){
 
+# create a graph ----------------------------------------------------------
+
+
+create_graph <- function(data, indicator){
+  
 }
 
+
+# objects used to read in data --------------------------------------------
+
+# this is also used to create tables - _tbl is appended
+# will add the rest of the names here to help identify conflicts
 
 assumptions_names <- c("bikeped_assmps",
                        "transit_assmps",
@@ -68,6 +80,21 @@ assumptions_names <- c("bikeped_assmps",
                        "mhdv_assmps",
                        "pnr_assmps",
                        "evsi_assmps")
+
+projects_names <- c("bikeped_projs",
+                    "transit_fixed_projs",
+                    "transit_dr_projs",
+                    "transit_el_projs",
+                    "transit_bus_projs",
+                    "public_rail_projs",
+                    "tdm_projs",
+                    "micro_projs",
+                    "traffic_ops_projs",
+                    "mhdev_projs",
+                    "pnr_projs",
+                    "evsi_projs",
+                    "freight_projs",
+                    "expansion_projs")
 
 
 ui <- function(request) {
@@ -101,13 +128,17 @@ ui <- function(request) {
                                   placement = "right"),
                         downloadButton("downloadData", "Save & Download"),
                         p("Remember to save and download data regularly while
-                          entering or updating values.")),
+                          entering or updating values."),
+                        nav_spacer(),
+                        nav_spacer(),
+                        nav_spacer(),
+                        downloadButton("pdf_report","Download Summary Report")),
       nav_panel(title = "Welcome",
-                  p(),
-                  #    h2("Transportation Evaluation and Carbon Reduction Tool (TEA-CART)"),
-                  h3("About"),
-                  p(),
-                  p("The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a
+                p(),
+                #    h2("Transportation Evaluation and Carbon Reduction Tool (TEA-CART)"),
+                h3("About"),
+                p(),
+                p("The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a
       comprehensive and dynamic tool aimed at assisting states with selecting
       and prioritizing transportation capital program investments to effectively
       support greenhouse gas (GHG) reduction. The tool is designed to accept
@@ -119,21 +150,21 @@ ui <- function(request) {
               tags$li(p("Information on cost-effectiveness of various project
                       types."))),
       h3("Version"),
-      p("Version 1.8"),
-      p("last updated December 8, 2023"),
+      p("Based on TEA-CART Excel Model Version 1.8"),
+      p("Shiny App last updated December 13, 2023"),
       p("draft User Interface (UI) under development by Cambridge Systematics, Inc."),
       p("under contract to Georgetown Climate Center"),
       p("© Georgetown Climate Center"),
-                ),
+      ),
       nav_panel(title = "Inputs",
                 navset_card_pill(
                   nav_panel(title = "Baseline",
                             fluidRow(
                               column(6,
-
+                                     
                                      tabPanel(title = "Key Inputs"),
                                      p("Select the state, years, and scope of baseline GHG forecast."),
-
+                                     
                                      selectInput("state_input",
                                                  "State:",
                                                  selected = NULL,
@@ -181,9 +212,24 @@ ui <- function(request) {
                                      bsTooltip("scope_fuels",
                                                "Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG.",
                                                "right",
-                                               options = list(container = "body"))
+                                               options = list(container = "body")),
+                                     selectInput("vmt_forecast_input",
+                                                 "VMT Forecast",
+                                                 c("Default","Custom"),
+                                                 "Default"),
+                                     selectInput("ev_baseline_input",
+                                                 "Vehicle Electrification Baseline",
+                                                 c("AEO Baseline","ACC II","ACC II + ACT","Custom"),
+                                                 "AEO Baseline"),
+                                     numericInput("grid_emissions_input",
+                                                  "Electricity Grid Emissions Net-Zero Year",
+                                                  value = 2025,
+                                                  min = 2021,
+                                                  max = 2050,
+                                                  step = 1)
+                                     
                               )),
-                            ),
+                  ),
                   nav_panel(title = "Projects",
                             fluidRow(
                               p(""),
@@ -215,7 +261,7 @@ ui <- function(request) {
       p(""),
       DT::dataTableOutput("bikeped_projs_tbl")
                             ),
-
+      
       fluidRow(
         h3("Transit: Increased Fixed Route Service (new Vehicles Operating in Maximum Service)"),
         DT::dataTableOutput("transit_fixed_projs_tbl")
@@ -268,200 +314,225 @@ ui <- function(request) {
         h3("Roadway expansion (number of new lane-miles)"),
         DT::dataTableOutput("expansion_projs_tbl")
       ),
-
-                            ),
-                  nav_panel(title = "Assumptions",
-
-
-
-
-                              fluidRow(
-                                p(""),
-                                h3("Bicycle and Pedestrian Data",
-                                   tooltip(
-                                     bsicons::bs_icon("info-circle",
-                                                      title = ""),
-                                     placement = "top",
-                                     "Increasing the prior drive mode share will result in a larger reduction in VMT reduction and CO2.")
-                                ),
-                                p(""),
-                                DT::dataTableOutput("bikeped_assmps_tbl")
-                              ),
-                              fluidRow(
-                                p(""),
-                                h3("Transit Data"),
-                                p(""),
-                                DT::dataTableOutput("transit_assmps_tbl")
-                              ),
-                              fluidRow(
-                                p(""),
-                                h3("Travel Demand Management (TDM) Data"),
-                                p(""),
-                                DT::dataTableOutput("tdm_assmps_tbl")
-                              ),
-                              fluidRow(
-                                p(""),
-                                h3("Micromobility Data"),
-                                p(""),
-                                DT::dataTableOutput("micro_assmps_tbl")
-                              ),
-                              fluidRow(
-                                p(""),
-                                h3("Traffic operations & roadway expansion  Data"),
-                                p(""),
-                                DT::dataTableOutput("traffic_ops_assmps_tbl")
-                              ),
-                              fluidRow(
-                                p(""),
-                                h3("Medium & heavy-duty vehicle replacement Data"),
-                                p(""),
-                              DT::dataTableOutput("mhdv_assmps_tbl")
-                              ),
-                              fluidRow(
-                                p(""),
-                                h3("Park & Ride Data"),
-                                p(""),
-                               DT::dataTableOutput("pnr_assmps_tbl")
-                              ),
-                              fluidRow(
-                                p(""),
-                                h3("Electric Vehicle charging infrastructure Data"),
-                                p(""),
-                                DT::dataTableOutput("evsi_assmps_tbl")
-                              )
-
-
-
-
-                            ),
-                  nav_panel(title = "Costs",
-                            fluidRow(
-                              p(""),
-                              h3("Bicycle & Pedestrian"),
-                              p(""),
-                              DT::dataTableOutput("bikeped_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Transit: Fixed Route Service"),
-                              p(""),
-                              DT::dataTableOutput("transit_fixed_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Transit: Demand Response Service"),
-                              p(""),
-                              DT::dataTableOutput("transit_dr_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Public Transportation: Bus Priority Treatment"),
-                              p(""),
-                              DT::dataTableOutput("pub_trans_priority_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Public Transportation: Rail"),
-                              p(""),
-                              DT::dataTableOutput("pub_trans_rail_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Travel Demand Management"),
-                              p(""),
-                              DT::dataTableOutput("tdm_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Micromobility"),
-                              p(""),
-                              DT::dataTableOutput("micro_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Traffic Operations - Intersection"),
-                              p(""),
-                              DT::dataTableOutput("traffic_ops_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Medium and Heavy Duty Vehicle Replacement (per-vehicle cost)"),
-                              p(""),
-                              DT::dataTableOutput("mhdev_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Park & Ride"),
-                              p(""),
-                              DT::dataTableOutput("pnr_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("EV Charging Infrastructure"),
-                              p(""),
-                              DT::dataTableOutput("evsi_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Roadway Expansion"),
-                              p(""),
-                              DT::dataTableOutput("roadway_expand_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Fuel Price (2022)"),
-                              p(""),
-                              DT::dataTableOutput("fuel_costs_tbl")
-                            ),
-                            fluidRow(
-                              p(""),
-                              h3("Intermodal Freight Investment"),
-                              p(""),
-                              DT::dataTableOutput("intermodal_costs_tbl")
-                            ),
-                            ),
-                  nav_panel(title = "Scenarios",
-                            fluidRow(
-                              p(""),
-                              h3("Scenario Testing"),
-                              p(""),
-                              DT::dataTableOutput("scenario_tbl")
-                            )
-     ),
-                  nav_panel(title = "Advanced",
-
-                            fluidRow(
-                              p(""),
-                              h3("Custom Forecast: Percent of on-road vehicles that are EVs",
-                                 tooltip(
-                                   bsicons::bs_icon("info-circle",
-                                                    title = ""),
-                                   placement = "top",
-                                   "Enter values as a whole number (differently stated, type '55' in a cell to indicate '55%').")
-                              ),
-                              p(""),
-                              DT::dataTableOutput("ev_forecast_tbl")
-                            ),
-
-                            fluidRow(
-                              h3("Custom Forecast: Vehicles Miled Traveled (VMT)"),
-                              DT::dataTableOutput("vmt_forecast_tbl")
-                            )
-
-    )
+      
+                  ),
+      nav_panel(title = "Assumptions",
+                
+                
+                
+                
+                fluidRow(
+                  p(""),
+                  h3("Bicycle and Pedestrian Data",
+                     tooltip(
+                       bsicons::bs_icon("info-circle",
+                                        title = ""),
+                       placement = "top",
+                       "Increasing the prior drive mode share will result in a larger reduction in VMT reduction and CO2.")
+                  ),
+                  p(""),
+                  DT::dataTableOutput("bikeped_assmps_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Transit Data"),
+                  p(""),
+                  DT::dataTableOutput("transit_assmps_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Travel Demand Management (TDM) Data"),
+                  p(""),
+                  DT::dataTableOutput("tdm_assmps_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Micromobility Data"),
+                  p(""),
+                  DT::dataTableOutput("micro_assmps_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Traffic operations & roadway expansion  Data"),
+                  p(""),
+                  DT::dataTableOutput("traffic_ops_assmps_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Medium & heavy-duty vehicle replacement Data"),
+                  p(""),
+                  DT::dataTableOutput("mhdv_assmps_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Park & Ride Data"),
+                  p(""),
+                  DT::dataTableOutput("pnr_assmps_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Electric Vehicle charging infrastructure Data"),
+                  p(""),
+                  DT::dataTableOutput("evsi_assmps_tbl")
+                )
+                
+                
+                
+                
+      ),
+      nav_panel(title = "Costs",
+                fluidRow(
+                  p(""),
+                  h3("Bicycle & Pedestrian"),
+                  p(""),
+                  DT::dataTableOutput("bikeped_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Transit: Fixed Route Service"),
+                  p(""),
+                  DT::dataTableOutput("transit_fixed_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Transit: Demand Response Service"),
+                  p(""),
+                  DT::dataTableOutput("transit_dr_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Public Transportation: Bus Priority Treatment"),
+                  p(""),
+                  DT::dataTableOutput("pub_trans_priority_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Public Transportation: Rail"),
+                  p(""),
+                  DT::dataTableOutput("pub_trans_rail_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Travel Demand Management"),
+                  p(""),
+                  DT::dataTableOutput("tdm_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Micromobility"),
+                  p(""),
+                  DT::dataTableOutput("micro_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Traffic Operations - Intersection"),
+                  p(""),
+                  DT::dataTableOutput("traffic_ops_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Medium and Heavy Duty Vehicle Replacement (per-vehicle cost)"),
+                  p(""),
+                  DT::dataTableOutput("mhdev_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Park & Ride"),
+                  p(""),
+                  DT::dataTableOutput("pnr_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("EV Charging Infrastructure"),
+                  p(""),
+                  DT::dataTableOutput("evsi_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Roadway Expansion"),
+                  p(""),
+                  DT::dataTableOutput("roadway_expand_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Fuel Price (2022)"),
+                  p(""),
+                  DT::dataTableOutput("fuel_costs_tbl")
+                ),
+                fluidRow(
+                  p(""),
+                  h3("Intermodal Freight Investment"),
+                  p(""),
+                  DT::dataTableOutput("intermodal_costs_tbl")
+                ),
+      ),
+      nav_panel(title = "Scenarios",
+                fluidRow(
+                  p(""),
+                  h3("Scenario Testing"),
+                  p(""),
+                  DT::dataTableOutput("scenario_tbl")
+                )
+      ),
+      nav_panel(title = "Advanced",
+                
+                fluidRow(
+                  p(""),
+                  h3("Custom Forecast: Percent of on-road vehicles that are EVs",
+                     tooltip(
+                       bsicons::bs_icon("info-circle",
+                                        title = ""),
+                       placement = "top",
+                       "Enter values as a whole number (differently stated, type '55' in a cell to indicate '55%').")
+                  ),
+                  p(""),
+                  DT::dataTableOutput("ev_forecast_sheet_tbl")
+                ),
+                
+                fluidRow(
+                  h3("Custom Forecast: Vehicles Miled Traveled (VMT)"),
+                  DT::dataTableOutput("vmt_forecast_sheet_tbl")
+                ),
+                fluidRow(
+                  h3("Onroad Public Transit - Fuel Technology Fraction"),
+                  DT::dataTableOutput("onroad_fuel_tech_frac_sheet_tbl")
+                ),
+                fluidRow(
+                  h3("Passenger Rail"),
+                  DT::dataTableOutput("pass_rail_sheet_tbl")
+                ),
+                fluidRow(
+                  h3("Freight Rail"),
+                  DT::dataTableOutput("freight_rail_sheet_tbl")
+                ),
+                fluidRow(
+                  h3("Construction and Maintenance"),
+                  DT::dataTableOutput("construction_sheet_tbl")
+                ),
+                fluidRow(
+                  h3("Fuel Apportionments"),
+                  DT::dataTableOutput("fuel_apportionment_sheet_tbl")
+                )
+                
+                
+                
+                
+                
+                
+      )
                 )),
-
+      
       nav_panel(title = "Outputs",
                 navset_card_pill(
                   placement = "above",
                   nav_panel(title = "Baseline GHG Forecast",
-
+                            
                             h2("Baseline GHG Forecast"),
                             h3("Transportation GHG Forecast"),
-
+                            
                             DT::dataTableOutput("baseline_outputs")
-
-   ),
+                            
+                  ),
                   nav_panel(title = "Scenario and Strategy Summary",
                             fluidRow(
                               p(""),
@@ -486,7 +557,7 @@ ui <- function(request) {
                                      )),
                               column(6,
                                      plotlyOutput("emission_change_graph", width = "auto", height = "auto"))),
-  ),
+                  ),
                   nav_panel(title = "Cost effectiveness",
                             fluidRow(
                               p(""),
@@ -573,24 +644,24 @@ ui <- function(request) {
                               p(""),
                               DT::dataTableOutput("intermodal_costs_outputs_tbl")
                             )
- )
+                  ),
                 )),
       nav_panel(title = "Sources",
                 h2("Sources"),
                 p("The following resources were used in developing the TEA-CART tool."),
-
+                
                 DT::dataTableOutput("source_table")
-                ),
+      ),
       nav_spacer(),
       nav_menu(
         title = tags$img(src = "GCC_Logo_Transparent_Stacked.png", height = "30px"),
         nav_item(tags$a("Visit", href = "https://www.georgetownclimate.org/", target = "_blank")))
-
-
+      
+      
     )
-
+    
   )
-
+  
 }
 
 # setting themes - golem probably wants them somewhere else
@@ -605,11 +676,11 @@ theme_set(theme_bw(base_size = 16))
 
 
 server <- function(input, output, session) {
-
-  # server - front matter ---------------------------------------------------
-
+  
+  # server sources ---------------------------------------------------
+  
   sources_data <- read_xlsx("sources.xlsx", sheet = 1, col_names = TRUE)
-
+  
   output$source_table <- renderDT({
     DT::datatable(sources_data,
                   escape = FALSE,
@@ -621,9 +692,9 @@ server <- function(input, output, session) {
                   filter = 'bottom',
                   rownames = FALSE)
   })
-
+  
   # server project inputs ---------------------------------------------------------
-
+  
   projects_names <- c("bikeped_projs",
                       "transit_fixed_projs",
                       "transit_dr_projs",
@@ -638,87 +709,87 @@ server <- function(input, output, session) {
                       "evsi_projs",
                       "freight_projs",
                       "expansion_projs")
-
+  
   read_static_tables("projects.xlsx", projects_names)
-
-
-
+  
+  
+  
   ## create tables -----------------------------------------------------------
-
+  
   output$bikeped_projs_tbl <- create_table(bikeped_projs,
                                            list(target = 'row',
                                                 disable = list(columns = c(0,1)),
                                                 autoWidth = TRUE))
-
+  
   output$transit_fixed_projs_tbl <- create_table(transit_fixed_projs,
                                                  list(target = 'row',
                                                       disable = list(columns = c(0,1)),
                                                       autoWidth = TRUE))
-
+  
   output$transit_dr_projs_tbl <- create_table(transit_dr_projs,
                                               list(target = 'row',
                                                    disable = list(columns = c(0,1)),
                                                    autoWidth = TRUE))
-
+  
   output$transit_el_projs_tbl <- create_table(transit_el_projs,
                                               list(target = 'row',
                                                    disable = list(columns = c(0,1)),
                                                    autoWidth = TRUE))
-
+  
   output$transit_bus_projs_tbl <- create_table(transit_bus_projs,
                                                list(target = 'row',
                                                     disable = list(columns = c(0,1)),
                                                     autoWidth = TRUE))
-
+  
   output$public_rail_projs_tbl <- create_table(public_rail_projs,
                                                list(target = 'row',
                                                     disable = list(columns = c(0,1)),
                                                     autoWidth = TRUE))
-
+  
   output$tdm_projs_tbl <- create_table(tdm_projs,
                                        list(target = 'row',
                                             disable = list(columns = c(0,1)),
                                             autoWidth = TRUE))
-
+  
   output$micro_projs_tbl <- create_table(micro_projs,
                                          list(target = 'row',
                                               disable = list(columns = c(0,1)),
                                               autoWidth = TRUE))
-
+  
   output$traffic_ops_projs_tbl <- create_table(traffic_ops_projs,
                                                list(target = 'row',
                                                     disable = list(columns = c(0,1)),
                                                     autoWidth = TRUE))
-
+  
   output$mhdev_projs_tbl <- create_table(mhdev_projs,
                                          list(target = 'row',
                                               disable = list(columns = c(0,1)),
                                               autoWidth = TRUE))
-
+  
   output$pnr_projs_tbl <- create_table(pnr_projs,
                                        list(target = 'row',
                                             disable = list(columns = c(0,1)),
                                             autoWidth = TRUE))
-
+  
   output$evsi_projs_tbl <- create_table(evsi_projs,
                                         list(target = 'row',
                                              disable = list(columns = c(0,1)),
                                              autoWidth = TRUE))
-
+  
   output$freight_projs_tbl <- create_table(freight_projs,
                                            list(target = 'row',
                                                 disable = list(columns = c(0,1)),
                                                 autoWidth = TRUE))
-
+  
   output$expansion_projs_tbl <- create_table(expansion_projs,
                                              list(target = 'row',
                                                   disable = list(columns = c(0,1)),
                                                   autoWidth = TRUE))
-
-
-
+  
+  
+  
   ## make tables editable ----------------------------------------------------
-
+  
   projects_names <- c("bikeped_projs",
                       "transit_fixed_projs",
                       "transit_dr_projs",
@@ -733,71 +804,71 @@ server <- function(input, output, session) {
                       "evsi_projs",
                       "freight_projs",
                       "expansion_projs")
-
+  
   observe(print(input$acc1))
-
-
+  
+  
   observeEvent(input$bikeped_projs_edit, {
     bikeped_projs <<- editData(bikeped_projs, input$bikeped_projs_edit, 'bikeped_projs_tbl')
   })
-
+  
   observeEvent(input$transit_fixed_projs_edit, {
     transit_fixed_projs <<- editData(transit_fixed_projs, input$transit_fixed_projs_edit, 'transit_fixed_projs_tbl')
   })
-
+  
   observeEvent(input$transit_dr_projs_edit, {
     transit_dr_projs <<- editData(transit_fixed_projs, input$transit_dr_projs_edit, 'transit_dr_projs_tbl')
   })
-
+  
   observeEvent(input$transit_el_projs_edit, {
     transit_el_projs <<- editData(transit_fixed_projs, input$transit_el_projs_edit, 'transit_el_projs_tbl')
   })
-
+  
   observeEvent(input$transit_bus_projs_edit, {
     transit_bus_projs <<- editData(transit_fixed_projs, input$transit_bus_projs_edit, 'transit_bus_projs_tbl')
   })
-
+  
   observeEvent(input$public_rail_projs_edit, {
     public_rail_projs <<- editData(transit_fixed_projs, input$public_rail_projs_edit, 'public_rail_projs_tbl')
   })
-
+  
   observeEvent(input$tdm_projs_edit, {
     tdm_projs <<- editData(transit_fixed_projs, input$tdm_projs_edit, 'tdm_projs_tbl')
   })
-
+  
   observeEvent(input$micro_projs_edit, {
     micro_projs <<- editData(transit_fixed_projs, input$micro_projs_edit, 'micro_projs_tbl')
   })
-
+  
   observeEvent(input$traffic_ops_projs_edit, {
     traffic_ops_projs <<- editData(transit_fixed_projs, input$traffic_ops_projs_edit, 'traffic_ops_projs_tbl')
   })
-
+  
   observeEvent(input$mhdev_projs_edit, {
     mhdev_projs <<- editData(transit_fixed_projs, input$mhdev_projs_edit, 'mhdev_projs_tbl')
   })
-
+  
   observeEvent(input$pnr_projs_edit, {
     pnr_projs <<- editData(transit_fixed_projs, input$pnr_projs_edit, 'pnr_projs_tbl')
   })
-
+  
   observeEvent(input$evsi_projs_edit, {
     evsi_projs <<- editData(transit_fixed_projs, input$evsi_projs_edit, 'evsi_projs_tbl')
   })
-
+  
   observeEvent(input$freight_projs_edit, {
     freight_projs <<- editData(transit_fixed_projs, input$freight_projs_edit, 'freight_projs_tbl')
   })
-
+  
   observeEvent(input$expansion_projs_edit, {
     expansion_projs <<- editData(transit_fixed_projs, input$expansion_projs_edit, 'expansion_projs_tbl')
   })
   #
-
-
-
-# server assumptions ------------------------------------------------------
-
+  
+  
+  
+  # server assumptions ------------------------------------------------------
+  
   assumptions_names <- c("bikeped_assmps",
                          "transit_assmps",
                          "tdm_assmps",
@@ -806,102 +877,102 @@ server <- function(input, output, session) {
                          "mhdv_assmps",
                          "pnr_assmps",
                          "evsi_assmps")
-
-
+  
+  
   read_static_tables("assumptions.xlsx", assumptions_names)
-
-
+  
+  
   ## create tables -----------------------------------------------------------
-
-
+  
+  
   output$bikeped_assmps_tbl <- create_table(bikeped_assmps,
                                             list(target = 'row',
                                                  disable = list(columns = c(0,1)),
                                                  autoWidth = TRUE))
-
-
+  
+  
   output$transit_assmps_tbl <- create_table(transit_assmps,
                                             list(target = 'row',
                                                  disable = list(columns = c(0,1)),
                                                  autoWidth = TRUE))
-
-
+  
+  
   output$tdm_assmps_tbl <- create_table(tdm_assmps,
                                         list(target = 'row',
                                              disable = list(columns = c(0,1)),
                                              autoWidth = TRUE))
-
-
+  
+  
   output$micro_assmps_tbl <- create_table(micro_assmps,
                                           list(target = 'row',
                                                disable = list(columns = c(0,1)),
                                                autoWidth = TRUE))
-
-
+  
+  
   output$traffic_ops_assmps_tbl <- create_table(traffic_ops_assmps,
                                                 list(target = 'row',
                                                      disable = list(columns = c(0,1)),
                                                      autoWidth = TRUE))
-
-
+  
+  
   output$mhdv_assmps_tbl <- create_table(mhdv_assmps,
                                          list(target = 'row',
                                               disable = list(columns = c(0,1)),
                                               autoWidth = TRUE))
-
-
+  
+  
   output$pnr_assmps_tbl <- create_table(pnr_assmps,
                                         list(target = 'row',
                                              disable = list(columns = c(0)),
                                              autoWidth = TRUE))
-
-
+  
+  
   output$evsi_assmps_tbl <- create_table(evsi_assmps,
                                          list(target = 'row',
                                               disable = list(columns = c(0,1)),
                                               autoWidth = TRUE))
-
-
+  
+  
   ## make tables editable ----------------------------------------------------
-
-
+  
+  
   observeEvent(input$bikeped_assmps_edit, {
     bikeped_assmps <<- editData(bikeped_assmps, input$bikeped_assmps_edit, 'bikeped_assmps_tbl')
   })
-
+  
   observeEvent(input$transit_assmps_edit, {
     transit_assmps <<- editData(transit_assmps, input$transit_assmps_edit, 'transit_assmps_tbl')
   })
-
+  
   observeEvent(input$tdm_assmps_edit, {
     tdm_assmps <<- editData(tdm_assmps, input$tdm_assmps_edit, 'tdm_assmps_tbl')
   })
-
+  
   observeEvent(input$micro_assmps_edit, {
     micro_assmps <<- editData(micro_assmps, input$micro_assmps_edit, 'micro_assmps_tbl')
   })
-
+  
   observeEvent(input$traffic_ops_assmps_edit, {
     traffic_ops_assmps <<- editData(traffic_ops_assmps, input$traffic_ops_assmps_edit, 'traffic_ops_assmps_tbl')
   })
-
+  
   observeEvent(input$mhdv_assmps_edit, {
     mhdv_assmps <<- editData(mhdv_assmps, input$mhdv_assmps_edit, 'mhdv_assmps_tbl')
   })
-
+  
   observeEvent(input$pnr_assmps_edit, {
     pnr_assmps <<- editData(pnr_assmps, input$pnr_assmps_edit, 'pnr_assmps_tbl')
   })
-
+  
   observeEvent(input$evsi_assmps_edit, {
     evsi_assmps <<- editData(evsi_assmps, input$evsi_assmps_edit, 'evsi_assmps_tbl')
   })
-
-
-
-# costs inputs server ------------------------------------------------------------
-
-
+  
+  
+  
+  # costs inputs server ------------------------------------------------------------
+  
+  
   costs_names <- c("bikeped_costs",
                    "transit_fixed_costs",
                    "transit_dr_costs",
@@ -916,146 +987,146 @@ server <- function(input, output, session) {
                    "roadway_expand_costs",
                    "fuel_costs",
                    "intermodal_costs")
-
+  
   read_static_tables("costs_inputs.xlsx", costs_names)
-
-
+  
+  
   ## create tables -----------------------------------------------------------
-
+  
   output$bikeped_costs_tbl <- create_table(bikeped_costs,
                                            list(target = 'row',
                                                 disable = list(columns = c(0,1)),
                                                 autoWidth = TRUE))
-
+  
   output$transit_fixed_costs_tbl <- create_table(transit_fixed_costs,
                                                  list(target = 'row',
                                                       disable = list(columns = c(0,1)),
                                                       autoWidth = TRUE))
-
+  
   output$transit_dr_costs_tbl <- create_table(transit_dr_costs,
                                               list(target = 'row',
                                                    disable = list(columns = c(0,1)),
                                                    autoWidth = TRUE))
-
+  
   output$pub_trans_priority_costs_tbl <- create_table(pub_trans_priority_costs,
                                                       list(target = 'row',
                                                            disable = list(columns = c(0,1)),
                                                            autoWidth = TRUE))
-
+  
   output$pub_trans_rail_costs_tbl <- create_table(pub_trans_rail_costs,
                                                   list(target = 'row',
                                                        disable = list(columns = c(0,1)),
                                                        autoWidth = TRUE))
-
+  
   output$tdm_costs_tbl <- create_table(tdm_costs,
                                        list(target = 'row',
                                             disable = list(columns = c(0,1)),
                                             autoWidth = TRUE))
-
+  
   output$micro_costs_tbl <- create_table(micro_costs,
                                          list(target = 'row',
                                               disable = list(columns = c(0,1)),
                                               autoWidth = TRUE))
-
+  
   output$traffic_ops_costs_tbl <- create_table(traffic_ops_costs,
                                                list(target = 'row',
                                                     disable = list(columns = c(0,1)),
                                                     autoWidth = TRUE))
-
+  
   output$mhdev_costs_tbl <- create_table(mhdev_costs,
                                          list(target = 'row',
                                               disable = list(columns = c(0,1)),
                                               autoWidth = TRUE))
-
+  
   output$pnr_costs_tbl <- create_table(pnr_costs,
                                        list(target = 'row',
                                             disable = list(columns = c(0,1)),
                                             autoWidth = TRUE))
-
+  
   output$evsi_costs_tbl <- create_table(evsi_costs,
                                         list(target = 'row',
                                              disable = list(columns = c(0,1)),
                                              autoWidth = TRUE))
-
+  
   output$roadway_expand_costs_tbl <- create_table(roadway_expand_costs,
                                                   list(target = 'row',
                                                        disable = list(columns = c(0,1)),
                                                        autoWidth = TRUE))
-
+  
   output$fuel_costs_tbl <- create_table(fuel_costs,
                                         list(target = 'row',
                                              disable = list(columns = c(0,1)),
                                              autoWidth = TRUE))
-
+  
   output$intermodal_costs_tbl <- create_table(intermodal_costs,
                                               list(target = 'row',
                                                    disable = list(columns = c(0,1)),
                                                    autoWidth = TRUE))
-
-
+  
+  
   ## make editable -----------------------------------------------------------
-
+  
   observeEvent(input$bikeped_costs_edit, {
     bikeped_costs <<- editData(bikeped_costs, input$bikeped_costs_edit, 'bikeped_costs_tbl')
   })
-
+  
   observeEvent(input$transit_fixed_costs_edit, {
     transit_fixed_costs <<- editData(transit_fixed_costs, input$transit_fixed_costs_edit, 'transit_fixed_costs_tbl')
   })
-
+  
   observeEvent(input$transit_dr_costs_edit, {
     transit_dr_costs <<- editData(transit_dr_costs, input$transit_dr_costs_edit, 'transit_dr_costs_tbl')
   })
-
+  
   observeEvent(input$pub_trans_priority_costs_edit, {
     pub_trans_priority_costs <<- editData(pub_trans_priority_costs, input$pub_trans_priority_costs_edit, 'pub_trans_priority_costs_tbl')
   })
-
+  
   observeEvent(input$pub_trans_rail_costs_edit, {
     pub_trans_rail_costs <<- editData(pub_trans_rail_costs, input$pub_trans_rail_costs_edit, 'pub_trans_rail_costs_tbl')
   })
-
+  
   observeEvent(input$tdm_costs_edit, {
     tdm_costs <<- editData(tdm_costs, input$tdm_costs_edit, 'tdm_costs_tbl')
   })
-
+  
   observeEvent(input$micro_costs_edit, {
     micro_costs <<- editData(micro_costs, input$micro_costs_edit, 'micro_costs_tbl')
   })
-
+  
   observeEvent(input$traffic_ops_costs_edit, {
     traffic_ops_costs <<- editData(traffic_ops_costs, input$traffic_ops_costs_edit, 'traffic_ops_costs_tbl')
   })
-
+  
   observeEvent(input$mhdev_costs_edit, {
     mhdev_costs <<- editData(mhdev_costs, input$mhdev_costs_edit, 'mhdev_costs_tbl')
   })
-
+  
   observeEvent(input$pnr_costs_edit, {
     pnr_costs <<- editData(pnr_costs, input$pnr_costs_edit, 'pnr_costs_tbl')
   })
-
+  
   observeEvent(input$evsi_costs_edit, {
     evsi_costs <<- editData(evsi_costs, input$evsi_costs_edit, 'evsi_costs_tbl')
   })
-
+  
   observeEvent(input$roadway_expand_costs_edit, {
     roadway_expand_costs <<- editData(roadway_expand_costs, input$roadway_expand_costs_edit, 'roadway_expand_costs_tbl')
   })
-
+  
   observeEvent(input$fuel_costs_edit, {
     fuel_costs <<- editData(fuel_costs, input$fuel_costs_edit, 'fuel_costs_tbl')
   })
-
+  
   observeEvent(input$intermodal_costs_edit, {
     intermodal_costs <<- editData(intermodal_costs, input$intermodal_costs_edit, 'intermodal_costs_tbl')
   })
-
-
-
-# server scenarios inputs -------------------------------------------------
-
-
+  
+  
+  
+  # server scenarios inputs -------------------------------------------------
+  
+  
   strategy_names <- c("Bicycle and Pedestrian",
                       "Transit Service Expansion",
                       "Micromobility",
@@ -1068,7 +1139,7 @@ server <- function(input, output, session) {
                       "Traffic Operations",
                       "Roadway Expansion",
                       "Custom Projects")
-
+  
   rowName <- function(scenario) {
     as.character(
       checkboxInput(paste0("row", gsub(" ", "", scenario)), label = scenario)
@@ -1143,71 +1214,77 @@ server <- function(input, output, session) {
     )
   })
   
-
-
-# server advanced inputs ---------------------------------------------------------
-
-  advanced_names <- c("ev_forecast",
-                      "vmt_forecast")
-
-
-  read_static_tables <- function(file_name, sheet_names) {
-    for (i in seq_along(sheet_names)) {
-      assign(sheet_names[i], read_xlsx(file_name,
-                                       sheet = i,
-                                       skip = 1,
-                                       col_names = TRUE), envir = .GlobalEnv)
-    }
-  }
-
+  
+  
+  # server advanced inputs ---------------------------------------------------------
+  
+  advanced_names <- c("ev_forecast_sheet",
+                      "vmt_forecast_sheet",
+                      "onroad_fuel_tech_frac_sheet",
+                      "pass_rail_sheet",
+                      "freight_rail_sheet",
+                      "construction_sheet",
+                      "fuel_apportionment_sheet")
+  
   read_static_tables("advanced.xlsx", advanced_names)
-
-
-  create_table = function(data, editable = 'row', server = TRUE, ...) {
-    renderDT(data,
-             selection = 'none',
-             server = server,
-             editable = editable,
-             rownames = FALSE,
-             ...)
-  }
-
-  create_graph <- function(data, indicator){
-
-  }
-
-
+  
+  
   ## create tables -----------------------------------------------------------
-
-  output$ev_forecast_tbl <- create_table(ev_forecast,
-                                         list(target = 'row',
-                                              disable = list(columns = c(0)),
-                                              autoWidth = TRUE))
-
-  output$vmt_forecast_tbl <- create_table(vmt_forecast,
-                                          list(target = 'row',
-                                               disable = list(columns = c(0)),
-                                               autoWidth = TRUE))
-
+  
+  output$ev_forecast_sheet_tbl <- create_table(ev_forecast_sheet,
+                                               list(target = 'row',
+                                                    disable = list(columns = c(0)),
+                                                    autoWidth = TRUE))
+  
+  output$vmt_forecast_sheet_tbl <- create_table(vmt_forecast_sheet,
+                                                list(target = 'row',
+                                                     disable = list(columns = c(0)),
+                                                     autoWidth = TRUE))
+  
+  output$onroad_fuel_tech_frac_sheet_tbl <- create_table(onroad_fuel_tech_frac_sheet,
+                                                         list(target = 'row',
+                                                              disable = list(columns = c(0,1)),
+                                                              autoWidth = TRUE))
+  
+  output$pass_rail_sheet_tbl <- create_table(pass_rail_sheet,
+                                             list(target = 'row',
+                                                  disable = list(columns = c(0,1)),
+                                                  autoWidth = TRUE))
+  
+  output$freight_rail_sheet_tbl <- create_table(freight_rail_sheet,
+                                                list(target = 'row',
+                                                     disable = list(columns = c(0)),
+                                                     autoWidth = TRUE))
+  
+  output$construction_sheet_tbl <- create_table(construction_sheet,
+                                                list(target = 'row',
+                                                     disable = list(columns = c(0)),
+                                                     autoWidth = TRUE))
+  
+  output$fuel_apportionment_sheet_tbl <- create_table(fuel_apportionment_sheet,
+                                                      list(target = 'row',
+                                                           disable = list(columns = c(0)),
+                                                           autoWidth = TRUE))
+  
   ## make editable -----------------------------------------------------------
-
-
-
+  
+  
+  
   observeEvent(input$ev_forecast_edit, {
     ev_forecast <<- editData(ev_forecast, input$ev_forecast_edit, 'ev_forecast_tbl')
   })
-
-
+  
+  
   observeEvent(input$vmt_forecast_edit, {
     vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
   })
-
-
+  
+  
   # server - outputs --------------------------------------------------------
-
-
-# server baseline outputs -------------------------------------------------
-
+  
+  
+  # server baseline outputs -------------------------------------------------
+  
   # dummy data - copy pasta
   data_sample <- c(
     "Emissions (MT CO2e),2021,2025,2030,2050",
@@ -1221,17 +1298,17 @@ server <- function(input, output, session) {
     "Total (All Transportation),22775117,23493340,22644362,22089133",
     "Change from Base Year (%),,3%,-1%,-3%"
   )
-
+  
   dt <- rbindlist(lapply(data_sample, function(x) data.table(t(strsplit(x, ",")[[1]]))), use.names = TRUE, fill = TRUE)
-
+  
   # better names, dropping first row, changing data stored as character to numeric
   setnames(dt, unlist(dt[1,]))
   dt <- dt[-1]
   numeric_columns <- names(dt)[!names(dt) %in% c("Emissions (MT CO2e)", "Change from Base Year (%)")]
   dt[, (numeric_columns) := lapply(.SD, function(x) as.numeric(gsub(",", "", x))), .SDcols = numeric_columns]
-
+  
   # next time just upload a table
-
+  
   output$baseline_outputs <- renderDT({
     DT::datatable(dt,
                   escape = FALSE,
@@ -1243,10 +1320,10 @@ server <- function(input, output, session) {
                   filter = 'bottom',
                   rownames = FALSE)
   })
-
-
-# server costs outputs ----------------------------------------------------
-
+  
+  
+  # server costs outputs ----------------------------------------------------
+  
   costs_outputs_names <- c("bikeped_costs_outputs",
                            "transit_fixed_costs_outputs",
                            "transit_dr_costs_outputs",
@@ -1261,13 +1338,13 @@ server <- function(input, output, session) {
                            "evsi_costs_outputs",
                            "roadway_expand_costs_outputs",
                            "intermodal_costs_outputs")
-
+  
   read_static_tables("costs_outputs.xlsx", costs_outputs_names)
-
+  
   ## create tables -----------------------------------------------------------
-
+  
   # note that the tables below are not using the editable table function
-
+  
   output$bikeped_costs_outputs_tbl <- renderDT({
     datatable(bikeped_costs_outputs,
               extensions = c('RowGroup','Buttons'),
@@ -1280,49 +1357,49 @@ server <- function(input, output, session) {
                              buttons = c('copy', 'csv', 'excel', 'pdf')),
               rownames = FALSE) |>
       formatRound(c(3:7),1)})
-
+  
   output$transit_fixed_costs_outputs_tbl <- renderDT(transit_fixed_costs_outputs,
                                                      rownames = FALSE)
-
+  
   output$transit_dr_costs_outputs_tbl <- renderDT(transit_dr_costs_outputs,
                                                   rownames = FALSE)
-
+  
   output$pub_trans_priority_costs_outputs_tbl <- renderDT(pub_trans_priority_costs_outputs,
                                                           rownames = FALSE)
-
+  
   output$transit_zeb_costs_outputs_tbl <- renderDT(transit_zeb_costs_outputs,
                                                    rownames = FALSE)
-
+  
   output$pub_trans_rail_costs_outputs_tbl <- renderDT(pub_trans_rail_costs_outputs,
                                                       rownames = FALSE)
-
+  
   output$tdm_costs_outputs_tbl <- renderDT(tdm_costs_outputs,
                                            rownames = FALSE)
-
+  
   output$micro_costs_outputs_tbl <- renderDT(micro_costs_outputs,
                                              rownames = FALSE)
-
+  
   output$traffic_ops_costs_outputs_tbl <- renderDT(traffic_ops_costs_outputs,
                                                    rownames = FALSE)
-
+  
   output$mhdev_costs_outputs_tbl <- renderDT(mhdev_costs_outputs,
                                              rownames = FALSE)
-
+  
   output$pnr_costs_outputs_tbl <- renderDT(pnr_costs_outputs,
                                            rownames = FALSE)
-
+  
   output$evsi_costs_outputs_tbl <- renderDT(evsi_costs_outputs,
                                             rownames = FALSE)
-
+  
   output$roadway_expand_costs_outputs_tbl <- renderDT(roadway_expand_costs_outputs,
                                                       rownames = FALSE)
-
+  
   output$intermodal_costs_outputs_tbl <- renderDT(intermodal_costs_outputs,
                                                   rownames = FALSE)
-
-
-  # make editable -----------------------------------------------------------
-
+  
+  
+  ## make editable -----------------------------------------------------------
+  
   costs_outputs_names <- c("bikeped_costs_outputs",
                            "transit_fixed_costs_outputs",
                            "transit_dr_costs_outputs",
@@ -1337,14 +1414,14 @@ server <- function(input, output, session) {
                            "evsi_costs_outputs",
                            "roadway_expand_costs_outputs",
                            "intermodal_costs_outputs")
-
-
-
-# server scenarios outputs ------------------------------------------------
-
+  
+  
+  
+  # server scenarios outputs ------------------------------------------------
+  
   # read dummy data
   scenario_result <- readxl::read_excel("scenario_simplified.xlsx")
-
+  
   observeEvent(input$scenario_indicator,{
     dat_temp <- scenario_result %>%
       filter( indicator== input$scenario_indicator, !is.na(mt_reduction)) %>%
@@ -1352,7 +1429,7 @@ server <- function(input, output, session) {
       mutate(year = as.character(year)) %>%
       pivot_wider(names_from = scenario,
                   values_from = mt_reduction)
-
+    
     output$emission_change_graph <- renderPlotly(
       dat_temp %>%
         plotly::plot_ly(x = ~year,
@@ -1360,15 +1437,15 @@ server <- function(input, output, session) {
                         type = 'bar',
                         name = 'Scenario 1' ) %>%
         add_trace(y = ~ `Scenario 2`, name = 'Scenario 2'))
-
+    
     output$emission_change_tbl <- DT::renderDataTable(
       DT::datatable(dat_temp,
                     escape = FALSE,
                     rownames=F,
                     options = list(dom = 't')))
-
+    
   })
-
+  
   output$downloadscenario_result <- downloadHandler(
     filename = function(){
       paste("scenario_results",Sys.Date(), ".csv", sep="")},
@@ -1377,10 +1454,10 @@ server <- function(input, output, session) {
         rename()
       write.csv(tbl_out, file,row.names = F)
     })
-
-
-
-
+  
+  
+  
+  
 }
 
 # Run the application
