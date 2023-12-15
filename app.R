@@ -824,6 +824,20 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
+  # establishing the initial values in a format that datatable prefers
+  
+  
+  # function to reshape data for rendering
+  reshape_data <- function(data, selected_state) {
+    data |>
+      filter(State == selected_state) |>
+      select(-State) |>
+      group_by(Fruit) |>
+      pivot_wider(names_from = Year, values_from = Values) |>
+      ungroup()
+  }
+  
+  
 
   # rendering bike ped table
   output$bikeped_projs_tbl <- renderDT({
