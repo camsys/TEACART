@@ -683,22 +683,6 @@ server <- function(input, output, session) {
   # set reactiveValues
   rv <- reactiveValues()
   
-  # server sources ---------------------------------------------------
-  
-  sources_data <- read_xlsx("sources.xlsx", sheet = 1, col_names = TRUE)
-  
-  output$source_table <- renderDT({
-    DT::datatable(sources_data,
-                  escape = FALSE,
-                  options = list(pageLength = 10,
-                                 autoWidth = FALSE,
-                                 buttons = c('csv', 'excel')
-                  ),
-                  extensions = 'Buttons',
-                  filter = 'bottom',
-                  rownames = FALSE)
-  })
-  
   # Initiate or Upload User Inputs -------------------------------------------
   
   observeEvent(input$user_inputs_upload, {
@@ -716,7 +700,7 @@ server <- function(input, output, session) {
   
   ## Example of how to modify the reactiveValues
   observeEvent(rv$Capital_Project_Inputs, { ### may be good to use observe instead
-    browser()
+    # browser()
     rv$random_calculated_table <- rv$Capital_Project_Inputs %>% filter(value == 4)
     print(rv$random_calculated_table)
   })
@@ -733,6 +717,22 @@ server <- function(input, output, session) {
                            file = file))
     }
   )
+  
+  # server sources ---------------------------------------------------
+  
+  sources_data <- read_xlsx("sources.xlsx", sheet = 1, col_names = TRUE)
+  
+  output$source_table <- renderDT({
+    DT::datatable(sources_data,
+                  escape = FALSE,
+                  options = list(pageLength = 10,
+                                 autoWidth = FALSE,
+                                 buttons = c('csv', 'excel')
+                  ),
+                  extensions = 'Buttons',
+                  filter = 'bottom',
+                  rownames = FALSE)
+  })
   
   # server project inputs ---------------------------------------------------------
   
