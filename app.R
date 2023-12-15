@@ -158,6 +158,9 @@ costs_outputs_names <- c("bikeped_costs_outputs",
 
 
 
+# ui ----------------------------------------------------------------------
+
+
 ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -741,6 +744,11 @@ server <- function(input, output, session) {
   # set reactiveValues
   rv <- reactiveValues()
   
+
+    # using the new function to populate a new object that contains data
+    rvs <- read_user_inputs_excel("2.User_Inputs.xlsx")
+
+  
   # Initiate or Upload User Inputs -------------------------------------------
   
   observeEvent(input$user_inputs_upload, {
@@ -814,10 +822,36 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
-  output$bikeped_projs_tbl <- create_table(bikeped_projs,
-                                           list(target = 'row',
-                                                disable = list(columns = c(0,1)),
-                                                autoWidth = TRUE))
+  output$bikeped_projs_tbl <- renderDT({
+    filtered_table <- rvs$Capital_Project_Inputs
+    
+#    filtered_table <- filtered_table[category == "Bicycle and Pedestrian"]
+    #    filtered_table <- rv$Capital_Project_Inputs$category == "Bicycle and Pedestrian"
+    
+    # browser()
+    # for (yr in years) {
+    #   year_col_name <- as.character(yr)
+    #   filtered_table[, (year_col_name) := ifelse (year == yr, 'values', NA_integer_)]
+    # }
+    #
+    # # Dropping columns only NA
+    # filtered_table <- filtered_table[, .SD, .SDcols = Filter(function(x) !all(is.na(x)), names(filtered_table))]
+    #
+    # # defining which columns to display (excluding field and year)
+    # cols_to_display <- setdiff(names(filtered_table), c("field", "year"))
+    
+    # rendering DT with selected columns
+    #datatable(filtered_table[, ..cols_to_display], rownames = FALSE)
+    
+    # rendering DT with selected columns
+    datatable(filtered_table, rownames = FALSE)
+  })
+  
+  
+  # output$bikeped_projs_tbl <- create_table(bikeped_projs,
+  #                                          list(target = 'row',
+  #                                               disable = list(columns = c(0,1)),
+  #                                               autoWidth = TRUE))
   
   output$transit_fixed_projs_tbl <- create_table(transit_fixed_projs,
                                                  list(target = 'row',
