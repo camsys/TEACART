@@ -32,6 +32,7 @@ for (file in c(
 
 
 # read in data and assign a name from a list ------------------------------
+# true global object - moving to server would make this a session-level object
 
 read_static_tables <- function(file_name, sheet_names) {
   for (i in seq_along(sheet_names)) {
@@ -779,7 +780,8 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       # browser()
-      return(openxlsx::write.xlsx(x = list("Cost_Parameters" = rv$Cost_Parameters, "Baseline_Parameters" = rv$Baseline_Parameters), 
+      return(openxlsx::write.xlsx(x = list("Cost_Parameters" = rv$Cost_Parameters,
+                                           "Baseline_Parameters" = rv$Baseline_Parameters), 
                            file = file))
     }
   )
@@ -822,6 +824,40 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
+
+  # rendering bike ped table
+  output$bikeped_projs_tbl <- renderDT({
+    req(rvs$Capital_Project_Inputs())
+    datatable(rvs$Capital_Project_Inputs(),
+              options = list(columnDefs = list(list(visible = FALSE,
+                                                    targets = which(colnames(rvs$Capital_Project_Inputs() == "field"))))),
+              editable = TRUE)
+    # filtered_table <- rvs$Capital_Project_Inputs
+    
+#    filtered_table <- filtered_table[category == "Bicycle and Pedestrian"]
+    #    filtered_table <- rv$Capital_Project_Inputs$category == "Bicycle and Pedestrian"
+    
+    # browser()
+    # for (yr in years) {
+    #   year_col_name <- as.character(yr)
+    #   filtered_table[, (year_col_name) := ifelse (year == yr, 'values', NA_integer_)]
+    # }
+    #
+    # # Dropping columns only NA
+    # filtered_table <- filtered_table[, .SD, .SDcols = Filter(function(x) !all(is.na(x)), names(filtered_table))]
+    #
+    # # defining which columns to display (excluding field and year)
+    # cols_to_display <- setdiff(names(filtered_table), c("field", "year"))
+    
+    # rendering DT with selected columns
+    #datatable(filtered_table[, ..cols_to_display], rownames = FALSE)
+    
+    # rendering DT with selected columns
+#    datatable(filtered_table, rownames = FALSE)
+  }, server = FALSE)
+  
+  
+# using reactive objects loaded from my new set of    
   output$bikeped_projs_tbl <- renderDT({
     filtered_table <- rvs$Capital_Project_Inputs
     
