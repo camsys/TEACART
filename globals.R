@@ -79,6 +79,9 @@ expand(State_Populations, state, year = rep(2020:2050)) %>%
          growth = population / population[year == 2020] - 1) %>%
   ungroup()
 
+NHS_VMT <- read_excel("1.Raw_Data.xlsx", sheet = "NHS_VMT", range = "A4:R57") %>%
+    select(state, LDV_pct_on_NHS, TRK_pct_on_NHS)
+
 VMT_State_Allocation <- read_excel("1.Raw_Data.xlsx", sheet = "VMT_State_Allocation")
 
 Stock_Type_Tech_BASE <- read_excel("1.Raw_Data.xlsx", sheet = "Stock_Type_Tech_BASE") %>%
@@ -106,6 +109,8 @@ HPMS <- read_excel("1.Raw_Data.xlsx", sheet = "HPMS")
 Fuel_Econs <- read_excel("1.Raw_Data.xlsx", sheet = "Fuel_Econs")
 
 State_Prices <- read_excel("1.Raw_Data.xlsx", sheet = "State_Prices")
+
+Electricity_EmRate <- read_excel("1.Raw_Data.xlsx", sheet = "Electricity_EmRate")
 
 Bike_Ped <- read_excel("1.Raw_Data.xlsx", sheet = "Bike_Ped")
 
