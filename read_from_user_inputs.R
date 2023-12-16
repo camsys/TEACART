@@ -28,6 +28,37 @@ read_user_inputs_excel <- function(filename){
               "Baseline_Parameters" = Baseline_Parameters, "Capital_Project_Inputs" = Capital_Project_Inputs))
 }
 
+
+create_reactive_list <- function(filename) {
+  # Read data
+  Key_Inputs <- read_excel(path = filename,
+                           sheet = "Key_Inputs") |> as.vector()
+  Cost_Parameters <- read_excel(path = filename,
+                                sheet = "Cost_Parameters",
+                                col_names = TRUE)
+  Assumptions <- read_excel(path = filename,
+                            sheet = "Assumptions",
+                            col_names = TRUE)
+  Baseline_Parameters <- read_excel(path = filename,
+                                    sheet = "Baseline_Parameters",
+                                    col_names = TRUE)
+  Capital_Project_Inputs <- read_excel(path = filename,
+                                       sheet = "Capital_Project_Inputs",
+                                       col_names = TRUE)
+  
+  # Create reactive list
+  reactive_list <- reactiveValues(
+    Key_Inputs = Key_Inputs, 
+    Cost_Parameters = Cost_Parameters, 
+    Assumptions = Assumptions,
+    Baseline_Parameters = Baseline_Parameters, 
+    Capital_Project_Inputs = Capital_Project_Inputs
+  )
+  
+  return(reactive_data)
+}
+
+
 ### KEY INPUTS -----------------------------------------------------------------
 # Key_Inputs <- read_excel("2.User_Inputs.xlsx", sheet = "Key_Inputs") %>% as.vector()
 # 

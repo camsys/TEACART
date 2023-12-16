@@ -32,6 +32,7 @@ for (file in c(
 
 
 # read in data and assign a name from a list ------------------------------
+# true global object - moving to server would make this a session-level object
 
 read_static_tables <- function(file_name, sheet_names) {
   for (i in seq_along(sheet_names)) {
@@ -72,6 +73,16 @@ create_graph <- function(data, indicator){
 # this is also used to create tables - _tbl is appended
 # will add the rest of the names here to help identify conflicts
 
+
+advanced_names <- c("ev_forecast_sheet",
+                    "vmt_forecast_sheet",
+                    "onroad_fuel_tech_frac_sheet",
+                    "pass_rail_sheet",
+                    "freight_rail_sheet",
+                    "construction_sheet",
+                    "fuel_apportionment_sheet")
+
+
 assumptions_names <- c("bikeped_assmps",
                        "transit_assmps",
                        "tdm_assmps",
@@ -80,6 +91,8 @@ assumptions_names <- c("bikeped_assmps",
                        "mhdv_assmps",
                        "pnr_assmps",
                        "evsi_assmps")
+
+
 
 projects_names <- c("bikeped_projs",
                     "transit_fixed_projs",
@@ -98,6 +111,55 @@ projects_names <- c("bikeped_projs",
 
 source("globals.R")
 source("read_from_user_inputs.R")
+
+
+strategy_names <- c("Bicycle and Pedestrian",
+                    "Transit Service Expansion",
+                    "Micromobility",
+                    "Travel Demand Management",
+                    "Park and Ride",
+                    "Transit Electrification",
+                    "MD/HD Truck Replacement",
+                    "Electric Vehicle Charging Infra.",
+                    "Intermodal Freight Investment",
+                    "Traffic Operations",
+                    "Roadway Expansion",
+                    "Custom Projects")
+
+# these are costs inputs
+costs_names <- c("bikeped_costs",
+                 "transit_fixed_costs",
+                 "transit_dr_costs",
+                 "pub_trans_priority_costs",
+                 "tdm_costs",
+                 "pub_trans_rail_costs",
+                 "micro_costs",
+                 "traffic_ops_costs",
+                 "mhdev_costs",
+                 "pnr_costs",
+                 "evsi_costs",
+                 "roadway_expand_costs",
+                 "fuel_costs",
+                 "intermodal_costs")
+
+costs_outputs_names <- c("bikeped_costs_outputs",
+                           "transit_fixed_costs_outputs",
+                           "transit_dr_costs_outputs",
+                           "pub_trans_priority_costs_outputs",
+                           "transit_zeb_costs_outputs",
+                           "pub_trans_rail_costs_outputs",
+                           "tdm_costs_outputs",
+                           "micro_costs_outputs",
+                           "traffic_ops_costs_outputs",
+                           "mhdev_costs_outputs",
+                           "pnr_costs_outputs",
+                           "evsi_costs_outputs",
+                           "roadway_expand_costs_outputs",
+                           "intermodal_costs_outputs")
+
+
+
+# ui ----------------------------------------------------------------------
 
 
 ui <- function(request) {
@@ -683,6 +745,11 @@ server <- function(input, output, session) {
   # set reactiveValues
   rv <- reactiveValues()
   
+
+    # using the new function to populate a new object that contains data
+    rvs <- read_user_inputs_excel("2.User_Inputs.xlsx")
+
+  
   # Initiate or Upload User Inputs -------------------------------------------
   
   observeEvent(input$user_inputs_upload, {
@@ -713,7 +780,8 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       # browser()
-      return(openxlsx::write.xlsx(x = list("Cost_Parameters" = rv$Cost_Parameters, "Baseline_Parameters" = rv$Baseline_Parameters), 
+      return(openxlsx::write.xlsx(x = list("Cost_Parameters" = rv$Cost_Parameters,
+                                           "Baseline_Parameters" = rv$Baseline_Parameters), 
                            file = file))
     }
   )
@@ -756,10 +824,84 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
-  output$bikeped_projs_tbl <- create_table(bikeped_projs,
-                                           list(target = 'row',
-                                                disable = list(columns = c(0,1)),
-                                                autoWidth = TRUE))
+  # establishing the initial values in a format that datatable prefers
+  
+  
+  # function to reshape data for rendering
+  reshape_data <- function(data, selected_state) {
+    data |>
+      filter(State == selected_state) |>
+      select(-State) |>
+      group_by(Fruit) |>
+      pivot_wider(names_from = Year, values_from = Values) |>
+      ungroup()
+  }
+  
+  
+
+  # rendering bike ped table
+  output$bikeped_projs_tbl <- renderDT({
+    req(rvs$Capital_Project_Inputs())
+    datatable(rvs$Capital_Project_Inputs(),
+              options = list(columnDefs = list(list(visible = FALSE,
+                                                    targets = which(colnames(rvs$Capital_Project_Inputs() == "field"))))),
+              editable = TRUE)
+    # filtered_table <- rvs$Capital_Project_Inputs
+    
+#    filtered_table <- filtered_table[category == "Bicycle and Pedestrian"]
+    #    filtered_table <- rv$Capital_Project_Inputs$category == "Bicycle and Pedestrian"
+    
+    # browser()
+    # for (yr in years) {
+    #   year_col_name <- as.character(yr)
+    #   filtered_table[, (year_col_name) := ifelse (year == yr, 'values', NA_integer_)]
+    # }
+    #
+    # # Dropping columns only NA
+    # filtered_table <- filtered_table[, .SD, .SDcols = Filter(function(x) !all(is.na(x)), names(filtered_table))]
+    #
+    # # defining which columns to display (excluding field and year)
+    # cols_to_display <- setdiff(names(filtered_table), c("field", "year"))
+    
+    # rendering DT with selected columns
+    #datatable(filtered_table[, ..cols_to_display], rownames = FALSE)
+    
+    # rendering DT with selected columns
+#    datatable(filtered_table, rownames = FALSE)
+  }, server = FALSE)
+  
+  
+# using reactive objects loaded from my new set of    
+  output$bikeped_projs_tbl <- renderDT({
+    filtered_table <- rvs$Capital_Project_Inputs
+    
+#    filtered_table <- filtered_table[category == "Bicycle and Pedestrian"]
+    #    filtered_table <- rv$Capital_Project_Inputs$category == "Bicycle and Pedestrian"
+    
+    # browser()
+    # for (yr in years) {
+    #   year_col_name <- as.character(yr)
+    #   filtered_table[, (year_col_name) := ifelse (year == yr, 'values', NA_integer_)]
+    # }
+    #
+    # # Dropping columns only NA
+    # filtered_table <- filtered_table[, .SD, .SDcols = Filter(function(x) !all(is.na(x)), names(filtered_table))]
+    #
+    # # defining which columns to display (excluding field and year)
+    # cols_to_display <- setdiff(names(filtered_table), c("field", "year"))
+    
+    # rendering DT with selected columns
+    #datatable(filtered_table[, ..cols_to_display], rownames = FALSE)
+    
+    # rendering DT with selected columns
+    datatable(filtered_table, rownames = FALSE)
+  })
+  
+  
+  # output$bikeped_projs_tbl <- create_table(bikeped_projs,
+  #                                          list(target = 'row',
+  #                                               disable = list(columns = c(0,1)),
+  #                                               autoWidth = TRUE))
   
   output$transit_fixed_projs_tbl <- create_table(transit_fixed_projs,
                                                  list(target = 'row',
