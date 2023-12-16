@@ -12,28 +12,27 @@ library(htmltools)
 library(plotly)
 
 
-# load modules and source files
+
+# load source files -------------------------------------------------------
+
 for (file in c(
-  list.files(".//R//ui_components/",
-             pattern = "*.R",
-             full.names = TRUE ),
-  list.files(".//R//server_components/",
-             pattern = "*.R",
-             full.names = TRUE ),
-  list.files(".//R//utils/",
-             pattern = "*.R",
-             full.names = TRUE ),
-  list.files(".//R//functions/",
+  list.files("",
              pattern = "*.R",
              full.names = TRUE )
 )) {
   source(file, encoding = "utf8")
 }
 
+# source("globals.R")
+# source("read_from_user_inputs.R")
 
-# read in data and assign a name from a list ------------------------------
-# true global object - moving to server would make this a session-level object
 
+# functions related to rendering the tables for the UI --------------------
+
+# reading in static tables from the assumptions.xlsx etc files
+# note that this is a true global object - moving to server would make this a 
+# session-level object
+# to delete once all tables have been updated
 read_static_tables <- function(file_name, sheet_names) {
   for (i in seq_along(sheet_names)) {
     assign(sheet_names[i],
@@ -45,10 +44,7 @@ read_static_tables <- function(file_name, sheet_names) {
   }
 }
 
-
-
-# render datatable, make editable -----------------------------------------
-
+# the way tables are created using the old assumptions.xlsx files
 
 create_table = function(data, editable = 'row', server = TRUE, ...) {
   renderDT(data,
@@ -71,8 +67,7 @@ create_graph <- function(data, indicator){
 # objects used to read in data --------------------------------------------
 
 # this is also used to create tables - _tbl is appended
-# will add the rest of the names here to help identify conflicts
-
+# also won't be necessary in the redone workflow
 
 advanced_names <- c("ev_forecast_sheet",
                     "vmt_forecast_sheet",
@@ -108,9 +103,6 @@ projects_names <- c("bikeped_projs",
                     "evsi_projs",
                     "freight_projs",
                     "expansion_projs")
-
-source("globals.R")
-source("read_from_user_inputs.R")
 
 
 strategy_names <- c("Bicycle and Pedestrian",
@@ -745,11 +737,9 @@ server <- function(input, output, session) {
   # set reactiveValues
   rv <- reactiveValues()
   
-
     # using the new function to populate a new object that contains data
     rvs <- read_user_inputs_excel("2.User_Inputs.xlsx")
-
-  
+    
   # Initiate or Upload User Inputs -------------------------------------------
   
   observeEvent(input$user_inputs_upload, {
@@ -764,13 +754,13 @@ server <- function(input, output, session) {
       rv[[name]] <- user_inputs[[name]]
     }
   }, ignoreNULL = F, ignoreInit = F)
-  
-  ## Example of how to modify the reactiveValues
-  observeEvent(rv$Capital_Project_Inputs, { ### may be good to use observe instead
-    # browser()
-    rv$random_calculated_table <- rv$Capital_Project_Inputs %>% filter(value == 4)
-    print(rv$random_calculated_table)
-  })
+
+  # ## Example of how to modify the reactiveValues
+  # observeEvent(rv$Capital_Project_Inputs, { ### may be good to use observe instead
+  #   # browser()
+  #   rv$random_calculated_table <- rv$Capital_Project_Inputs %>% filter(value == 4)
+  #   print(rv$random_calculated_table)
+  # })
   
   # Download user inputs -------------------------------------------------------
   ### will eventually use openxlsx to format the excel file to match the uploaded file exactly
@@ -780,8 +770,8 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       # browser()
-      return(openxlsx::write.xlsx(x = list("Cost_Parameters" = rv$Cost_Parameters,
-                                           "Baseline_Parameters" = rv$Baseline_Parameters), 
+      return(openxlsx::write.xlsx(x = list("Cost_Parameters" = rvs$Cost_Parameters,
+                                           "Baseline_Parameters" = rvs$Baseline_Parameters), 
                            file = file))
     }
   )
