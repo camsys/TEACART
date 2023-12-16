@@ -7,32 +7,13 @@
 library(tidyverse)
 library(readxl)
 
-### READ RAW DATA ------------------------- 
-# At very end of project we should consider switching to RData file to minimize processing/startup time
-State_Populations <- read_excel("1.Raw_Data.xlsx", sheet = "State_Populations")
-State_Populations <-
-expand(State_Populations, state, year = rep(2020:2050)) %>%
-  left_join(State_Populations, by = c("state", "year")) %>%
-  group_by(state) %>%
-  mutate(population = approx(year, population, xout = year)$y,
-         growth = population / population[year == 2020] - 1) %>%
-  ungroup()
-Fuel_Econs <- read_excel("1.Raw_Data.xlsx", sheet = "Fuel_Econs")
-AEO_VMT_Base <- read_excel("1.Raw_Data.xlsx", sheet = "AEO_VMT_Base")
-HPMS <- read_excel("1.Raw_Data.xlsx", sheet = "HPMS")
-State_VMTs <- read_excel("1.Raw_Data.xlsx", sheet = "State_VMTs")
-Fuel_Prices <- read_excel("1.Raw_Data.xlsx", sheet = "Fuel_Prices")
-Bike_Ped <- read_excel("1.Raw_Data.xlsx", sheet = "Bike_Ped")
-NTD_Service <- read_excel("1.Raw_Data.xlsx", sheet = "NTD_Service")
-Fuel_Factors <- read_excel("1.Raw_Data.xlsx", sheet = "Fuel_Factors")
-Transit_Costs <- read_excel("1.Raw_Data.xlsx", sheet = "Transit_Costs")
-Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
-  expand(Transit_Costs, state_code, transit_mode) %>%
-  left_join(Transit_Costs, by = join_by(state_code, transit_mode)) %>%
-  replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0))
-
-
 ### HELPER FUNCTIONS -----------------------------------------
+
+# Define the mapping from column1 values to groups
+veh_types_mapping <- c("Passenger Cars" ~ "Light Duty Vehicles", 
+                       "Light Duty Trucks" ~ "Light Duty Vehicles", 
+                       "Medium Duty Trucks" ~ "Medium/Heavy Duty Vehicles", 
+                       "Heavy Duty Trucks" ~ "Medium/Heavy Duty Vehicles")
 
 convert_to_nested_list <- function(df){ 
   # Create an empty list
@@ -86,6 +67,57 @@ get_num_primary_keys <- function(df){
   # If no combination of columns can act as a primary key, return NULL
   return(NULL)
 }
+
+### READ and PROCESS RAW DATA ------------------------- 
+# At very end of project we should consider switching to RData file to minimize processing/startup time
+State_Populations <- read_excel("1.Raw_Data.xlsx", sheet = "State_Populations")
+State_Populations <-
+expand(State_Populations, state, year = rep(2020:2050)) %>%
+  left_join(State_Populations, by = c("state", "year")) %>%
+  group_by(state) %>%
+  mutate(population = approx(year, population, xout = year)$y,
+         growth = population / population[year == 2020] - 1) %>%
+  ungroup()
+
+VMT_State_Allocation <- read_excel("1.Raw_Data.xlsx", sheet = "VMT_State_Allocation")
+
+Stock_Type_Tech_BASE <- read_excel("1.Raw_Data.xlsx", sheet = "Stock_Type_Tech_BASE") %>%
+  pivot_longer(cols = !c(veh_type, veh_subtype), names_to = "year", values_to = "stock_millions") %>%
+  mutate(year = as.integer(year))
+# VMT_State_Allocation <- ### Can be calculated but just copied in the sheet that Qi put together
+# State_Populations %>%
+#   left_join(filter(State_VMTs, year == 2021), by = join_by(year, state)) %>%
+#   group_by(state) %>%
+#   mutate(hmm = (1+growth)*state_vmt[year == 2021])
+AEO_VMT <- read_excel("1.Raw_Data.xlsx", sheet = "AEO_VMT_Base") %>%
+  left_join(summarize(Stock_Type_Tech_BASE, "total_stock_millions" = sum(stock_millions), .by = c(veh_type, year)),
+            by = join_by(veh_type, year)) %>%
+  mutate(VMT_per_veh = VMT_AEO / total_stock_millions,
+         veh_supertype = case_match(veh_type, !!!veh_types_mapping))
+  
+Stock_Type <- AEO_VMT %>%
+  group_by(veh_supertype, year) %>%
+  summarize("total_VMT" = sum(VMT_AEO, na.rm = T), "total_stock_millions" = sum(total_stock_millions, na.rm = T), .groups = "drop") %>%
+  mutate("VMT_per_veh" = total_VMT / total_stock_millions) %>%
+  arrange(desc(veh_supertype))
+
+HPMS <- read_excel("1.Raw_Data.xlsx", sheet = "HPMS")
+
+Fuel_Econs <- read_excel("1.Raw_Data.xlsx", sheet = "Fuel_Econs")
+
+State_Prices <- read_excel("1.Raw_Data.xlsx", sheet = "State_Prices")
+
+Bike_Ped <- read_excel("1.Raw_Data.xlsx", sheet = "Bike_Ped")
+
+NTD_Service <- read_excel("1.Raw_Data.xlsx", sheet = "NTD_Service")
+
+Fuel_Factors <- read_excel("1.Raw_Data.xlsx", sheet = "Fuel_Factors")
+
+Transit_Costs <- read_excel("1.Raw_Data.xlsx", sheet = "Transit_Costs")
+Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
+  expand(Transit_Costs, state_code, transit_mode) %>%
+  left_join(Transit_Costs, by = join_by(state_code, transit_mode)) %>%
+  replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0))
 
 
 
