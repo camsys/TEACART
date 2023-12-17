@@ -24,8 +24,11 @@ read_user_inputs_excel <- function(filename){
   ### CAPITAL_PROJECT_INPUTS -----------------------------------------------------
   Capital_Project_Inputs <- read_excel(path = filename, sheet = "Capital_Project_Inputs")
   
-  return(list("Key_Inputs" = Key_Inputs, "Cost_Parameters" = Cost_Parameters, "Assumptions" = Assumptions, 
-              "Baseline_Parameters" = Baseline_Parameters, "Capital_Project_Inputs" = Capital_Project_Inputs))
+  return(list("Key_Inputs" = Key_Inputs,
+              "Cost_Parameters" = Cost_Parameters,
+              "Assumptions" = Assumptions, 
+              "Baseline_Parameters" = Baseline_Parameters,
+              "Capital_Project_Inputs" = Capital_Project_Inputs))
 }
 
 
@@ -55,7 +58,7 @@ create_reactive_list <- function(filename) {
     Capital_Project_Inputs = Capital_Project_Inputs
   )
   
-  return(reactive_data)
+  return(reactive_list)
 }
 
 

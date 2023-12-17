@@ -23,8 +23,8 @@ for (file in c(
   source(file, encoding = "utf8")
 }
 
-# source("globals.R")
-# source("read_from_user_inputs.R")
+source("globals.R")
+source("read_from_user_inputs.R")
 
 
 # functions related to rendering the tables for the UI --------------------
@@ -54,6 +54,9 @@ create_table = function(data, editable = 'row', server = TRUE, ...) {
            rownames = FALSE,
            ...)
 }
+
+# function to reshape data for rendering
+# reshape_data <- function
 
 
 # create a graph ----------------------------------------------------------
@@ -738,7 +741,7 @@ server <- function(input, output, session) {
   rv <- reactiveValues()
   
     # using the new function to populate a new object that contains data
-    rvs <- read_user_inputs_excel("2.User_Inputs.xlsx")
+    rvs <- create_reactive_list("2.User_Inputs.xlsx")
     
   # Initiate or Upload User Inputs -------------------------------------------
   
