@@ -10,52 +10,58 @@
 
 read_user_inputs_excel <- function(filename){
   ### KEY INPUTS -----------------------------------------------------------------
-  Key_Inputs <- read_excel(path = filename, sheet = "Key_Inputs") %>% as.vector()
+  Baseline <- read_excel(path = filename, sheet = "Baseline") %>% as.vector()
   
   ### COST PARAMETERS ------------------------------------------------------------
-  Cost_Parameters <- read_excel(path = filename, sheet = "Cost_Parameters")
+  Costs <- read_excel(path = filename, sheet = "Costs")
   
   ### ASSUMPTIONS ----------------------------------------------------------------
   Assumptions <- read_excel(path = filename, sheet = "Assumptions")
   
   ### BASELINE PARAMETERS --------------------------------------------------------
-  Baseline_Parameters <- read_excel(path = filename, sheet = "Baseline_Parameters")
+  Advanced <- read_excel(path = filename, sheet = "Advanced")
   
   ### CAPITAL_PROJECT_INPUTS -----------------------------------------------------
-  Capital_Project_Inputs <- read_excel(path = filename, sheet = "Capital_Project_Inputs")
+  Projects <- read_excel(path = filename, sheet = "Projects")
   
-  return(list("Key_Inputs" = Key_Inputs,
-              "Cost_Parameters" = Cost_Parameters,
+  return(list("Baseline" = Baseline,
+              "Costs" = Costs,
               "Assumptions" = Assumptions, 
-              "Baseline_Parameters" = Baseline_Parameters,
-              "Capital_Project_Inputs" = Capital_Project_Inputs))
+              "Advanced" = Advanced,
+              "Projects" = Projects))
 }
+
+# return(list("Key_Inputs" = Key_Inputs,
+#             "Cost_Parameters" = Cost_Parameters,
+#             "Assumptions" = Assumptions, 
+#             "Baseline_Parameters" = Baseline_Parameters,
+#             "Capital_Project_Inputs" = Capital_Project_Inputs))
 
 
 create_reactive_list <- function(filename) {
   # Read data
-  Key_Inputs <- read_excel(path = filename,
-                           sheet = "Key_Inputs") |> as.vector()
-  Cost_Parameters <- read_excel(path = filename,
-                                sheet = "Cost_Parameters",
+  Baseline <- read_excel(path = filename,
+                           sheet = "Baseline") |> as.vector()
+  Costs <- read_excel(path = filename,
+                                sheet = "Costs",
                                 col_names = TRUE)
   Assumptions <- read_excel(path = filename,
                             sheet = "Assumptions",
                             col_names = TRUE)
-  Baseline_Parameters <- read_excel(path = filename,
-                                    sheet = "Baseline_Parameters",
+  Advanced <- read_excel(path = filename,
+                                    sheet = "Advanced",
                                     col_names = TRUE)
-  Capital_Project_Inputs <- read_excel(path = filename,
-                                       sheet = "Capital_Project_Inputs",
+  Projects <- read_excel(path = filename,
+                                       sheet = "Projects",
                                        col_names = TRUE)
   
   # Create reactive list
   reactive_list <- reactiveValues(
-    Key_Inputs = Key_Inputs, 
-    Cost_Parameters = Cost_Parameters, 
+    Baseline = Baseline, 
+    Costs = Costs, 
     Assumptions = Assumptions,
-    Baseline_Parameters = Baseline_Parameters, 
-    Capital_Project_Inputs = Capital_Project_Inputs
+    Advanced = Advanced, 
+    Projects = Projects
   )
   
   return(reactive_list)

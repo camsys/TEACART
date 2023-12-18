@@ -773,8 +773,8 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       # browser()
-      return(openxlsx::write.xlsx(x = list("Cost_Parameters" = rvs$Cost_Parameters,
-                                           "Baseline_Parameters" = rvs$Baseline_Parameters), 
+      return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
+                                           "Baseline" = rvs$Baseline), 
                            file = file))
     }
   )
