@@ -15,13 +15,28 @@ library(plotly)
 
 # load source files -------------------------------------------------------
 
-for (file in c(
-  list.files("",
-             pattern = "*.R",
-             full.names = TRUE )
-)) {
-  source(file, encoding = "utf8")
+# for (file in c(
+#   list.files(".//data//",
+#              pattern = "*.xlsx",
+#              full.names = TRUE )
+# )) {
+#   source(file, encoding = "utf8")
+# }
+
+all_files <- c(
+#               ,list.files("processing_scripts", full.names = TRUE) # this breaks it at the moment
+               )
+
+data_list <- list()
+
+
+# reading in xlsx and R files only - note
+for (file in all_files) {
+  if (grepl("\\.R$", file)) {
+    source(file)
+  }
 }
+
 
 source("globals.R")
 source("read_from_user_inputs.R")
@@ -741,7 +756,7 @@ server <- function(input, output, session) {
   rv <- reactiveValues()
   
     # using the new function to populate a new object that contains data
-    rvs <- create_reactive_list("2.User_Inputs.xlsx")
+    rvs <- create_reactive_list(".\\data\\2.User_Inputs.xlsx")
     
   # Initiate or Upload User Inputs -------------------------------------------
   
@@ -749,7 +764,7 @@ server <- function(input, output, session) {
     if(isTruthy(input$user_inputs_upload)){
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
     } else{
-      user_inputs <- read_user_inputs_excel("2.User_Inputs.xlsx")
+      user_inputs <- read_user_inputs_excel(".\\data\\2.User_Inputs.xlsx")
     }
     
     # Assign each table in user_inputs to rv
@@ -769,7 +784,7 @@ server <- function(input, output, session) {
   ### will eventually use openxlsx to format the excel file to match the uploaded file exactly
   output$user_inputs_download <- downloadHandler(
     filename = function() {
-      paste0("2.User_Inputs_", Sys.Date(), ".xlsx")
+      paste0(".\\data\\2.User_Inputs_", Sys.Date(), ".xlsx")
     },
     content = function(file) {
       # browser()
@@ -781,7 +796,7 @@ server <- function(input, output, session) {
   
   # server sources ---------------------------------------------------
   
-  sources_data <- read_xlsx("sources.xlsx", sheet = 1, col_names = TRUE)
+  sources_data <- read_xlsx(".\\data\\sources.xlsx", sheet = 1, col_names = TRUE)
   
   output$source_table <- renderDT({
     DT::datatable(sources_data,
@@ -812,7 +827,7 @@ server <- function(input, output, session) {
                       "freight_projs",
                       "expansion_projs")
   
-  read_static_tables("projects.xlsx", projects_names)
+  read_static_tables(".\\data\\projects.xlsx", projects_names)
   
   
   ## create tables -----------------------------------------------------------
@@ -1054,7 +1069,7 @@ server <- function(input, output, session) {
                          "evsi_assmps")
   
   
-  read_static_tables("assumptions.xlsx", assumptions_names)
+  read_static_tables(".\\data\\assumptions.xlsx", assumptions_names)
   
   
   ## create tables -----------------------------------------------------------
@@ -1163,7 +1178,7 @@ server <- function(input, output, session) {
                    "fuel_costs",
                    "intermodal_costs")
   
-  read_static_tables("costs_inputs.xlsx", costs_names)
+  read_static_tables(".\\data\\costs_inputs.xlsx", costs_names)
   
   
   ## create tables -----------------------------------------------------------
@@ -1401,7 +1416,7 @@ server <- function(input, output, session) {
                       "construction_sheet",
                       "fuel_apportionment_sheet")
   
-  read_static_tables("advanced.xlsx", advanced_names)
+  read_static_tables(".\\data\\advanced.xlsx", advanced_names)
   
   
   ## create tables -----------------------------------------------------------
@@ -1514,7 +1529,7 @@ server <- function(input, output, session) {
                            "roadway_expand_costs_outputs",
                            "intermodal_costs_outputs")
   
-  read_static_tables("costs_outputs.xlsx", costs_outputs_names)
+  read_static_tables(".\\data\\costs_outputs.xlsx", costs_outputs_names)
   
   ## create tables -----------------------------------------------------------
   
@@ -1595,7 +1610,7 @@ server <- function(input, output, session) {
   # server scenarios outputs ------------------------------------------------
   
   # read dummy data
-  scenario_result <- readxl::read_excel("scenario_simplified.xlsx")
+  scenario_result <- readxl::read_excel(".\\data\\scenario_simplified.xlsx")
   
   observeEvent(input$scenario_indicator,{
     dat_temp <- scenario_result |> 

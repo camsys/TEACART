@@ -70,7 +70,7 @@ get_num_primary_keys <- function(df){
 
 ### READ and PROCESS RAW DATA ------------------------- 
 # At very end of project we should consider switching to RData file to minimize processing/startup time
-State_Populations <- read_excel("1.Raw_Data.xlsx", sheet = "State_Populations")
+State_Populations <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "State_Populations")
 State_Populations <-
 expand(State_Populations, state, year = rep(2020:2050)) %>%
   left_join(State_Populations, by = c("state", "year")) %>%
@@ -79,12 +79,12 @@ expand(State_Populations, state, year = rep(2020:2050)) %>%
          growth = population / population[year == 2020] - 1) %>%
   ungroup()
 
-NHS_VMT <- read_excel("1.Raw_Data.xlsx", sheet = "NHS_VMT", range = "A4:R57") %>%
+NHS_VMT <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NHS_VMT", range = "A4:R57") %>%
     select(state, LDV_pct_on_NHS, TRK_pct_on_NHS)
 
-VMT_State_Allocation <- read_excel("1.Raw_Data.xlsx", sheet = "VMT_State_Allocation")
+VMT_State_Allocation <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "VMT_State_Allocation")
 
-Stock_Type_Tech_BASE <- read_excel("1.Raw_Data.xlsx", sheet = "Stock_Type_Tech_BASE") %>%
+Stock_Type_Tech_BASE <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Stock_Type_Tech_BASE") %>%
   pivot_longer(cols = !c(veh_type, veh_subtype), names_to = "year", values_to = "stock_millions") %>%
   mutate(year = as.integer(year))
 # VMT_State_Allocation <- ### Can be calculated but just copied in the sheet that Qi put together
@@ -92,7 +92,7 @@ Stock_Type_Tech_BASE <- read_excel("1.Raw_Data.xlsx", sheet = "Stock_Type_Tech_B
 #   left_join(filter(State_VMTs, year == 2021), by = join_by(year, state)) %>%
 #   group_by(state) %>%
 #   mutate(hmm = (1+growth)*state_vmt[year == 2021])
-AEO_VMT <- read_excel("1.Raw_Data.xlsx", sheet = "AEO_VMT_Base") %>%
+AEO_VMT <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "AEO_VMT_Base") %>%
   left_join(summarize(Stock_Type_Tech_BASE, "total_stock_millions" = sum(stock_millions), .by = c(veh_type, year)),
             by = join_by(veh_type, year)) %>%
   mutate(VMT_per_veh = VMT_AEO / total_stock_millions,
@@ -104,21 +104,21 @@ Stock_Type <- AEO_VMT %>%
   mutate("VMT_per_veh" = total_VMT / total_stock_millions) %>%
   arrange(desc(veh_supertype))
 
-HPMS <- read_excel("1.Raw_Data.xlsx", sheet = "HPMS")
+HPMS <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "HPMS")
 
-Fuel_Econs <- read_excel("1.Raw_Data.xlsx", sheet = "Fuel_Econs")
+Fuel_Econs <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Econs")
 
-State_Prices <- read_excel("1.Raw_Data.xlsx", sheet = "State_Prices")
+State_Prices <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "State_Prices")
 
-Electricity_EmRate <- read_excel("1.Raw_Data.xlsx", sheet = "Electricity_EmRate")
+Electricity_EmRate <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Electricity_EmRate")
 
-Bike_Ped <- read_excel("1.Raw_Data.xlsx", sheet = "Bike_Ped")
+Bike_Ped <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Bike_Ped")
 
-NTD_Service <- read_excel("1.Raw_Data.xlsx", sheet = "NTD_Service")
+NTD_Service <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NTD_Service")
 
-Fuel_Factors <- read_excel("1.Raw_Data.xlsx", sheet = "Fuel_Factors")
+Fuel_Factors <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors")
 
-Transit_Costs <- read_excel("1.Raw_Data.xlsx", sheet = "Transit_Costs")
+Transit_Costs <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Transit_Costs")
 Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
   expand(Transit_Costs, state_code, transit_mode) %>%
   left_join(Transit_Costs, by = join_by(state_code, transit_mode)) %>%
