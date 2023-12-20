@@ -14,15 +14,6 @@ library(plotly)
 
 
 # load source files -------------------------------------------------------
-
-# for (file in c(
-#   list.files(".//data//",
-#              pattern = "*.xlsx",
-#              full.names = TRUE )
-# )) {
-#   source(file, encoding = "utf8")
-# }
-
 all_files <- c(
 #               ,list.files("processing_scripts", full.names = TRUE) # this breaks it at the moment
                )
@@ -70,15 +61,89 @@ create_table = function(data, editable = 'row', server = TRUE, ...) {
            ...)
 }
 
-# function to reshape data for rendering
-# reshape_data <- function
+
+# new function using new reactive values
+# WARNING WARNING WARNING - the way these reactive values are read in right now,
+# they're not going to update the global object -- needs the data_ractive to have () 
+
+render_custom_datatable <- function(input_reactives,
+                                    data_reactive,
+                                    table_number,
+                                    non_editable_cols,
+                                    page_length,
+                                    comma_rows,
+                                    percent_rows,
+                                    currency_rows,
+                                    decimal_rows) {
+
+  # pull in any inputs (currently does not pull anything )
+  lapply(input_reactives, req)
+  
+  temp_thing <- data_reactive                                   # need to fix this
+  
+  output <- renderDT({
+    # Use the data reactive for reshaping and rendering the table
+    reshaped_table <- temp_thing |>                              # need to fix this
+      filter(table_no_ui == table_number) |>
+      pivot_wider(names_from = year, values_from = value) |>
+      ungroup() |> 
+      select(-c(table_no_ui, table, unit, category)) |> 
+      select_if(~ !all(is.na(.) | . == '')) |> 
+      rename(any_of(references_vector))
+    
+    datatable(
+      reshaped_table,
+      rownames = FALSE,
+      editable = list(target = 'all', disable = list(columns = non_editable_cols)),
+      options = list(
+        pageLength = page_length,
+        columnDefs = list(
+          list(
+            targets = '_all',
+            render = DT::JS(
+              sprintf(
+                "function(data, type, row, meta) {
+                  if (type === 'display') {
+                    var commaRows = [%s];
+                    var percentRows = [%s];
+                    var currencyRows = [%s];
+                    var decimalRows = [%s];
+
+                    var formatter = null;
+                    if (commaRows.includes(meta.row)) {
+                      formatter = function(d) { return Number(d).toLocaleString('en-US'); };
+                    } else if (percentRows.includes(meta.row)) {
+                      formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
+                    } else if (currencyRows.includes(meta.row)) {
+                      formatter = function(d) { return '$' + Number(d).toLocaleString('en-US'); };
+                    } else if (decimalRows.includes(meta.row)) {
+                      formatter = function(d) { return Number(d).toFixed(1); };
+                    }
+                    
+                    return formatter && !isNaN(data) && data !== null && data !== '' ? formatter(data) : data;
+                  }
+                  return data;
+                }",
+                paste(comma_rows, collapse = ", "), 
+                paste(percent_rows, collapse = ", "),
+                paste(currency_rows, collapse = ", "),
+                paste(decimal_rows, collapse = ", ")
+              )
+            )
+          )
+        )
+      )
+    )
+  }, server = FALSE)
+  
+  return(output)
+}
 
 
 # create a graph ----------------------------------------------------------
 
 
 create_graph <- function(data, indicator){
-  
 }
 
 
@@ -832,20 +897,6 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
-  # establishing the initial values in a format that datatable prefers
-  
-  # 
-  # # function to reshape data for rendering
-  # reshape_data <- function(data, selected_state) {
-  #   data |>
-  #     filter(State == selected_state) |>
-  #     select(-State) |>
-  #     group_by(Fruit) |>
-  #     pivot_wider(names_from = Year, values_from = Values) |>
-  #     ungroup()
-  # }
-  # 
-  
 
  # rendering bike ped table
   output$bikeped_projs_tbl <- renderDT({
@@ -859,33 +910,38 @@ server <- function(input, output, session) {
       filter(table_no_ui == 1) |>
       pivot_wider(names_from = year,
                   values_from = value) |>
-      ungroup()
-    
-    reshaped_table <- reshaped_table |> 
+      ungroup() |> 
       select(-c(table_no_ui,table,unit,category)) |> 
-      select_if(~ !all(is.na(.) | . == '')) 
-    
-    # renaming the table using any friendlier names available
-    reshaped_table <- reshaped_table |> 
+      select_if(~ !all(is.na(.) | . == '')) |> 
       rename(any_of(references_vector))
 
 
     datatable(reshaped_table,
-              editable = TRUE,
               rownames = FALSE,
-              list(target = 'row',
-                   disable = list(columns = c(0,1)))
+              editable = list(target = 'all',
+                              disable = list(columns = c(0,1))),
+              options = list(pageLength = 19,
+                             columnDefs = list(list(className = 'dt-left',
+                                                    targets = '_all')))
     )
 
   }, server = FALSE)
 
 
 
+  output$transit_fixed_projs_tbl <- render_custom_datatable(
+    input_reactives = list(), 
+    data_reactive = rvs$Projects,
+    table_number = 2,
+    non_editable_cols = c(0, 1, 2),
+    page_length = 10,
+    comma_rows = 0:6, 
+    percent_rows = integer(0),
+    currency_rows = integer(0),
+    decimal_rows = integer(0)
+  )
+  
 
-  output$transit_fixed_projs_tbl <- create_table(transit_fixed_projs,
-                                                 list(target = 'row',
-                                                      disable = list(columns = c(0,1)),
-                                                      autoWidth = TRUE))
   
   output$transit_dr_projs_tbl <- create_table(transit_dr_projs,
                                               list(target = 'row',
