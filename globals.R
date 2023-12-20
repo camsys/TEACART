@@ -125,5 +125,8 @@ Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
   replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0))
 
 
+references <- read_excel(".\\data\\2.User_Inputs.xlsx",
+                         sheet ="References",
+                         col_names = TRUE)
 
-
+references_vector <- setNames(references$field, references$description)

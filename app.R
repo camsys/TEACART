@@ -756,7 +756,7 @@ server <- function(input, output, session) {
   rv <- reactiveValues()
   
     # using the new function to populate a new object that contains data
-    rvs <- create_reactive_list(".\\data\\2.User_Inputs.xlsx")
+    rvs <- read_user_inputs_excel(".\\data\\2.User_Inputs.xlsx")
     
   # Initiate or Upload User Inputs -------------------------------------------
   
@@ -834,83 +834,54 @@ server <- function(input, output, session) {
   
   # establishing the initial values in a format that datatable prefers
   
-  
-  # function to reshape data for rendering
-  reshape_data <- function(data, selected_state) {
-    data |>
-      filter(State == selected_state) |>
-      select(-State) |>
-      group_by(Fruit) |>
-      pivot_wider(names_from = Year, values_from = Values) |>
-      ungroup()
-  }
-  
+  # 
+  # # function to reshape data for rendering
+  # reshape_data <- function(data, selected_state) {
+  #   data |>
+  #     filter(State == selected_state) |>
+  #     select(-State) |>
+  #     group_by(Fruit) |>
+  #     pivot_wider(names_from = Year, values_from = Values) |>
+  #     ungroup()
+  # }
+  # 
   
 
-  # rendering bike ped table
+ # rendering bike ped table
   output$bikeped_projs_tbl <- renderDT({
-    req(rvs$Capital_Project_Inputs())
-    datatable(rvs$Capital_Project_Inputs(),
-              options = list(columnDefs = list(list(visible = FALSE,
-                                                    targets = which(colnames(rvs$Capital_Project_Inputs() == "field"))))),
-              editable = TRUE)
-    # filtered_table <- rvs$Capital_Project_Inputs
+    req(rvs$Projects)
+    req(input$state_input)
+    projs <- rvs$Projects
     
-#    filtered_table <- filtered_table[category == "Bicycle and Pedestrian"]
-    #    filtered_table <- rv$Capital_Project_Inputs$category == "Bicycle and Pedestrian"
+    selected_state <- input$state_input
+
+    reshaped_table <- projs |>
+      filter(table_no_ui == 1) |>
+      pivot_wider(names_from = year,
+                  values_from = value) |>
+      ungroup()
     
-    # browser()
-    # for (yr in years) {
-    #   year_col_name <- as.character(yr)
-    #   filtered_table[, (year_col_name) := ifelse (year == yr, 'values', NA_integer_)]
-    # }
-    #
-    # # Dropping columns only NA
-    # filtered_table <- filtered_table[, .SD, .SDcols = Filter(function(x) !all(is.na(x)), names(filtered_table))]
-    #
-    # # defining which columns to display (excluding field and year)
-    # cols_to_display <- setdiff(names(filtered_table), c("field", "year"))
+    reshaped_table <- reshaped_table |> 
+      select(-c(table_no_ui,table,unit,category)) |> 
+      select_if(~ !all(is.na(.) | . == '')) 
     
-    # rendering DT with selected columns
-    #datatable(filtered_table[, ..cols_to_display], rownames = FALSE)
-    
-    # rendering DT with selected columns
-#    datatable(filtered_table, rownames = FALSE)
+    # renaming the table using any friendlier names available
+    reshaped_table <- reshaped_table |> 
+      rename(any_of(references_vector))
+
+
+    datatable(reshaped_table,
+              editable = TRUE,
+              rownames = FALSE,
+              list(target = 'row',
+                   disable = list(columns = c(0,1)))
+    )
+
   }, server = FALSE)
-  
-  
-# using reactive objects loaded from my new set of    
-  output$bikeped_projs_tbl <- renderDT({
-    filtered_table <- rvs$Capital_Project_Inputs
-    
-#    filtered_table <- filtered_table[category == "Bicycle and Pedestrian"]
-    #    filtered_table <- rv$Capital_Project_Inputs$category == "Bicycle and Pedestrian"
-    
-    # browser()
-    # for (yr in years) {
-    #   year_col_name <- as.character(yr)
-    #   filtered_table[, (year_col_name) := ifelse (year == yr, 'values', NA_integer_)]
-    # }
-    #
-    # # Dropping columns only NA
-    # filtered_table <- filtered_table[, .SD, .SDcols = Filter(function(x) !all(is.na(x)), names(filtered_table))]
-    #
-    # # defining which columns to display (excluding field and year)
-    # cols_to_display <- setdiff(names(filtered_table), c("field", "year"))
-    
-    # rendering DT with selected columns
-    #datatable(filtered_table[, ..cols_to_display], rownames = FALSE)
-    
-    # rendering DT with selected columns
-    datatable(filtered_table, rownames = FALSE)
-  })
-  
-  
-  # output$bikeped_projs_tbl <- create_table(bikeped_projs,
-  #                                          list(target = 'row',
-  #                                               disable = list(columns = c(0,1)),
-  #                                               autoWidth = TRUE))
-  
+
+
+
+
   output$transit_fixed_projs_tbl <- create_table(transit_fixed_projs,
                                                  list(target = 'row',
                                                       disable = list(columns = c(0,1)),
