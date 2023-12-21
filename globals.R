@@ -71,13 +71,6 @@ get_num_primary_keys <- function(df){
 ### READ and PROCESS RAW DATA ------------------------- 
 # At very end of project we should consider switching to RData file to minimize processing/startup time
 State_Populations <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "State_Populations")
-State_Populations <-
-expand(State_Populations, state, year = rep(2020:2050)) %>%
-  left_join(State_Populations, by = c("state", "year")) %>%
-  group_by(state) %>%
-  mutate(population = approx(year, population, xout = year)$y,
-         growth = population / population[year == 2020] - 1) %>%
-  ungroup()
 
 NHS_VMT <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NHS_VMT", range = "A4:R57") %>%
     select(state, LDV_pct_on_NHS, TRK_pct_on_NHS)
@@ -117,6 +110,8 @@ Bike_Ped <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Bike_Ped")
 NTD_Service <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NTD_Service")
 
 Fuel_Factors <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors")
+Fuel_Factors_Revision <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Revision") # SL ADDED NEED TO WORK TO COMBINE THESE TWO
+
 
 Transit_Costs <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Transit_Costs")
 Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
@@ -125,5 +120,98 @@ Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
   replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0))
 
 
+references <- read_excel(".\\data\\2.User_Inputs.xlsx",
+                         sheet ="References",
+                         col_names = TRUE)
+
+references_vector <- setNames(references$field, references$description)
 
 
+#Additional Calculations ----
+
+#State Population ----
+#have to add the 2050 year somehow for approx to work
+for (var in unique(State_Populations$state)){
+  temp_state <- State_Populations %>% 
+    filter(state == var) %>%
+    add_row(state = var, 
+            year = 2050, 
+            population = (.$population[.$year == 2040] - .$population[.$year == 2030]) + .$population[.$year == 2040]) %>% 
+    filter(year == 2050)
+  State_Populations = rbind(State_Populations,temp_state)
+}
+
+State_Populations <-
+  expand(State_Populations, state, year = rep(2020:2050)) %>%
+  left_join(State_Populations, by = c("state", "year")) %>%
+  group_by(state) %>%
+  mutate(population = approx(year, population, xout = year)$y) %>% 
+  mutate(growth = population / population[year == 2020] - 1) %>%
+  ungroup()
+
+#VMT_State_Allocation ----
+# #calculate US Total
+totalvmt_temp <- data.frame()
+for (i in 2022: 2050){
+  totalvmt_temp <- VMT_State_Allocation %>% filter(year == i) %>%
+    add_row(state = 'U.S. Total', year = i, state_vmt  = sum(.$state_vmt ))
+
+  VMT_State_Allocation = rbind(VMT_State_Allocation,totalvmt_temp)
+}
+
+VMT_State_Allocation <- left_join(State_Populations,VMT_State_Allocation, by = c('year','state'))
+
+#add percentage of VMT as portion of total VMT
+VMT_State_Allocation<-VMT_State_Allocation %>%
+  group_by(year) %>%
+  mutate(state_perc = state_vmt/(sum(state_vmt,na.rm = T)/2)) %>% #dividing by two removes US Total
+  ungroup()
+
+## join the vmt for each vehicle types
+VMT_State_Allocation <- merge(VMT_State_Allocation, AEO_VMT, by = 'year', all = TRUE)
+
+VMT_VehType <- VMT_State_Allocation %>% #aka VMT_Forecast
+  mutate(state_vmt_vehtype = VMT_AEO*state_perc)
+
+#TechFrac object----
+#I need to match up the columns with what's above for this one
+# TechFrac <- Stock_Type_Tech_BASE_forecast %>%
+#   group_by(year, vehicle_type) %>%
+#   #Baseline vision 2022 I think aka AEO
+#   mutate(AEO_Tech_Frac = million_vehicles/sum(million_vehicles)) %>%
+#   #select(year, vehicle_type, fuel_type, AEO_Tech_Frac) %>%
+#   ungroup() %>%
+#   mutate(is_ev_type = ifelse(fuel_type %in% ev_fuel_type,1,0)) %>%
+#   group_by(year, vehicle_type, is_ev_type) %>%
+#   mutate(per_ev_nonev = AEO_Tech_Frac/sum(AEO_Tech_Frac)) %>%
+#   #ACC Forecasting
+#   ungroup() %>%
+#   group_by(year, vehicle_type) %>%
+#   mutate(ACC_Tech_Fractemp = percEVstock_ACC*per_ev_nonev*is_ev_type) %>%
+#   mutate(ACC_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACC_Tech_Fractemp)), ACC_Tech_Fractemp)) %>%
+#   mutate(ACC_Tech_Frac = ifelse(vehicle_type %in% c("Medium Duty Truck","Heavy Duty Truck"), AEO_Tech_Frac, ACC_Tech_Frac)) %>%
+#   select(-ACC_Tech_Fractemp) %>%
+#   ungroup() %>%
+#   #ACCII Version
+#   ungroup() %>%
+#   group_by(year, vehicle_type) %>%
+#   mutate(ACCII_Tech_Fractemp = percEVstock_ACCII*per_ev_nonev*is_ev_type) %>%
+#   mutate(ACCII_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCII_Tech_Fractemp)), ACCII_Tech_Fractemp)) %>%
+#   mutate(ACCII_Tech_Frac = ifelse(vehicle_type %in% c("Medium Duty Truck","Heavy Duty Truck"), AEO_Tech_Frac, ACCII_Tech_Frac)) %>%
+#   select(-ACCII_Tech_Fractemp) %>%
+#   ungroup() %>%
+#   #ACC + ACT
+#   group_by(year, vehicle_type) %>%
+#   mutate(ACCACT_Tech_Fractemp = percEVstock_ACCACT*per_ev_nonev*is_ev_type) %>%
+#   mutate(ACCACT_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCACT_Tech_Fractemp)), ACCACT_Tech_Fractemp)) %>%
+#   mutate(ACCACT_Tech_Frac = ifelse(vehicle_type %in% c("Medium Duty Truck","Heavy Duty Truck"), ACCACT_Tech_Frac, ACC_Tech_Frac)) %>%
+#   select(-ACCACT_Tech_Fractemp) %>%
+#   ungroup() %>%
+#   #ACCII + ACT
+#   mutate(ACCIIACT_Tech_Frac = ifelse(vehicle_type %in% c("Passenger Car","Light Duty Truck"), ACCII_Tech_Frac, ACCACT_Tech_Frac)) #%>%
+# # #Future Scenario - no numbers in the EV Forecast tab so I'm commenting it out - What's up with it?
+# # group_by(year, vehicle_type) %>%
+# # mutate(FScen_Tech_Fractemp = percEVstock_Fscen*per_ev_nonev*is_ev_type) %>%
+# # mutate(FScen_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(FScen_Tech_Fractemp)), FScen_Tech_Fractemp)) %>%
+# # select(-FScen_Tech_Fractemp) %>%
+# # ungroup() %>%

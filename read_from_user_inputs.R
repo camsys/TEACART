@@ -9,19 +9,11 @@ library(tidyverse)
 ### lists are easier to pull values from, tables are easier to visualize and push to front end
 
 read_user_inputs_excel <- function(filename){
-  ### KEY INPUTS -----------------------------------------------------------------
+
   Baseline <- read_excel(path = filename, sheet = "Baseline") %>% as.vector()
-  
-  ### COST PARAMETERS ------------------------------------------------------------
   Costs <- read_excel(path = filename, sheet = "Costs")
-  
-  ### ASSUMPTIONS ----------------------------------------------------------------
   Assumptions <- read_excel(path = filename, sheet = "Assumptions")
-  
-  ### BASELINE PARAMETERS --------------------------------------------------------
   Advanced <- read_excel(path = filename, sheet = "Advanced")
-  
-  ### CAPITAL_PROJECT_INPUTS -----------------------------------------------------
   Projects <- read_excel(path = filename, sheet = "Projects")
   
   return(list("Baseline" = Baseline,
@@ -31,42 +23,24 @@ read_user_inputs_excel <- function(filename){
               "Projects" = Projects))
 }
 
-# return(list("Key_Inputs" = Key_Inputs,
-#             "Cost_Parameters" = Cost_Parameters,
-#             "Assumptions" = Assumptions, 
-#             "Baseline_Parameters" = Baseline_Parameters,
-#             "Capital_Project_Inputs" = Capital_Project_Inputs))
-
-
-create_reactive_list <- function(filename) {
-  # Read data
-  Baseline <- read_excel(path = filename,
-                           sheet = "Baseline") |> as.vector()
-  Costs <- read_excel(path = filename,
-                                sheet = "Costs",
-                                col_names = TRUE)
-  Assumptions <- read_excel(path = filename,
-                            sheet = "Assumptions",
-                            col_names = TRUE)
-  Advanced <- read_excel(path = filename,
-                                    sheet = "Advanced",
-                                    col_names = TRUE)
-  Projects <- read_excel(path = filename,
-                                       sheet = "Projects",
-                                       col_names = TRUE)
+read_user_inputs_version2 <- function(filename){
   
-  # Create reactive list
-  reactive_list <- reactiveValues(
-    Baseline = Baseline, 
-    Costs = Costs, 
-    Assumptions = Assumptions,
-    Advanced = Advanced, 
-    Projects = Projects
-  )
+  Baseline <- read_excel(path = filename, sheet = "Baseline") %>% as.vector()
+  Costs <- read_excel(path = filename, sheet = "Costs")
+  Assumptions <- read_excel(path = filename, sheet = "Assumptions")
+  Advanced <- read_excel(path = filename, sheet = "Advanced")
+  Projects <- read_excel(path = filename, sheet = "Projects")
   
-  return(reactive_list)
+  reactive_data <- reactiveValues(
+    "Baseline" = Baseline,
+    "Costs" = Costs,
+    "Assumptions" = Assumptions, 
+    "Advanced" = Advanced,
+    "Projects" = Projects
+    )
+  
+  return(reactive_data)
 }
-
 
 ### KEY INPUTS -----------------------------------------------------------------
 # Key_Inputs <- read_excel("2.User_Inputs.xlsx", sheet = "Key_Inputs") %>% as.vector()

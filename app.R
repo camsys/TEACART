@@ -14,16 +14,8 @@ library(plotly)
 
 
 # load source files -------------------------------------------------------
-
-# for (file in c(
-#   list.files(".//data//",
-#              pattern = "*.xlsx",
-#              full.names = TRUE )
-# )) {
-#   source(file, encoding = "utf8")
-# }
-
 all_files <- c(
+  list.files("functions", full.names = TRUE)
 #               ,list.files("processing_scripts", full.names = TRUE) # this breaks it at the moment
                )
 
@@ -42,130 +34,11 @@ source("globals.R")
 source("read_from_user_inputs.R")
 
 
-# functions related to rendering the tables for the UI --------------------
-
-# reading in static tables from the assumptions.xlsx etc files
-# note that this is a true global object - moving to server would make this a 
-# session-level object
-# to delete once all tables have been updated
-read_static_tables <- function(file_name, sheet_names) {
-  for (i in seq_along(sheet_names)) {
-    assign(sheet_names[i],
-           read_xlsx(file_name,
-                     sheet = i,
-                     skip = 1,
-                     col_names = TRUE),
-           envir = .GlobalEnv)
-  }
-}
-
-# the way tables are created using the old assumptions.xlsx files
-
-create_table = function(data, editable = 'row', server = TRUE, ...) {
-  renderDT(data,
-           selection = 'none',
-           server = server,
-           editable = editable,
-           rownames = FALSE,
-           ...)
-}
-
-# function to reshape data for rendering
-# reshape_data <- function
-
-
 # create a graph ----------------------------------------------------------
 
 
 create_graph <- function(data, indicator){
-  
 }
-
-
-# objects used to read in data --------------------------------------------
-
-# this is also used to create tables - _tbl is appended
-# also won't be necessary in the redone workflow
-
-advanced_names <- c("ev_forecast_sheet",
-                    "vmt_forecast_sheet",
-                    "onroad_fuel_tech_frac_sheet",
-                    "pass_rail_sheet",
-                    "freight_rail_sheet",
-                    "construction_sheet",
-                    "fuel_apportionment_sheet")
-
-
-assumptions_names <- c("bikeped_assmps",
-                       "transit_assmps",
-                       "tdm_assmps",
-                       "micro_assmps",
-                       "traffic_ops_assmps",
-                       "mhdv_assmps",
-                       "pnr_assmps",
-                       "evsi_assmps")
-
-
-
-projects_names <- c("bikeped_projs",
-                    "transit_fixed_projs",
-                    "transit_dr_projs",
-                    "transit_el_projs",
-                    "transit_bus_projs",
-                    "public_rail_projs",
-                    "tdm_projs",
-                    "micro_projs",
-                    "traffic_ops_projs",
-                    "mhdev_projs",
-                    "pnr_projs",
-                    "evsi_projs",
-                    "freight_projs",
-                    "expansion_projs")
-
-
-strategy_names <- c("Bicycle and Pedestrian",
-                    "Transit Service Expansion",
-                    "Micromobility",
-                    "Travel Demand Management",
-                    "Park and Ride",
-                    "Transit Electrification",
-                    "MD/HD Truck Replacement",
-                    "Electric Vehicle Charging Infra.",
-                    "Intermodal Freight Investment",
-                    "Traffic Operations",
-                    "Roadway Expansion",
-                    "Custom Projects")
-
-# these are costs inputs
-costs_names <- c("bikeped_costs",
-                 "transit_fixed_costs",
-                 "transit_dr_costs",
-                 "pub_trans_priority_costs",
-                 "tdm_costs",
-                 "pub_trans_rail_costs",
-                 "micro_costs",
-                 "traffic_ops_costs",
-                 "mhdev_costs",
-                 "pnr_costs",
-                 "evsi_costs",
-                 "roadway_expand_costs",
-                 "fuel_costs",
-                 "intermodal_costs")
-
-costs_outputs_names <- c("bikeped_costs_outputs",
-                           "transit_fixed_costs_outputs",
-                           "transit_dr_costs_outputs",
-                           "pub_trans_priority_costs_outputs",
-                           "transit_zeb_costs_outputs",
-                           "pub_trans_rail_costs_outputs",
-                           "tdm_costs_outputs",
-                           "micro_costs_outputs",
-                           "traffic_ops_costs_outputs",
-                           "mhdev_costs_outputs",
-                           "pnr_costs_outputs",
-                           "evsi_costs_outputs",
-                           "roadway_expand_costs_outputs",
-                           "intermodal_costs_outputs")
 
 
 
@@ -274,6 +147,13 @@ ui <- function(request) {
                                                   min = 2021,
                                                   max = 2050,
                                                   step = 1),
+                                     p(""),
+                                     numericInput("net_zero_year",
+                                                 "Net-Zero Electricity by Year:",
+                                                 value = 2050,
+                                                 min = 2021,
+                                                 max = 2100,
+                                                 step = 1),
                                      p(""),
                                      selectInput("transportation_scope",
                                                  "Transportation System Scope:",
@@ -749,14 +629,16 @@ theme_set(theme_bw(base_size = 16))
 # https://rstudio.github.io/bslib/articles/sidebars/index.html
 
 
+# Server ------------------------------------------------------------------
+
 server <- function(input, output, session) {
   # browser()
   
   # set reactiveValues
   rv <- reactiveValues()
   
-    # using the new function to populate a new object that contains data
-    rvs <- create_reactive_list(".\\data\\2.User_Inputs.xlsx")
+  rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
+
     
   # Initiate or Upload User Inputs -------------------------------------------
   
@@ -784,12 +666,15 @@ server <- function(input, output, session) {
   ### will eventually use openxlsx to format the excel file to match the uploaded file exactly
   output$user_inputs_download <- downloadHandler(
     filename = function() {
-      paste0(".\\data\\2.User_Inputs_", Sys.Date(), ".xlsx")
+      paste0(".\\data\\2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
     },
     content = function(file) {
+      #download_projects <- as.data.frame(rvs$Projects)
       # browser()
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
-                                           "Baseline" = rvs$Baseline), 
+                                           "Baseline" = rvs$Baseline,
+                                           "Projects" = rvs$Projects
+                                           ), 
                            file = file))
     }
   )
@@ -832,89 +717,67 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
-  # establishing the initial values in a format that datatable prefers
-  
-  
-  # function to reshape data for rendering
-  reshape_data <- function(data, selected_state) {
-    data |>
-      filter(State == selected_state) |>
-      select(-State) |>
-      group_by(Fruit) |>
-      pivot_wider(names_from = Year, values_from = Values) |>
-      ungroup()
-  }
-  
+
+ # rendering bike ped table
+  output$bikeped_projs_tbl <- renderDT({
+    req(rvs$Projects)
+    req(input$state_input)
+    projs <- rvs$Projects
+    
+    selected_state <- input$state_input
+
+    reshaped_table <- projs |>
+      filter(table_no_ui == 1) |>
+      pivot_wider(names_from = year,
+                  values_from = value) |>
+      ungroup() |> 
+      select(-c(table_no_ui,table,unit,category)) |> 
+      select_if(~ !all(is.na(.) | . == '')) |> 
+      rename(any_of(references_vector))
+
+
+    datatable(reshaped_table,
+              rownames = FALSE,
+              editable = list(target = 'all',
+                              disable = list(columns = c(0,1))),
+              options = list(pageLength = 19,
+                             columnDefs = list(list(className = 'dt-left',
+                                                    targets = '_all')))
+    )
+
+  }, server = FALSE)
+
+# observe edits to the bike ped table
+  observeEvent(input$bikeped_projs_tbl_cell_edit, {
+    print(input$bikeped_projs_tbl_cell_edit)
+    
+    browser()
+    user_data <- input$bikeped_projs_tbl_cell_edit
+    #updated_data <- rvs$Projects
+    ##need to reshape reassign
+    #rvs$Projects[table_no == 2,"value"]
+    #rvs$Projects <- user_data
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+
+  })
+
+
+ 
+  output$transit_fixed_projs_tbl <- render_custom_datatable(
+    input_reactives = list(),
+    data_reactive = rvs$Projects,
+    table_number = 2,
+    non_editable_cols = c(0, 1, 2),
+    page_length = 10,
+    comma_rows = 0:6,
+    percent_rows = integer(0),
+    currency_rows = integer(0),
+    decimal_rows = integer(0)
+  )
   
 
-  # rendering bike ped table
-  output$bikeped_projs_tbl <- renderDT({
-    req(rvs$Capital_Project_Inputs())
-    datatable(rvs$Capital_Project_Inputs(),
-              options = list(columnDefs = list(list(visible = FALSE,
-                                                    targets = which(colnames(rvs$Capital_Project_Inputs() == "field"))))),
-              editable = TRUE)
-    # filtered_table <- rvs$Capital_Project_Inputs
-    
-#    filtered_table <- filtered_table[category == "Bicycle and Pedestrian"]
-    #    filtered_table <- rv$Capital_Project_Inputs$category == "Bicycle and Pedestrian"
-    
-    # browser()
-    # for (yr in years) {
-    #   year_col_name <- as.character(yr)
-    #   filtered_table[, (year_col_name) := ifelse (year == yr, 'values', NA_integer_)]
-    # }
-    #
-    # # Dropping columns only NA
-    # filtered_table <- filtered_table[, .SD, .SDcols = Filter(function(x) !all(is.na(x)), names(filtered_table))]
-    #
-    # # defining which columns to display (excluding field and year)
-    # cols_to_display <- setdiff(names(filtered_table), c("field", "year"))
-    
-    # rendering DT with selected columns
-    #datatable(filtered_table[, ..cols_to_display], rownames = FALSE)
-    
-    # rendering DT with selected columns
-#    datatable(filtered_table, rownames = FALSE)
-  }, server = FALSE)
-  
-  
-# using reactive objects loaded from my new set of    
-  output$bikeped_projs_tbl <- renderDT({
-    filtered_table <- rvs$Capital_Project_Inputs
-    
-#    filtered_table <- filtered_table[category == "Bicycle and Pedestrian"]
-    #    filtered_table <- rv$Capital_Project_Inputs$category == "Bicycle and Pedestrian"
-    
-    # browser()
-    # for (yr in years) {
-    #   year_col_name <- as.character(yr)
-    #   filtered_table[, (year_col_name) := ifelse (year == yr, 'values', NA_integer_)]
-    # }
-    #
-    # # Dropping columns only NA
-    # filtered_table <- filtered_table[, .SD, .SDcols = Filter(function(x) !all(is.na(x)), names(filtered_table))]
-    #
-    # # defining which columns to display (excluding field and year)
-    # cols_to_display <- setdiff(names(filtered_table), c("field", "year"))
-    
-    # rendering DT with selected columns
-    #datatable(filtered_table[, ..cols_to_display], rownames = FALSE)
-    
-    # rendering DT with selected columns
-    datatable(filtered_table, rownames = FALSE)
-  })
-  
-  
-  # output$bikeped_projs_tbl <- create_table(bikeped_projs,
-  #                                          list(target = 'row',
-  #                                               disable = list(columns = c(0,1)),
-  #                                               autoWidth = TRUE))
-  
-  output$transit_fixed_projs_tbl <- create_table(transit_fixed_projs,
-                                                 list(target = 'row',
-                                                      disable = list(columns = c(0,1)),
-                                                      autoWidth = TRUE))
   
   output$transit_dr_projs_tbl <- create_table(transit_dr_projs,
                                               list(target = 'row',
@@ -1469,6 +1332,14 @@ server <- function(input, output, session) {
     vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
   })
   
+  observeEvent(input$fuel_apportionment_sheet_tbl_cell_edit, {
+    print('yippee')
+    print(input$fuel_apportionment_sheet_tbl_cell_edit)
+    
+    rvs$Advanced[]
+    #vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
+  })
+  
   
   # server - outputs --------------------------------------------------------
   
@@ -1649,8 +1520,9 @@ server <- function(input, output, session) {
     })
   
   
-  
-  
+  #sl working ----
+  source("processing_scripts/processing_Base_Projections.R", local = TRUE)
+  #check for tables being edited
 }
 
 # Run the application
