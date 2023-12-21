@@ -23,7 +23,24 @@ read_user_inputs_excel <- function(filename){
               "Projects" = Projects))
 }
 
-
+read_user_inputs_version2 <- function(filename){
+  
+  Baseline <- read_excel(path = filename, sheet = "Baseline") %>% as.vector()
+  Costs <- read_excel(path = filename, sheet = "Costs")
+  Assumptions <- read_excel(path = filename, sheet = "Assumptions")
+  Advanced <- read_excel(path = filename, sheet = "Advanced")
+  Projects <- read_excel(path = filename, sheet = "Projects")
+  
+  reactive_data <- reactiveValues(
+    "Baseline" = Baseline,
+    "Costs" = Costs,
+    "Assumptions" = Assumptions, 
+    "Advanced" = Advanced,
+    "Projects" = Projects
+    )
+  
+  return(reactive_data)
+}
 
 ### KEY INPUTS -----------------------------------------------------------------
 # Key_Inputs <- read_excel("2.User_Inputs.xlsx", sheet = "Key_Inputs") %>% as.vector()

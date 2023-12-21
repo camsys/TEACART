@@ -15,6 +15,7 @@ library(plotly)
 
 # load source files -------------------------------------------------------
 all_files <- c(
+  list.files("functions", full.names = TRUE)
 #               ,list.files("processing_scripts", full.names = TRUE) # this breaks it at the moment
                )
 
@@ -33,204 +34,11 @@ source("globals.R")
 source("read_from_user_inputs.R")
 
 
-# functions related to rendering the tables for the UI --------------------
-
-# reading in static tables from the assumptions.xlsx etc files
-# note that this is a true global object - moving to server would make this a 
-# session-level object
-# to delete once all tables have been updated
-read_static_tables <- function(file_name, sheet_names) {
-  for (i in seq_along(sheet_names)) {
-    assign(sheet_names[i],
-           read_xlsx(file_name,
-                     sheet = i,
-                     skip = 1,
-                     col_names = TRUE),
-           envir = .GlobalEnv)
-  }
-}
-
-# the way tables are created using the old assumptions.xlsx files
-
-create_table = function(data, editable = 'row', server = TRUE, ...) {
-  renderDT(data,
-           selection = 'none',
-           server = server,
-           editable = editable,
-           rownames = FALSE,
-           ...)
-}
-
-
-# new function using new reactive values
-# WARNING WARNING WARNING - the way these reactive values are read in right now,
-# they're not going to update the global object -- needs the data_ractive to have () 
-
-render_custom_datatable <- function(input_reactives,
-                                    data_reactive,
-                                    table_number,
-                                    non_editable_cols,
-                                    page_length,
-                                    comma_rows,
-                                    percent_rows,
-                                    currency_rows,
-                                    decimal_rows) {
-
-  # pull in any inputs (currently does not pull anything )
-  lapply(input_reactives, req)
-  
-  temp_thing <- data_reactive                                   # need to fix this
-  
-  output <- renderDT({
-    # Use the data reactive for reshaping and rendering the table
-    reshaped_table <- temp_thing |>                              # need to fix this
-      filter(table_no_ui == table_number) |>
-      pivot_wider(names_from = year, values_from = value) |>
-      ungroup() |> 
-      select(-c(table_no_ui, table, unit, category)) |> 
-      select_if(~ !all(is.na(.) | . == '')) |> 
-      rename(any_of(references_vector))
-    
-    datatable(
-      reshaped_table,
-      rownames = FALSE,
-      editable = list(target = 'all', disable = list(columns = non_editable_cols)),
-      options = list(
-        pageLength = page_length,
-        columnDefs = list(
-          list(
-            targets = '_all',
-            render = DT::JS(
-              sprintf(
-                "function(data, type, row, meta) {
-                  if (type === 'display') {
-                    var commaRows = [%s];
-                    var percentRows = [%s];
-                    var currencyRows = [%s];
-                    var decimalRows = [%s];
-
-                    var formatter = null;
-                    if (commaRows.includes(meta.row)) {
-                      formatter = function(d) { return Number(d).toLocaleString('en-US'); };
-                    } else if (percentRows.includes(meta.row)) {
-                      formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
-                    } else if (currencyRows.includes(meta.row)) {
-                      formatter = function(d) { return '$' + Number(d).toLocaleString('en-US'); };
-                    } else if (decimalRows.includes(meta.row)) {
-                      formatter = function(d) { return Number(d).toFixed(1); };
-                    }
-                    
-                    return formatter && !isNaN(data) && data !== null && data !== '' ? formatter(data) : data;
-                  }
-                  return data;
-                }",
-                paste(comma_rows, collapse = ", "), 
-                paste(percent_rows, collapse = ", "),
-                paste(currency_rows, collapse = ", "),
-                paste(decimal_rows, collapse = ", ")
-              )
-            )
-          )
-        )
-      )
-    )
-  }, server = FALSE)
-  
-  return(output)
-}
-
-
 # create a graph ----------------------------------------------------------
 
 
 create_graph <- function(data, indicator){
 }
-
-
-# objects used to read in data --------------------------------------------
-
-# this is also used to create tables - _tbl is appended
-# also won't be necessary in the redone workflow
-
-advanced_names <- c("ev_forecast_sheet",
-                    "vmt_forecast_sheet",
-                    "onroad_fuel_tech_frac_sheet",
-                    "pass_rail_sheet",
-                    "freight_rail_sheet",
-                    "construction_sheet",
-                    "fuel_apportionment_sheet")
-
-
-assumptions_names <- c("bikeped_assmps",
-                       "transit_assmps",
-                       "tdm_assmps",
-                       "micro_assmps",
-                       "traffic_ops_assmps",
-                       "mhdv_assmps",
-                       "pnr_assmps",
-                       "evsi_assmps")
-
-
-
-projects_names <- c("bikeped_projs",
-                    "transit_fixed_projs",
-                    "transit_dr_projs",
-                    "transit_el_projs",
-                    "transit_bus_projs",
-                    "public_rail_projs",
-                    "tdm_projs",
-                    "micro_projs",
-                    "traffic_ops_projs",
-                    "mhdev_projs",
-                    "pnr_projs",
-                    "evsi_projs",
-                    "freight_projs",
-                    "expansion_projs")
-
-
-strategy_names <- c("Bicycle and Pedestrian",
-                    "Transit Service Expansion",
-                    "Micromobility",
-                    "Travel Demand Management",
-                    "Park and Ride",
-                    "Transit Electrification",
-                    "MD/HD Truck Replacement",
-                    "Electric Vehicle Charging Infra.",
-                    "Intermodal Freight Investment",
-                    "Traffic Operations",
-                    "Roadway Expansion",
-                    "Custom Projects")
-
-# these are costs inputs
-costs_names <- c("bikeped_costs",
-                 "transit_fixed_costs",
-                 "transit_dr_costs",
-                 "pub_trans_priority_costs",
-                 "tdm_costs",
-                 "pub_trans_rail_costs",
-                 "micro_costs",
-                 "traffic_ops_costs",
-                 "mhdev_costs",
-                 "pnr_costs",
-                 "evsi_costs",
-                 "roadway_expand_costs",
-                 "fuel_costs",
-                 "intermodal_costs")
-
-costs_outputs_names <- c("bikeped_costs_outputs",
-                           "transit_fixed_costs_outputs",
-                           "transit_dr_costs_outputs",
-                           "pub_trans_priority_costs_outputs",
-                           "transit_zeb_costs_outputs",
-                           "pub_trans_rail_costs_outputs",
-                           "tdm_costs_outputs",
-                           "micro_costs_outputs",
-                           "traffic_ops_costs_outputs",
-                           "mhdev_costs_outputs",
-                           "pnr_costs_outputs",
-                           "evsi_costs_outputs",
-                           "roadway_expand_costs_outputs",
-                           "intermodal_costs_outputs")
 
 
 
@@ -820,8 +628,8 @@ server <- function(input, output, session) {
   # set reactiveValues
   rv <- reactiveValues()
   
-    # using the new function to populate a new object that contains data
-    rvs <- read_user_inputs_excel(".\\data\\2.User_Inputs.xlsx")
+  rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
+
     
   # Initiate or Upload User Inputs -------------------------------------------
   
@@ -849,12 +657,14 @@ server <- function(input, output, session) {
   ### will eventually use openxlsx to format the excel file to match the uploaded file exactly
   output$user_inputs_download <- downloadHandler(
     filename = function() {
-      paste0(".\\data\\2.User_Inputs_", Sys.Date(), ".xlsx")
+      paste0(".\\data\\2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
     },
     content = function(file) {
+      download_projects <- as.data.frame(rvs$Projects)
       # browser()
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
-                                           "Baseline" = rvs$Baseline), 
+                                           "Baseline" = rvs$Baseline,
+                                           "Projects" = download_projects), 
                            file = file))
     }
   )
@@ -927,15 +737,26 @@ server <- function(input, output, session) {
 
   }, server = FALSE)
 
+# observe edits to the bike ped table
+  observeEvent(input$bikeped_projs_edit, {
+    user_data <- input$bikeped_projs_edit
+    updated_data <- rvs$Projects()
+    updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    rvs$Projects(updated_table)
+    # debugging
+    str(rvs$Projects)
+    class(rvs$Projects) 
+  })
 
 
+ 
   output$transit_fixed_projs_tbl <- render_custom_datatable(
-    input_reactives = list(), 
+    input_reactives = list(),
     data_reactive = rvs$Projects,
     table_number = 2,
     non_editable_cols = c(0, 1, 2),
     page_length = 10,
-    comma_rows = 0:6, 
+    comma_rows = 0:6,
     percent_rows = integer(0),
     currency_rows = integer(0),
     decimal_rows = integer(0)
