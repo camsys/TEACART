@@ -751,7 +751,7 @@ server <- function(input, output, session) {
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
     print(input$bikeped_projs_tbl_cell_edit)
     
-    #browser()
+    browser()
     user_data <- input$bikeped_projs_tbl_cell_edit
     #updated_data <- rvs$Projects
     ##need to reshape reassign

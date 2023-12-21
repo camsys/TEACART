@@ -171,7 +171,7 @@ EmRate_by_Tech <- reactive({
   return(EmRate_by_Tech)
   })
 
-browser()
+
 #Testing area ---
 # observeEvent(eemrate_listen(),{
 #   req(EmRate_by_Tech)
