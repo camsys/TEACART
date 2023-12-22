@@ -9,8 +9,11 @@ render_custom_datatable <- function(input_reactives,
                                     currency_rows,
                                     decimal_rows) {
   
-  lapply(input_reactives, req)
+  # lapply(input_reactives, req)
+  #lapply(data_reactive, req)
   
+  print("check point")
+
   output <- renderDT({
     
     reshaped_table <- data_reactive |> 

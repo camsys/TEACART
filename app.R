@@ -747,22 +747,88 @@ server <- function(input, output, session) {
 
   }, server = FALSE)
 
+
+  #browser()
+  
 # observe edits to the bike ped table
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
     print(input$bikeped_projs_tbl_cell_edit)
     
-    browser()
-    user_data <- input$bikeped_projs_tbl_cell_edit
-    #updated_data <- rvs$Projects
-    ##need to reshape reassign
+    #browser()
+    #user_data <- input$bikeped_projs_tbl_cell_edit
+    #need to reshape reassign
     #rvs$Projects[table_no == 2,"value"]
-    #rvs$Projects <- user_data
+
     
-    
+    #rvs$Projects <- updated_data
+    rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping(input$bikeped_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 1,
+                                                              col1 = 'area_type',
+                                                              col2 = 'facility_type',
+                                                              col3 = NA,
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
 
   })
+  
+  
+  # observe edits to the bike ped table
+  observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
+    print(input$transit_fixed_projs_tbl_cell_edit)
+    
+    # browser()
+    #user_data <- input$bikeped_projs_tbl_cell_edit
+    #need to reshape reassign
+    #rvs$Projects[table_no == 2,"value"]
+    
+    
+    #rvs$Projects <- updated_data
+    rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping(input$transit_fixed_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 2,
+                                                              col1 = 'area_type',
+                                                              col2 = 'fuel_type',
+                                                              col3 = 'transit_mode',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  
 
+  
+  
+
+  
+  
+  # observe edits to the public_rail_projs table     #checkpoint
+  observeEvent(input$public_rail_projs_tbl_cell_edit, {
+    print(input$public_rail_projs_tbl_cell_edit)
+    
+    #browser()
+    #need to reshape reassign
+    #rvs$Projects[table_no == 2,"value"]
+    
+    
+    #rvs$Projects <- updated_data
+    rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping(input$public_rail_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 6,
+                                                              col1 = 'transit_mode',
+                                                              col2 = 'fuel_type',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
 
  
   output$transit_fixed_projs_tbl <- render_custom_datatable(
