@@ -18,7 +18,7 @@
 # fuel_factor_apportionment <- xlsx::read.xlsx("Data Extracts/Fuel Factors_Workbook.xlsx", 4)
 # fuel_factor <- left_join(fuel_factor_df, fuel_factor_apportionment)
 
-# IS :: Fuel_Factors_Revision + rvs$Advanced[rvs$Advanced$table_no == 7]  ## note to self:: [!sapply(mydf, function(x) all(x == ""))]
+# IS :: Fuel_Factors_Revision + rvs$Advanced[rvs$Advanced$table_no_ui == 7]  ## note to self:: [!sapply(mydf, function(x) all(x == ""))]
 # #end emrate by tech inputs
 
 # AEO_VMT_Base <- read.csv('Data Extracts/AEO_VMT_Base.csv') # no calculation needed
@@ -144,7 +144,7 @@ eemrate <- eventReactive(eemrate_listen(),{
 #joining dataframe together which makes it easier to calcualte things
 
 EmRate_by_Tech <- reactive({
-  input_ff_factors <- rvs$Advanced[rvs$Advanced$table_no == 7,] %>% 
+  input_ff_factors <- rvs$Advanced[rvs$Advanced$table_no_ui == 7,] %>% 
     select(veh_type, value) %>%
     rename(apportionment = value) %>%
     mutate(apportionment = as.numeric(apportionment)) #not sure why this step was necessary

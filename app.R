@@ -148,13 +148,6 @@ ui <- function(request) {
                                                   max = 2050,
                                                   step = 1),
                                      p(""),
-                                     numericInput("net_zero_year",
-                                                 "Net-Zero Electricity by Year:",
-                                                 value = 2050,
-                                                 min = 2021,
-                                                 max = 2100,
-                                                 step = 1),
-                                     p(""),
                                      selectInput("transportation_scope",
                                                  "Transportation System Scope:",
                                                  c("All Roadways","NHS Only"),
@@ -629,8 +622,6 @@ theme_set(theme_bw(base_size = 16))
 # https://rstudio.github.io/bslib/articles/sidebars/index.html
 
 
-# Server ------------------------------------------------------------------
-
 server <- function(input, output, session) {
   # browser()
   
@@ -669,12 +660,11 @@ server <- function(input, output, session) {
       paste0(".\\data\\2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
     },
     content = function(file) {
-      #download_projects <- as.data.frame(rvs$Projects)
+      
       # browser()
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Baseline" = rvs$Baseline,
-                                           "Projects" = rvs$Projects
-                                           ), 
+                                           "Projects" = rvs$Projects), 
                            file = file))
     }
   )
@@ -747,34 +737,15 @@ server <- function(input, output, session) {
 
   }, server = FALSE)
 
-
-  #browser()
-  
 # observe edits to the bike ped table
-  observeEvent(input$bikeped_projs_tbl_cell_edit, {
-    print(input$bikeped_projs_tbl_cell_edit)
-    
-    #browser()
-    #user_data <- input$bikeped_projs_tbl_cell_edit
-    #need to reshape reassign
-    #rvs$Projects[table_no == 2,"value"]
-
-    
-    #rvs$Projects <- updated_data
-    rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping(input$bikeped_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 1,
-                                                              col1 = 'area_type',
-                                                              col2 = 'facility_type',
-                                                              col3 = NA,
-                                                              input$horizon_year_1,
-                                                              input$horizon_year_2,
-                                                              input$horizon_year_3)
-
-    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
-
+  observeEvent(input$bikeped_projs_edit, {
+    user_data <- input$bikeped_projs_edit
+    updated_data <- rvs$Projects
+    updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    rvs$Projects(updated_table)
+    str(user_data)
   })
-  
+
   output$transit_fixed_projs_tbl <- render_custom_datatable(
     input_reactives = list(),
     data_reactive = rvs$Projects,
@@ -863,38 +834,20 @@ server <- function(input, output, session) {
     
   })
   
-
-  
-  
-
-  
-  
-  # observe edits to the public_rail_projs table     #checkpoint
-  observeEvent(input$public_rail_projs_tbl_cell_edit, {
-    print(input$public_rail_projs_tbl_cell_edit)
-    
-    #browser()
-    #need to reshape reassign
-    #rvs$Projects[table_no == 2,"value"]
-    
-    
-    #rvs$Projects <- updated_data
-    rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping(input$public_rail_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 6,
-                                                              col1 = 'transit_mode',
-                                                              col2 = 'fuel_type',
-                                                              input$horizon_year_1,
-                                                              input$horizon_year_2,
-                                                              input$horizon_year_3)
-    
-    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
-    
-  })
-
  
+  output$transit_fixed_projs_tbl <- render_custom_datatable(
+    input_reactives = list(),
+    data_reactive = rvs$Projects,
+    table_number = 2,
+    is_year_table = TRUE,
+    non_editable_cols = c(0, 1, 2,3),
+    page_length = 10,
+    comma_rows = 0:6,
+    percent_rows = integer(0),
+    currency_rows = integer(0),
+    decimal_rows = integer(0)
+  )
 
-  
 
   
   output$transit_dr_projs_tbl <- create_table(transit_dr_projs,
@@ -1055,11 +1008,24 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
+
+  output$bikeped_assmps_tbl <- render_custom_datatable(
+    input_reactives = list(),
+    data_reactive = rvs$Assumptions,
+    table_number = 1,
+    is_year_table = FALSE,
+    non_editable_cols = c(0, 1),
+    page_length = 10,
+    comma_rows = integer(0),
+    percent_rows = integer(0),
+    currency_rows = integer(0),
+    decimal_rows = 2:7
+  )
   
-  output$bikeped_assmps_tbl <- create_table(bikeped_assmps,
-                                            list(target = 'row',
-                                                 disable = list(columns = c(0,1)),
-                                                 autoWidth = TRUE))
+  # output$bikeped_assmps_tbl <- create_table(bikeped_assmps,
+  #                                           list(target = 'row',
+  #                                                disable = list(columns = c(0,1)),
+  #                                                autoWidth = TRUE))
   
   
   output$transit_assmps_tbl <- create_table(transit_assmps,
@@ -1450,14 +1416,6 @@ server <- function(input, output, session) {
     vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
   })
   
-  observeEvent(input$fuel_apportionment_sheet_tbl_cell_edit, {
-    print('yippee')
-    print(input$fuel_apportionment_sheet_tbl_cell_edit)
-    
-    rvs$Advanced[]
-    #vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
-  })
-  
   
   # server - outputs --------------------------------------------------------
   
@@ -1638,6 +1596,8 @@ server <- function(input, output, session) {
     })
   
   
+
+
   #sl working ----
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
   #check for tables being edited
@@ -1646,6 +1606,7 @@ server <- function(input, output, session) {
     # browser()
     # source("processing_scripts/processing_freight.R")
   })
+
   
   
 }

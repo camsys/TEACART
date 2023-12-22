@@ -2,6 +2,7 @@
 render_custom_datatable <- function(input_reactives,
                                     data_reactive,
                                     table_number,
+                                    is_year_table,
                                     non_editable_cols,
                                     page_length,
                                     comma_rows,
@@ -9,28 +10,51 @@ render_custom_datatable <- function(input_reactives,
                                     currency_rows,
                                     decimal_rows) {
   
-  # lapply(input_reactives, req)
-  #lapply(data_reactive, req)
   
-  print("check point")
 
-  output <- renderDT({
-    req(input_reactives)
-    req(data_reactive)
-    browser()
+  
+    conditionally_transform <- function(df) {
+    if (is_year_table == TRUE) {
+      df %>%
+        pivot_wider(names_from = year, values_from = value) %>%
+        select(-c(table_no_ui, table, category))
+    } else {
+      df %>%
+        select(-c(table_no_ui, table, category))
+    }
+    }
+
     
-    reshaped_table <- data_reactive |> 
-      filter(table_no_ui == table_number) |>
-      pivot_wider(names_from = year, values_from = value) |>
-      ungroup() |> 
-      select(-c(table_no_ui, table, unit, category)) |> 
-      select_if(~ !all(is.na(.) | . == '')) |> 
+    # 
+    # conditionally_select <- function(df) {
+    #   if (is_year_table == TRUE) { 
+    #     df |> 
+    #       select(-c(table_no_ui, table, unit, category))
+    #   } else {
+    #     select(-c(year, table_no_ui, table, unit, category))
+    #   }
+    # }
+    
+  output <- renderDT({
+    lapply(input_reactives, req)
+    req(data_reactive)
+    
+    reshaped_table <- data_reactive  %>%
+      filter(table_no_ui == table_number) %>% 
+      conditionally_transform() %>%
+      ungroup() %>%
+      select_if(~ !all(is.na(.) | . == '')) %>%
+      left_join(references, by = c("unit" = "field")) %>%
+      mutate(unit = description) %>%
+      select(-description) %>%
+#      mutate(unit = map_chr(unit, ~ references_vector[.x] %||% .x)) %>%
       rename(any_of(references_vector))
     
     datatable(
       reshaped_table,
       rownames = FALSE,
       editable = list(target = 'all', disable = list(columns = non_editable_cols)),
+      selection = "none",
       options = list(
         pageLength = page_length,
         columnDefs = list(
