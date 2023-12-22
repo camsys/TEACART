@@ -173,8 +173,16 @@ VMT_State_Allocation <- merge(VMT_State_Allocation, AEO_VMT, by = 'year', all = 
 VMT_VehType <- VMT_State_Allocation %>% #aka VMT_Forecast
   mutate(state_vmt_vehtype = VMT_AEO*state_perc)
 
+# right now this only grabs "Vision 2022"
+Tech_Frac_Vision <-   
+  Stock_Type_Tech_BASE %>%
+  group_by(veh_type, year) %>%
+  mutate(aeo_tech_frac = stock_millions / sum(stock_millions)) %>%
+  ungroup()
+
 #TechFrac object----
 #I need to match up the columns with what's above for this one
+# GLV 12/21/23: I did the vision 2022 one above, with the helpful code below. We can expand on other options at a later time?
 # TechFrac <- Stock_Type_Tech_BASE_forecast %>%
 #   group_by(year, vehicle_type) %>%
 #   #Baseline vision 2022 I think aka AEO
