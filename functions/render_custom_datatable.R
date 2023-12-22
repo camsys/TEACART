@@ -10,17 +10,21 @@ render_custom_datatable <- function(input_reactives,
                                     currency_rows,
                                     decimal_rows) {
   
-  lapply(input_reactives, req)
   
-    conditionally_pivot <- function(df) {
-    if (is_year_table == TRUE) { 
-      df |> 
-        pivot_wider(names_from = year, values_from = value)
+  
+    conditionally_transform <- function(df) {
+    if (is_year_table == TRUE) {
+      df %>%
+        pivot_wider(names_from = year, values_from = value) %>%
+        select(-c(table_no_ui, table, category))
     } else {
-      df
+      df %>%
+        select(-c(table_no_ui, table, category))
     }
     }
     
+    
+    # 
     # conditionally_select <- function(df) {
     #   if (is_year_table == TRUE) { 
     #     df |> 
@@ -31,19 +35,25 @@ render_custom_datatable <- function(input_reactives,
     # }
     
   output <- renderDT({
+    lapply(input_reactives, req)
+    req(data_reactive)
     
-    reshaped_table <- data_reactive |> 
-      filter(table_no_ui == table_number) |>
-      conditionally_pivot() |>
-      ungroup() |> 
-      select(-c(table_no_ui, table, unit, category)) |> 
-      select_if(~ !all(is.na(.) | . == '')) |> 
+    reshaped_table <- data_reactive  %>%
+      filter(table_no_ui == table_number) %>% 
+      conditionally_transform() %>%
+      ungroup() %>%
+      select_if(~ !all(is.na(.) | . == '')) %>%
+      left_join(references, by = c("unit" = "field")) %>%
+      mutate(unit = description) %>%
+      select(-description) %>%
+#      mutate(unit = map_chr(unit, ~ references_vector[.x] %||% .x)) %>%
       rename(any_of(references_vector))
     
     datatable(
       reshaped_table,
       rownames = FALSE,
       editable = list(target = 'all', disable = list(columns = non_editable_cols)),
+      selection = "none",
       options = list(
         pageLength = page_length,
         columnDefs = list(

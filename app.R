@@ -753,7 +753,7 @@ server <- function(input, output, session) {
     data_reactive = rvs$Projects,
     table_number = 2,
     is_year_table = TRUE,
-    non_editable_cols = c(0, 1, 2),
+    non_editable_cols = c(0, 1, 2,3),
     page_length = 10,
     comma_rows = 0:6,
     percent_rows = integer(0),
@@ -927,12 +927,12 @@ server <- function(input, output, session) {
     data_reactive = rvs$Assumptions,
     table_number = 1,
     is_year_table = FALSE,
-    non_editable_cols = c(0, 1, 2),
+    non_editable_cols = c(0, 1),
     page_length = 10,
-    comma_rows = 0:6,
+    comma_rows = integer(0),
     percent_rows = integer(0),
     currency_rows = integer(0),
-    decimal_rows = integer(0)
+    decimal_rows = 2:7
   )
   
   # output$bikeped_assmps_tbl <- create_table(bikeped_assmps,
