@@ -2,6 +2,7 @@
 render_custom_datatable <- function(input_reactives,
                                     data_reactive,
                                     table_number,
+                                    is_year_table,
                                     non_editable_cols,
                                     page_length,
                                     comma_rows,
@@ -11,11 +12,29 @@ render_custom_datatable <- function(input_reactives,
   
   lapply(input_reactives, req)
   
+    conditionally_pivot <- function(df) {
+    if (is_year_table == TRUE) { 
+      df |> 
+        pivot_wider(names_from = year, values_from = value)
+    } else {
+      df
+    }
+    }
+    
+    # conditionally_select <- function(df) {
+    #   if (is_year_table == TRUE) { 
+    #     df |> 
+    #       select(-c(table_no_ui, table, unit, category))
+    #   } else {
+    #     select(-c(year, table_no_ui, table, unit, category))
+    #   }
+    # }
+    
   output <- renderDT({
     
     reshaped_table <- data_reactive |> 
       filter(table_no_ui == table_number) |>
-      pivot_wider(names_from = year, values_from = value) |>
+      conditionally_pivot() |>
       ungroup() |> 
       select(-c(table_no_ui, table, unit, category)) |> 
       select_if(~ !all(is.na(.) | . == '')) |> 

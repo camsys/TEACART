@@ -660,11 +660,11 @@ server <- function(input, output, session) {
       paste0(".\\data\\2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
     },
     content = function(file) {
-      download_projects <- as.data.frame(rvs$Projects)
+      
       # browser()
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Baseline" = rvs$Baseline,
-                                           "Projects" = download_projects), 
+                                           "Projects" = rvs$Projects), 
                            file = file))
     }
   )
@@ -740,12 +740,10 @@ server <- function(input, output, session) {
 # observe edits to the bike ped table
   observeEvent(input$bikeped_projs_edit, {
     user_data <- input$bikeped_projs_edit
-    updated_data <- rvs$Projects()
+    updated_data <- rvs$Projects
     updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
     rvs$Projects(updated_table)
-    # debugging
-    str(rvs$Projects)
-    class(rvs$Projects) 
+    str(user_data)
   })
 
 
@@ -754,6 +752,7 @@ server <- function(input, output, session) {
     input_reactives = list(),
     data_reactive = rvs$Projects,
     table_number = 2,
+    is_year_table = TRUE,
     non_editable_cols = c(0, 1, 2),
     page_length = 10,
     comma_rows = 0:6,
@@ -922,11 +921,24 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
+
+  output$bikeped_assmps_tbl <- render_custom_datatable(
+    input_reactives = list(),
+    data_reactive = rvs$Assumptions,
+    table_number = 1,
+    is_year_table = FALSE,
+    non_editable_cols = c(0, 1, 2),
+    page_length = 10,
+    comma_rows = 0:6,
+    percent_rows = integer(0),
+    currency_rows = integer(0),
+    decimal_rows = integer(0)
+  )
   
-  output$bikeped_assmps_tbl <- create_table(bikeped_assmps,
-                                            list(target = 'row',
-                                                 disable = list(columns = c(0,1)),
-                                                 autoWidth = TRUE))
+  # output$bikeped_assmps_tbl <- create_table(bikeped_assmps,
+  #                                           list(target = 'row',
+  #                                                disable = list(columns = c(0,1)),
+  #                                                autoWidth = TRUE))
   
   
   output$transit_assmps_tbl <- create_table(transit_assmps,
