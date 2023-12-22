@@ -15,6 +15,9 @@ render_custom_datatable <- function(input_reactives,
   print("check point")
 
   output <- renderDT({
+    req(input_reactives)
+    req(data_reactive)
+    browser()
     
     reshaped_table <- data_reactive |> 
       filter(table_no_ui == table_number) |>

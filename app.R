@@ -775,16 +775,78 @@ server <- function(input, output, session) {
 
   })
   
+  output$transit_fixed_projs_tbl <- render_custom_datatable(
+    input_reactives = list(),
+    data_reactive = rvs$Projects,
+    table_number = 2,
+    non_editable_cols = c(0, 1, 2),
+    page_length = 10,
+    comma_rows = 0:6,
+    percent_rows = integer(0),
+    currency_rows = integer(0),
+    decimal_rows = integer(0)
+  )
+
+  # 
+  # output$transit_fixed_projs_tbl <- renderDT({
+  #   req(rvs$Projects)
+  #   browser()
+  #   
+  #   reshaped_table <- rvs$Projects |> 
+  #     filter(table_no_ui == 2) |>
+  #     pivot_wider(names_from = year, values_from = value) |>
+  #     ungroup() |> 
+  #     select(-c(table_no_ui, table, unit, category)) |> 
+  #     select_if(~ !all(is.na(.) | . == '')) |> 
+  #     rename(any_of(references_vector))
+  #   
+  #   datatable(
+  #     reshaped_table,
+  #     rownames = FALSE,
+  #     editable = list(target = 'all', disable = list(columns = c(0, 1, 2))),
+  #     options = list(
+  #       pageLength = 10,
+  #       columnDefs = list(
+  #         list(
+  #           targets = '_all',
+  #           render = DT::JS(
+  #             sprintf(
+  #               "function(data, type, row, meta) {
+  #                 if (type === 'display') {
+  #                   var commaRows = [%s];
+  #                   var percentRows = [%s];
+  #                   var currencyRows = [%s];
+  #                   var decimalRows = [%s];
+  # 
+  #                   var formatter = null;
+  #                   if (commaRows.includes(meta.row)) {
+  #                     formatter = function(d) { return Number(d).toLocaleString('en-US'); };
+  #                   } else if (percentRows.includes(meta.row)) {
+  #                     formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
+  #                   } else if (currencyRows.includes(meta.row)) {
+  #                     formatter = function(d) { return '$' + Number(d).toLocaleString('en-US'); };
+  #                   } else if (decimalRows.includes(meta.row)) {
+  #                     formatter = function(d) { return Number(d).toFixed(1); };
+  #                   }
+  #                   
+  #                   return formatter && !isNaN(data) && data !== null && data !== '' ? formatter(data) : data;
+  #                 }
+  #                 return data;
+  #               }",
+  #               paste(0:6, collapse = ", "), 
+  #               paste(integer(0), collapse = ", "),
+  #               paste(integer(0), collapse = ", "),
+  #               paste(integer(0), collapse = ", ")
+  #             )
+  #           )
+  #         )
+  #       )
+  #     )
+  #   )
+  # }, server = FALSE)
   
-  # observe edits to the bike ped table
+  # observe edits to the transit_fixed_projs
   observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
-    print(input$transit_fixed_projs_tbl_cell_edit)
-    
-    # browser()
-    #user_data <- input$bikeped_projs_tbl_cell_edit
-    #need to reshape reassign
-    #rvs$Projects[table_no == 2,"value"]
-    
     
     #rvs$Projects <- updated_data
     rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping(input$transit_fixed_projs_tbl_cell_edit,
@@ -831,17 +893,7 @@ server <- function(input, output, session) {
   })
 
  
-  output$transit_fixed_projs_tbl <- render_custom_datatable(
-    input_reactives = list(),
-    data_reactive = rvs$Projects,
-    table_number = 2,
-    non_editable_cols = c(0, 1, 2),
-    page_length = 10,
-    comma_rows = 0:6,
-    percent_rows = integer(0),
-    currency_rows = integer(0),
-    decimal_rows = integer(0)
-  )
+
   
 
   
