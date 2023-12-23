@@ -752,8 +752,8 @@ server <- function(input, output, session) {
   
 # observe edits to the bike ped table
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
-    print(input$bikeped_projs_tbl_cell_edit)
-    
+    #print(input$bikeped_projs_tbl_cell_edit)
+    print('the rv vals are updating')
     #browser()
     #user_data <- input$bikeped_projs_tbl_cell_edit
     #need to reshape reassign
@@ -778,15 +778,16 @@ server <- function(input, output, session) {
   
   # observe edits to the bike ped table
   observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
-    print(input$transit_fixed_projs_tbl_cell_edit)
+    #print(input$transit_fixed_projs_tbl_cell_edit)
     
     # browser()
     #user_data <- input$bikeped_projs_tbl_cell_edit
     #need to reshape reassign
     #rvs$Projects[table_no == 2,"value"]
-    
+    print("the tabl 2 observent is going off")
     
     #rvs$Projects <- updated_data
+    
     rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping(input$transit_fixed_projs_tbl_cell_edit,
                                                               rvs$Projects,
                                                               tbl_no = 2,
@@ -796,7 +797,8 @@ server <- function(input, output, session) {
                                                               input$horizon_year_1,
                                                               input$horizon_year_2,
                                                               input$horizon_year_3)
-    
+    print('heres the new data')
+    print(rvs$Projects[rvs$Projects$table_no_ui == 2,])
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
     
   })
@@ -825,6 +827,7 @@ server <- function(input, output, session) {
                                                               input$horizon_year_1,
                                                               input$horizon_year_2,
                                                               input$horizon_year_3)
+    
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
     
@@ -1595,6 +1598,16 @@ server <- function(input, output, session) {
     # source("processing_scripts/processing_freight.R")
   })
   
+  #rvs update from different inputs
+  #key_inputs update
+  key_inputs_listen <- reactive({
+    list(input$state_input, input$net_zero_year)
+  })
+  
+  observeEvent(key_inputs_listen(),{
+    rvs$Baseline$state <- input$state_input
+    rvs$Baseline$elec_grid_emissions_net_zero <- input$net_zero_year
+  })
   
 }
 

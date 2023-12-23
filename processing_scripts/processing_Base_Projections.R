@@ -123,21 +123,15 @@ electricity_emrate_projecter <- function(eemrate_df, net_zero_year = 2100){
   return(eemrate_return_fin)
 }
 
-#calcualte and combine relevant data frames
-eemrate_listen <- reactive({
-  req(input$state_input)
-  req(input$net_zero_year)
-  list(input$state_input,input$net_zero_yer)
-  #need to add reactive i.e. rvs to this 
-})
-#observeEvent 
 
-eemrate <- eventReactive(eemrate_listen(),{
-  print("ran on initial")
+#observeEvent 
+eemrate <- reactive({
+  zero_em <- rvs$Baseline$elec_grid_emissions_net_zero
+  state_ch <- rvs$Baseline$state
   
-  eemrate<-electricity_emrate_projecter(Electricity_EmRate, net_zero_year = input$net_zero_year) %>% 
-    filter(state == input$state_input)
-  
+  eemrate<-electricity_emrate_projecter(Electricity_EmRate, net_zero_year = zero_em) %>% 
+    filter(state == state_ch)
+
   return(eemrate)
 })
 
@@ -191,7 +185,6 @@ EmRate_by_Tech <- reactive({
 #   group_by(vehicle_type, year) %>%
 #   mutate(miles_per_veh = VMT_AEO/million_vehicles)
 
-# ev_fuel_type <- c("EV100","EV200","EV300","SI PHEV 10","SI PHEV 40", "FCV", "EV", "Gasoline PHEV", "Diesel PHEV")
 # 
 # TechFrac <- Stock_Type_Tech_BASE_forecast %>%
 #   group_by(year, vehicle_type) %>%
