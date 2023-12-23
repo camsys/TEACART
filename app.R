@@ -818,7 +818,7 @@ server <- function(input, output, session) {
   
   # observe edits to the transit_fixed_projs
   observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
-    
+    req(rvs$Projects)
     #rvs$Projects <- updated_data
     rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping(input$transit_fixed_projs_tbl_cell_edit,
                                                               rvs$Projects,
