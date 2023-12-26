@@ -152,10 +152,12 @@ ui <- function(request) {
                                                  "Transportation System Scope:",
                                                  c("All Roadways","NHS Only"),
                                                  "All Roadways"),
+                                     p(""),
                                      selectInput("scope_emissions",
                                                  "Include Electricity",
                                                  c("Yes","No"),
                                                  "Yes"),
+                                     p(""),
                                      selectInput("scope_fuels",
                                                  "Include Upstream Fuels",
                                                  c("Yes","No"),
@@ -164,14 +166,17 @@ ui <- function(request) {
                                                "Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG.",
                                                "right",
                                                options = list(container = "body")),
+                                     p(""),
                                      selectInput("vmt_forecast_input",
                                                  "VMT Forecast",
                                                  c("Default","Custom"),
                                                  "Default"),
+                                     p(""),
                                      selectInput("ev_baseline_input",
                                                  "Vehicle Electrification Baseline",
                                                  c("AEO Baseline","ACC II","ACC II + ACT","Custom"),
                                                  "AEO Baseline"),
+                                     p(""),
                                      numericInput("grid_emissions_input",
                                                   "Electricity Grid Emissions Net-Zero Year",
                                                   value = 2025,
@@ -622,6 +627,8 @@ theme_set(theme_bw(base_size = 16))
 # https://rstudio.github.io/bslib/articles/sidebars/index.html
 
 
+# Start Server Function ---------------------------------------------------
+
 server <- function(input, output, session) {
   # browser()
   
@@ -734,7 +741,6 @@ server <- function(input, output, session) {
                              columnDefs = list(list(className = 'dt-left',
                                                     targets = '_all')))
     )
-
   }, server = FALSE)
 
 # observe edits to the bike ped table
@@ -745,76 +751,26 @@ server <- function(input, output, session) {
     rvs$Projects(updated_table)
     str(user_data)
   })
-
-  output$transit_fixed_projs_tbl <- render_custom_datatable(
+  
+  source("functions/render_custom_datatable_SLVER.R", local = T)
+  source("functions/reshaping.R", local = T)
+  
+  output$transit_fixed_projs_tbl <- renderDT({
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
     input_reactives = list(),
-    data_reactive = rvs$Projects,
+    data_reactive = temp_send,
     table_number = 2,
     non_editable_cols = c(0, 1, 2),
     page_length = 10,
     comma_rows = 0:6,
     percent_rows = integer(0),
     currency_rows = integer(0),
-    decimal_rows = integer(0)
-  )
-
-  # 
-  # output$transit_fixed_projs_tbl <- renderDT({
-  #   req(rvs$Projects)
-  #   browser()
-  #   
-  #   reshaped_table <- rvs$Projects |> 
-  #     filter(table_no_ui == 2) |>
-  #     pivot_wider(names_from = year, values_from = value) |>
-  #     ungroup() |> 
-  #     select(-c(table_no_ui, table, unit, category)) |> 
-  #     select_if(~ !all(is.na(.) | . == '')) |> 
-  #     rename(any_of(references_vector))
-  #   
-  #   datatable(
-  #     reshaped_table,
-  #     rownames = FALSE,
-  #     editable = list(target = 'all', disable = list(columns = c(0, 1, 2))),
-  #     options = list(
-  #       pageLength = 10,
-  #       columnDefs = list(
-  #         list(
-  #           targets = '_all',
-  #           render = DT::JS(
-  #             sprintf(
-  #               "function(data, type, row, meta) {
-  #                 if (type === 'display') {
-  #                   var commaRows = [%s];
-  #                   var percentRows = [%s];
-  #                   var currencyRows = [%s];
-  #                   var decimalRows = [%s];
-  # 
-  #                   var formatter = null;
-  #                   if (commaRows.includes(meta.row)) {
-  #                     formatter = function(d) { return Number(d).toLocaleString('en-US'); };
-  #                   } else if (percentRows.includes(meta.row)) {
-  #                     formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
-  #                   } else if (currencyRows.includes(meta.row)) {
-  #                     formatter = function(d) { return '$' + Number(d).toLocaleString('en-US'); };
-  #                   } else if (decimalRows.includes(meta.row)) {
-  #                     formatter = function(d) { return Number(d).toFixed(1); };
-  #                   }
-  #                   
-  #                   return formatter && !isNaN(data) && data !== null && data !== '' ? formatter(data) : data;
-  #                 }
-  #                 return data;
-  #               }",
-  #               paste(0:6, collapse = ", "), 
-  #               paste(integer(0), collapse = ", "),
-  #               paste(integer(0), collapse = ", "),
-  #               paste(integer(0), collapse = ", ")
-  #             )
-  #           )
-  #         )
-  #       )
-  #     )
-  #   )
-  # }, server = FALSE)
+    decimal_rows = integer(0))
+    
+    })
   
   # observe edits to the transit_fixed_projs
   observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
@@ -827,6 +783,7 @@ server <- function(input, output, session) {
                                                               col1 = 'area_type',
                                                               col2 = 'fuel_type',
                                                               col3 = 'transit_mode',
+                                                              col4 = 'unit',
                                                               input$horizon_year_1,
                                                               input$horizon_year_2,
                                                               input$horizon_year_3)
@@ -867,18 +824,18 @@ server <- function(input, output, session) {
   })
 
  
-  output$transit_fixed_projs_tbl <- render_custom_datatable(
-    input_reactives = list(),
-    data_reactive = rvs$Projects,
-    table_number = 2,
-    is_year_table = TRUE,
-    non_editable_cols = c(0, 1, 2,3),
-    page_length = 10,
-    comma_rows = 0:6,
-    percent_rows = integer(0),
-    currency_rows = integer(0),
-    decimal_rows = integer(0)
-  )
+  # output$transit_fixed_projs_tbl <- render_custom_datatable(
+  #   input_reactives = list(),
+  #   data_reactive = rvs$Projects,
+  #   table_number = 2,
+  #   is_year_table = TRUE,
+  #   non_editable_cols = c(0, 1, 2,3),
+  #   page_length = 10,
+  #   comma_rows = 0:6,
+  #   percent_rows = integer(0),
+  #   currency_rows = integer(0),
+  #   decimal_rows = integer(0)
+  # )
 
 
   
@@ -1642,23 +1599,33 @@ server <- function(input, output, session) {
   #rvs update from different inputs
   #key_inputs update
   key_inputs_listen <- reactive({
-    list(input$state_input, input$net_zero_year)
+    list(input$state_input,
+         input$base_year,
+         input$horizon_year_1,
+         input$horizon_year_2,
+         input$horizon_year_3,
+         input$transportation_scope,
+         input$scope_emissions,
+         input$scope_fuels,
+         input$vmt_forecast_input,
+         input$ev_baseline_input,
+         input$grid_emissions_input)
   })
   
   observeEvent(key_inputs_listen(),{
+    #browser()
+    print("RUNNING: Update rvs$Baseline key inputs")
     rvs$Baseline$state <- input$state_input
-    rvs$Baseline$elec_grid_emissions_net_zero <- input$net_zero_year
-  })
-  
-  #rvs update from different inputs
-  #key_inputs update
-  key_inputs_listen <- reactive({
-    list(input$state_input, input$net_zero_year)
-  })
-  
-  observeEvent(key_inputs_listen(),{
-    rvs$Baseline$state <- input$state_input
-    rvs$Baseline$elec_grid_emissions_net_zero <- input$net_zero_year
+    rvs$Baseline$base_year <- input$base_year
+    rvs$Baseline$horizon_year_1 <- input$horizon_year_1
+    rvs$Baseline$horizon_year_2 <- input$horizon_year_2
+    rvs$Baseline$horizon_year_3 <- input$horizon_year_3
+    rvs$Baseline$trans_system_scope <- input$transportation_scope
+    rvs$Baseline$include_electricity <- input$scope_emissions #do these match?
+    rvs$Baseline$include_upstream_fuels <- input$scope_fuels
+    rvs$Baseline$vmt_forecast <- input$vmt_forecast_input
+    rvs$Baseline$veh_elec_baseline <- input$ev_baseline_input
+    rvs$Baseline$elec_grid_emissions_net_zero <- input$grid_emissions_input
   })
   
 }

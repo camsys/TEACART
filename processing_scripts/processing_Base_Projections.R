@@ -126,6 +126,9 @@ electricity_emrate_projecter <- function(eemrate_df, net_zero_year = 2100){
 
 #observeEvent 
 eemrate <- reactive({
+  #browser()
+  req(rvs$Baseline$elec_grid_emissions_net_zero)
+  req(rvs$Baseline$state)
   zero_em <- rvs$Baseline$elec_grid_emissions_net_zero
   state_ch <- rvs$Baseline$state
   

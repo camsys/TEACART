@@ -125,7 +125,7 @@ references <- read_excel(".\\data\\2.User_Inputs.xlsx",
                          col_names = TRUE)
 
 references_vector <- setNames(references$field, references$description)
-
+rev_references_vector <- setNames(references$description, references$field)
 
 #Additional Calculations ----
 
