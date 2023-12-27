@@ -733,7 +733,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
 
   output$transit_fixed_projs_tbl <- renderDT({
     
@@ -828,8 +827,8 @@ server <- function(input, output, session) {
     render_custom_datatable_SLVER(
       data_reactive = temp_send,
       table_number = 7,
-      non_editable_cols = c(0,1),
-      page_length = 3,
+      non_editable_cols = c(0),
+      page_length = 10,
       comma_rows = 0,
       percent_rows = integer(0),
       currency_rows = integer(0),
@@ -837,48 +836,131 @@ server <- function(input, output, session) {
     
   })
   
+  output$micro_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 8,
+      non_editable_cols = c(0),
+      page_length = 10,
+      comma_rows = 0,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
   
-  output$micro_projs_tbl <- create_table(micro_projs,
-                                         list(target = 'row',
-                                              disable = list(columns = c(0,1)),
-                                              autoWidth = TRUE))
+  output$traffic_ops_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 9,
+      non_editable_cols = c(0,1,2),
+      page_length = 10,
+      comma_rows = 0:3,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
   
-  output$traffic_ops_projs_tbl <- create_table(traffic_ops_projs,
-                                               list(target = 'row',
-                                                    disable = list(columns = c(0,1)),
-                                                    autoWidth = TRUE))
+  output$mhdev_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 10,
+      non_editable_cols = c(0,1,2),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
   
-  output$mhdev_projs_tbl <- create_table(mhdev_projs,
-                                         list(target = 'row',
-                                              disable = list(columns = c(0,1)),
-                                              autoWidth = TRUE))
+  output$pnr_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 11,
+      non_editable_cols = c(0,1),
+      page_length = 1,
+      comma_rows = 0,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
   
-  output$pnr_projs_tbl <- create_table(pnr_projs,
-                                       list(target = 'row',
-                                            disable = list(columns = c(0,1)),
-                                            autoWidth = TRUE))
+  output$evsi_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 12,
+      non_editable_cols = c(0,1),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
   
-  output$evsi_projs_tbl <- create_table(evsi_projs,
-                                        list(target = 'row',
-                                             disable = list(columns = c(0,1)),
-                                             autoWidth = TRUE))
+  output$freight_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 13,
+      non_editable_cols = c(0),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
   
-  output$freight_projs_tbl <- create_table(freight_projs,
-                                           list(target = 'row',
-                                                disable = list(columns = c(0,1)),
-                                                autoWidth = TRUE))
-  
-  output$expansion_projs_tbl <- create_table(expansion_projs,
-                                             list(target = 'row',
-                                                  disable = list(columns = c(0,1)),
-                                                  autoWidth = TRUE))
+  output$expansion_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 14,
+      non_editable_cols = c(0,1,2),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
 
 #Observe Table Edits ---------------------------------------------------------
   # observe edits to the transit_fixed_projs
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
     req(rvs$Projects)
     
-    rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping(input$bikeped_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping_projects(input$bikeped_projs_tbl_cell_edit,
                                                               rvs$Projects,
                                                               tbl_no = 1,
                                                               col1 = 'area_type',
@@ -893,7 +975,7 @@ server <- function(input, output, session) {
   observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
     req(rvs$Projects)
 
-    rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping(input$transit_fixed_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping_projects(input$transit_fixed_projs_tbl_cell_edit,
                                                               rvs$Projects,
                                                               tbl_no = 2,
                                                               col1 = 'area_type',
@@ -909,7 +991,7 @@ server <- function(input, output, session) {
   observeEvent(input$transit_dr_projs_tbl_cell_edit, {
     req(rvs$Projects)
     
-    rvs$Projects[rvs$Projects$table_no_ui == 3,] <- reshaping(input$transit_dr_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 3,] <- reshaping_projects(input$transit_dr_projs_tbl_cell_edit,
                                                               rvs$Projects,
                                                               tbl_no = 3,
                                                               col1 = 'area_type',
@@ -925,7 +1007,7 @@ server <- function(input, output, session) {
   observeEvent(input$transit_el_projs_tbl_cell_edit, {
     req(rvs$Projects)
     
-    rvs$Projects[rvs$Projects$table_no_ui == 4,] <- reshaping(input$transit_el_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 4,] <- reshaping_projects(input$transit_el_projs_tbl_cell_edit,
                                                               rvs$Projects,
                                                               tbl_no = 4,
                                                               col1 = 'area_type',
@@ -936,10 +1018,11 @@ server <- function(input, output, session) {
                                                               input$horizon_year_2,
                                                               input$horizon_year_3)
   })
+  
   # observe edits to the transit_bus_projs_tbl  
   observeEvent(input$transit_bus_projs_tbl_cell_edit, {
 
-    rvs$Projects[rvs$Projects$table_no_ui == 5,] <- reshaping(input$transit_bus_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 5,] <- reshaping_projects(input$transit_bus_projs_tbl_cell_edit,
                                                               rvs$Projects,
                                                               tbl_no = 5,
                                                               col1 = 'unit',
@@ -951,10 +1034,11 @@ server <- function(input, output, session) {
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
     
   })
-  # observe edits to the public_rail_projs table     #checkpoint
+  
+  # observe edits to the public_rail_projs table
   observeEvent(input$public_rail_projs_tbl_cell_edit, {
     
-    rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping(input$public_rail_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping_projects(input$public_rail_projs_tbl_cell_edit,
                                                               rvs$Projects,
                                                               tbl_no = 6,
                                                               col1 = 'fuel_type',
@@ -969,104 +1053,155 @@ server <- function(input, output, session) {
     
   })
   
-  # # observe edits to the public_rail_projs table     
-  # observeEvent(input$public_rail_projs_tbl_cell_edit, {
-  #   
-  #   rvs$Projects[rvs$Projects$table_no_ui == 7,] <- reshaping(input$public_rail_projs_tbl_cell_edit,
-  #                                                             rvs$Projects,
-  #                                                             tbl_no = 7,
-  #                                                             col1 = 'fuel_type',
-  #                                                             col2 = 'transit_mode',
-  #                                                             col3 = 'unit',
-  #                                                             input$horizon_year_1,
-  #                                                             input$horizon_year_2,
-  #                                                             input$horizon_year_3)
-  #   
-  #   
-  #   #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
-  #   
-  # })
-  
-  ## make tables editable ----------------------------------------------------
-  
-  projects_names <- c("bikeped_projs",
-                      "transit_fixed_projs",
-                      "transit_dr_projs",
-                      "transit_el_projs",
-                      "transit_bus_projs",
-                      "public_rail_projs",
-                      "tdm_projs",
-                      "micro_projs",
-                      "traffic_ops_projs",
-                      "mhdev_projs",
-                      "pnr_projs",
-                      "evsi_projs",
-                      "freight_projs",
-                      "expansion_projs")
-  
-  observe(print(input$acc1))
-  
-  
-  observeEvent(input$bikeped_projs_edit, {
-    bikeped_projs <<- editData(bikeped_projs, input$bikeped_projs_edit, 'bikeped_projs_tbl')
-    #maybe should move reshpaing of rvs here?
+  # observe edits to the tdm_projs_tbl table
+  observeEvent(input$tdm_projs_tbl_cell_edit, {
+
+    rvs$Projects[rvs$Projects$table_no_ui == 7,] <- reshaping_projects(input$tdm_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 7,
+                                                              col1 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+
+
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+
   })
   
-  observeEvent(input$transit_fixed_projs_edit, {
-    transit_fixed_projs <<- editData(transit_fixed_projs, input$transit_fixed_projs_edit, 'transit_fixed_projs_tbl')
+  # observe edits to the micro_projs_tbl table
+  observeEvent(input$micro_projs_tbl_cell_edit, {
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 8,] <- reshaping_projects(input$micro_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 8,
+                                                              col1 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
   })
   
-  observeEvent(input$transit_dr_projs_edit, {
-    transit_dr_projs <<- editData(transit_fixed_projs, input$transit_dr_projs_edit, 'transit_dr_projs_tbl')
+  # observe edits to the traffic_ops_projs_tbl table
+  observeEvent(input$traffic_ops_projs_tbl_cell_edit, {
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 9,] <- reshaping_projects(input$traffic_ops_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 9,
+                                                              col1 = 'area_type',
+                                                              col2 = 'road_class',
+                                                              col3 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
   })
   
-  observeEvent(input$transit_el_projs_edit, {
-    transit_el_projs <<- editData(transit_fixed_projs, input$transit_el_projs_edit, 'transit_el_projs_tbl')
+  # observe edits to the mhdev_projs_tbl table
+  observeEvent(input$mhdev_projs_tbl_cell_edit, {
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 10,] <- reshaping_projects(input$mhdev_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 10,
+                                                              col1 = 'veh_type',
+                                                              col2 = 'fuel_type',
+                                                              col3 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
   })
   
-  observeEvent(input$transit_bus_projs_edit, {
-    transit_bus_projs <<- editData(transit_fixed_projs, input$transit_bus_projs_edit, 'transit_bus_projs_tbl')
+  # observe edits to the mhdev_projs_tbl table
+  observeEvent(input$pnr_projs_tbl_cell_edit, {
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 11,] <- reshaping_projects(input$pnr_projs_tbl_cell_edit,
+                                                               rvs$Projects,
+                                                               tbl_no = 11,
+                                                               col1 = 'unit',
+                                                               input$horizon_year_1,
+                                                               input$horizon_year_2,
+                                                               input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
   })
   
-  observeEvent(input$public_rail_projs_edit, {
-    public_rail_projs <<- editData(transit_fixed_projs, input$public_rail_projs_edit, 'public_rail_projs_tbl')
+  # observe edits to the evsi_projs_tbl table
+  observeEvent(input$evsi_projs_tbl_cell_edit, {
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 12,] <- reshaping_projects(input$evsi_projs_tbl_cell_edit,
+                                                               rvs$Projects,
+                                                               tbl_no = 12,
+                                                               col1 = 'charge_port_detail',
+                                                               col2 = 'unit',
+                                                               input$horizon_year_1,
+                                                               input$horizon_year_2,
+                                                               input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
   })
   
-  observeEvent(input$tdm_projs_edit, {
-    tdm_projs <<- editData(transit_fixed_projs, input$tdm_projs_edit, 'tdm_projs_tbl')
+  # observe edits to the freight_projs_tbl table
+  observeEvent(input$freight_projs_tbl_cell_edit, {
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 13,] <- reshaping_projects(input$freight_projs_tbl_cell_edit,
+                                                               rvs$Projects,
+                                                               tbl_no = 13,
+                                                               col1 = 'unit',
+                                                               input$horizon_year_1,
+                                                               input$horizon_year_2,
+                                                               input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
   })
-  
-  observeEvent(input$micro_projs_edit, {
-    micro_projs <<- editData(transit_fixed_projs, input$micro_projs_edit, 'micro_projs_tbl')
+  # observe edits to the expansion_projs_tbl table
+  observeEvent(input$expansion_projs_tbl_cell_edit, {
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 14,] <- reshaping_projects(input$expansion_projs_tbl_cell_edit,
+                                                               rvs$Projects,
+                                                               tbl_no = 14,
+                                                               col1 = 'area_type',
+                                                               col2 = 'road_class',
+                                                               col3 = 'unit',
+                                                               input$horizon_year_1,
+                                                               input$horizon_year_2,
+                                                               input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
   })
-  
-  observeEvent(input$traffic_ops_projs_edit, {
-    traffic_ops_projs <<- editData(transit_fixed_projs, input$traffic_ops_projs_edit, 'traffic_ops_projs_tbl')
-  })
-  
-  observeEvent(input$mhdev_projs_edit, {
-    mhdev_projs <<- editData(transit_fixed_projs, input$mhdev_projs_edit, 'mhdev_projs_tbl')
-  })
-  
-  observeEvent(input$pnr_projs_edit, {
-    pnr_projs <<- editData(transit_fixed_projs, input$pnr_projs_edit, 'pnr_projs_tbl')
-  })
-  
-  observeEvent(input$evsi_projs_edit, {
-    evsi_projs <<- editData(transit_fixed_projs, input$evsi_projs_edit, 'evsi_projs_tbl')
-  })
-  
-  observeEvent(input$freight_projs_edit, {
-    freight_projs <<- editData(transit_fixed_projs, input$freight_projs_edit, 'freight_projs_tbl')
-  })
-  
-  observeEvent(input$expansion_projs_edit, {
-    expansion_projs <<- editData(transit_fixed_projs, input$expansion_projs_edit, 'expansion_projs_tbl')
-  })
-  #
-  
-  
-  
+
+  # projects_names <- c("bikeped_projs",
+  #                     "transit_fixed_projs",
+  #                     "transit_dr_projs",
+  #                     "transit_el_projs",
+  #                     "transit_bus_projs",
+  #                     "public_rail_projs",
+  #                     "tdm_projs",
+  #                     "micro_projs",
+  #                     "traffic_ops_projs",
+  #                     "mhdev_projs",
+  #                     "pnr_projs",
+  #                     "evsi_projs",
+  #                     "freight_projs",
+  #                     "expansion_projs")
+
   # server assumptions ------------------------------------------------------
   
   assumptions_names <- c("bikeped_assmps",

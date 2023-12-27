@@ -43,11 +43,8 @@ render_custom_datatable_SLVER <- function(#input_reactives,
       mutate(unit = description) %>%
       select(-description) %>%
       #mutate(unit = map_chr(unit, ~ references_vector[.x] %||% .x)) %>%
-      rename(any_of(references_vector)) #SETH Q: This is nice but IDK how it works is it a different rename function from the dplyr?
+      rename(any_of(references_vector))
     
-    #print(reshaped_table)
-      #SETH - adding these to rename the horizon year columns probably a cleaner way? rename_with lets me work with the variables in dplyr (i think)
-
     
     returnDT<-datatable(
       reshaped_table,
