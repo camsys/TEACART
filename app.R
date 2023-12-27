@@ -1590,11 +1590,12 @@ server <- function(input, output, session) {
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
   #check for tables being edited
   
-  observeEvent(EmRate_by_Tech(), {
-    # browser()
-    # source("processing_scripts/processing_freight.R")
-  })
+  # observeEvent(EmRate_by_Tech(), { ### be careful to add everything that could update your outputs
+  #   browser()
+  #   # source("processing_scripts/processing_freight.R")
+  # })
   
+  source("processing_scripts/processing_freight.R", local = T)
   
 }
 
