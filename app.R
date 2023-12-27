@@ -713,7 +713,7 @@ server <- function(input, output, session) {
   read_static_tables(".\\data\\projects.xlsx", projects_names)
   
   
-  ## create project tables -----------------------------------------------------------
+  #create project tables -----------------------------------------------------------
   
   # rendering bike ped table
 
@@ -1217,11 +1217,13 @@ server <- function(input, output, session) {
   read_static_tables(".\\data\\assumptions.xlsx", assumptions_names)
   
   
-  ## create tables -----------------------------------------------------------
+  ## create assumption tables -----------------------------------------------------------
   
 
-  output$bikeped_assmps_tbl <- render_custom_datatable(
-    input_reactives = list(),
+  output$bikeped_assmps_tbl <- renderDT({
+    req(rvs$Assumptions)
+    
+    render_custom_datatable_SLVER(
     data_reactive = rvs$Assumptions,
     table_number = 1,
     is_year_table = FALSE,
@@ -1230,55 +1232,120 @@ server <- function(input, output, session) {
     comma_rows = integer(0),
     percent_rows = integer(0),
     currency_rows = integer(0),
-    decimal_rows = 2:7
-  )
-  
-  # output$bikeped_assmps_tbl <- create_table(bikeped_assmps,
-  #                                           list(target = 'row',
-  #                                                disable = list(columns = c(0,1)),
-  #                                                autoWidth = TRUE))
+    decimal_rows = 2:7)
+  })
   
   
-  output$transit_assmps_tbl <- create_table(transit_assmps,
-                                            list(target = 'row',
-                                                 disable = list(columns = c(0,1)),
-                                                 autoWidth = TRUE))
+  output$transit_assmps_tbl <- renderDT({
+    req(rvs$Assumptions)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Assumptions,
+      table_number = 2,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),
+      page_length = 10,
+      comma_rows = c(18, 47),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = c(0:17,19:46))
+  })
   
   
-  output$tdm_assmps_tbl <- create_table(tdm_assmps,
-                                        list(target = 'row',
-                                             disable = list(columns = c(0,1)),
-                                             autoWidth = TRUE))
+  output$tdm_assmps_tbl <- renderDT({
+    req(rvs$Assumptions)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Assumptions,
+      table_number = 3,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = c(0:2))
+  })
   
   
-  output$micro_assmps_tbl <- create_table(micro_assmps,
-                                          list(target = 'row',
-                                               disable = list(columns = c(0,1)),
-                                               autoWidth = TRUE))
+  output$micro_assmps_tbl <- renderDT({
+    req(rvs$Assumptions)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Assumptions,
+      table_number = 4,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = c(0:4))
+  })
   
   
-  output$traffic_ops_assmps_tbl <- create_table(traffic_ops_assmps,
-                                                list(target = 'row',
-                                                     disable = list(columns = c(0,1)),
-                                                     autoWidth = TRUE))
+  output$traffic_ops_assmps_tbl <- renderDT({
+    req(rvs$Assumptions)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Assumptions,
+      table_number = 5,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = c(0:15))
+  })
   
   
-  output$mhdv_assmps_tbl <- create_table(mhdv_assmps,
-                                         list(target = 'row',
-                                              disable = list(columns = c(0,1)),
-                                              autoWidth = TRUE))
+  output$mhdv_assmps_tbl <- renderDT({
+    req(rvs$Assumptions)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Assumptions,
+      table_number = 6,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = c(0:15))
+  })
   
   
-  output$pnr_assmps_tbl <- create_table(pnr_assmps,
-                                        list(target = 'row',
-                                             disable = list(columns = c(0)),
-                                             autoWidth = TRUE))
+  output$pnr_assmps_tbl <- renderDT({
+    req(rvs$Assumptions)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Assumptions,
+      table_number = 7,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = c(0:15))
+  })
   
   
-  output$evsi_assmps_tbl <- create_table(evsi_assmps,
-                                         list(target = 'row',
-                                              disable = list(columns = c(0,1)),
-                                              autoWidth = TRUE))
+  output$evsi_assmps_tbl <- renderDT({
+    req(rvs$Assumptions)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Assumptions,
+      table_number = 8,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = c(0:15))
+  })
   
   
   ## make tables editable ----------------------------------------------------
