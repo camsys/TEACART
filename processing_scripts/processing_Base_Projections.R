@@ -18,7 +18,7 @@
 # fuel_factor_apportionment <- xlsx::read.xlsx("Data Extracts/Fuel Factors_Workbook.xlsx", 4)
 # fuel_factor <- left_join(fuel_factor_df, fuel_factor_apportionment)
 
-# IS :: Fuel_Factors_Revision + rvs$Advanced[rvs$Advanced$table_no == 7]  ## note to self:: [!sapply(mydf, function(x) all(x == ""))]
+# IS :: Fuel_Factors_Revision + rvs$Advanced[rvs$Advanced$table_no_ui == 7]  ## note to self:: [!sapply(mydf, function(x) all(x == ""))]
 # #end emrate by tech inputs
 
 # AEO_VMT_Base <- read.csv('Data Extracts/AEO_VMT_Base.csv') # no calculation needed
@@ -123,28 +123,25 @@ electricity_emrate_projecter <- function(eemrate_df, net_zero_year = 2100){
   return(eemrate_return_fin)
 }
 
-#calcualte and combine relevant data frames
-eemrate_listen <- reactive({
-  req(input$state_input)
-  req(input$net_zero_year)
-  list(input$state_input,input$net_zero_yer)
-  #need to add reactive i.e. rvs to this 
-})
-#observeEvent 
 
-eemrate <- eventReactive(eemrate_listen(),{
-  print("ran on initial")
+#observeEvent 
+eemrate <- reactive({
+  #browser()
+  req(rvs$Baseline$elec_grid_emissions_net_zero)
+  req(rvs$Baseline$state)
+  zero_em <- rvs$Baseline$elec_grid_emissions_net_zero
+  state_ch <- rvs$Baseline$state
   
-  eemrate<-electricity_emrate_projecter(Electricity_EmRate, net_zero_year = input$net_zero_year) %>% 
-    filter(state == input$state_input)
-  
+  eemrate<-electricity_emrate_projecter(Electricity_EmRate, net_zero_year = zero_em) %>% 
+    filter(state == state_ch)
+
   return(eemrate)
 })
 
 #joining dataframe together which makes it easier to calcualte things
 
 EmRate_by_Tech <- reactive({
-  input_ff_factors <- rvs$Advanced[rvs$Advanced$table_no == 7,] %>% 
+  input_ff_factors <- rvs$Advanced[rvs$Advanced$table_no_ui == 7,] %>% 
     select(veh_type, value) %>%
     rename(apportionment = value) %>%
     mutate(apportionment = as.numeric(apportionment)) #not sure why this step was necessary
@@ -191,7 +188,6 @@ EmRate_by_Tech <- reactive({
 #   group_by(vehicle_type, year) %>%
 #   mutate(miles_per_veh = VMT_AEO/million_vehicles)
 
-# ev_fuel_type <- c("EV100","EV200","EV300","SI PHEV 10","SI PHEV 40", "FCV", "EV", "Gasoline PHEV", "Diesel PHEV")
 # 
 # TechFrac <- Stock_Type_Tech_BASE_forecast %>%
 #   group_by(year, vehicle_type) %>%

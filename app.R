@@ -148,21 +148,16 @@ ui <- function(request) {
                                                   max = 2050,
                                                   step = 1),
                                      p(""),
-                                     numericInput("net_zero_year",
-                                                 "Net-Zero Electricity by Year:",
-                                                 value = 2050,
-                                                 min = 2021,
-                                                 max = 2100,
-                                                 step = 1),
-                                     p(""),
                                      selectInput("transportation_scope",
                                                  "Transportation System Scope:",
                                                  c("All Roadways","NHS Only"),
                                                  "All Roadways"),
+                                     p(""),
                                      selectInput("scope_emissions",
                                                  "Include Electricity",
                                                  c("Yes","No"),
                                                  "Yes"),
+                                     p(""),
                                      selectInput("scope_fuels",
                                                  "Include Upstream Fuels",
                                                  c("Yes","No"),
@@ -171,14 +166,17 @@ ui <- function(request) {
                                                "Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG.",
                                                "right",
                                                options = list(container = "body")),
+                                     p(""),
                                      selectInput("vmt_forecast_input",
                                                  "VMT Forecast",
                                                  c("Default","Custom"),
                                                  "Default"),
+                                     p(""),
                                      selectInput("ev_baseline_input",
                                                  "Vehicle Electrification Baseline",
                                                  c("AEO Baseline","ACC II","ACC II + ACT","Custom"),
                                                  "AEO Baseline"),
+                                     p(""),
                                      numericInput("grid_emissions_input",
                                                   "Electricity Grid Emissions Net-Zero Year",
                                                   value = 2025,
@@ -629,17 +627,18 @@ theme_set(theme_bw(base_size = 16))
 # https://rstudio.github.io/bslib/articles/sidebars/index.html
 
 
-# Server ------------------------------------------------------------------
+# Start Server Function ---------------------------------------------------
 
 server <- function(input, output, session) {
-  # browser()
+  #Source Local Scripts --------------------------------------------------------
+  source("functions/render_custom_datatable_SLVER.R", local = T)
+  source("functions/reshaping.R", local = T)
   
-  # set reactiveValues
+  #set reactiveValues ----------------------------------------------------------
+  
   rv <- reactiveValues()
-  
   rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
-
-    
+  
   # Initiate or Upload User Inputs -------------------------------------------
   
   observeEvent(input$user_inputs_upload, {
@@ -669,12 +668,11 @@ server <- function(input, output, session) {
       paste0(".\\data\\2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
     },
     content = function(file) {
-      #download_projects <- as.data.frame(rvs$Projects)
+      
       # browser()
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Baseline" = rvs$Baseline,
-                                           "Projects" = rvs$Projects
-                                           ), 
+                                           "Projects" = rvs$Projects), 
                            file = file))
     }
   )
@@ -695,7 +693,7 @@ server <- function(input, output, session) {
                   rownames = FALSE)
   })
   
-  # server project inputs ---------------------------------------------------------
+  # server project inputs ------------------------------------------------------
   
   projects_names <- c("bikeped_projs",
                       "transit_fixed_projs",
@@ -715,160 +713,130 @@ server <- function(input, output, session) {
   read_static_tables(".\\data\\projects.xlsx", projects_names)
   
   
-  ## create tables -----------------------------------------------------------
+  ## create project tables -----------------------------------------------------------
   
+  # rendering bike ped table
 
- # rendering bike ped table
+  
   output$bikeped_projs_tbl <- renderDT({
     req(rvs$Projects)
-    req(input$state_input)
-    projs <- rvs$Projects
-    
-    selected_state <- input$state_input
+    temp_send <- rvs$Projects
 
-    reshaped_table <- projs |>
-      filter(table_no_ui == 1) |>
-      pivot_wider(names_from = year,
-                  values_from = value) |>
-      ungroup() |> 
-      select(-c(table_no_ui,table,unit,category)) |> 
-      select_if(~ !all(is.na(.) | . == '')) |> 
-      rename(any_of(references_vector))
-
-
-    datatable(reshaped_table,
-              rownames = FALSE,
-              editable = list(target = 'all',
-                              disable = list(columns = c(0,1))),
-              options = list(pageLength = 19,
-                             columnDefs = list(list(className = 'dt-left',
-                                                    targets = '_all')))
-    )
-
-  }, server = FALSE)
-
-
-  #browser()
-  
-# observe edits to the bike ped table
-  observeEvent(input$bikeped_projs_tbl_cell_edit, {
-    print(input$bikeped_projs_tbl_cell_edit)
-    
-    #browser()
-    #user_data <- input$bikeped_projs_tbl_cell_edit
-    #need to reshape reassign
-    #rvs$Projects[table_no == 2,"value"]
-
-    
-    #rvs$Projects <- updated_data
-    rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping(input$bikeped_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 1,
-                                                              col1 = 'area_type',
-                                                              col2 = 'facility_type',
-                                                              col3 = NA,
-                                                              input$horizon_year_1,
-                                                              input$horizon_year_2,
-                                                              input$horizon_year_3)
-
-    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
-
-  })
-  
-  
-  # observe edits to the bike ped table
-  observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
-    print(input$transit_fixed_projs_tbl_cell_edit)
-    
-    # browser()
-    #user_data <- input$bikeped_projs_tbl_cell_edit
-    #need to reshape reassign
-    #rvs$Projects[table_no == 2,"value"]
-    
-    
-    #rvs$Projects <- updated_data
-    rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping(input$transit_fixed_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 2,
-                                                              col1 = 'area_type',
-                                                              col2 = 'fuel_type',
-                                                              col3 = 'transit_mode',
-                                                              input$horizon_year_1,
-                                                              input$horizon_year_2,
-                                                              input$horizon_year_3)
-    
-    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 1,
+      non_editable_cols = c(0, 1, 2),
+      page_length = 19,
+      comma_rows = 0:19,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
     
   })
   
 
-  
-  
-
-  
-  
-  # observe edits to the public_rail_projs table     #checkpoint
-  observeEvent(input$public_rail_projs_tbl_cell_edit, {
-    print(input$public_rail_projs_tbl_cell_edit)
+  output$transit_fixed_projs_tbl <- renderDT({
     
-    #browser()
-    #need to reshape reassign
-    #rvs$Projects[table_no == 2,"value"]
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
     
-    
-    #rvs$Projects <- updated_data
-    rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping(input$public_rail_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 6,
-                                                              col1 = 'transit_mode',
-                                                              col2 = 'fuel_type',
-                                                              input$horizon_year_1,
-                                                              input$horizon_year_2,
-                                                              input$horizon_year_3)
-    
-    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
-    
-  })
-
- 
-  output$transit_fixed_projs_tbl <- render_custom_datatable(
-    input_reactives = list(),
-    data_reactive = rvs$Projects,
+    render_custom_datatable_SLVER(
+    data_reactive = temp_send,
     table_number = 2,
-    non_editable_cols = c(0, 1, 2),
+    non_editable_cols = c(0, 1, 2, 3),
     page_length = 10,
     comma_rows = 0:6,
     percent_rows = integer(0),
     currency_rows = integer(0),
-    decimal_rows = integer(0)
-  )
+    decimal_rows = integer(0))
+    
+    })
   
+  output$transit_dr_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 3,
+      non_editable_cols = c(0, 1, 2, 3),
+      page_length = 10,
+      comma_rows = 0:6,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
 
+  })
   
-  output$transit_dr_projs_tbl <- create_table(transit_dr_projs,
-                                              list(target = 'row',
-                                                   disable = list(columns = c(0,1)),
-                                                   autoWidth = TRUE))
+  output$transit_el_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 4,
+      non_editable_cols = c(0, 1, 2, 3),
+      page_length = 10,
+      comma_rows = 0:8,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
   
-  output$transit_el_projs_tbl <- create_table(transit_el_projs,
-                                              list(target = 'row',
-                                                   disable = list(columns = c(0,1)),
-                                                   autoWidth = TRUE))
+  output$transit_bus_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 5,
+      non_editable_cols = c(0),
+      page_length = 4,
+      comma_rows = 0,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
   
-  output$transit_bus_projs_tbl <- create_table(transit_bus_projs,
-                                               list(target = 'row',
-                                                    disable = list(columns = c(0,1)),
-                                                    autoWidth = TRUE))
+  output$public_rail_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 6,
+      non_editable_cols = c(0,1,2),
+      page_length = 8,
+      comma_rows = 0:3,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
   
-  output$public_rail_projs_tbl <- create_table(public_rail_projs,
-                                               list(target = 'row',
-                                                    disable = list(columns = c(0,1)),
-                                                    autoWidth = TRUE))
+  output$tdm_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable_SLVER(
+      data_reactive = temp_send,
+      table_number = 7,
+      non_editable_cols = c(0,1),
+      page_length = 3,
+      comma_rows = 0,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
   
-  output$tdm_projs_tbl <- create_table(tdm_projs,
-                                       list(target = 'row',
-                                            disable = list(columns = c(0,1)),
-                                            autoWidth = TRUE))
   
   output$micro_projs_tbl <- create_table(micro_projs,
                                          list(target = 'row',
@@ -904,8 +872,120 @@ server <- function(input, output, session) {
                                              list(target = 'row',
                                                   disable = list(columns = c(0,1)),
                                                   autoWidth = TRUE))
+
+#Observe Table Edits ---------------------------------------------------------
+  # observe edits to the transit_fixed_projs
+  observeEvent(input$bikeped_projs_tbl_cell_edit, {
+    req(rvs$Projects)
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping(input$bikeped_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 1,
+                                                              col1 = 'area_type',
+                                                              col2 = 'facility_type',
+                                                              col3 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+    })
   
+  # observe edits to the transit_fixed_projs
+  observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
+    req(rvs$Projects)
+
+    rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping(input$transit_fixed_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 2,
+                                                              col1 = 'area_type',
+                                                              col2 = 'fuel_type',
+                                                              col3 = 'transit_mode',
+                                                              col4 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+    })
   
+  # observe edits to the transit_dr_projs_tbl_cell_edit
+  observeEvent(input$transit_dr_projs_tbl_cell_edit, {
+    req(rvs$Projects)
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 3,] <- reshaping(input$transit_dr_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 3,
+                                                              col1 = 'area_type',
+                                                              col2 = 'fuel_type',
+                                                              col3 = 'transit_mode',
+                                                              col4 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+  })
+  
+  # observe edits to the transit_el_projs_tbl
+  observeEvent(input$transit_el_projs_tbl_cell_edit, {
+    req(rvs$Projects)
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 4,] <- reshaping(input$transit_el_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 4,
+                                                              col1 = 'area_type',
+                                                              col2 = 'fuel_type',
+                                                              col3 = 'transit_mode',
+                                                              col4 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+  })
+  # observe edits to the transit_bus_projs_tbl  
+  observeEvent(input$transit_bus_projs_tbl_cell_edit, {
+
+    rvs$Projects[rvs$Projects$table_no_ui == 5,] <- reshaping(input$transit_bus_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 5,
+                                                              col1 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  # observe edits to the public_rail_projs table     #checkpoint
+  observeEvent(input$public_rail_projs_tbl_cell_edit, {
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping(input$public_rail_projs_tbl_cell_edit,
+                                                              rvs$Projects,
+                                                              tbl_no = 6,
+                                                              col1 = 'fuel_type',
+                                                              col2 = 'transit_mode',
+                                                              col3 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  
+  # # observe edits to the public_rail_projs table     
+  # observeEvent(input$public_rail_projs_tbl_cell_edit, {
+  #   
+  #   rvs$Projects[rvs$Projects$table_no_ui == 7,] <- reshaping(input$public_rail_projs_tbl_cell_edit,
+  #                                                             rvs$Projects,
+  #                                                             tbl_no = 7,
+  #                                                             col1 = 'fuel_type',
+  #                                                             col2 = 'transit_mode',
+  #                                                             col3 = 'unit',
+  #                                                             input$horizon_year_1,
+  #                                                             input$horizon_year_2,
+  #                                                             input$horizon_year_3)
+  #   
+  #   
+  #   #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+  #   
+  # })
   
   ## make tables editable ----------------------------------------------------
   
@@ -929,6 +1009,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$bikeped_projs_edit, {
     bikeped_projs <<- editData(bikeped_projs, input$bikeped_projs_edit, 'bikeped_projs_tbl')
+    #maybe should move reshpaing of rvs here?
   })
   
   observeEvent(input$transit_fixed_projs_edit, {
@@ -1003,11 +1084,24 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
+
+  output$bikeped_assmps_tbl <- render_custom_datatable(
+    input_reactives = list(),
+    data_reactive = rvs$Assumptions,
+    table_number = 1,
+    is_year_table = FALSE,
+    non_editable_cols = c(0, 1),
+    page_length = 10,
+    comma_rows = integer(0),
+    percent_rows = integer(0),
+    currency_rows = integer(0),
+    decimal_rows = 2:7
+  )
   
-  output$bikeped_assmps_tbl <- create_table(bikeped_assmps,
-                                            list(target = 'row',
-                                                 disable = list(columns = c(0,1)),
-                                                 autoWidth = TRUE))
+  # output$bikeped_assmps_tbl <- create_table(bikeped_assmps,
+  #                                           list(target = 'row',
+  #                                                disable = list(columns = c(0,1)),
+  #                                                autoWidth = TRUE))
   
   
   output$transit_assmps_tbl <- create_table(transit_assmps,
@@ -1398,14 +1492,6 @@ server <- function(input, output, session) {
     vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
   })
   
-  observeEvent(input$fuel_apportionment_sheet_tbl_cell_edit, {
-    print('yippee')
-    print(input$fuel_apportionment_sheet_tbl_cell_edit)
-    
-    rvs$Advanced[]
-    #vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
-  })
-  
   
   # server - outputs --------------------------------------------------------
   
@@ -1586,6 +1672,8 @@ server <- function(input, output, session) {
     })
   
   
+
+
   #sl working ----
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
   #check for tables being edited
@@ -1596,6 +1684,37 @@ server <- function(input, output, session) {
   # })
   
   source("processing_scripts/processing_freight.R", local = T)
+  #rvs update from different inputs
+  #key_inputs update
+  key_inputs_listen <- reactive({
+    list(input$state_input,
+         input$base_year,
+         input$horizon_year_1,
+         input$horizon_year_2,
+         input$horizon_year_3,
+         input$transportation_scope,
+         input$scope_emissions,
+         input$scope_fuels,
+         input$vmt_forecast_input,
+         input$ev_baseline_input,
+         input$grid_emissions_input)
+  })
+  
+  observeEvent(key_inputs_listen(),{
+    #browser()
+    print("RUNNING: Update rvs$Baseline key inputs")
+    rvs$Baseline$state <- input$state_input
+    rvs$Baseline$base_year <- input$base_year
+    rvs$Baseline$horizon_year_1 <- input$horizon_year_1
+    rvs$Baseline$horizon_year_2 <- input$horizon_year_2
+    rvs$Baseline$horizon_year_3 <- input$horizon_year_3
+    rvs$Baseline$trans_system_scope <- input$transportation_scope
+    rvs$Baseline$include_electricity <- input$scope_emissions #do these match?
+    rvs$Baseline$include_upstream_fuels <- input$scope_fuels
+    rvs$Baseline$vmt_forecast <- input$vmt_forecast_input
+    rvs$Baseline$veh_elec_baseline <- input$ev_baseline_input
+    rvs$Baseline$elec_grid_emissions_net_zero <- input$grid_emissions_input
+  })
   
 }
 
