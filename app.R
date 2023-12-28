@@ -1966,7 +1966,7 @@ server <- function(input, output, session) {
     # observe edits to the bikeped_projs
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
     req(rvs$Projects)
-    
+
     rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping_projects(input$bikeped_projs_tbl_cell_edit,
                                                                        rvs$Projects,
                                                                        tbl_no = 1,
@@ -1978,6 +1978,7 @@ server <- function(input, output, session) {
                                                                        input$horizon_year_3)
   })
   
+ 
   # observe edits to the transit_fixed_projs
   observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
     req(rvs$Projects)
@@ -2405,11 +2406,45 @@ server <- function(input, output, session) {
   
   ## make tables editable ----------------------------------------------------
   
+  assumptions_names <- c("bikeped_assmps",
+                         "transit_assmps",
+                         "tdm_assmps",
+                         "micro_assmps",
+                         "traffic_ops_assmps",
+                         "mhdv_assmps",
+                         "pnr_assmps",
+                         "evsi_assmps")
   
   observeEvent(input$bikeped_assmps_edit, {
     bikeped_assmps <<- editData(bikeped_assmps, input$bikeped_assmps_edit, 'bikeped_assmps_tbl')
   })
   
+  # observe edits to bikeped_assmps
+  observeEvent(input$bikeped_assmps_tbl_cell_edit, {
+    req(rvs$Assumptions)
+    
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 1,] <- reshaping_projects(input$bikeped_assmps_tbl_cell_edit,
+                                                                       rvs$Assumptions,
+                                                                       tbl_no = 1,
+                                                                       col1 = 'element',
+                                                                       col2 = 'unit')
+  })
+  
+  
+  # observe edits to 
+  # observeEvent(input$_tbl_cell_edit, {
+  #   req(rvs$Assumptions)
+  #   
+  #   rvs$Assumptions[rvs$Assumptions$table_no_ui == 1,] <- reshaping_projects(input$_tbl_cell_edit,
+  #                                                                            rvs$Assumptions,
+  #                                                                            tbl_no = 1,
+  #                                                                            col1 = 'area_type',
+  #                                                                            col2 = 'facility_type',
+  #                                                                            col3 = 'unit',
+  #                                                                            input$horizon_year_1,
+  #                                                                            input$horizon_year_2,
+  #                                                                            input$horizon_year_3)
+  # })
   observeEvent(input$transit_assmps_edit, {
     transit_assmps <<- editData(transit_assmps, input$transit_assmps_edit, 'transit_assmps_tbl')
   })
@@ -2627,6 +2662,66 @@ server <- function(input, output, session) {
     intermodal_costs <<- editData(intermodal_costs, input$intermodal_costs_edit, 'intermodal_costs_tbl')
   })
   
+
+# observe reset buttons for costs -----------------------------------------
+
+
+  observeEvent(input$reset_bikeped_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 1,] <- initial_costs[initial_costs$table_no_ui == 1, ]
+  })  
+  
+  observeEvent(input$reset_transit_fixed_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 2,] <- initial_costs[initial_costs$table_no_ui == 2, ]
+  })  
+  
+  observeEvent(input$reset_transit_dr_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 3,] <- initial_costs[initial_costs$table_no_ui == 3, ]
+  })  
+  
+  observeEvent(input$reset_pub_trans_priority_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 4,] <- initial_costs[initial_costs$table_no_ui == 4, ]
+  })  
+  
+  observeEvent(input$reset_tdm_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 5,] <- initial_costs[initial_costs$table_no_ui == 5, ]
+  })  
+  
+  observeEvent(input$reset_pub_trans_rail_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 6,] <- initial_costs[initial_costs$table_no_ui == 6, ]
+  })  
+  
+  observeEvent(input$reset_micro_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 7,] <- initial_costs[initial_costs$table_no_ui == 7, ]
+  })  
+  
+  observeEvent(input$reset_traffic_ops_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 8,] <- initial_costs[initial_costs$table_no_ui == 8, ]
+  })  
+  
+  observeEvent(input$reset_mhdev_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 9,] <- initial_costs[initial_costs$table_no_ui == 9, ]
+  })  
+  
+  observeEvent(input$reset_pnr_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 10,] <- initial_costs[initial_costs$table_no_ui == 10, ]
+  })  
+  
+  observeEvent(input$reset_evsi_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 11,] <- initial_costs[initial_costs$table_no_ui == 11, ]
+  })  
+  
+  observeEvent(input$reset_roadway_expand_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 12,] <- initial_costs[initial_costs$table_no_ui == 12, ]
+  })  
+  
+  observeEvent(input$reset_fuel_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 13,] <- initial_costs[initial_costs$table_no_ui == 13, ]
+  })  
+  
+  observeEvent(input$reset_intermodal_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 14,] <- initial_costs[initial_costs$table_no_ui == 14, ]
+  })  
+  
   
   
   # server scenarios inputs -------------------------------------------------
@@ -2784,6 +2879,38 @@ server <- function(input, output, session) {
     vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
   })
   
+  
+
+# observe reset buttons for advanced inputs -------------------------------
+
+
+  observeEvent(input$reset_ev_forecast_sheet_tbl, {
+    rvs$Advanced[rvs$Advanced$table_no_ui == 1,] <- initial_advanced[initial_advanced$table_no_ui == 1, ]
+  })  
+  
+  observeEvent(input$reset_vmt_forecast_sheet_tbl, {
+    rvs$Advanced[rvs$Advanced$table_no_ui == 2,] <- initial_advanced[initial_advanced$table_no_ui == 2, ]
+  })  
+  
+  observeEvent(input$onroad_fuel_tech_frac_sheet, {
+    rvs$Advanced[rvs$Advanced$table_no_ui == 3,] <- initial_advanced[initial_advanced$table_no_ui == 3, ]
+  })  
+  
+  observeEvent(input$reset_pass_rail_sheet_tbl, {
+    rvs$Advanced[rvs$Advanced$table_no_ui == 4,] <- initial_advanced[initial_advanced$table_no_ui == 4, ]
+  })  
+  
+  observeEvent(input$reset_freight_rail_sheet_tbl, {
+    rvs$Advanced[rvs$Advanced$table_no_ui == 5,] <- initial_advanced[initial_advanced$table_no_ui == 5, ]
+  })  
+  
+  observeEvent(input$reset_construction_sheet_tbl, {
+    rvs$Advanced[rvs$Advanced$table_no_ui == 6,] <- initial_advanced[initial_advanced$table_no_ui == 6, ]
+  })  
+  
+  observeEvent(input$reset_fuel_apportionment_sheet_tbl, {
+    rvs$Advanced[rvs$Advanced$table_no_ui == 7,] <- initial_advanced[initial_advanced$table_no_ui == 7, ]
+  })  
   
   # server - outputs --------------------------------------------------------
   

@@ -11,8 +11,9 @@ reshaping_projects <- function(user_data,
                                horizon_year_3){
   
   print(paste0("RUNNING: Reshaping Function for table: ", tbl_no))
-  #if(tbl_no == 2){browser()}
+  if(tbl_no == 2){browser()}
   ## reshape the table
+  
   
   if(length(unique(user_data$col)) == 4){
     #browser()
