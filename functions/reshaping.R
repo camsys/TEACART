@@ -37,8 +37,8 @@ reshaping_projects <- function(user_data,
     ##browser()
     
     
-    y_names = c('year')
-    x_names = c('year')
+    y_names = c('var1', 'year')
+    x_names = c(col1, 'year')
     
     updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']]%>%
       left_join(modified_data, by = setNames(y_names,x_names)) # setNames(y,x)
