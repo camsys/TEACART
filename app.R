@@ -186,152 +186,643 @@ ui <- function(request) {
                                      
                               )),
                   ),
+                  
+
+# projects tab ui ---------------------------------------------------------
                   nav_panel(title = "Projects",
+                            
+          # bike ped
+                            
                             fluidRow(
                               column(10,
-
-                              #     h3("Bicycle and Pedestrian lane miles of new infrastructure"),
-                              accordion(
-                                accordion_panel(
-                                  HTML('<span style ="font-size: 24px; font-weight: bold;">Bicycle and
+                                     accordion(
+                                       accordion_panel(
+                                         HTML('<span style ="font-size: 24px; font-weight: bold;">Bicycle and
            Pedestrian Lane Miles of New Infrastructure</span>'),
-           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Amet nulla facilisi
-      morbi tempus iaculis urna id. Scelerisque in dictum non consectetur a
-      erat. Cursus sit amet dictum sit amet justo donec enim diam. Egestas
-      pretium aenean pharetra magna ac placerat vestibulum. Et tortor consequat
-      id porta nibh venenatis cras sed felis. Facilisis magna etiam tempor
-      orci eu lobortis elementum nibh. Leo vel fringilla est ullamcorper eget
-      nulla. Habitasse platea dictumst quisque sagittis purus sit amet volutpat
-      consequat. Justo nec ultrices dui sapien eget mi proin sed. Nulla
-      facilisi nullam vehicula ipsum a arcu cursus vitae. Eu mi bibendum neque
-      egestas congue quisque egestas. Ornare massa eget egestas purus viverra
-      accumsan in nisl nisi. Risus sed vulputate odio ut enim. Sem nulla
-      pharetra diam sit amet nisl. At urna condimentum mattis pellentesque id
-      nibh tortor id. Nibh praesent tristique magna sit amet purus gravida
-      quis blandit. Arcu cursus euismod quis viverra nibh cras pulvinar
-      mattis. Elit sed vulputate mi sit amet. Id eu nisl nunc mi."
-                                ),
-      id = "acc1",
-      open = FALSE
+           HTML("This category represents implementation of any <b>two-way miles of new 
+           bicycle or pedestrian facility.</b> The default assumption for these 
+           project types is that any new bicycle or pedestrian facility would 
+           be two-way. (i.e., for one-way facilities, please enter half the 
+           total miles for the facility)."),
+                                       ),
+           id = "acc1",
+           open = FALSE
+                                     ),
                               ),
-                              ),
-      column(2,
-      actionButton("reset_bikeped_projs_tbl", "Reset Bike Ped Projects", class = "btn-custom"),
-      ),
+           column(2,
+                  actionButton("reset_bikeped_projs_tbl", "Reset Bike Ped Projects", class = "btn-custom"),
+           ),
                             ),
-      fluidRow(
-      DT::dataTableOutput("bikeped_projs_tbl")
+           fluidRow(
+             DT::dataTableOutput("bikeped_projs_tbl")
+             
+           ),
 
-                  ),
-#      fluidRow(),
+
+      
+      # transit fixed route
+      
       fluidRow(
-        h3("Transit: Increased Fixed Route Service (new Vehicles Operating in Maximum Service)"),
-        DT::dataTableOutput("transit_fixed_projs_tbl")
+        column(10,
+        accordion(
+          accordion_panel(
+               "Transit: Increased Fixed Route Service (new Vehicles Operating in Maximum Service)",
+               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
+               tempor incididunt ut labore et dolore magna aliqua. Ut enim ad 
+               minim veniam, quis nostrud exercitation ullamco laboris nisi ut 
+               aliquip ex ea commodo consequat. Duis aute irure dolor in 
+               reprehenderit in voluptate velit esse cillum dolore eu fugiat 
+               nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
+               sunt in culpa qui officia deserunt mollit anim id est laborum."
+               ),
+          open = FALSE
+        ),
+        ),
+        column(2,
+               actionButton("reset_transit_fixed_projs_tbl", "Reset Transit Fixed Projects", class = "btn-custom")
+               ),
+        ),
+        fluidRow(
+          DT::dataTableOutput("transit_fixed_projs_tbl")
+        ),
+
+      
+      # transit DR
+      
+      fluidRow(
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Transit: Increased Demand Response Service (new Vehicles Operating in Maximum Service)",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_transit_dr_projs_tbl", "Reset Transit DR Projects", class = "btn-custom")
+        ),
+
       ),
       fluidRow(
-        h3("Transit: Increased Demand Response Service (new Vehicles Operating in Maximum Service)"),
         DT::dataTableOutput("transit_dr_projs_tbl")
       ),
+      
+      # fleet electrification
+      
       fluidRow(
-        h3("Fleet Electrification (number of vehicles replaced)"),
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Fleet Electrification (number of vehicles replaced)",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_transit_el_projs_tbl", "Reset Fleet Electrification Projects", class = "btn-custom")
+        ),
+
+      ),
+      fluidRow(
         DT::dataTableOutput("transit_el_projs_tbl")
       ),
+      
+      # bus priority
+      
       fluidRow(
-        h3("Public Transportation: Bus Priority Treatment (number of units)"),
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Public Transportation: Bus Priority Treatment (number of units)",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_transit_bus_projs_tbl", "Reset Bus Priority Treatment Projects", class = "btn-custom")
+        ),
+
+      ),
+      fluidRow(
         DT::dataTableOutput("transit_bus_projs_tbl")
       ),
+      
+      # public transportation - rail
+      
       fluidRow(
-        h3("Public Transportation: Rail (new Vehicles Operating in Maximum Service)"),
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Public Transportation: Rail (new Vehicles Operating in Maximum Service / VOMS)",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_public_rail_projs_tbl", "Reset Rail VOMS Projects", class = "btn-custom")
+        ),
+
+      ),
+      fluidRow(
         DT::dataTableOutput("public_rail_projs_tbl")
       ),
+      
+      
+      # TDM
+      
       fluidRow(
-        h3("Travel Demand Management (number of units)"),
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Travel Demand Management / TDM (number of units)",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_tdm_projs_tbl", "Reset TDM Projects", class = "btn-custom")
+        ),
+
+      ),
+      fluidRow(
         DT::dataTableOutput("tdm_projs_tbl")
       ),
+      
+      # Micromobility
+      
       fluidRow(
-        h3("Micromobility (number of units)"),
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Micromobility (number of units)",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_micro_projs_tbl", "Reset Micromobility Projects", class = "btn-custom")
+        ),
+
+      ),
+      fluidRow(
         DT::dataTableOutput("micro_projs_tbl")
       ),
+      
+      # traffic ops
+      
       fluidRow(
-        h3("Traffic Operations (number of intersection improvements)"),
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Traffic Operations",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_traffic_ops_projs_tbl", "Reset Traffic Operations Projects", class = "btn-custom")
+        ),
+
+      ),
+      fluidRow(
         DT::dataTableOutput("traffic_ops_projs_tbl")
       ),
+      
+      # MHDEV
+      
       fluidRow(
-        h3("Medium- and Heavy-Duty Vehicle Replacement (number of Vehicles Replaced)"),
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_mhdev_projs_tbl", "Reset MHDV Replacement Projects", class = "btn-custom")
+        ),
+
+      ),
+      fluidRow(
         DT::dataTableOutput("mhdev_projs_tbl")
       ),
+      
+      
+      # Park & Ride
+      
       fluidRow(
-        h3("Park & Ride (number of units)"),
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Park & Ride Projects",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_pnr_projs_tbl", "Reset P&R Projects", class = "btn-custom")
+        ),
+
+      ),
+      fluidRow(
         DT::dataTableOutput("pnr_projs_tbl")
       ),
+      
+      # EVSI
+      
       fluidRow(
-        h3("EV Charging Infrastructure (number of units)"),
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "EV Charging Infrastructure",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_evsi_projs_tbl", "Reset EV Charging Projects", class = "btn-custom")
+        ),
+
+      ),
+      fluidRow(
         DT::dataTableOutput("evsi_projs_tbl")
       ),
+      
+      # freight intermodal facilities
+      
       fluidRow(
-        h3("Freight Intermodal Facilities (number of new intermodal facilities)"),
-        DT::dataTableOutput("freight_projs_tbl")
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Freight Intermodal Facilities",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_freight_projs_tbl", "Reset Freight Intermodal Facilities Projects", class = "btn-custom")
+        ),
+
       ),
       fluidRow(
-        h3("Roadway expansion (number of new lane-miles)"),
+        DT::dataTableOutput("freight_projs_tbl")
+      ),
+      
+      
+      # Roadway expansion
+            
+      fluidRow(
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Roadway Expansion",
+                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                   sed do eiusmod tempor incididunt ut labore et dolore magna
+                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   Duis aute irure dolor in reprehenderit in voluptate velit
+                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                   sint occaecat cupidatat non proident, sunt in culpa qui
+                   officia deserunt mollit anim id est laborum.",
+
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_expansion_projs_tbl", "Reset Roadway Expansion Projects", class = "btn-custom")
+        ),
+
+      ),
+      fluidRow(
         DT::dataTableOutput("expansion_projs_tbl")
       ),
       
                   ),
+
+# assumptions tab ui ------------------------------------------------------
       nav_panel(title = "Assumptions",
+                
+                # bike ped parameters
                 fluidRow(
-                  p(""),
-                  h3("Bicycle and Pedestrian Data",
-                     tooltip(
-                       bsicons::bs_icon("info-circle",
-                                        title = ""),
-                       placement = "top",
-                       "Increasing the prior drive mode share will result in a larger reduction in VMT reduction and CO2.")
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Bicycle and Pedestrian Parameters",
+                             "Increasing the prior drive mode share will result 
+                in a larger reduction in VMT reduction and CO2."
+                           ),
+                open = FALSE
+                         ),
                   ),
-                  p(""),
+                column(2,
+                       actionButton("reset_bikeped_assmps_tbl", "Reset Bike Ped Parameters", class = "btn-custom")
+                ),
+                
+                ),
+                fluidRow(
                   DT::dataTableOutput("bikeped_assmps_tbl")
                 ),
+                
+                
+                # transit parameters
                 fluidRow(
-                  p(""),
-                  h3("Transit Data"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Transit Parameters",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+                             
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_transit_assmps_tbl", "Reset Transit Parameters", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("transit_assmps_tbl")
                 ),
+                
+                
+                # tdm parameters
                 fluidRow(
-                  p(""),
-                  h3("Travel Demand Management (TDM) Data"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Travel Demand Management (TDM) Parameters",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+                             
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_tdm_assmps_tbl", "Reset TDM Parameters", class = "btn-custom")
+                  ),
+                  
+                ),
+                fluidRow(
                   DT::dataTableOutput("tdm_assmps_tbl")
                 ),
+                
+                
+                # micromobility parameters
                 fluidRow(
-                  p(""),
-                  h3("Micromobility Data"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Micromobility Parameters",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_micro_assmps_tbl", "Reset Micromobility Parameters", class = "btn-custom")
+                  ),
+
+                ),
+                fluidRow(
                   DT::dataTableOutput("micro_assmps_tbl")
                 ),
+                
+                
+                # traffic ops paramaters
                 fluidRow(
-                  p(""),
-                  h3("Traffic operations & roadway expansion  Data"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Traffic Operations & Roadway Expansion Parameters",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+                             
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_traffic_ops_assmps_tbl", "Reset Traffic Ops & Expansion Parameters", class = "btn-custom")
+                  ),
+                  
+                ),
+                fluidRow(
                   DT::dataTableOutput("traffic_ops_assmps_tbl")
                 ),
+                
+                
+                # MHDV parameters
                 fluidRow(
-                  p(""),
-                  h3("Medium & heavy-duty vehicle replacement Data"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Medium & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_mhdv_assmps_tbl", "Reset MHDV Parameters", class = "btn-custom")
+                  ),
+
+                ),
+                fluidRow(
                   DT::dataTableOutput("mhdv_assmps_tbl")
                 ),
+                
+                
+                # P&R parameters
                 fluidRow(
-                  p(""),
-                  h3("Park & Ride Data"),
-                  p(""),
-                  DT::dataTableOutput("pnr_assmps_tbl")
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Park & Ride Parameters",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+                             
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_pnr_assmps_tbl", "Reset Park & Ride Parameters", class = "btn-custom")
+                  ),
+                  
                 ),
                 fluidRow(
-                  p(""),
-                  h3("Electric Vehicle charging infrastructure Data"),
-                  p(""),
+                  DT::dataTableOutput("pnr_assmps_tbl")
+                ),
+                
+                
+                # evsi parameters
+                fluidRow(
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Electric Vehicle Charging Infrastructure Parameters",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_evsi_assmps_tbl", "Reset Electric Vehicle Charging Parameters", class = "btn-custom")
+                  ),
+
+                ),
+                fluidRow(
                   DT::dataTableOutput("evsi_assmps_tbl")
                 )
                 
@@ -339,93 +830,418 @@ ui <- function(request) {
                 
                 
       ),
+
+
+# costs tab ui ------------------------------------------------------------
       nav_panel(title = "Costs",
+                
+                # bike ped costs
                 fluidRow(
-                  p(""),
-                  h3("Bicycle & Pedestrian"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Bicycle & Pedestrian Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_bikeped_costs_tbl", "Reset Bike Ped Costs", class = "btn-custom")
+                  ),
+
+                ),
+                fluidRow(
                   DT::dataTableOutput("bikeped_costs_tbl")
                 ),
+                
+                
+                # transit fixed route costs
                 fluidRow(
-                  p(""),
-                  h3("Transit: Fixed Route Service"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Transit: Fixed Route Service Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_transit_fixed_costs_tbl", "Reset Transit Fixed Route Costs", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("transit_fixed_costs_tbl")
                 ),
+                
+                
+                # transit DR costs
                 fluidRow(
-                  p(""),
-                  h3("Transit: Demand Response Service"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Transit: Demand Response (DR) Service Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_transit_dr_costs_tbl", "Reset Transit DR Costs", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("transit_dr_costs_tbl")
                 ),
+                
+                
+                # bus priority costs
                 fluidRow(
-                  p(""),
-                  h3("Public Transportation: Bus Priority Treatment"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Public Transportation: Bus Priority Treatment Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_pub_trans_priority_costs_tbl", "Reset Bus Priority Costs", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("pub_trans_priority_costs_tbl")
                 ),
+                
+                
+                # pub trans rail costs
                 fluidRow(
-                  p(""),
-                  h3("Public Transportation: Rail"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Public Transportation: Rail Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_pub_trans_rail_costs_tbl", "Reset Rail Costs", class = "btn-custom")
+                  ),
+
+                ),
+                fluidRow(
                   DT::dataTableOutput("pub_trans_rail_costs_tbl")
                 ),
+                
+                
+                # tdm costs
                 fluidRow(
-                  p(""),
-                  h3("Travel Demand Management"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Travel Demand Management (TDM) Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_tdm_costs_tbl", "Reset TDM Costs", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("tdm_costs_tbl")
                 ),
+                
+                
+                # micromobility costs
                 fluidRow(
-                  p(""),
-                  h3("Micromobility"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Micromobility Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+                             
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_micro_costs_tbl", "Reset Micromobility Costs", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("micro_costs_tbl")
                 ),
+                
+                
+                
+                # traffic ops costs
                 fluidRow(
-                  p(""),
-                  h3("Traffic Operations - Intersection"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Traffic Operations - Intersection Improvement Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+                             
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_traffic_ops_costs_tbl", "Reset Traffic Ops Costs", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("traffic_ops_costs_tbl")
                 ),
+                
+                
+                # mhdv replacement costs
+                
                 fluidRow(
-                  p(""),
-                  h3("Medium and Heavy Duty Vehicle Replacement (per-vehicle cost)"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Medium and Heavy Duty Vehicle Replacement Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_mhdev_costs_tbl", "Reset MHDV Costs", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("mhdev_costs_tbl")
                 ),
+                
+                
+                # p&r costs
+                
                 fluidRow(
-                  p(""),
-                  h3("Park & Ride"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Park & Ride Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_pnr_costs_tbl", "Reset Park & Ride Costs", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("pnr_costs_tbl")
                 ),
+                
+                
+                # evsi costs
+                
                 fluidRow(
-                  p(""),
-                  h3("EV Charging Infrastructure"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "EV Charging Infrastructure Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_evsi_costs_tbl", "Reset EV Charging Infrastructure Costs", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("evsi_costs_tbl")
                 ),
+                
+                
+                # roadway expansion costs
+                
                 fluidRow(
-                  p(""),
-                  h3("Roadway Expansion"),
-                  p(""),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Roadway Expansion Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_roadway_expand_costs_tbl", "Reset Roadway Expansion Costs", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("roadway_expand_costs_tbl")
                 ),
+                
+                
+                # fuel price costs
+                
                 fluidRow(
-                  p(""),
-                  h3("Fuel Price (2022)"),
-                  p(""),
-                  DT::dataTableOutput("fuel_costs_tbl")
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Fuel Price (2022$)",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_fuel_costs_tbl", "Reset Fuel Price (2022)", class = "btn-custom")
+                  ),
                 ),
                 fluidRow(
-                  p(""),
-                  h3("Intermodal Freight Investment"),
-                  p(""),
+                  DT::dataTableOutput("fuel_costs_tbl")
+                ),
+                
+                
+                # intermodal freight investment costs
+                
+                fluidRow(
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Intermodal Freight Investment Costs",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_intermodal_costs_tbl", "Reset Intermodal Freight Investment Costs", class = "btn-custom")
+                  ),
+
+                ),
+                fluidRow(
                   DT::dataTableOutput("intermodal_costs_tbl")
                 ),
       ),
+
+
+# scenarios tab ui --------------------------------------------------------
       nav_panel(title = "Scenarios",
+                
+                
                 fluidRow(
                   p(""),
                   h3("Scenario Testing"),
@@ -433,40 +1249,194 @@ ui <- function(request) {
                   DT::dataTableOutput("scenario_tbl")
                 )
       ),
+
+
+
+# advanced tab ui ---------------------------------------------------------
       nav_panel(title = "Advanced",
                 
+                # custom forecast advanced
                 fluidRow(
-                  p(""),
-                  h3("Custom Forecast: Percent of on-road vehicles that are EVs",
-                     tooltip(
-                       bsicons::bs_icon("info-circle",
-                                        title = ""),
-                       placement = "top",
-                       "Enter values as a whole number (differently stated, type '55' in a cell to indicate '55%').")
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Custom Forecast: Percent of on-road vehicles that are EVs",
+                             "Enter values as a whole number (differently stated, type '55' in a cell to indicate '55%')."
+                           ),
+                           open = FALSE
+                         ),
                   ),
-                  p(""),
+                  column(2,
+                         actionButton("reset_ev_forecast_sheet_tbl", "Reset Custom Forecast", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("ev_forecast_sheet_tbl")
                 ),
                 
+                
+                # VMT Custom forecast
                 fluidRow(
-                  h3("Custom Forecast: Vehicles Miled Traveled (VMT)"),
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Custom Forecast: Vehicles Miled Traveled (VMT)",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_vmt_forecast_sheet_tbl", "Reset VMT Custom Forecast", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("vmt_forecast_sheet_tbl")
                 ),
+
+                                
+                # Onroad Public Transit - Fuel Technology Fraction
                 fluidRow(
-                  h3("Onroad Public Transit - Fuel Technology Fraction"),
-                  DT::dataTableOutput("onroad_fuel_tech_frac_sheet_tbl")
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Onroad Public Transit - Fuel Technology Fraction",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_onroad_fuel_tech_frac_sheet_tbl", "Reset Fuel Tech Fraction", class = "btn-custom")
+                  ),
                 ),
                 fluidRow(
-                  h3("Passenger Rail"),
+                  h3(""),
+                  DT::dataTableOutput("onroad_fuel_tech_frac_sheet_tbl")
+                ),
+                
+                # passenger rail
+                fluidRow(
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Passenger Rail",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_pass_rail_sheet_tbl", "Reset Passenger Rail", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
                   DT::dataTableOutput("pass_rail_sheet_tbl")
+                ),
+                
+                # Freight Rail
+                fluidRow(
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Title",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_freight_rail_sheet_tbl", "Reset Freight Rail", class = "btn-custom")
+                  ),
+
                 ),
                 fluidRow(
                   h3("Freight Rail"),
                   DT::dataTableOutput("freight_rail_sheet_tbl")
                 ),
+                
+                # Construction and Maintenance
+                fluidRow(
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Construction and Maintenance",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_construction_sheet_tbl", "Reset Construction and Maintenance", class = "btn-custom")
+                  ),
+                ),
                 fluidRow(
                   h3("Construction and Maintenance"),
                   DT::dataTableOutput("construction_sheet_tbl")
+                ),
+                
+                # fuel apportionments
+                fluidRow(
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Fuel Apportionments",
+                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                             sed do eiusmod tempor incididunt ut labore et dolore magna
+                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                             Duis aute irure dolor in reprehenderit in voluptate velit
+                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
+                             sint occaecat cupidatat non proident, sunt in culpa qui
+                             officia deserunt mollit anim id est laborum.",
+
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_fuel_apportionment_sheet_tbl", "Reset Fuel Apportionments", class = "btn-custom")
+                  ),
                 ),
                 fluidRow(
                   h3("Fuel Apportionments"),
@@ -480,7 +1450,9 @@ ui <- function(request) {
                 
       )
                 )),
-      
+
+# outputs tab ui ----------------------------------------------------------
+
       nav_panel(title = "Outputs",
                 navset_card_pill(
                   placement = "above",
@@ -605,6 +1577,36 @@ ui <- function(request) {
                             )
                   ),
                 )),
+
+# fluidRow(
+#   column(10,
+#          accordion(
+#            accordion_panel(
+#              "Title",
+#              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+#              sed do eiusmod tempor incididunt ut labore et dolore magna 
+#              aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
+#              ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+#              Duis aute irure dolor in reprehenderit in voluptate velit 
+#              esse cillum dolore eu fugiat nulla pariatur. Excepteur 
+#              sint occaecat cupidatat non proident, sunt in culpa qui 
+#              officia deserunt mollit anim id est laborum.",
+# 
+#            ),
+#            open = FALSE
+#          ),
+#   ),
+#   column(2,
+#          actionButton("reset_", "Reset ", class = "btn-custom")
+#   ),
+# 
+# ),
+
+
+# sources tab ui ----------------------------------------------------------
+
+ 
+
       nav_panel(title = "Sources",
                 h2("Sources"),
                 p("The following resources were used in developing the TEA-CART tool."),
@@ -623,15 +1625,11 @@ ui <- function(request) {
   
 }
 
-# setting themes - golem probably wants them somewhere else
 # enabling thematic
 thematic::thematic_shiny(font = "auto")
 
 # setting default ggplot theme
 theme_set(theme_bw(base_size = 16))
-
-# https://stackoverflow.com/questions/31013769/locking-r-shiny-dashboard-sidebar-shinydashboard
-# https://rstudio.github.io/bslib/articles/sidebars/index.html
 
 
 # Start Server Function ---------------------------------------------------
@@ -667,9 +1665,10 @@ server <- function(input, output, session) {
   #   rv$random_calculated_table <- rv$Capital_Project_Inputs %>% filter(value == 4)
   #   print(rv$random_calculated_table)
   # })
-  
+
+    
   # Download user inputs -------------------------------------------------------
-  ### will eventually use openxlsx to format the excel file to match the uploaded file exactly
+
   output$user_inputs_download <- downloadHandler(
     filename = function() {
       paste0(".\\data\\2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
@@ -801,8 +1800,8 @@ server <- function(input, output, session) {
       data_reactive = temp_send,
       table_number = 5,
       non_editable_cols = c(0),
-      page_length = 4,
-      comma_rows = 0,
+      page_length = 10,
+      comma_rows = integer(1),
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
@@ -962,7 +1961,7 @@ server <- function(input, output, session) {
     
   })
 
-# Observe Table Edits ---------------------------------------------------------
+# Observe Table Edits to projects ---------------------------------------------------------
 
     # observe edits to the bikeped_projs
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
@@ -1196,31 +2195,67 @@ server <- function(input, output, session) {
   })
 
 
-# observe reset buttons ---------------------------------------------------
+# observe reset buttons on projects ---------------------------------------------------
 
 
-  # Observe reset bike ped projects button
   observeEvent(input$reset_bikeped_projs_tbl, {
-    
     rvs$Projects[rvs$Projects$table_no_ui == 1,] <- initial_projects[initial_projects$table_no_ui == 1, ]
-
   })  
   
   
-  # projects_names <- c("bikeped_projs",
-  #                     "transit_fixed_projs",
-  #                     "transit_dr_projs",
-  #                     "transit_el_projs",
-  #                     "transit_bus_projs",
-  #                     "public_rail_projs",
-  #                     "tdm_projs",
-  #                     "micro_projs",
-  #                     "traffic_ops_projs",
-  #                     "mhdev_projs",
-  #                     "pnr_projs",
-  #                     "evsi_projs",
-  #                     "freight_projs",
-  #                     "expansion_projs")
+  observeEvent(input$reset_transit_fixed_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 2,] <- initial_projects[initial_projects$table_no_ui == 2, ]
+  })  
+  
+  observeEvent(input$reset_transit_dr_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 3,] <- initial_projects[initial_projects$table_no_ui == 3, ]
+  })  
+  
+  observeEvent(input$reset_transit_el_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 4,] <- initial_projects[initial_projects$table_no_ui == 4, ]
+  })  
+  
+  observeEvent(input$reset_transit_bus_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 5,] <- initial_projects[initial_projects$table_no_ui == 5, ]
+  })  
+  
+  observeEvent(input$reset_public_rail_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 6,] <- initial_projects[initial_projects$table_no_ui == 6, ]
+  })  
+  
+  observeEvent(input$reset_tdm_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 7,] <- initial_projects[initial_projects$table_no_ui == 7, ]
+  })  
+  
+  observeEvent(input$reset_micro_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 8,] <- initial_projects[initial_projects$table_no_ui == 8, ]
+  })  
+  
+  observeEvent(input$reset_traffic_ops_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 9,] <- initial_projects[initial_projects$table_no_ui == 9, ]
+  })  
+  
+  observeEvent(input$reset_mhdev_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 10,] <- initial_projects[initial_projects$table_no_ui == 10, ]
+  })  
+  
+  observeEvent(input$reset_pnr_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 11,] <- initial_projects[initial_projects$table_no_ui == 11, ]
+  })  
+  
+  observeEvent(input$reset_evsi_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 12,] <- initial_projects[initial_projects$table_no_ui == 12, ]
+  })  
+  
+  observeEvent(input$reset_freight_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 13,] <- initial_projects[initial_projects$table_no_ui == 13, ]
+  })  
+  
+  observeEvent(input$reset_expansion_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 14,] <- initial_projects[initial_projects$table_no_ui == 14, ]
+  })  
+  
+
 
   # server assumptions ------------------------------------------------------
   
@@ -1403,6 +2438,41 @@ server <- function(input, output, session) {
     evsi_assmps <<- editData(evsi_assmps, input$evsi_assmps_edit, 'evsi_assmps_tbl')
   })
   
+
+  # observe reset buttons on assumptions ---------------------------------------------------
+  
+
+  observeEvent(input$reset_bikeped_assmps_tbl, {
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 1,] <- initial_assumptions[initial_assumptions$table_no_ui == 1, ]
+  })  
+  
+  observeEvent(input$reset_transit_assmps_tbl, {
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 2,] <- initial_assumptions[initial_assumptions$table_no_ui == 2, ]
+  })  
+  
+  observeEvent(input$reset_tdm_assmps_tbl, {
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 3,] <- initial_assumptions[initial_assumptions$table_no_ui == 3, ]
+  })  
+  
+  observeEvent(input$reset_micro_assmps_tbl, {
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 4,] <- initial_assumptions[initial_assumptions$table_no_ui == 4, ]
+  })  
+  
+  observeEvent(input$reset_traffic_ops_assmps_tbl, {
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 5,] <- initial_assumptions[initial_assumptions$table_no_ui == 5, ]
+  })  
+  
+  observeEvent(input$reset_mhdv_assmps_tbl, {
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 6,] <- initial_assumptions[initial_assumptions$table_no_ui == 6, ]
+  })  
+  
+  observeEvent(input$reset_pnr_assmps_tbl, {
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 7,] <- initial_assumptions[initial_assumptions$table_no_ui == 7, ]
+  })  
+  
+  observeEvent(input$reset_evsi_assmps_tbl, {
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 8,] <- initial_assumptions[initial_assumptions$table_no_ui == 8, ]
+  })  
   
   
   # costs inputs server ------------------------------------------------------------
