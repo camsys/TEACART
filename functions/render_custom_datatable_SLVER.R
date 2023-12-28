@@ -64,18 +64,28 @@ render_custom_datatable_SLVER <- function(#input_reactives,
                     var percentRows = [%s];
                     var currencyRows = [%s];
                     var decimalRows = [%s];
-
+                
                     var formatter = null;
                     if (commaRows.includes(meta.row)) {
                       formatter = function(d) { return Number(d).toLocaleString('en-US'); };
-                    } else if (percentRows.includes(meta.row)) {
+                    }
+                    if (percentRows.includes(meta.row)) {
                       formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
-                    } else if (currencyRows.includes(meta.row)) {
+                    }
+                    if (currencyRows.includes(meta.row)) {
                       formatter = function(d) { return '$' + Number(d).toLocaleString('en-US'); };
-                    } else if (decimalRows.includes(meta.row)) {
+                    }
+                    if (decimalRows.includes(meta.row)) {
                       formatter = function(d) { return Number(d).toFixed(1); };
                     }
                     
+                //console.log('the data: ' + data)
+                //console.log('the type: '+ type)
+                //console.log('the row: ' + row)
+                //console.log('the meta: ' + meta)
+                //console.log('the formatter' + formatter)
+                
+                
                     return formatter && !isNaN(data) && data !== null && data !== '' ? formatter(data) : data;
                   }
                   return data;
