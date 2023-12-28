@@ -47,7 +47,7 @@
 
 ### REACTIVE -----
 observeEvent(EmRate_by_Tech(), {
-  browser()
+ # browser()
 EmRate_by_Tech() %>% filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks"), str_detect(fuel_type, "ICE"))
 })
 

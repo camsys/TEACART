@@ -188,7 +188,8 @@ ui <- function(request) {
                   ),
                   nav_panel(title = "Projects",
                             fluidRow(
-                              p(""),
+                              column(10,
+
                               #     h3("Bicycle and Pedestrian lane miles of new infrastructure"),
                               accordion(
                                 accordion_panel(
@@ -214,10 +215,16 @@ ui <- function(request) {
       id = "acc1",
       open = FALSE
                               ),
-      p(""),
-      DT::dataTableOutput("bikeped_projs_tbl")
+                              ),
+      column(2,
+      actionButton("reset_bikeped_projs_tbl", "Reset Bike Ped Projects", class = "btn-custom"),
+      ),
                             ),
-      
+      fluidRow(
+      DT::dataTableOutput("bikeped_projs_tbl")
+
+                  ),
+#      fluidRow(),
       fluidRow(
         h3("Transit: Increased Fixed Route Service (new Vehicles Operating in Maximum Service)"),
         DT::dataTableOutput("transit_fixed_projs_tbl")
@@ -717,7 +724,6 @@ server <- function(input, output, session) {
   
   # rendering bike ped table
 
-  
   output$bikeped_projs_tbl <- renderDT({
     req(rvs$Projects)
     temp_send <- rvs$Projects
@@ -733,6 +739,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
 
   output$transit_fixed_projs_tbl <- renderDT({
     
@@ -955,21 +962,22 @@ server <- function(input, output, session) {
     
   })
 
-#Observe Table Edits ---------------------------------------------------------
-  # observe edits to the transit_fixed_projs
+# Observe Table Edits ---------------------------------------------------------
+
+    # observe edits to the bikeped_projs
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
     req(rvs$Projects)
     
     rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping_projects(input$bikeped_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 1,
-                                                              col1 = 'area_type',
-                                                              col2 = 'facility_type',
-                                                              col3 = 'unit',
-                                                              input$horizon_year_1,
-                                                              input$horizon_year_2,
-                                                              input$horizon_year_3)
-    })
+                                                                       rvs$Projects,
+                                                                       tbl_no = 1,
+                                                                       col1 = 'area_type',
+                                                                       col2 = 'facility_type',
+                                                                       col3 = 'unit',
+                                                                       input$horizon_year_1,
+                                                                       input$horizon_year_2,
+                                                                       input$horizon_year_3)
+  })
   
   # observe edits to the transit_fixed_projs
   observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
@@ -1187,6 +1195,18 @@ server <- function(input, output, session) {
     
   })
 
+
+# observe reset buttons ---------------------------------------------------
+
+
+  # Observe reset bike ped projects button
+  observeEvent(input$reset_bikeped_projs_tbl, {
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 1,] <- initial_projects[initial_projects$table_no_ui == 1, ]
+
+  })  
+  
+  
   # projects_names <- c("bikeped_projs",
   #                     "transit_fixed_projs",
   #                     "transit_dr_projs",

@@ -1,14 +1,14 @@
 
 reshaping_projects <- function(user_data,
-                      rvs,
-                      tbl_no,
-                      col1,
-                      col2,
-                      col3,
-                      col4,
-                      horizon_year_1,
-                      horizon_year_2,
-                      horizon_year_3){
+                               rvs,
+                               tbl_no,
+                               col1,
+                               col2,
+                               col3,
+                               col4,
+                               horizon_year_1,
+                               horizon_year_2,
+                               horizon_year_3){
   
   print(paste0("RUNNING: Reshaping Function for table: ", tbl_no))
   #if(tbl_no == 2){browser()}
@@ -46,11 +46,11 @@ reshaping_projects <- function(user_data,
     return(updated_data)
     
   } else if(length(unique(user_data$col)) == 5){
-  var1 = user_data$value[user_data$col == 0]
-  var2 = user_data$value[user_data$col == 1]
-  var3 = user_data$value[user_data$col == 2]
-  var4 = user_data$value[user_data$col == 3]
-  var5 = user_data$value[user_data$col == 4]
+    var1 = user_data$value[user_data$col == 0]
+    var2 = user_data$value[user_data$col == 1]
+    var3 = user_data$value[user_data$col == 2]
+    var4 = user_data$value[user_data$col == 3]
+    var5 = user_data$value[user_data$col == 4]
   
   modified_data <- data.frame(var1 = var1,
                               var2 = var2,
