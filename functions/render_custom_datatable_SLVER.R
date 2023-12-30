@@ -43,11 +43,8 @@ render_custom_datatable_SLVER <- function(#input_reactives,
       mutate(unit = description) %>%
       select(-description) %>%
       #mutate(unit = map_chr(unit, ~ references_vector[.x] %||% .x)) %>%
-      rename(any_of(references_vector)) #SETH Q: This is nice but IDK how it works is it a different rename function from the dplyr?
+      rename(any_of(references_vector))
     
-    #print(reshaped_table)
-      #SETH - adding these to rename the horizon year columns probably a cleaner way? rename_with lets me work with the variables in dplyr (i think)
-
     
     returnDT<-datatable(
       reshaped_table,
@@ -67,18 +64,28 @@ render_custom_datatable_SLVER <- function(#input_reactives,
                     var percentRows = [%s];
                     var currencyRows = [%s];
                     var decimalRows = [%s];
-
+                
                     var formatter = null;
                     if (commaRows.includes(meta.row)) {
                       formatter = function(d) { return Number(d).toLocaleString('en-US'); };
-                    } else if (percentRows.includes(meta.row)) {
+                    }
+                    if (percentRows.includes(meta.row)) {
                       formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
-                    } else if (currencyRows.includes(meta.row)) {
+                    }
+                    if (currencyRows.includes(meta.row)) {
                       formatter = function(d) { return '$' + Number(d).toLocaleString('en-US'); };
-                    } else if (decimalRows.includes(meta.row)) {
+                    }
+                    if (decimalRows.includes(meta.row)) {
                       formatter = function(d) { return Number(d).toFixed(1); };
                     }
                     
+                //console.log('the data: ' + data)
+                //console.log('the type: '+ type)
+                //console.log('the row: ' + row)
+                //console.log('the meta: ' + meta)
+                //console.log('the formatter' + formatter)
+                
+                
                     return formatter && !isNaN(data) && data !== null && data !== '' ? formatter(data) : data;
                   }
                   return data;

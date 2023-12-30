@@ -127,6 +127,23 @@ references <- read_excel(".\\data\\2.User_Inputs.xlsx",
 references_vector <- setNames(references$field, references$description)
 rev_references_vector <- setNames(references$description, references$field)
 
+initial_projects <- read_excel(".\\data\\2.User_Inputs.xlsx",
+                               sheet ="Projects",
+                               col_names = TRUE)
+
+initial_assumptions <- read_excel(".\\data\\2.User_Inputs.xlsx",
+                                  sheet ="Assumptions",
+                                  col_names = TRUE)
+
+initial_costs <- read_excel(".\\data\\2.User_Inputs.xlsx",
+                            sheet ="Costs",
+                            col_names = TRUE)
+
+initial_advanced <- read_excel(".\\data\\2.User_Inputs.xlsx",
+                               sheet ="Advanced",
+                               col_names = TRUE)
+
+
 #Additional Calculations ----
 
 #State Population ----
