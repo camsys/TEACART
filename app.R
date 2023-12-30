@@ -654,12 +654,13 @@ server <- function(input, output, session) {
     }
   }, ignoreNULL = F, ignoreInit = F)
 
-  # ## Example of how to modify the reactiveValues
-  # observeEvent(rv$Capital_Project_Inputs, { ### may be good to use observe instead
-  #   # browser()
-  #   rv$random_calculated_table <- rv$Capital_Project_Inputs %>% filter(value == 4)
-  #   print(rv$random_calculated_table)
-  # })
+  ### INTERMEDIATE TABLES ----------------
+  ### these tables don't have to be show to the user, but it is helpful to have them as reactive tables
+  VMT_Forecast <- reactive({
+    AEO_VMT %>%
+      left_join(y = State_Populations %>% filter(state == rv$Baseline$state) %>% select(year, state_pct_of_national), by = join_by(year)) %>%
+      mutate(state_vmt = VMT_AEO * state_pct_of_national) # state VMT forecast
+  })
   
   # Download user inputs -------------------------------------------------------
   ### will eventually use openxlsx to format the excel file to match the uploaded file exactly

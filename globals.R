@@ -147,6 +147,8 @@ State_Populations <-
   group_by(state) %>%
   mutate(population = approx(year, population, xout = year)$y) %>% 
   mutate(growth = population / population[year == 2020] - 1) %>%
+  group_by(year) %>% 
+  mutate(state_pct_of_national = population / sum(population)) %>% 
   ungroup()
 
 #VMT_State_Allocation ----
