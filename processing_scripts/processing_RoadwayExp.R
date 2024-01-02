@@ -3,24 +3,38 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 
+observeEvent(input$state_input, {
+  
+  browser()
 #set inputs - delete in final deployment -------
 
 #these should be pulled from EmRate Tech
 #light_duty_automobile_emrate_2025 = 311
 #light_duty_automobile_emrate_2030 = 290
 #light_duty_automobile_emrate_2050 = 257
+EmRate_by_Tech <- EmRate_by_Tech() %>% 
+  mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
+  select(year, veh_supertype, emission_rate)
 
-light_duty_automobile_emrate = list(y2025 = 311,
-                                    y2030 = 290,
-                                    y2050 = 257)
+VMT_Type_Tech_Base <- VMT_Type_Tech_Base()  %>% 
+  mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
+  select(year, veh_supertype, mmt_by_type)
+
+temp_em_df <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base) %>%
+  group_by(year, veh_supertype)
+  summarise(cat_avg = sum(emission_rate*mmt_by_type))
+
+light_duty_automobile_emrate = list(hz1 = temp_em_df$cat_avg[tmp_em_df$year == rvs$Baseline$horizon_year_1 & tmp_em_df$veh_supertype == "Light Duty Vehicles"],
+                                    hz2 = temp_em_df$cat_avg[tmp_em_df$year == rvs$Baseline$horizon_year_2 & tmp_em_df$veh_supertype == "Light Duty Vehicles"],
+                                    hz3 = temp_em_df$cat_avg[tmp_em_df$year == rvs$Baseline$horizon_year_3 & tmp_em_df$veh_supertype == "Light Duty Vehicles"])
 
 #medium_heavy_duty_truck_emrate_2025 = 983
 #medium_heavy_duty_truck_emrate_2035 = 886
 #medium_heavy_duty_truck_emrate_2050 = 739
 
-medium_heavy_duty_truck_emrate = list(y2025 = 983,
-                                      y2030 = 886,
-                                      y2050 = 739)
+medium_heavy_duty_truck_emrate = list(hz1 = temp_em_df$cat_avg[tmp_em_df$year == rvs$Baseline$horizon_year_1 & tmp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"],
+                                      hz2 = temp_em_df$cat_avg[tmp_em_df$year == rvs$Baseline$horizon_year_2 & tmp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"],
+                                      hz3 = temp_em_df$cat_avg[tmp_em_df$year == rvs$Baseline$horizon_year_3 & tmp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"],)
 
 
 #project inputs - this should be deleted and pulled from UI -----
@@ -101,7 +115,6 @@ calculate_MT_CO2e_change <- function(
     base_speed, #roadway depedent
     CO2em_per_hour_delay, #roadway dependent use first fucntion
     tspeed, #roadway dependent
-    VMT_elasticity, #roadway dependent
     existing_lanes = 6 #roadway dependent
 ){
   annual_VMTperLaneMile = VMTperLaneMile*300
@@ -125,6 +138,7 @@ calculate_MT_CO2e_change <- function(
   
 }
 
+})
 
 
 

@@ -3094,7 +3094,9 @@ server <- function(input, output, session) {
 
 
   #sl working ----
+
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
+  source("processing_scripts/processing_RoadwayExp.R", local = TRUE)
   #check for tables being edited
   
   # observeEvent(EmRate_by_Tech(), { ### be careful to add everything that could update your outputs
@@ -3115,6 +3117,7 @@ server <- function(input, output, session) {
          input$scope_emissions,
          input$scope_fuels,
          input$vmt_forecast_input,
+         input$vmt_nhs,
          input$ev_baseline_input,
          input$grid_emissions_input)
   })
@@ -3131,6 +3134,7 @@ server <- function(input, output, session) {
     rvs$Baseline$include_electricity <- input$scope_emissions #do these match?
     rvs$Baseline$include_upstream_fuels <- input$scope_fuels
     rvs$Baseline$vmt_forecast <- input$vmt_forecast_input
+    rvs$Baseline$vmt_nhs <- input$vmt_nhs
     rvs$Baseline$veh_elec_baseline <- input$ev_baseline_input
     rvs$Baseline$elec_grid_emissions_net_zero <- input$grid_emissions_input
   })
