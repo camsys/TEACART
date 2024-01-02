@@ -19,8 +19,10 @@ convert_to_nested_list <- function(df){
   # Create an empty list
   my_list <- list()
   
-  # Get number of primary keys, adding a 2 for the transit column
-  num_primary_keys <- if(nrow(df) == 1){get_num_primary_keys(df) + 1}else{get_num_primary_keys(df) + 2}
+  num_primary_keys <- get_num_primary_keys(df)
+  
+  # Get number of primary keys, adding a 2 for the transit column,
+  num_primary_keys <- if(nrow(df) == 1 | num_primary_keys == 1){num_primary_keys + 1}else{num_primary_keys + 2}
   
   # Get the names of the primary key columns
   primary_keys <- names(df)[1:num_primary_keys]
@@ -111,7 +113,13 @@ NTD_Service <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NTD_Service")
 
 Fuel_Factors <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors")
 Fuel_Factors_Revision <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Revision") # SL ADDED NEED TO WORK TO COMBINE THESE TWO
-
+Fuel_Factors_Weighted <-
+  Fuel_Factors %>% # Different veh types will need different weighting strategies, will likely need to make reactive
+  group_by(veh_type) %>% 
+  summarize(NOx_g_per_veh_mi_avg = sum(hd_weight * NOx_g_per_veh_mi, na.rm = T),
+            PM25_exhaust_avg = sum(hd_weight * PM25_exhaust, na.rm = T),
+            PM25_tires_brakes_avg = sum(hd_weight * PM25_tires_brakes, na.rm = T)) %>%
+    convert_to_nested_list()
 
 Transit_Costs <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Transit_Costs")
 Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes

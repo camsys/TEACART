@@ -3284,14 +3284,7 @@ server <- function(input, output, session) {
 
 
   #sl working ----
-  source("processing_scripts/processing_Base_Projections.R", local = TRUE)
-  #check for tables being edited
-  
-  # observeEvent(EmRate_by_Tech(), { ### be careful to add everything that could update your outputs
-  #   browser()
-  #   # source("processing_scripts/processing_freight.R")
-  # })
-  
+  source("processing_scripts/processing_Base_Projections.R", local = T)
   source("processing_scripts/processing_freight.R", local = T)
   #rvs update from different inputs
   #key_inputs update

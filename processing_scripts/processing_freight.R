@@ -49,16 +49,15 @@
 
 intermodal_investment_factor_truck <- -72103.0
 intermodal_investment_factor_rail <- 1021459
-fuel_factor_mdhd_weighted <- c("nox" = 2.748, "pm25_exhaust" = 0.062, "pm25_tiresBrakes" = 0.012)
+# fuel_factor_mdhd_weighted <- c("nox" = 2.748, "pm25_exhaust" = 0.062, "pm25_tiresBrakes" = 0.012)
 
-# observeEvent(EmRate_by_Tech(), VMT_Forecast(), { ### uncomment to test!
+# observeEvent(list(EmRate_by_Tech(), VMT_Forecast()), { ### uncomment this line and browser and comment below to test!
 output_freight <- reactive({
   req(EmRate_by_Tech(), VMT_Forecast())
-  browser()
+  # browser()
   VMT_Type_Tech_BASE_grouped <- 
     Tech_Frac_Vision %>%
     left_join(select(VMT_Forecast(), veh_type, year, state_vmt), by = join_by(veh_type, year)) %>%
-    # arrange(veh_type, year, veh_subtype)
     mutate(state_vmt_by_subtype = state_vmt * aeo_tech_frac) %>%
     filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks"), veh_subtype %in% c("Diesel", "Gasoline")) %>%
     group_by(year) %>%
@@ -97,17 +96,9 @@ output_freight <- reactive({
            total_change_MTCO2 = displaced_truck_emissions + added_rail_emissions,
            total_change_direct = total_change_MTCO2,
            total_change_electricity = 0,
-           total_change_mtnox = truck_vmt_affected * fuel_factor_mdhd_weighted["nox"] / 1000000,
-           total_change_pm25 = (truck_vmt_affected * fuel_factor_mdhd_weighted["pm25_exhaust"] +
-           truck_vmt_affected * fuel_factor_mdhd_weighted["pm25_tiresBrakes"]) / 1000000)
-  
-  
-  ### calculate state vmt forecast
-  # AEO_VMT %>% 
-  #   left_join(y = State_Populations %>% filter(state == rv$Baseline$state) %>% select(year, state_pct_of_national), by = join_by(year)) %>%
-  #   mutate(state_vmt = VMT_AEO * state_pct_of_national)
-  #   select(veh_type, veh_supertype, year) # state VMT forecast
-  
+           total_change_mtnox = truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["NOx_g_per_veh_mi_avg"]] / 1000000,
+           total_change_pm25 = (truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["PM25_exhaust_avg"]] +
+           truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["PM25_tires_brakes_avg"]]) / 1000000)
 })
 
 
