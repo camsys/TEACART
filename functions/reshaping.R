@@ -67,6 +67,8 @@ reshaping_assmp <- function(user_data,
   names(modified_data)[length(names(modified_data))]<-"value"     ## change the last column name to value
 
   modified_data <- modified_data[, colSums(!is.na(modified_data)) > 0] #  ## drop all na column
+  
+  browser()
 
   col_list <- c(colnames(modified_data)[-ncol(modified_data)])
   
@@ -79,7 +81,11 @@ reshaping_assmp <- function(user_data,
       mutate(field = ifelse(is.na(field),get(var),field)) %>%
       select(-var) %>%
       rename(!!var := field)  }
+  
+  modified_data[modified_data == ""] <- NA
 
+  browser()
+  
   y_names = col_list
   x_names = c(colnames( rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']][colSums(!is.na( rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']])) > 0])) 
   x_names = x_names[-c(1,2,3)] # remove the first 'category','table_no_ui','table'
@@ -89,11 +95,13 @@ reshaping_assmp <- function(user_data,
     select(-contains("var")) %>%
     mutate(value = as.numeric(value))
   
+  browser()
+  
    return(updated_data)
 }
 
 
-## reshape cost 
+## reshape cost still working on. 
 reshaping_cost <- function(user_data,
                    rvs,
                    tbl_no){

@@ -53,6 +53,8 @@ render_custom_datatable_SLVER <- function(#input_reactives,
       selection = "none",
       options = list(
         pageLength = page_length,
+        # scrollX = TRUE,
+        # scrollY = TRUE,
         columnDefs = list(
           list(
             targets = '_all',

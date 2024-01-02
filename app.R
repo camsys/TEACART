@@ -10,6 +10,7 @@ library(shinydashboard)
 library(shinyWidgets)
 library(htmltools)
 library(plotly)
+library(shiny)
 
 
 
@@ -1725,9 +1726,10 @@ server <- function(input, output, session) {
   # rendering bike ped table
 
   output$bikeped_projs_tbl <- renderDT({
-    req(rvs$Projects)
-    temp_send <- rvs$Projects
-
+    #req(rvs$Projects)
+    temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
+    #temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
+    
     render_custom_datatable_SLVER(
       data_reactive = temp_send,
       table_number = 1,
@@ -1970,7 +1972,6 @@ server <- function(input, output, session) {
 
     rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping_projects2(input$bikeped_projs_tbl_cell_edit,
                                                                        rvs$Projects,
-                                                                       is_year_table = TRUE,
                                                                        tbl_no = 1,
                                                                        col1 = 'area_type',
                                                                        col2 = 'facility_type',
@@ -1986,7 +1987,6 @@ server <- function(input, output, session) {
 
     rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping_projects2(input$transit_fixed_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 2,
                                                               col1 = 'area_type',
                                                               col2 = 'fuel_type',
@@ -2001,7 +2001,6 @@ server <- function(input, output, session) {
     
     rvs$Projects[rvs$Projects$table_no_ui == 3,] <- reshaping_projects2(input$transit_dr_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 3,
                                                               col1 = 'area_type',
                                                               col2 = 'fuel_type',
@@ -2016,7 +2015,6 @@ server <- function(input, output, session) {
     # check dup
     rvs$Projects[rvs$Projects$table_no_ui == 4,] <- reshaping_projects2(input$transit_el_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 4,
                                                               col1 = 'area_type',
                                                               col2 = 'fuel_type',
@@ -2031,7 +2029,6 @@ server <- function(input, output, session) {
 
     rvs$Projects[rvs$Projects$table_no_ui == 5,] <- reshaping_projects2(input$transit_bus_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 5,
                                                               col1 = 'unit',
                                                               horizon_year_1 = input$horizon_year_1,
@@ -2048,7 +2045,6 @@ server <- function(input, output, session) {
     
     rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping_projects2(input$public_rail_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 6,
                                                               col1 = 'fuel_type',
                                                               col2 = 'transit_mode',
@@ -2066,7 +2062,6 @@ server <- function(input, output, session) {
 
     rvs$Projects[rvs$Projects$table_no_ui == 7,] <- reshaping_projects2(input$tdm_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 7,
                                                               col1 = 'unit',
                                                               horizon_year_1 = input$horizon_year_1,
@@ -2083,7 +2078,6 @@ server <- function(input, output, session) {
     
     rvs$Projects[rvs$Projects$table_no_ui == 8,] <- reshaping_projects2(input$micro_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 8,
                                                               col1 = 'unit',
                                                               horizon_year_1 = input$horizon_year_1,
@@ -2100,7 +2094,6 @@ server <- function(input, output, session) {
     
     rvs$Projects[rvs$Projects$table_no_ui == 9,] <- reshaping_projects2(input$traffic_ops_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 9,
                                                               col1 = 'area_type',
                                                               col2 = 'road_class',
@@ -2119,7 +2112,6 @@ server <- function(input, output, session) {
     
     rvs$Projects[rvs$Projects$table_no_ui == 10,] <- reshaping_projects2(input$mhdev_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 10,
                                                               col1 = 'veh_type',
                                                               col2 = 'fuel_type',
@@ -2137,7 +2129,6 @@ server <- function(input, output, session) {
     
     rvs$Projects[rvs$Projects$table_no_ui == 11,] <- reshaping_projects2(input$pnr_projs_tbl_cell_edit,
                                                                rvs$Projects,
-                                                               is_year_table = TRUE,
                                                                tbl_no = 11,
                                                                col1 = 'unit',
                                                                horizon_year_1 = input$horizon_year_1,
@@ -2154,7 +2145,6 @@ server <- function(input, output, session) {
     
     rvs$Projects[rvs$Projects$table_no_ui == 12,] <- reshaping_projects2(input$evsi_projs_tbl_cell_edit,
                                                                rvs$Projects,
-                                                               is_year_table = TRUE,
                                                                tbl_no = 12,
                                                                col1 = 'charge_port_detail',
                                                                horizon_year_1 = input$horizon_year_1,
@@ -2171,7 +2161,6 @@ server <- function(input, output, session) {
     
     rvs$Projects[rvs$Projects$table_no_ui == 13,] <- reshaping_projects2(input$freight_projs_tbl_cell_edit,
                                                                rvs$Projects,
-                                                               is_year_table = TRUE,
                                                                tbl_no = 13,
                                                                col1 = 'unit',
                                                                horizon_year_1 = input$horizon_year_1,
@@ -2187,7 +2176,6 @@ server <- function(input, output, session) {
     
     rvs$Projects[rvs$Projects$table_no_ui == 14,] <- reshaping_projects2(input$expansion_projs_tbl_cell_edit,
                                                                rvs$Projects,
-                                                               is_year_table = TRUE,
                                                                tbl_no = 14,
                                                                col1 = 'area_type',
                                                                col2 = 'road_class',
@@ -2305,7 +2293,7 @@ server <- function(input, output, session) {
       table_number = 2,
       is_year_table = FALSE,
       non_editable_cols = c(0, 1),
-      page_length = 10,
+      page_length = 50,
       comma_rows = c(18, 47),
       percent_rows = integer(0),
       currency_rows = integer(0),
@@ -2590,11 +2578,28 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
 
-    output$bikeped_costs_tbl <- create_table(bikeped_costs,
-                                           list(target = 'row',
-                                                disable = list(columns = c(0,1)),
-                                                autoWidth = TRUE))
-
+output$bikeped_costs_tbl <- create_table(bikeped_costs,
+                                       list(target = 'row',
+                                            disable = list(columns = c(0,1)),
+                                            autoWidth = TRUE))
+  
+  # output$bikeped_costs_tbl <- renderDT({   # checkpoint
+  #   
+  #   render_custom_datatable_SLVER(
+  #     data_reactive = rvs$Costs,
+  #     table_number = 1,
+  #     is_year_table = FALSE,
+  #     is_cost_table = TRUE,
+  #     non_editable_cols = c(0, 1),  #checkpoint
+  #     page_length = 10,
+  #     comma_rows = 0:42,
+  #     percent_rows = integer(0),
+  #     currency_rows = integer(0),
+  #     decimal_rows = integer(0))
+  #   
+  # })
+  
+ 
   
   output$transit_fixed_costs_tbl <- create_table(transit_fixed_costs,
                                                  list(target = 'row',
@@ -3286,7 +3291,7 @@ server <- function(input, output, session) {
   #sl working ----
 
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
-  source("processing_scripts/processing_RoadwayExp.R", local = TRUE)
+  #source("processing_scripts/processing_RoadwayExp.R", local = TRUE)
   #check for tables being edited
   
   # observeEvent(EmRate_by_Tech(), { ### be careful to add everything that could update your outputs
