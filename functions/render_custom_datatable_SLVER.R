@@ -29,7 +29,6 @@ render_custom_datatable_SLVER <- function(#input_reactives,
       }
     }
 
-    
 
     #lapply(input_reactives, req)
     req(data_reactive)
@@ -45,6 +44,7 @@ render_custom_datatable_SLVER <- function(#input_reactives,
       #mutate(unit = map_chr(unit, ~ references_vector[.x] %||% .x)) %>%
       rename(any_of(references_vector))
     
+    # browser()
     
     returnDT<-datatable(
       reshaped_table,
