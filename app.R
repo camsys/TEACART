@@ -2590,76 +2590,215 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
 
-    output$bikeped_costs_tbl <- create_table(bikeped_costs,
-                                           list(target = 'row',
-                                                disable = list(columns = c(0,1)),
-                                                autoWidth = TRUE))
-
+    output$bikeped_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 1,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:2),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$transit_fixed_costs_tbl <- create_table(transit_fixed_costs,
-                                                 list(target = 'row',
-                                                      disable = list(columns = c(0,1)),
-                                                      autoWidth = TRUE))
+  output$transit_fixed_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 2,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$transit_dr_costs_tbl <- create_table(transit_dr_costs,
-                                              list(target = 'row',
-                                                   disable = list(columns = c(0,1)),
-                                                   autoWidth = TRUE))
+  output$transit_dr_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 3,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$pub_trans_priority_costs_tbl <- create_table(pub_trans_priority_costs,
-                                                      list(target = 'row',
-                                                           disable = list(columns = c(0,1)),
-                                                           autoWidth = TRUE))
+  output$pub_trans_priority_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 4,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:0),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$pub_trans_rail_costs_tbl <- create_table(pub_trans_rail_costs,
-                                                  list(target = 'row',
-                                                       disable = list(columns = c(0,1)),
-                                                       autoWidth = TRUE))
+  output$pub_trans_rail_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 5,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:2),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$tdm_costs_tbl <- create_table(tdm_costs,
-                                       list(target = 'row',
-                                            disable = list(columns = c(0,1)),
-                                            autoWidth = TRUE))
+  output$tdm_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 6,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:0),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$micro_costs_tbl <- create_table(micro_costs,
-                                         list(target = 'row',
-                                              disable = list(columns = c(0,1)),
-                                              autoWidth = TRUE))
+  output$micro_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 7,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:0),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$traffic_ops_costs_tbl <- create_table(traffic_ops_costs,
-                                               list(target = 'row',
-                                                    disable = list(columns = c(0,1)),
-                                                    autoWidth = TRUE))
+  output$traffic_ops_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 8,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$mhdev_costs_tbl <- create_table(mhdev_costs,
-                                         list(target = 'row',
-                                              disable = list(columns = c(0,1)),
-                                              autoWidth = TRUE))
+  output$mhdev_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 9,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:2),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$pnr_costs_tbl <- create_table(pnr_costs,
-                                       list(target = 'row',
-                                            disable = list(columns = c(0,1)),
-                                            autoWidth = TRUE))
+  output$pnr_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 10,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:0),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$evsi_costs_tbl <- create_table(evsi_costs,
-                                        list(target = 'row',
-                                             disable = list(columns = c(0,1)),
-                                             autoWidth = TRUE))
+  output$evsi_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 11,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:1),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$roadway_expand_costs_tbl <- create_table(roadway_expand_costs,
-                                                  list(target = 'row',
-                                                       disable = list(columns = c(0,1)),
-                                                       autoWidth = TRUE))
+  output$roadway_expand_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 12,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:2),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$fuel_costs_tbl <- create_table(fuel_costs,
-                                        list(target = 'row',
-                                             disable = list(columns = c(0,1)),
-                                             autoWidth = TRUE))
+  output$fuel_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 13,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:1),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
-  output$intermodal_costs_tbl <- create_table(intermodal_costs,
-                                              list(target = 'row',
-                                                   disable = list(columns = c(0,1)),
-                                                   autoWidth = TRUE))
+  output$intermodal_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Costs,
+      table_number = 14,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:0),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
   
   ## make editable -----------------------------------------------------------
@@ -2755,11 +2894,12 @@ server <- function(input, output, session) {
   observeEvent(input$pub_trans_priority_costs_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 4,] <- reshaping_assmp(input$pub_trans_priority_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 4,] <- reshaping_cost(input$pub_trans_priority_costs_cell_edit,
                                                               rvs$Costs,
                                                               tbl_no = 4)
   })
   
+  # qi - is this right? switches from cost to assmp
   ## observe change to tdm_costs
   observeEvent(input$tdm_costs_cell_edit, {
     req(rvs$Costs)
