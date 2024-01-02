@@ -172,11 +172,6 @@ ui <- function(request) {
                                                  c("Default","Custom"),
                                                  "Default"),
                                      p(""),
-                                     selectInput("vmt_nhs",
-                                                 "Transportation System Scope",
-                                                 c("All Roadways", "NHS Only"),
-                                                 "All Roadways"),
-                                     p(""),
                                      selectInput("ev_baseline_input",
                                                  "Vehicle Electrification Baseline",
                                                  c("AEO Baseline","ACC II","ACC II + ACT","Custom"),
@@ -3120,7 +3115,6 @@ server <- function(input, output, session) {
          input$scope_emissions,
          input$scope_fuels,
          input$vmt_forecast_input,
-         input$vmt_nhs,
          input$ev_baseline_input,
          input$grid_emissions_input)
   })
@@ -3137,7 +3131,6 @@ server <- function(input, output, session) {
     rvs$Baseline$include_electricity <- input$scope_emissions #do these match?
     rvs$Baseline$include_upstream_fuels <- input$scope_fuels
     rvs$Baseline$vmt_forecast <- input$vmt_forecast_input
-    rvs$Baseline$vmt_nhs <- input$vmt_nhs
     rvs$Baseline$veh_elec_baseline <- input$ev_baseline_input
     rvs$Baseline$elec_grid_emissions_net_zero <- input$grid_emissions_input
   })

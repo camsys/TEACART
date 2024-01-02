@@ -15,8 +15,6 @@ veh_types_mapping <- c("Passenger Cars" ~ "Light Duty Vehicles",
                        "Medium Duty Trucks" ~ "Medium/Heavy Duty Vehicles", 
                        "Heavy Duty Trucks" ~ "Medium/Heavy Duty Vehicles")
 
-ev_fuel_types <- c("EV100","EV200","EV300","SI PHEV 10","SI PHEV 40", "FCV", "EV", "Gasoline PHEV", "Diesel PHEV")
-
 convert_to_nested_list <- function(df){ 
   # Create an empty list
   my_list <- list()
@@ -112,15 +110,8 @@ Bike_Ped <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Bike_Ped")
 NTD_Service <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NTD_Service")
 
 Fuel_Factors <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors")
-Fuel_Factors_Baselines <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Baselines")
 Fuel_Factors_Revision <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Revision") # SL ADDED NEED TO WORK TO COMBINE THESE TWO
 
-EV_Forecast <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "EV_Forecast")
-
-Passenger_Rail_State_Mileage <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Passenger_Rail_State_Mileage")
-Passenger_Rail_FuelFactors <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Passenger_Rail_FuelFactors")
-
-Warming_Potential <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Warming_Potential")
 
 Transit_Costs <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Transit_Costs")
 Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
@@ -209,39 +200,43 @@ Tech_Frac_Vision <-
 #TechFrac object----
 #I need to match up the columns with what's above for this one
 # GLV 12/21/23: I did the vision 2022 one above, with the helpful code below. We can expand on other options at a later time?
-TechFrac <- Stock_Type_Tech_BASE %>% left_join(EV_Forecast, by = c("veh_type", "year")) %>%
-  group_by(year, veh_type) %>%
-  #Baseline vision 2022 I think aka AEO
-  mutate(AEO_Tech_Frac = stock_millions/sum(stock_millions)) %>%
-  #select(year, veh_type, fuel_type, AEO_Tech_Frac) %>%
-  ungroup() %>%
-  mutate(is_ev_type = ifelse(veh_subtype %in% ev_fuel_types,1,0)) %>%
-  group_by(year, veh_type, is_ev_type) %>%
-  mutate(per_ev_nonev = AEO_Tech_Frac/sum(AEO_Tech_Frac)) %>%
-  #ACC Forecasting
-  ungroup() %>%
-  group_by(year, veh_type) %>%
-  mutate(ACC_Tech_Fractemp = percEVstock_ACC*per_ev_nonev*is_ev_type) %>%
-  mutate(ACC_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACC_Tech_Fractemp)), ACC_Tech_Fractemp)) %>%
-  mutate(ACC_Tech_Frac = ifelse(veh_type %in% c("Medium Duty Truck","Heavy Duty Truck"), AEO_Tech_Frac, ACC_Tech_Frac)) %>%
-  select(-ACC_Tech_Fractemp) %>%
-  ungroup() %>%
-  #ACCII Version
-  ungroup() %>%
-  group_by(year, veh_type) %>%
-  mutate(ACCII_Tech_Fractemp = percEVstock_ACCII*per_ev_nonev*is_ev_type) %>%
-  mutate(ACCII_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCII_Tech_Fractemp)), ACCII_Tech_Fractemp)) %>%
-  mutate(ACCII_Tech_Frac = ifelse(veh_type %in% c("Medium Duty Truck","Heavy Duty Truck"), AEO_Tech_Frac, ACCII_Tech_Frac)) %>%
-  select(-ACCII_Tech_Fractemp) %>%
-  ungroup() %>%
-  #ACC + ACT
-  group_by(year, veh_type) %>%
-  mutate(ACCACT_Tech_Fractemp = percEVstock_ACCACT*per_ev_nonev*is_ev_type) %>%
-  mutate(ACCACT_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCACT_Tech_Fractemp)), ACCACT_Tech_Fractemp)) %>%
-  mutate(ACCACT_Tech_Frac = ifelse(veh_type %in% c("Medium Duty Truck","Heavy Duty Truck"), ACCACT_Tech_Frac, ACC_Tech_Frac)) %>%
-  select(-ACCACT_Tech_Fractemp) %>%
-  ungroup() %>%
-  #ACCII + ACT
-  mutate(ACCIIACT_Tech_Frac = ifelse(veh_type %in% c("Passenger Car","Light Duty Truck"), ACCII_Tech_Frac, ACCACT_Tech_Frac))
-
-
+# TechFrac <- Stock_Type_Tech_BASE_forecast %>%
+#   group_by(year, vehicle_type) %>%
+#   #Baseline vision 2022 I think aka AEO
+#   mutate(AEO_Tech_Frac = million_vehicles/sum(million_vehicles)) %>%
+#   #select(year, vehicle_type, fuel_type, AEO_Tech_Frac) %>%
+#   ungroup() %>%
+#   mutate(is_ev_type = ifelse(fuel_type %in% ev_fuel_type,1,0)) %>%
+#   group_by(year, vehicle_type, is_ev_type) %>%
+#   mutate(per_ev_nonev = AEO_Tech_Frac/sum(AEO_Tech_Frac)) %>%
+#   #ACC Forecasting
+#   ungroup() %>%
+#   group_by(year, vehicle_type) %>%
+#   mutate(ACC_Tech_Fractemp = percEVstock_ACC*per_ev_nonev*is_ev_type) %>%
+#   mutate(ACC_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACC_Tech_Fractemp)), ACC_Tech_Fractemp)) %>%
+#   mutate(ACC_Tech_Frac = ifelse(vehicle_type %in% c("Medium Duty Truck","Heavy Duty Truck"), AEO_Tech_Frac, ACC_Tech_Frac)) %>%
+#   select(-ACC_Tech_Fractemp) %>%
+#   ungroup() %>%
+#   #ACCII Version
+#   ungroup() %>%
+#   group_by(year, vehicle_type) %>%
+#   mutate(ACCII_Tech_Fractemp = percEVstock_ACCII*per_ev_nonev*is_ev_type) %>%
+#   mutate(ACCII_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCII_Tech_Fractemp)), ACCII_Tech_Fractemp)) %>%
+#   mutate(ACCII_Tech_Frac = ifelse(vehicle_type %in% c("Medium Duty Truck","Heavy Duty Truck"), AEO_Tech_Frac, ACCII_Tech_Frac)) %>%
+#   select(-ACCII_Tech_Fractemp) %>%
+#   ungroup() %>%
+#   #ACC + ACT
+#   group_by(year, vehicle_type) %>%
+#   mutate(ACCACT_Tech_Fractemp = percEVstock_ACCACT*per_ev_nonev*is_ev_type) %>%
+#   mutate(ACCACT_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCACT_Tech_Fractemp)), ACCACT_Tech_Fractemp)) %>%
+#   mutate(ACCACT_Tech_Frac = ifelse(vehicle_type %in% c("Medium Duty Truck","Heavy Duty Truck"), ACCACT_Tech_Frac, ACC_Tech_Frac)) %>%
+#   select(-ACCACT_Tech_Fractemp) %>%
+#   ungroup() %>%
+#   #ACCII + ACT
+#   mutate(ACCIIACT_Tech_Frac = ifelse(vehicle_type %in% c("Passenger Car","Light Duty Truck"), ACCII_Tech_Frac, ACCACT_Tech_Frac)) #%>%
+# # #Future Scenario - no numbers in the EV Forecast tab so I'm commenting it out - What's up with it?
+# # group_by(year, vehicle_type) %>%
+# # mutate(FScen_Tech_Fractemp = percEVstock_Fscen*per_ev_nonev*is_ev_type) %>%
+# # mutate(FScen_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(FScen_Tech_Fractemp)), FScen_Tech_Fractemp)) %>%
+# # select(-FScen_Tech_Fractemp) %>%
+# # ungroup() %>%
