@@ -1664,14 +1664,14 @@ server <- function(input, output, session) {
     }
   }, ignoreNULL = F, ignoreInit = F)
 
-  ### INTERMEDIATE TABLES ----------------
-  ### these tables don't have to be show to the user, but it is helpful to have them as reactive tables
-  VMT_Forecast <- reactive({
-    AEO_VMT %>%
-      left_join(y = State_Populations %>% filter(state == rv$Baseline$state) %>% select(year, state_pct_of_national), by = join_by(year)) %>%
-      mutate(state_vmt = VMT_AEO * state_pct_of_national) # state VMT forecast
-  })
-  
+  # ## Example of how to modify the reactiveValues
+  # observeEvent(rv$Capital_Project_Inputs, { ### may be good to use observe instead
+  #   # browser()
+  #   rv$random_calculated_table <- rv$Capital_Project_Inputs %>% filter(value == 4)
+  #   print(rv$random_calculated_table)
+  # })
+
+    
   # Download user inputs -------------------------------------------------------
 
   output$user_inputs_download <- downloadHandler(
@@ -1682,7 +1682,6 @@ server <- function(input, output, session) {
       
       # browser()
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
-                                           "Assumptions" = rvs$Assumptions,
                                            "Baseline" = rvs$Baseline,
                                            "Projects" = rvs$Projects), 
                            file = file))
@@ -1973,15 +1972,15 @@ server <- function(input, output, session) {
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
     req(rvs$Projects)
 
-    rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping_projects2(input$bikeped_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping_projects(input$bikeped_projs_tbl_cell_edit,
                                                                        rvs$Projects,
-                                                                       is_year_table = TRUE,
                                                                        tbl_no = 1,
                                                                        col1 = 'area_type',
                                                                        col2 = 'facility_type',
-                                                                       horizon_year_1 = input$horizon_year_1,
-                                                                       horizon_year_2 = input$horizon_year_2,
-                                                                       horizon_year_3 = input$horizon_year_3)
+                                                                       col3 = 'unit',
+                                                                       input$horizon_year_1,
+                                                                       input$horizon_year_2,
+                                                                       input$horizon_year_3)
   })
   
  
@@ -1989,59 +1988,60 @@ server <- function(input, output, session) {
   observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
     req(rvs$Projects)
 
-    rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping_projects2(input$transit_fixed_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping_projects(input$transit_fixed_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 2,
                                                               col1 = 'area_type',
                                                               col2 = 'fuel_type',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                              col3 = 'transit_mode',
+                                                              col4 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
     })
   
   # observe edits to the transit_dr_projs_tbl_cell_edit
   observeEvent(input$transit_dr_projs_tbl_cell_edit, {
     req(rvs$Projects)
     
-    rvs$Projects[rvs$Projects$table_no_ui == 3,] <- reshaping_projects2(input$transit_dr_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 3,] <- reshaping_projects(input$transit_dr_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 3,
                                                               col1 = 'area_type',
                                                               col2 = 'fuel_type',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                              col3 = 'transit_mode',
+                                                              col4 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
   })
   
   # observe edits to the transit_el_projs_tbl
   observeEvent(input$transit_el_projs_tbl_cell_edit, {
     req(rvs$Projects)
-    # check dup
-    rvs$Projects[rvs$Projects$table_no_ui == 4,] <- reshaping_projects2(input$transit_el_projs_tbl_cell_edit,
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 4,] <- reshaping_projects(input$transit_el_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 4,
                                                               col1 = 'area_type',
                                                               col2 = 'fuel_type',
                                                               col3 = 'transit_mode',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                              col4 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
   })
   
   # observe edits to the transit_bus_projs_tbl  
   observeEvent(input$transit_bus_projs_tbl_cell_edit, {
 
-    rvs$Projects[rvs$Projects$table_no_ui == 5,] <- reshaping_projects2(input$transit_bus_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 5,] <- reshaping_projects(input$transit_bus_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 5,
                                                               col1 = 'unit',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2051,15 +2051,15 @@ server <- function(input, output, session) {
   # observe edits to the public_rail_projs table
   observeEvent(input$public_rail_projs_tbl_cell_edit, {
     
-    rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping_projects2(input$public_rail_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping_projects(input$public_rail_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 6,
                                                               col1 = 'fuel_type',
                                                               col2 = 'transit_mode',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                              col3 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2069,14 +2069,13 @@ server <- function(input, output, session) {
   # observe edits to the tdm_projs_tbl table
   observeEvent(input$tdm_projs_tbl_cell_edit, {
 
-    rvs$Projects[rvs$Projects$table_no_ui == 7,] <- reshaping_projects2(input$tdm_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 7,] <- reshaping_projects(input$tdm_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 7,
                                                               col1 = 'unit',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
 
 
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2086,14 +2085,13 @@ server <- function(input, output, session) {
   # observe edits to the micro_projs_tbl table
   observeEvent(input$micro_projs_tbl_cell_edit, {
     
-    rvs$Projects[rvs$Projects$table_no_ui == 8,] <- reshaping_projects2(input$micro_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 8,] <- reshaping_projects(input$micro_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 8,
                                                               col1 = 'unit',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2103,16 +2101,15 @@ server <- function(input, output, session) {
   # observe edits to the traffic_ops_projs_tbl table
   observeEvent(input$traffic_ops_projs_tbl_cell_edit, {
     
-    rvs$Projects[rvs$Projects$table_no_ui == 9,] <- reshaping_projects2(input$traffic_ops_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 9,] <- reshaping_projects(input$traffic_ops_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 9,
                                                               col1 = 'area_type',
                                                               col2 = 'road_class',
                                                               col3 = 'unit',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2122,15 +2119,15 @@ server <- function(input, output, session) {
   # observe edits to the mhdev_projs_tbl table
   observeEvent(input$mhdev_projs_tbl_cell_edit, {
     
-    rvs$Projects[rvs$Projects$table_no_ui == 10,] <- reshaping_projects2(input$mhdev_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 10,] <- reshaping_projects(input$mhdev_projs_tbl_cell_edit,
                                                               rvs$Projects,
-                                                              is_year_table = TRUE,
                                                               tbl_no = 10,
                                                               col1 = 'veh_type',
                                                               col2 = 'fuel_type',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                              col3 = 'unit',
+                                                              input$horizon_year_1,
+                                                              input$horizon_year_2,
+                                                              input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2140,14 +2137,13 @@ server <- function(input, output, session) {
   # observe edits to the mhdev_projs_tbl table
   observeEvent(input$pnr_projs_tbl_cell_edit, {
     
-    rvs$Projects[rvs$Projects$table_no_ui == 11,] <- reshaping_projects2(input$pnr_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 11,] <- reshaping_projects(input$pnr_projs_tbl_cell_edit,
                                                                rvs$Projects,
-                                                               is_year_table = TRUE,
                                                                tbl_no = 11,
                                                                col1 = 'unit',
-                                                               horizon_year_1 = input$horizon_year_1,
-                                                               horizon_year_2 = input$horizon_year_2,
-                                                               horizon_year_3 = input$horizon_year_3)
+                                                               input$horizon_year_1,
+                                                               input$horizon_year_2,
+                                                               input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2157,14 +2153,14 @@ server <- function(input, output, session) {
   # observe edits to the evsi_projs_tbl table
   observeEvent(input$evsi_projs_tbl_cell_edit, {
     
-    rvs$Projects[rvs$Projects$table_no_ui == 12,] <- reshaping_projects2(input$evsi_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 12,] <- reshaping_projects(input$evsi_projs_tbl_cell_edit,
                                                                rvs$Projects,
-                                                               is_year_table = TRUE,
                                                                tbl_no = 12,
                                                                col1 = 'charge_port_detail',
-                                                               horizon_year_1 = input$horizon_year_1,
-                                                               horizon_year_2 = input$horizon_year_2,
-                                                               horizon_year_3 = input$horizon_year_3)
+                                                               col2 = 'unit',
+                                                               input$horizon_year_1,
+                                                               input$horizon_year_2,
+                                                               input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2174,14 +2170,13 @@ server <- function(input, output, session) {
   # observe edits to the freight_projs_tbl table
   observeEvent(input$freight_projs_tbl_cell_edit, {
     
-    rvs$Projects[rvs$Projects$table_no_ui == 13,] <- reshaping_projects2(input$freight_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 13,] <- reshaping_projects(input$freight_projs_tbl_cell_edit,
                                                                rvs$Projects,
-                                                               is_year_table = TRUE,
                                                                tbl_no = 13,
                                                                col1 = 'unit',
-                                                               horizon_year_1 = input$horizon_year_1,
-                                                               horizon_year_2 = input$horizon_year_2,
-                                                               horizon_year_3 = input$horizon_year_3)
+                                                               input$horizon_year_1,
+                                                               input$horizon_year_2,
+                                                               input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2190,15 +2185,15 @@ server <- function(input, output, session) {
   # observe edits to the expansion_projs_tbl table
   observeEvent(input$expansion_projs_tbl_cell_edit, {
     
-    rvs$Projects[rvs$Projects$table_no_ui == 14,] <- reshaping_projects2(input$expansion_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 14,] <- reshaping_projects(input$expansion_projs_tbl_cell_edit,
                                                                rvs$Projects,
-                                                               is_year_table = TRUE,
                                                                tbl_no = 14,
                                                                col1 = 'area_type',
                                                                col2 = 'road_class',
-                                                               horizon_year_1 = input$horizon_year_1,
-                                                               horizon_year_2 = input$horizon_year_2,
-                                                               horizon_year_3 = input$horizon_year_3)
+                                                               col3 = 'unit',
+                                                               input$horizon_year_1,
+                                                               input$horizon_year_2,
+                                                               input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2293,7 +2288,7 @@ server <- function(input, output, session) {
     data_reactive = rvs$Assumptions,
     table_number = 1,
     is_year_table = FALSE,
-    non_editable_cols = c(0, 1),  #checkpoint
+    non_editable_cols = c(0, 1),
     page_length = 10,
     comma_rows = integer(0),
     percent_rows = integer(0),
@@ -2432,81 +2427,29 @@ server <- function(input, output, session) {
   # observe edits to bikeped_assmps
   observeEvent(input$bikeped_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
-
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 1,] <- reshaping_assmp(input$bikeped_assmps_tbl_cell_edit,
+    
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 1,] <- reshaping_projects(input$bikeped_assmps_tbl_cell_edit,
                                                                        rvs$Assumptions,
-                                                                       tbl_no = 1)
+                                                                       tbl_no = 1,
+                                                                       col1 = 'element',
+                                                                       col2 = 'unit')
   })
   
   
-  #observe edits to transit_assmps
-  observeEvent(input$transit_assmps_tbl_cell_edit, {
-    req(rvs$Assumptions)
-    
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 2,] <- reshaping_assmp(input$transit_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 2
-                                                                             )
-  })
-  
-  #observe edits to tdm_assmps
-  observeEvent(input$tdm_assmps_tbl_cell_edit, {
-    req(rvs$Assumptions)
-
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 3,] <- reshaping_assmp(input$tdm_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 3)
-  })
-  
-  #observe edits to micro_assmps
-  observeEvent(input$micro_assmps_tbl_cell_edit, {
-    req(rvs$Assumptions)
-    
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 4,] <- reshaping_assmp(input$micro_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 4)
-  })
-  
-  #observe edits to traffic_ops_assmps
-  observeEvent(input$traffic_ops_assmps_tbl_cell_edit, {
-    req(rvs$Assumptions)
-    
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 5,] <- reshaping_assmp(input$traffic_ops_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 5)
-  })
-  
-  
-  #observe edits to mhdv_assmps
-  observeEvent(input$mhdv_assmps_tbl_cell_edit, {
-    req(rvs$Assumptions)
-    
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 6,] <- reshaping_assmp(input$mhdv_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 6)
-  })
-
-  #observe edits to pnr_assmps
-  observeEvent(input$pnr_assmps_tbl_cell_edit, {
-    req(rvs$Assumptions)
-    
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 7,] <- reshaping_assmp(input$pnr_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 7)
-  })
-
-  #observe edits to evsi_assmps
-  observeEvent(input$evsi_assmps_tbl_cell_edit, {
-    req(rvs$Assumptions)
-    
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 8,] <- reshaping_assmp(input$evsi_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 8)
-  })
-  
-  # end of reshaping assumptions
-  
-  
+  # observe edits to 
+  # observeEvent(input$_tbl_cell_edit, {
+  #   req(rvs$Assumptions)
+  #   
+  #   rvs$Assumptions[rvs$Assumptions$table_no_ui == 1,] <- reshaping_projects(input$_tbl_cell_edit,
+  #                                                                            rvs$Assumptions,
+  #                                                                            tbl_no = 1,
+  #                                                                            col1 = 'area_type',
+  #                                                                            col2 = 'facility_type',
+  #                                                                            col3 = 'unit',
+  #                                                                            input$horizon_year_1,
+  #                                                                            input$horizon_year_2,
+  #                                                                            input$horizon_year_3)
+  # })
   observeEvent(input$transit_assmps_edit, {
     transit_assmps <<- editData(transit_assmps, input$transit_assmps_edit, 'transit_assmps_tbl')
   })
@@ -2594,12 +2537,11 @@ server <- function(input, output, session) {
   
   
   ## create tables -----------------------------------------------------------
-
-    output$bikeped_costs_tbl <- create_table(bikeped_costs,
+  
+  output$bikeped_costs_tbl <- create_table(bikeped_costs,
                                            list(target = 'row',
                                                 disable = list(columns = c(0,1)),
                                                 autoWidth = TRUE))
-
   
   output$transit_fixed_costs_tbl <- create_table(transit_fixed_costs,
                                                  list(target = 'row',
@@ -2725,138 +2667,6 @@ server <- function(input, output, session) {
     intermodal_costs <<- editData(intermodal_costs, input$intermodal_costs_edit, 'intermodal_costs_tbl')
   })
   
-  #reshaping
-  #observe change to bikeped_costs_tbl
-  observeEvent(input$bikeped_costs_tbl_cell_edit, {
-    req(rvs$Costs)
-
-    browser()
-    rvs$Costs[rvs$Costs$table_no_ui == 1,] <- reshaping_cost(input$bikeped_costs_tbl_cell_edit,
-                                                                          rvs$Costs,
-                                                                          tbl_no = 1)
-  })
-  
-
-  
-  ## observe change to transit_fixed_costs
-  observeEvent(input$transit_fixed_costs_tbl_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 2,] <- reshaping_cost(input$transit_fixed_costs_tbl_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 2)
-  })
-  
-  ## observe change to transit_dr_costs
-  observeEvent(input$transit_dr_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 3,] <- reshaping_cost(input$transit_dr_costs_cell_edit,
-                                                             rvs$Costs,
-                                                             tbl_no = 3)
-  })
-  
-  ## observe change to pub_trans_priority_costs
-  observeEvent(input$pub_trans_priority_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 4,] <- reshaping_assmp(input$pub_trans_priority_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 4)
-  })
-  
-  ## observe change to tdm_costs
-  observeEvent(input$tdm_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 5,] <- reshaping_assmp(input$tdm_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 5)
-  })
-  
-  
-  ## observe change to pub_trans_rail_costs
-  observeEvent(input$pub_trans_rail_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 6,] <- reshaping_assmp(input$pub_trans_rail_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 6)
-  })
-  
-  ## observe change to micro_costs
-  observeEvent(input$micro_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 7,] <- reshaping_assmp(input$micro_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 7)
-  })
-  
-  ## observe change to traffic_ops_costs
-  observeEvent(input$traffic_ops_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 8,] <- reshaping_assmp(input$traffic_ops_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 8)
-  })
-  
-  
-  ## observe change to mhdev_costs
-  observeEvent(input$mhdev_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 9,] <- reshaping_assmp(input$mhdev_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 9)
-  })
-  
-  
-  ## observe change to pnr_costs
-  observeEvent(input$pnr_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 10,] <- reshaping_assmp(input$pnr_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 10)
-  })
-  
-  ## observe change to evsi_costs
-  observeEvent(input$evsi_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 11,] <- reshaping_assmp(input$evsi_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 11)
-  })
-  
-  ## observe change to roadway_expand_costs
-  observeEvent(input$roadway_expand_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 12,] <- reshaping_assmp(input$roadway_expand_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 12)
-  })
-  
-  ## observe change to fuel_costs
-  observeEvent(input$fuel_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 13,] <- reshaping_assmp(input$fuel_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 13)
-  })
-  
-  ## observe change to intermodal_costs
-  observeEvent(input$intermodal_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 14,] <- reshaping_assmp(input$intermodal_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 14)
-  }) # end of reshaping
 
 # observe reset buttons for costs -----------------------------------------
 
@@ -3289,10 +3099,15 @@ server <- function(input, output, session) {
 
 
   #sl working ----
-  source("processing_scripts/processing_Base_Projections.R", local = T)
-  source("processing_scripts/processing_freight.R", local = T)
-  source("processing_scripts/processing_EVSE.R", local = T)
+  source("processing_scripts/processing_Base_Projections.R", local = TRUE)
+  #check for tables being edited
   
+  # observeEvent(EmRate_by_Tech(), { ### be careful to add everything that could update your outputs
+  #   browser()
+  #   # source("processing_scripts/processing_freight.R")
+  # })
+  
+  source("processing_scripts/processing_freight.R", local = T)
   #rvs update from different inputs
   #key_inputs update
   key_inputs_listen <- reactive({

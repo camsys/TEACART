@@ -1,119 +1,152 @@
-reshaping_projects2 <- function(user_data,
+
+reshaping_projects <- function(user_data,
                                rvs,
                                tbl_no,
                                col1,
-                               col2 = NA,
-                               col3 = NA,
+                               col2,
+                               col3,
+                               col4,
                                horizon_year_1,
                                horizon_year_2,
                                horizon_year_3){
   
-  no_row =  nrow(user_data)/length(unique(user_data$col))
-  modified_data <- data.frame(matrix(nrow = no_row))
-  for (i in 1:length(unique(user_data$col))) {
-    col_name <- paste0("var", i)
-    modified_data[[col_name]] = user_data$value[user_data$col == i-1]
-  }
+  print(paste0("RUNNING: Reshaping Function for table: ", tbl_no))
+  if(tbl_no == 2){browser()}
+  ## reshape the table
   
-  modified_data <- modified_data %>% 
-    select_if(~any(!is.na(.))) %>%
+  
+  if(length(unique(user_data$col)) == 4){
+    #browser()
+    var1 = user_data$value[user_data$col == 0]
+    var2 = user_data$value[user_data$col == 1]
+    var3 = user_data$value[user_data$col == 2]
+    var4 = user_data$value[user_data$col == 3]
+    
+    modified_data <- data.frame(var1 = var1,
+                                var2 = var2,
+                                var3 = var3,
+                                var4 = var4) %>%
+      pivot_longer(tail(names(.), 3), names_to = c("year"))%>%
+      mutate(year = case_when(year == 'var2' ~ "horizon_year_1",
+                              year == 'var3' ~ "horizon_year_2",
+                              year == 'var4' ~ "horizon_year_3")) %>%
+      mutate(value = as.numeric(value)) %>%
+      left_join(references, by = c("var1" = "description")) %>%
+      mutate(var1 = field) %>%
+      select(-field) 
+    
+    ##browser()
+    
+    
+    y_names = c('var1', 'year')
+    x_names = c(col1, 'year')
+    
+    updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']]%>%
+      left_join(modified_data, by = setNames(y_names,x_names)) # setNames(y,x)
+    ##browser()
+    return(updated_data)
+    
+  } else if(length(unique(user_data$col)) == 5){
+    var1 = user_data$value[user_data$col == 0]
+    var2 = user_data$value[user_data$col == 1]
+    var3 = user_data$value[user_data$col == 2]
+    var4 = user_data$value[user_data$col == 3]
+    var5 = user_data$value[user_data$col == 4]
+  
+  modified_data <- data.frame(var1 = var1,
+                              var2 = var2,
+                              var3 = var3,
+                              var4 = var4,
+                              var5 = var5) %>%
     pivot_longer(tail(names(.), 3), names_to = c("year"))%>%
-    mutate(year = case_when(year ==  colnames(modified_data)[length(colnames(modified_data)) - 2]~ "horizon_year_1",
-                            year == colnames(modified_data)[length(colnames(modified_data)) - 1] ~ "horizon_year_2",
-                            year == colnames(modified_data)[length(colnames(modified_data))] ~ "horizon_year_3")) %>%
-    mutate(value = as.numeric(value))
+    mutate(year = case_when(year == 'var3' ~ "horizon_year_1",
+                            year == 'var4' ~ "horizon_year_2",
+                            year == 'var5' ~ "horizon_year_3")) %>%
+    mutate(value = as.numeric(value)) %>%
+    left_join(references, by = c("var2" = "description")) %>%
+    mutate(var2 = field) %>%
+    select(-field) 
+  
+  ##browser()
+  
+  
+  y_names = c('var1','var2','year')
+  x_names = c(col1,col2,'year')
+  
+  updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']]%>%
+    left_join(modified_data, by = setNames(y_names,x_names)) # setNames(y,x)
+  ##browser()
+  return(updated_data)
+  
+  } else if(length(unique(user_data$col)) == 7){
+    
+    #browser()
+    var1 = user_data$value[user_data$col == 0]
+    var2 = user_data$value[user_data$col == 1]
+    var3 = user_data$value[user_data$col == 2]
+    var4 = user_data$value[user_data$col == 3]
+    var5 = user_data$value[user_data$col == 4]
+    var6 = user_data$value[user_data$col == 5]
+    var7 = user_data$value[user_data$col == 6]
+    
+    modified_data <- data.frame(var1 = var1,
+                                var2 = var2,
+                                var3 = var3,
+                                var4 = var4,
+                                var5 = var5,
+                                var6 = var6,
+                                var7 = var7) %>%
+      pivot_longer(tail(names(.), 3), names_to = c("year"))%>%
+      mutate(year = case_when(year == 'var5' ~ "horizon_year_1",
+                              year == 'var6' ~ "horizon_year_2",
+                              year == 'var7' ~ "horizon_year_3")) %>%
+      mutate(value = as.numeric(value)) %>%
+      left_join(references, by = c("var4" = "description")) %>%
+      mutate(var4 = field) %>%
+      select(-field)
+    
+    
+    y_names = c('var1','var2','var3','var4','year')#very janky how to deal with units column being renamed and then needing to be unrenamed
+    x_names = c(col1,col2,col3,col4,'year')
+    updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']]%>%
+      left_join(modified_data, by = setNames(y_names,x_names)) # setNames(y,x) 
 
-  if (!is.na(col3) & col3 == "unit"){
-    modified_data <- modified_data  %>%
+    return(updated_data)
+  }else if(length(unique(user_data$col)) == 6){
+    
+    var1 = user_data$value[user_data$col == 0]
+    var2 = user_data$value[user_data$col == 1]
+    var3 = user_data$value[user_data$col == 2]
+    var4 = user_data$value[user_data$col == 3]
+    var5 = user_data$value[user_data$col == 4]
+    var6 = user_data$value[user_data$col == 5]
+    
+    modified_data <- data.frame(var1 = var1,
+                                var2 = var2,
+                                var3 = var3,
+                                var4 = var4,
+                                var5 = var5,
+                                var6 = var6) %>%
+      pivot_longer(tail(names(.), 3), names_to = c("year"))%>%
+      mutate(year = case_when(year == 'var4' ~ "horizon_year_1",
+                              year == 'var5' ~ "horizon_year_2",
+                              year == 'var6' ~ "horizon_year_3")) %>%
+      mutate(value = as.numeric(value)) %>%
       left_join(references, by = c("var3" = "description")) %>%
       mutate(var3 = field) %>%
-      select(-field) }
-
-  if(length(unique(user_data$col)) == 4){ # when there is only one str field
-    y_names = c('year')
-    x_names = c('year')}
-  else if (length(unique(user_data$col)) == 5) { # specifically for tbl9, unit is needed for join. 
-    y_names = c('var1','year')
-    x_names = c(col1,'year')
-  }else if(!is.na(col3)){ # when three columns are needed for joining
+      select(-field) 
+    
+    ##browser()
+    
+    
     y_names = c('var1','var2','var3','year')
     x_names = c(col1,col2,col3,'year')
-  } else{ # all other table can be proper joined by 2 common fields.
-    y_names = c('var1','var2','year')
-    x_names = c(col1,col2,'year')
-  }
-
-  updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']] %>%
-    left_join(modified_data, by = setNames(y_names,x_names)) %>% # setNames(y,x) 
-  select(-contains("var"))
-
-  return(updated_data)
-}
-
-
-### assumption function
-reshaping_assmp <- function(user_data,
-                             rvs,
-                             tbl_no){
-  
-  no_row =  nrow(user_data)/length(unique(user_data$col))
-  modified_data <- data.frame(matrix(nrow = no_row))
-
-    for (i in 1:length(unique(user_data$col))) {
-    col_name <- paste0("var", i)
-    modified_data[[col_name]] = user_data$value[user_data$col == i-1]
-  }
-
-  names(modified_data)[length(names(modified_data))]<-"value"     ## change the last column name to value
-
-  modified_data <- modified_data[, colSums(!is.na(modified_data)) > 0] #  ## drop all na column
-
-  col_list <- c(colnames(modified_data)[-ncol(modified_data)])
-  
-  # another loop to join value from references.
-  for (var in col_list){
-    y_col = c('description')
-    x_col = c(var)
-    modified_data <- modified_data %>%
-      left_join(references,setNames(y_col,x_col)) %>%
-      mutate(field = ifelse(is.na(field),get(var),field)) %>%
-      select(-var) %>%
-      rename(!!var := field)  }
-
-  y_names = col_list
-  x_names = c(colnames( rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']][colSums(!is.na( rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']])) > 0])) 
-  x_names = x_names[-c(1,2,3)] # remove the first 'category','table_no_ui','table'
-  
-  updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']] %>%
-    left_join(modified_data, by = setNames(y_names,x_names)) %>% # setNames(y,x) 
-    select(-contains("var")) %>%
-    mutate(value = as.numeric(value))
-  
-   return(updated_data)
-}
-
-
-## reshape cost 
-reshaping_cost <- function(user_data,
-                   rvs,
-                   tbl_no){
-  # reshape the data
-  no_row =  nrow(user_data)/length(unique(user_data$col))
-  modified_data <- data.frame(matrix(nrow = no_row))
-  
-  for (i in 1:length(unique(user_data$col))) {
-    col_name <- paste0("var", i)
-    modified_data[[col_name]] = user_data$value[user_data$col == i-1]
+    
+    updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']] %>%
+      left_join(modified_data, by = setNames(y_names,x_names)) # setNames(y,x) 
+    ##browser()
+    
+    return(updated_data)
   }
   
-  browser()
-  
-  cols_to_pivot <- names(modified_data)[3:ncol(modified_data)]
-  
-  modified_data <- modified_data %>% 
-    select_if(~any(!is.na(.))) %>%
-    pivot_longer(cols = cols_to_pivot, names_to = c("unit"), values_to = "value")%>%
-    mutate(value = as.numeric(value))
-  
-  browser()
 }
