@@ -213,23 +213,25 @@ Passenger_Rail_FuelFactors <- Passenger_Rail_FuelFactors %>%
 
 # #Freight Rail ----------
 
-observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it in this indeterminate form for now
-#req('')
-  state_ch <- rvs$Baseline$state
-  browser()
-  #Freight rail inputs
-  input_FR_GrowthRate <- 0.006863941
-  input_FR_BTU_per_tonmile <- 297.5798656
-###End Freight rail inputs
-#need to add state filter to save memory
-Freight_Rail <- Freight_Rail_data
-for(yr in 2020:2050){
-  fr_temp <- Freight_Rail_data %>% mutate(year= yr) %>%
-    mutate(FR_million_tonmiles = FR_million_tonmiles*(1+input_FR_GrowthRate)^(yr-2019))
-  Freight_Rail <- rbind(Freight_Rail, fr_temp)
-}
-
-Freight_Rail <- Freight_Rail %>% mutate(FR_Diesel_Em = input_FR_BTU_per_tonmile/input_BTU_per_gallon_diesel*input_Diesel_CO2_kg_per_gallon*1000)
+#observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it in this indeterminate form for now
+  #req('')
+  #state_ch <- rvs$Baseline$state
+  #browser()
+#Freight rail inputs
+#input_FR_GrowthRate <- 0.006863941
+#input_FR_BTU_per_tonmile <- 297.5798656
+# 
+# Freight_Rail_data <- read.csv("Data Extracts/Freight_Rail_Data.csv")
+# ###End Freight rail inputs
+# #need to add state filter to save memory
+# Freight_Rail <- Freight_Rail_data
+# for(yr in 2020:2050){
+#   fr_temp <- Freight_Rail_data %>% mutate(year= yr) %>%
+#     mutate(FR_million_tonmiles = FR_million_tonmiles*(1+input_FR_GrowthRate)^(yr-2019))
+#   Freight_Rail <- rbind(Freight_Rail, fr_temp)
+# }
+# 
+# Freight_Rail <- Freight_Rail %>% mutate(FR_Diesel_Em = input_FR_BTU_per_tonmile/input_BTU_per_gallon_diesel*input_Diesel_CO2_kg_per_gallon*1000)
 
 })
 
