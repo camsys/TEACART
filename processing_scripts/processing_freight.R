@@ -80,7 +80,7 @@ output_freight <- reactive({
   capital_inputs <-
     rv$Projects %>% 
     filter(category == "Freight Intermodal Facilities") %>% 
-    select(year, unit, value) %>% 
+    select(year, charge_port_detail, unit, value) %>% ### needs to be renamed DCFC level
     pivot_wider(names_from = unit, values_from = value)
   
   

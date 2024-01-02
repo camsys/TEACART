@@ -3286,6 +3286,8 @@ server <- function(input, output, session) {
   #sl working ----
   source("processing_scripts/processing_Base_Projections.R", local = T)
   source("processing_scripts/processing_freight.R", local = T)
+  source("processing_scripts/processing_EVSE.R", local = T)
+  
   #rvs update from different inputs
   #key_inputs update
   key_inputs_listen <- reactive({
