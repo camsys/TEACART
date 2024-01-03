@@ -1724,7 +1724,7 @@ server <- function(input, output, session) {
   #create project tables -----------------------------------------------------------
   
   # rendering bike ped table
-
+  
   output$bikeped_projs_tbl <- renderDT({
     #req(rvs$Projects)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
@@ -1904,7 +1904,7 @@ server <- function(input, output, session) {
     render_custom_datatable_SLVER(
       data_reactive = temp_send,
       table_number = 11,
-      non_editable_cols = c(0,1),
+      non_editable_cols = c(0),
       page_length = 1,
       comma_rows = 0,
       percent_rows = integer(0),
@@ -2372,7 +2372,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Assumptions,
       table_number = 7,
       is_year_table = FALSE,
-      non_editable_cols = c(0, 1),
+      non_editable_cols = c(0),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2578,16 +2578,20 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
 
-
+  # output$bikeped_costs_tbl <- create_table(bikeped_costs,
+  #                                          list(target = 'row',
+  #                                               disable = list(columns = c(0,1)),
+  #                                               autoWidth = TRUE))
     output$bikeped_costs_tbl <- renderDT({
     req(rvs$Costs)
-    
+
     render_custom_datatable_SLVER(
       data_reactive = rvs$Costs,
       table_number = 1,
       is_year_table = FALSE,
-      non_editable_cols = c(0:2),
-      page_length = 10,
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:1),
+      page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = c(0:10),
@@ -2602,7 +2606,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 2,
       is_year_table = FALSE,
-      non_editable_cols = c(0:3),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:2),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2617,7 +2622,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 3,
       is_year_table = FALSE,
-      non_editable_cols = c(0:3),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:2),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2632,6 +2638,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 4,
       is_year_table = FALSE,
+      is_cost_table = TRUE,
       non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
@@ -2647,7 +2654,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 5,
       is_year_table = FALSE,
-      non_editable_cols = c(0:2),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:1),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2662,6 +2670,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 6,
       is_year_table = FALSE,
+      is_cost_table = TRUE,
       non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
@@ -2677,6 +2686,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 7,
       is_year_table = FALSE,
+      is_cost_table = TRUE,
       non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
@@ -2692,7 +2702,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 8,
       is_year_table = FALSE,
-      non_editable_cols = c(0:3),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:2),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2707,7 +2718,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 9,
       is_year_table = FALSE,
-      non_editable_cols = c(0:2),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:1),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2715,13 +2727,18 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
   })
   
+  # output$pnr_costs_tbl <- create_table(pnr_costs,
+  #                                      list(target = 'row',
+  #                                           disable = list(columns = c(0,1)),
+  #                                           autoWidth = TRUE))
   output$pnr_costs_tbl <- renderDT({
     req(rvs$Costs)
-    
+
     render_custom_datatable_SLVER(
       data_reactive = rvs$Costs,
       table_number = 10,
       is_year_table = FALSE,
+      is_cost_table = TRUE,
       non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
@@ -2737,7 +2754,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 11,
       is_year_table = FALSE,
-      non_editable_cols = c(0:1),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2752,7 +2770,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 12,
       is_year_table = FALSE,
-      non_editable_cols = c(0:2),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:1),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2762,18 +2781,23 @@ server <- function(input, output, session) {
   
   output$fuel_costs_tbl <- renderDT({
     req(rvs$Costs)
-    
+
     render_custom_datatable_SLVER(
       data_reactive = rvs$Costs,
       table_number = 13,
       is_year_table = FALSE,
-      non_editable_cols = c(0:1),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = c(0:10),
       decimal_rows = integer(0))
   })
+  # output$fuel_costs_tbl <- create_table(fuel_costs,
+  #                                       list(target = 'row',
+  #                                            disable = list(columns = c(0,1)),
+  #                                            autoWidth = TRUE))
   
   output$intermodal_costs_tbl <- renderDT({
     req(rvs$Costs)
@@ -2782,6 +2806,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 14,
       is_year_table = FALSE,
+      is_cost_table = TRUE,
       non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
@@ -2853,11 +2878,16 @@ server <- function(input, output, session) {
   #observe change to bikeped_costs_tbl
   observeEvent(input$bikeped_costs_tbl_cell_edit, {
     req(rvs$Costs)
-
-    browser()
+# checkpoint
     rvs$Costs[rvs$Costs$table_no_ui == 1,] <- reshaping_cost(input$bikeped_costs_tbl_cell_edit,
-                                                                          rvs$Costs,
-                                                                          tbl_no = 1)
+                                                             rvs$Costs,
+                                                             num_col = 2,
+                                                             tbl_no = 1,
+                                                             unit1 = 'per_mile_cost',
+                                                             unit2 = 'per_mile_maintain_cost',
+                                                             col_list = c('area_type',
+                                                                          'cap_proj_type',
+                                                                          'unit'))
   })
   
 
@@ -2867,120 +2897,182 @@ server <- function(input, output, session) {
     req(rvs$Costs)
     
     rvs$Costs[rvs$Costs$table_no_ui == 2,] <- reshaping_cost(input$transit_fixed_costs_tbl_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 2)
+                                                             rvs$Costs,
+                                                             num_col = 3, # how many numeric columns 
+                                                             tbl_no = 2,
+                                                             unit1 = 'per_veh_cap_cost',
+                                                             unit2 = 'per_VRM_fuel_cost',
+                                                             unit3 = 'per_VRM_onm_cost',
+                                                             col_list = c('area_type',
+                                                                          'fuel_type',
+                                                                          'unit'))
   })
   
   ## observe change to transit_dr_costs
-  observeEvent(input$transit_dr_costs_cell_edit, {
+  observeEvent(input$transit_dr_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 3,] <- reshaping_cost(input$transit_dr_costs_cell_edit,
+        rvs$Costs[rvs$Costs$table_no_ui == 3,] <- reshaping_cost(input$transit_dr_costs_tbl_cell_edit,
                                                              rvs$Costs,
-                                                             tbl_no = 3)
+                                                             tbl_no = 3,
+                                                             num_col = 3, # how many numeric columns,
+                                                             unit1 = 'per_veh_cap_cost',
+                                                             unit2 = 'per_VRM_fuel_cost',
+                                                             unit3 = 'per_VRM_onm_cost',
+                                                             col_list = c('area_type',
+                                                                          'fuel_type',
+                                                                          'transit_mode',
+                                                                          'unit'))
   })
   
   ## observe change to pub_trans_priority_costs
-  observeEvent(input$pub_trans_priority_costs_cell_edit, {
-    req(rvs$Costs)
+  observeEvent(input$pub_trans_priority_costs_tbl_cell_edit, {
+    req(rvs$Costs)  
     
-    rvs$Costs[rvs$Costs$table_no_ui == 4,] <- reshaping_cost(input$pub_trans_priority_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 4)
-  })
-  
-  # qi - is this right? switches from cost to assmp
-  ## observe change to tdm_costs
-  observeEvent(input$tdm_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 5,] <- reshaping_assmp(input$tdm_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 5)
+    rvs$Costs[rvs$Costs$table_no_ui == 4,] <- reshaping_cost(input$pub_trans_priority_costs_tbl_cell_edit,
+                                                             rvs$Costs,
+                                                             tbl_no = 4,
+                                                             num_col = 1,
+                                                             col_list = c('unit')
+                                                             )
   })
   
   
   ## observe change to pub_trans_rail_costs
-  observeEvent(input$pub_trans_rail_costs_cell_edit, {
+  observeEvent(input$pub_trans_rail_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 6,] <- reshaping_assmp(input$pub_trans_rail_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 5,] <- reshaping_cost(input$pub_trans_rail_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 6)
+                                                              tbl_no = 5,
+                                                              num_col = 3, # how many numeric columns,
+                                                              unit1 = 'per_veh_cap_cost',
+                                                              unit2 = 'per_VRM_fuel_cost',
+                                                              unit3 = 'per_VRM_onm_cost',
+                                                              col_list = c('fuel_type',
+                                                                           'transit_mode',
+                                                                           'unit')
+                                                              )
+  })
+  
+
+  ## observe change to pub_trans_rail_costs
+  observeEvent(input$tdm_costs_tbl_cell_edit, {
+    req(rvs$Costs)
+    
+    rvs$Costs[rvs$Costs$table_no_ui == 6,] <- reshaping_cost(input$tdm_costs_tbl_cell_edit,
+                                                             rvs$Costs,
+                                                             tbl_no = 6,
+                                                             num_col = 1,
+                                                             col_list = c('unit'))
   })
   
   ## observe change to micro_costs
-  observeEvent(input$micro_costs_cell_edit, {
+  observeEvent(input$micro_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 7,] <- reshaping_assmp(input$micro_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 7)
+    rvs$Costs[rvs$Costs$table_no_ui == 7,] <- reshaping_cost(input$micro_costs_tbl_cell_edit,
+                                                             rvs$Costs,
+                                                             tbl_no = 7,
+                                                             num_col = 1,
+                                                             col_list = c('unit'))
   })
   
   ## observe change to traffic_ops_costs
-  observeEvent(input$traffic_ops_costs_cell_edit, {
+  observeEvent(input$traffic_ops_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 8,] <- reshaping_assmp(input$traffic_ops_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 8,] <- reshaping_cost(input$traffic_ops_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 8)
+                                                              tbl_no = 8,
+                                                              num_col = 2, # how many numeric columns,
+                                                              unit1 = 'annual_maintenance_cost',
+                                                              unit2 = 'cost_per_improvement',
+                                                              col_list = c('road_class',
+                                                                           'area_type',
+                                                                           'cap_proj_type',
+                                                                           'unit'))
   })
   
   
   ## observe change to mhdev_costs
-  observeEvent(input$mhdev_costs_cell_edit, {
+  observeEvent(input$mhdev_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 9,] <- reshaping_assmp(input$mhdev_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 9,] <- reshaping_cost(input$mhdev_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 9)
+                                                              tbl_no = 9,
+                                                              num_col = 3, # how many numeric columns,
+                                                              unit1 = 'per_VRM_fuel_cost',
+                                                              unit2 = 'per_mile_onm_cost',
+                                                              unit3 = 'per_veh_cap_cost',
+                                                              col_list = c('fuel_type',
+                                                                           'veh_type',
+                                                                           'unit'))
   })
   
   
   ## observe change to pnr_costs
-  observeEvent(input$pnr_costs_cell_edit, {
+  observeEvent(input$pnr_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 10,] <- reshaping_assmp(input$pnr_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 10,] <- reshaping_cost(input$pnr_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 10)
+                                                              tbl_no = 10,
+                                                              num_col = 1,
+                                                              col_list = c('unit'))
   })
   
   ## observe change to evsi_costs
-  observeEvent(input$evsi_costs_cell_edit, {
+  observeEvent(input$evsi_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 11,] <- reshaping_assmp(input$evsi_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 11,] <- reshaping_cost(input$evsi_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 11)
+                                                              tbl_no = 11,
+                                                              num_col = 2, # how many numeric columns,
+                                                              unit1 = 'per_unit_hardware_cost',
+                                                              unit2 = 'per_unit_installation_cost',
+                                                              col_list = c('DCFC_level',
+                                                                           'unit'))
   })
   
   ## observe change to roadway_expand_costs
-  observeEvent(input$roadway_expand_costs_cell_edit, {
+  observeEvent(input$roadway_expand_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 12,] <- reshaping_assmp(input$roadway_expand_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 12,] <- reshaping_cost(input$roadway_expand_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 12)
+                                                              tbl_no = 12,
+                                                              num_col = 2, # how many numeric columns,
+                                                              unit1 = 'per_ln_mile_cap_cost',
+                                                              unit2 = 'per_ln_mile_cost',
+                                                              col_list = c('road_class',
+                                                                           'area_type',
+                                                                           'unit'))
   })
   
   ## observe change to fuel_costs
-  observeEvent(input$fuel_costs_cell_edit, {
+  observeEvent(input$fuel_costs_tbl_cell_edit, {
     req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 13,] <- reshaping_assmp(input$fuel_costs_cell_edit,
+
+    rvs$Costs[rvs$Costs$table_no_ui == 13,] <- reshaping_cost(input$fuel_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 13)
+                                                              tbl_no = 13,
+                                                              num_col = 1, # how many numeric columns,
+                                                              col_list = c('fuel_type'))
   })
+ 
   
   ## observe change to intermodal_costs
-  observeEvent(input$intermodal_costs_cell_edit, {
+  observeEvent(input$intermodal_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 14,] <- reshaping_assmp(input$intermodal_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 14,] <- reshaping_cost(input$intermodal_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 14)
+                                                              tbl_no = 14,
+                                                              num_col = 1,
+                                                              col_list = c('unit'))
   }) # end of reshaping
 
 # observe reset buttons for costs -----------------------------------------
@@ -3424,7 +3516,7 @@ server <- function(input, output, session) {
   #   # source("processing_scripts/processing_freight.R")
   # })
   
-  source("processing_scripts/processing_freight.R", local = T)
+  #source("processing_scripts/processing_freight.R", local = T)
   #rvs update from different inputs
   #key_inputs update
   key_inputs_listen <- reactive({
