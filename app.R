@@ -60,13 +60,26 @@ ui <- function(request) {
         font_scale = NULL,
         preset = "pulse",
         bg = "#fff"
-      ),
-      tags$style(HTML(
-        '
+      ), 
+      # #a0cf66 is a georgetown color but intense - color below is a milder variation
+      tags$head(
+        tags$style(HTML("
+            .accordion-button.collapsed {
+                background-color: #f5f0e4;
+            }
+        ")),
+        tags$style(HTML("
+            .btn-custom {
+                background-color: #f5f0e4 !important;;
+            }
+        ")),
+        tags$style(HTML(
+          '
       .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
       .nav.navbar-nav .form-group.shiny-input-container > label {display: inline;}
         '
-      )),
+        )),
+      ),
       title = "TEA-CART",
       sidebar = sidebar(fileInput("user_inputs_upload",
                                   "Upload User Inputs",
@@ -1660,14 +1673,6 @@ server <- function(input, output, session) {
     }
   }, ignoreNULL = F, ignoreInit = F)
 
-  # ## Example of how to modify the reactiveValues
-  # observeEvent(rv$Capital_Project_Inputs, { ### may be good to use observe instead
-  #   # browser()
-  #   rv$random_calculated_table <- rv$Capital_Project_Inputs %>% filter(value == 4)
-  #   print(rv$random_calculated_table)
-  # })
-
-    
   # Download user inputs -------------------------------------------------------
 
   output$user_inputs_download <- downloadHandler(
@@ -3511,13 +3516,11 @@ server <- function(input, output, session) {
   #source("processing_scripts/processing_RoadwayExp.R", local = TRUE)
   #check for tables being edited
   
-  # observeEvent(EmRate_by_Tech(), { ### be careful to add everything that could update your outputs
-  #   browser()
-  #   # source("processing_scripts/processing_freight.R")
-  # })
-  
-  #source("processing_scripts/processing_freight.R", local = T)
-  #rvs update from different inputs
+
+  source("processing_scripts/processing_freight.R", local = T)
+  source("processing_scripts/processing_EVSE.R", local = T)
+
+    #rvs update from different inputs
   #key_inputs update
   key_inputs_listen <- reactive({
     list(input$state_input,

@@ -47,15 +47,9 @@
 
 ### REACTIVE -----
 
-observeEvent(EmRate_by_Tech(), {
- # browser()
-EmRate_by_Tech() %>% filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks"), str_detect(fuel_type, "ICE"))
-
-
 intermodal_investment_factor_truck <- -72103.0
 intermodal_investment_factor_rail <- 1021459
 # fuel_factor_mdhd_weighted <- c("nox" = 2.748, "pm25_exhaust" = 0.062, "pm25_tiresBrakes" = 0.012)
-
 # observeEvent(list(EmRate_by_Tech(), VMT_Forecast()), { ### uncomment this line and browser and comment below to test!
 output_freight <- reactive({
   req(EmRate_by_Tech(), VMT_Forecast())
@@ -77,7 +71,7 @@ output_freight <- reactive({
     mutate(state_emission_rate = emission_rate * state_pct_of_category) %>%
     filter(!(veh_type == "Heavy Duty Trucks" & veh_subtype == "Gasoline")) %>%
     summarize("emissions_avg" = sum(state_emission_rate), .by = c(year))
-    
+  
   emissions_avg_rail <-
     as.numeric(pull(filter(rv$Advanced, unit == "energy_intensity"), value)) / 128500 * 1000 * 
     pull(filter(Fuel_Factors_Revision, str_detect(fuel_type, "Diesel")), fuel_carbon_content)[[1]] #128500 still needs to be added to somewhere....
@@ -85,7 +79,7 @@ output_freight <- reactive({
   capital_inputs <-
     rv$Projects %>% 
     filter(category == "Freight Intermodal Facilities") %>% 
-    select(year, unit, value) %>% 
+    select(year, charge_port_detail, unit, value) %>% ### needs to be renamed DCFC level
     pivot_wider(names_from = unit, values_from = value)
   
   
@@ -103,7 +97,5 @@ output_freight <- reactive({
            total_change_electricity = 0,
            total_change_mtnox = truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["NOx_g_per_veh_mi_avg"]] / 1000000,
            total_change_pm25 = (truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["PM25_exhaust_avg"]] +
-           truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["PM25_tires_brakes_avg"]]) / 1000000)
+                                  truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["PM25_tires_brakes_avg"]]) / 1000000)
 })
-
-
