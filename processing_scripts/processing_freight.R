@@ -99,4 +99,3 @@ output_freight <- reactive({
            total_change_pm25 = (truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["PM25_exhaust_avg"]] +
                                   truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["PM25_tires_brakes_avg"]]) / 1000000)
 })
-

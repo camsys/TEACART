@@ -268,3 +268,11 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
   
 })
 
+### VMT_Forecast ----------------
+### these tables don't have to be show to the user, but it is helpful to have them as reactive tables
+VMT_Forecast <- reactive({
+  AEO_VMT %>%
+    left_join(y = State_Populations %>% filter(state == rv$Baseline$state) %>% select(year, state_pct_of_national), by = join_by(year)) %>%
+    mutate(state_vmt = VMT_AEO * state_pct_of_national) # state VMT forecast
+})
+
