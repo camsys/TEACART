@@ -60,13 +60,26 @@ ui <- function(request) {
         font_scale = NULL,
         preset = "pulse",
         bg = "#fff"
-      ),
-      tags$style(HTML(
-        '
+      ), 
+      # #a0cf66 is a georgetown color but intense - color below is a milder variation
+      tags$head(
+        tags$style(HTML("
+            .accordion-button.collapsed {
+                background-color: #dbebc3;
+            }
+        ")),
+        tags$style(HTML("
+            .btn-custom {
+                background-color: #dbebc3 !important;;
+            }
+        ")),
+        tags$style(HTML(
+          '
       .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
       .nav.navbar-nav .form-group.shiny-input-container > label {display: inline;}
         '
-      )),
+        )),
+      ),
       title = "TEA-CART",
       sidebar = sidebar(fileInput("user_inputs_upload",
                                   "Upload User Inputs",
