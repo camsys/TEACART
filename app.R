@@ -1660,13 +1660,13 @@ server <- function(input, output, session) {
     }
   }, ignoreNULL = F, ignoreInit = F)
 
-  # ## Example of how to modify the reactiveValues
-  # observeEvent(rv$Capital_Project_Inputs, { ### may be good to use observe instead
-  #   # browser()
-  #   rv$random_calculated_table <- rv$Capital_Project_Inputs %>% filter(value == 4)
-  #   print(rv$random_calculated_table)
-  # })
-
+  ### INTERMEDIATE TABLES ----------------
+  ### these tables don't have to be show to the user, but it is helpful to have them as reactive tables
+  VMT_Forecast <- reactive({
+    AEO_VMT %>%
+      left_join(y = State_Populations %>% filter(state == rv$Baseline$state) %>% select(year, state_pct_of_national), by = join_by(year)) %>%
+      mutate(state_vmt = VMT_AEO * state_pct_of_national) # state VMT forecast
+  })
     
   # Download user inputs -------------------------------------------------------
 
@@ -3419,12 +3419,8 @@ server <- function(input, output, session) {
   #source("processing_scripts/processing_RoadwayExp.R", local = TRUE)
   #check for tables being edited
   
-  # observeEvent(EmRate_by_Tech(), { ### be careful to add everything that could update your outputs
-  #   browser()
-  #   # source("processing_scripts/processing_freight.R")
-  # })
-  
   source("processing_scripts/processing_freight.R", local = T)
+  source("processing_scripts/processing_EVSE.R", local = T)
   #rvs update from different inputs
   #key_inputs update
   key_inputs_listen <- reactive({
