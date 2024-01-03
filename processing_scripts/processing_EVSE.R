@@ -104,12 +104,16 @@ output_EVSE <- reactive({
     select(DCFC_level, unit, value) %>% 
     pivot_wider(names_from = "unit", values_from = "value")
   
-  EmRate_by_Tech() %>% distinct(veh_type)
-  filter(veh_type == "Light Duty Trucks")
+  # EmRate_by_Tech() %>% distinct(veh_type)
+  # filter(veh_type == "Light Duty Trucks")
   
   capital_inputs <-
     rv$Projects %>% 
     filter(category == "EV Charging Infrastructure") %>% 
     select(year, charge_port_detail, unit, value) %>% 
     pivot_wider(names_from = unit, values_from = value)
+  
+  Tech_Frac_Vision %>%
+    left_join(select(VMT_Forecast(), veh_type, year, state_vmt), by = join_by(veh_type, year)) %>%
+    mutate(state_vmt_by_subtype = state_vmt * aeo_tech_frac)
 })
