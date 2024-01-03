@@ -65,12 +65,12 @@ ui <- function(request) {
       tags$head(
         tags$style(HTML("
             .accordion-button.collapsed {
-                background-color: #dbebc3;
+                background-color: #f5f0e4;
             }
         ")),
         tags$style(HTML("
             .btn-custom {
-                background-color: #dbebc3 !important;;
+                background-color: #f5f0e4 !important;;
             }
         ")),
         tags$style(HTML(
