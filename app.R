@@ -241,14 +241,9 @@ ui <- function(request) {
         accordion(
           accordion_panel(
                "Transit: Increased Fixed Route Service (new Vehicles Operating in Maximum Service)",
-               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-               tempor incididunt ut labore et dolore magna aliqua. Ut enim ad 
-               minim veniam, quis nostrud exercitation ullamco laboris nisi ut 
-               aliquip ex ea commodo consequat. Duis aute irure dolor in 
-               reprehenderit in voluptate velit esse cillum dolore eu fugiat 
-               nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
-               sunt in culpa qui officia deserunt mollit anim id est laborum."
-               ),
+               HTML("This category represents additions of <b>new fixed route service vehicles operated in maximum service (VOMS).</b> 
+               Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
+               )),
           open = FALSE
         ),
         ),
@@ -268,14 +263,10 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Transit: Increased Demand Response Service (new Vehicles Operating in Maximum Service)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of any <b>new demand response service vehicles operated in maximum service (VOMS).</b> 
+              Demand response service vehicles include non-fixed route services that are initiated by customers and require advanced scheduling, 
+                        such as vehicles provided by public entities, nonprofits, and private providers."
+                   ),
 
                  ),
                  open = FALSE
@@ -297,14 +288,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Fleet Electrification (number of vehicles replaced)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
+                        with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
 
                  ),
                  open = FALSE
@@ -326,14 +311,10 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Public Transportation: Bus Priority Treatment (number of units)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of miles of <b>new bus priority treatment</b>. Bus priority treatment refers 
+                        to the improvement of transit speed and reliability between stops by changing the designation of street space. 
+                        Some examples include a bus-only lane, which assigns exclusive street space to buses, and a bus approach lane, 
+                        which assigns exclusive street spaces to buses as they approach an intersection.",)
 
                  ),
                  open = FALSE
@@ -355,14 +336,7 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Public Transportation: Rail (new Vehicles Operating in Maximum Service / VOMS)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>.",)
 
                  ),
                  open = FALSE
@@ -385,14 +359,9 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Travel Demand Management / TDM (number of units)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents the <b>number of employees covered through the TDM Program Outreach </b>. 
+                   TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
+                   reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",)
 
                  ),
                  open = FALSE
@@ -414,14 +383,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Micromobility (number of units)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents the <b>number of e-bikes funded </b> through the implementation of <b> e-bike subsidies </b>. 
+                   An e-bike subsidy reimburses part of the cost of an e-bike.",)
 
                  ),
                  open = FALSE
@@ -443,14 +406,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Traffic Operations",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>improvements made to traffic operations at intersections </b>, 
+                   such as new or retimed signals or new roundabouts.",)
 
                  ),
                  open = FALSE
@@ -472,14 +429,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents <b>replacement of any fossil fuel medium or heavy-duty vehicles with electric vehicles</b>, 
+                   with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle.",)
 
                  ),
                  open = FALSE
@@ -502,14 +453,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Park & Ride Projects",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>new addition or expansion of Park and Ride spaces</b>. A Park and Ride space 
+                   allows private transport users to park their vehicles at a large parking space and continue their commute via public transport.",)
 
                  ),
                  open = FALSE
@@ -531,14 +476,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "EV Charging Infrastructure",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
+                   EV charging ports supply electric power for recharging electric vehicles.",)
 
                  ),
                  open = FALSE
@@ -560,14 +499,7 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Freight Intermodal Facilities",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>intermodal freight investment</b>, expressed in millions of dollars.",)
 
                  ),
                  open = FALSE
@@ -590,14 +522,7 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Roadway Expansion",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of any <b>new lane-miles of roadways.</b>",)
 
                  ),
                  open = FALSE
@@ -1467,6 +1392,10 @@ ui <- function(request) {
 
 # outputs tab ui ----------------------------------------------------------
 
+
+# baseline outputs ui -----------------------------------------------------
+
+
       nav_panel(title = "Outputs",
                 navset_card_pill(
                   placement = "above",
@@ -1478,6 +1407,11 @@ ui <- function(request) {
                             DT::dataTableOutput("baseline_outputs")
                             
                   ),
+                  
+
+# scenario and strategy summary ui ----------------------------------------
+
+                  
                   nav_panel(title = "Scenario and Strategy Summary",
                             fluidRow(
                               p(""),
@@ -1503,9 +1437,14 @@ ui <- function(request) {
                               column(6,
                                      plotlyOutput("emission_change_graph", width = "auto", height = "auto"))),
                   ),
+
+# cost effectiveness ui ---------------------------------------------------
+
                   nav_panel(title = "Cost effectiveness",
                             fluidRow(
-                              p(""),
+                              radioButtons(inputId = "cost_view",
+                                           "Level of detail:",
+                                           c("Detail results" = "detail", "Summary results" = "summary")),
                               p("All results are reported in terms of annual change per $M investment."),
                               h3("Bicycle & Pedestrian"),
                               p(""),
@@ -1657,6 +1596,7 @@ server <- function(input, output, session) {
   
   rv <- reactiveValues()
   rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
+  rvs_out <- read_output_tables(".\\data\\3.Model_Outputs.xlsx")
   
   # Initiate or Upload User Inputs -------------------------------------------
   
@@ -3502,7 +3442,7 @@ server <- function(input, output, session) {
   })
   
   
-  # server costs outputs ----------------------------------------------------
+  # server cost effectiveness outputs ----------------------------------------------------
   
   costs_outputs_names <- c("bikeped_costs_outputs",
                            "transit_fixed_costs_outputs",
@@ -3525,18 +3465,31 @@ server <- function(input, output, session) {
   
   # note that the tables below are not using the editable table function
   
+ # adrienne working here - error I'm getting is that it's not finding inputs
+  
+  
   output$bikeped_costs_outputs_tbl <- renderDT({
-    datatable(bikeped_costs_outputs,
-              extensions = c('RowGroup','Buttons'),
-              options = list(rowGroup = list(columns = c(0)),
-                             columnDefs = list(list(visible = FALSE,
-                                                    targets = c(0))),
-                             autoWidth = TRUE,
-                             width = '100%',
-                             dom = 'tB',
-                             buttons = c('copy', 'csv', 'excel', 'pdf')),
-              rownames = FALSE) |>
-      formatRound(c(3:7),1)})
+    req(rvs_out$cost_output)
+    req(input$cost_view)
+
+    render_custom_datatable_costs_outputs(
+      data_reactive = rvs_out$cost_output,
+      table_number = 1,
+      page_length = 21
+      )})
+  
+    # renderDT({
+    # datatable(bikeped_costs_outputs,
+    #           extensions = c('RowGroup','Buttons'),
+    #           options = list(rowGroup = list(columns = c(0)),
+    #                          columnDefs = list(list(visible = FALSE,
+    #                                                 targets = c(0))),
+    #                          autoWidth = TRUE,
+    #                          width = '100%',
+    #                          dom = 'tB',
+    #                          buttons = c('copy', 'csv', 'excel', 'pdf')),
+    #           rownames = FALSE) |>
+    #   formatRound(c(3:7),1)})
   
   output$transit_fixed_costs_outputs_tbl <- renderDT(transit_fixed_costs_outputs,
                                                      rownames = FALSE)
