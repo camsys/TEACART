@@ -169,3 +169,60 @@ reshaping_cost <- function(user_data,
   return(updated_data)
   
 }
+
+# reshape advanced table
+reshaping_advanced <- function(user_data,
+                            rvs,
+                            tbl_no,
+                            col_list = c()){
+  
+  no_row =  nrow(user_data)/length(unique(user_data$col))
+  modified_data <- data.frame(matrix(nrow = no_row))
+  
+  for (i in 1:length(unique(user_data$col))) {
+    col_name <- paste0("var", i)
+    modified_data[[col_name]] = user_data$value[user_data$col == i-1]
+  }
+  
+  browser()
+  
+  if (tbl_no %in% c(1,2)){
+  modified_data <- modified_data[, colSums(!is.na(modified_data)) > 0] %>%
+    pivot_longer(cols = !(var1), names_to = 'year') %>%
+    mutate(year = as.numeric(gsub("var", "", year))+ 2019)
+  } else {
+    names(modified_data)[length(names(modified_data))]<-"value"     ## change the last column name to value
+    
+    modified_data <- modified_data[, colSums(!is.na(modified_data)) > 0] #  ## drop all na column
+    
+    # match with references
+    for (var in c(colnames(modified_data)[-ncol(modified_data)])){
+      y_col = c('description')
+      x_col = c(var)
+      modified_data <- modified_data %>%
+        left_join(references,setNames(y_col,x_col)) %>%
+        mutate(field = ifelse(is.na(field),get(var),field)) %>%
+        select(-var) %>%
+        rename(!!var := field)  }
+  }
+  
+  if (!('unit' %in% col_list) & tbl_no > 2){
+    y_names = c(colnames(modified_data)[-ncol(modified_data)])
+    y_names = y_names[y_names != 'value']  
+    } else {
+    y_names = c(colnames(modified_data))
+    y_names = y_names[y_names != 'value']  
+  }
+  x_names = c(col_list)
+  
+  
+  browser()
+  updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']] %>%
+    left_join(modified_data, by = setNames(y_names,x_names)) %>% # setNames(y,x) 
+    select(-contains("var")) 
+  
+  browser()
+  
+  return(updated_data)
+}
+

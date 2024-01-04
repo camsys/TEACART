@@ -1377,7 +1377,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Title",
+                             "Freight Rail",
                              "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
                              sed do eiusmod tempor incididunt ut labore et dolore magna
                              aliqua. Ut enim ad minim veniam, quis nostrud exercitation
@@ -1669,8 +1669,9 @@ server <- function(input, output, session) {
     
     # Assign each table in user_inputs to rv
     for(name in names(user_inputs)) {
-      rv[[name]] <- user_inputs[[name]]
+      rvs[[name]] <- user_inputs[[name]]
     }
+    
   }, ignoreNULL = F, ignoreInit = F)
 
   # Download user inputs -------------------------------------------------------
@@ -1681,11 +1682,14 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       
-      # browser()
-      return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
+      references <- read_xlsx(".\\data\\2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
+      
+            return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Assumptions" = rvs$Assumptions,
                                            "Baseline" = rvs$Baseline,
-                                           "Projects" = rvs$Projects), 
+                                           "Projects" = rvs$Projects,
+                                           "Advanced" = rvs$Advanced,
+                                           "References" = references), 
                            file = file))
     }
   )
@@ -1733,8 +1737,7 @@ server <- function(input, output, session) {
   output$bikeped_projs_tbl <- renderDT({
     #req(rvs$Projects)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
-    #temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
-    
+
     render_custom_datatable_SLVER(
       data_reactive = temp_send,
       table_number = 1,
@@ -2281,7 +2284,7 @@ server <- function(input, output, session) {
     data_reactive = rvs$Assumptions,
     table_number = 1,
     is_year_table = FALSE,
-    non_editable_cols = c(0, 1),  #checkpoint
+    non_editable_cols = c(0, 1),  
     page_length = 10,
     comma_rows = integer(0),
     percent_rows = integer(0),
@@ -2346,7 +2349,7 @@ server <- function(input, output, session) {
       table_number = 5,
       is_year_table = FALSE,
       non_editable_cols = c(0, 1),
-      page_length = 10,
+      page_length = 16,
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = integer(0),
@@ -2583,10 +2586,6 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
 
-  # output$bikeped_costs_tbl <- create_table(bikeped_costs,
-  #                                          list(target = 'row',
-  #                                               disable = list(columns = c(0,1)),
-  #                                               autoWidth = TRUE))
     output$bikeped_costs_tbl <- renderDT({
     req(rvs$Costs)
 
@@ -2799,11 +2798,7 @@ server <- function(input, output, session) {
       currency_rows = c(0:10),
       decimal_rows = integer(0))
   })
-  # output$fuel_costs_tbl <- create_table(fuel_costs,
-  #                                       list(target = 'row',
-  #                                            disable = list(columns = c(0,1)),
-  #                                            autoWidth = TRUE))
-  
+
   output$intermodal_costs_tbl <- renderDT({
     req(rvs$Costs)
     
@@ -2883,7 +2878,7 @@ server <- function(input, output, session) {
   #observe change to bikeped_costs_tbl
   observeEvent(input$bikeped_costs_tbl_cell_edit, {
     req(rvs$Costs)
-# checkpoint
+
     rvs$Costs[rvs$Costs$table_no_ui == 1,] <- reshaping_cost(input$bikeped_costs_tbl_cell_edit,
                                                              rvs$Costs,
                                                              num_col = 2,
@@ -3185,6 +3180,7 @@ server <- function(input, output, session) {
   rownames(dat) <- rowNames
   
   output$scenario_tbl <- renderDT({
+    browser()
     datatable(
       dat,
       escape = FALSE,
@@ -3232,7 +3228,6 @@ server <- function(input, output, session) {
   })
   
   
-  
   # server advanced inputs ---------------------------------------------------------
   
   advanced_names <- c("ev_forecast_sheet",
@@ -3248,41 +3243,108 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
-  output$ev_forecast_sheet_tbl <- create_table(ev_forecast_sheet,
-                                               list(target = 'row',
-                                                    disable = list(columns = c(0)),
-                                                    autoWidth = TRUE))
+  output$ev_forecast_sheet_tbl <- renderDT({
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 1,
+      is_year_table = TRUE,
+      is_advanced_table = TRUE,
+      non_editable_cols = c(0), 
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0),
+      pivot_col = c('year','veh_type','value'))
+  })
   
-  output$vmt_forecast_sheet_tbl <- create_table(vmt_forecast_sheet,
-                                                list(target = 'row',
-                                                     disable = list(columns = c(0)),
-                                                     autoWidth = TRUE))
+  output$vmt_forecast_sheet_tbl <- renderDT({
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 2,
+      is_year_table = TRUE,
+      is_advanced_table = TRUE,
+      non_editable_cols = c(0),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0),
+      pivot_col = c('year','veh_type','value'))
+  })
   
-  output$onroad_fuel_tech_frac_sheet_tbl <- create_table(onroad_fuel_tech_frac_sheet,
-                                                         list(target = 'row',
-                                                              disable = list(columns = c(0,1)),
-                                                              autoWidth = TRUE))
-  
-  output$pass_rail_sheet_tbl <- create_table(pass_rail_sheet,
-                                             list(target = 'row',
-                                                  disable = list(columns = c(0,1)),
-                                                  autoWidth = TRUE))
-  
-  output$freight_rail_sheet_tbl <- create_table(freight_rail_sheet,
-                                                list(target = 'row',
-                                                     disable = list(columns = c(0)),
-                                                     autoWidth = TRUE))
-  
-  output$construction_sheet_tbl <- create_table(construction_sheet,
-                                                list(target = 'row',
-                                                     disable = list(columns = c(0)),
-                                                     autoWidth = TRUE))
-  
+  output$onroad_fuel_tech_frac_sheet_tbl <- renderDT({
+
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 3,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1,2),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+ 
+  output$pass_rail_sheet_tbl <- renderDT({
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 4,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+ 
+  output$freight_rail_sheet_tbl <- renderDT({
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 5,
+      is_year_table = FALSE,
+      non_editable_cols = c(0),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+
+  output$construction_sheet_tbl <- renderDT({
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 6,
+      is_year_table = FALSE,
+      non_editable_cols = c(0),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
   output$fuel_apportionment_sheet_tbl <- create_table(fuel_apportionment_sheet,
                                                       list(target = 'row',
                                                            disable = list(columns = c(0)),
                                                            autoWidth = TRUE))
-  
+  output$fuel_apportionment_sheet_tbl <- renderDT({
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 7,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
   ## make editable -----------------------------------------------------------
   
   
@@ -3297,7 +3359,76 @@ server <- function(input, output, session) {
   })
   
   
+  # reshaping ev_forecast_sheet_tbl  #checkpoint
+  
+  observeEvent(input$ev_forecast_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 1,] <- reshaping_advanced(input$ev_forecast_sheet_tbl_cell_edit,
+                                                                          rvs$Advanced,
+                                                                          tbl_no = 1,
+                                                                          col_list = c('veh_type','year'))
+  })
+  
+  # reshaping vmt_forecast_sheet_tbl
+  observeEvent(input$vmt_forecast_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 2,] <- reshaping_advanced(input$vmt_forecast_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 2,
+                                                                       col_list = c('veh_type','year'))
+  })
+  
+  #reshaping onroad_fuel_tech_frac_sheet_tbl
+  observeEvent(input$onroad_fuel_tech_frac_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 3,] <- reshaping_advanced(input$onroad_fuel_tech_frac_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 3,
+                                                                       col_list = c('transit_mode','fuel_type'))
+  })
+  
+  #reshaping pass_rail_sheet_tbl
+  observeEvent(input$pass_rail_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 4,] <- reshaping_advanced(input$pass_rail_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 4,
+                                                                       col_list = c('mode_service','unit'))
+  })
+  
+  #reshaping freight_rail_sheet_tbl
+  observeEvent(input$freight_rail_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 5,] <- reshaping_advanced(input$freight_rail_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 5,
+                                                                       col_list = c('unit'))
+  })
+  
+  #reshaping construction_sheet_tbl
+  observeEvent(input$construction_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 6,] <- reshaping_advanced(input$construction_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 6,
+                                                                       col_list = c('unit'))
+  })
 
+  #reshaping pass_rail_sheet_tbl
+  observeEvent(input$fuel_apportionment_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 7,] <- reshaping_advanced(input$fuel_apportionment_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 7,
+                                                                       col_list = c('veh_type'))
+  })
 # observe reset buttons for advanced inputs -------------------------------
 
 
@@ -3539,19 +3670,33 @@ server <- function(input, output, session) {
   
   observeEvent(key_inputs_listen(),{
     #browser()
-    print("RUNNING: Update rvs$Baseline key inputs")
-    rvs$Baseline$state <- input$state_input
-    rvs$Baseline$base_year <- input$base_year
-    rvs$Baseline$horizon_year_1 <- input$horizon_year_1
-    rvs$Baseline$horizon_year_2 <- input$horizon_year_2
-    rvs$Baseline$horizon_year_3 <- input$horizon_year_3
-    rvs$Baseline$trans_system_scope <- input$transportation_scope
-    rvs$Baseline$include_electricity <- input$scope_emissions #do these match?
-    rvs$Baseline$include_upstream_fuels <- input$scope_fuels
-    rvs$Baseline$vmt_forecast <- input$vmt_forecast_input
-    rvs$Baseline$vmt_nhs <- input$vmt_nhs
-    rvs$Baseline$veh_elec_baseline <- input$ev_baseline_input
-    rvs$Baseline$elec_grid_emissions_net_zero <- input$grid_emissions_input
+    # print("RUNNING: Update rvs$Baseline key inputs")
+    # rvs$Baseline$state <- input$state_input
+    # rvs$Baseline$base_year <- input$base_year
+    # rvs$Baseline$horizon_year_1 <- input$horizon_year_1
+    # rvs$Baseline$horizon_year_2 <- input$horizon_year_2
+    # rvs$Baseline$horizon_year_3 <- input$horizon_year_3
+    # rvs$Baseline$trans_system_scope <- input$transportation_scope
+    # rvs$Baseline$include_electricity <- input$scope_emissions #do these match?
+    # rvs$Baseline$include_upstream_fuels <- input$scope_fuels
+    # rvs$Baseline$vmt_forecast <- input$vmt_forecast_input
+    # rvs$Baseline$vmt_nhs <- input$vmt_nhs
+    # rvs$Baseline$veh_elec_baseline <- input$ev_baseline_input
+    # rvs$Baseline$elec_grid_emissions_net_zero <- input$grid_emissions_input
+    # 
+    rvs$Baseline <- data.frame(state = input$state_input,
+                               base_year = input$base_year,
+                               horizon_year_1 = input$horizon_year_1,
+                               horizon_year_2 = input$horizon_year_2,
+                               horizon_year_3 = input$horizon_year_3,
+                               trans_system_scope = input$transportation_scope,
+                               include_electricity = input$scope_emissions,
+                               include_upstream_fuels = input$scope_fuels,
+                               # vmt_nhs = input$vmt_nhs,
+                               vmt_forecast = input$vmt_forecast_input,
+                               veh_elec_baseline = input$ev_baseline_input,
+                               elec_grid_emissions_net_zero = input$grid_emissions_input
+                               )
   })
   
 }
@@ -3559,3 +3704,9 @@ server <- function(input, output, session) {
 # Run the application
 shinyApp(ui, server)
 
+# ,
+# include_upstream_fuels = input$scope_fuels,
+# vmt_forecast = input$vmt_forecast_input,
+# vmt_nhs = input$vmt_nhs,
+# veh_elec_baseline = input$ev_baseline_input,
+# elec_grid_emissions_net_zero = input$grid_emissions_input

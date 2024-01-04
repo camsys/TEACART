@@ -4,12 +4,14 @@ render_custom_datatable_SLVER <- function(#input_reactives,
                                     table_number,
                                     is_year_table = TRUE,
                                     is_cost_table = FALSE,
+                                    is_advanced_table = FALSE,
                                     non_editable_cols,
                                     page_length,
                                     comma_rows,
                                     percent_rows,
                                     currency_rows,
-                                    decimal_rows) {
+                                    decimal_rows,
+                                    pivot_col = c()) {
   
   print(paste0('RUNNING: Render Custom Datatable SLVER for table: ', table_number))
   
@@ -17,7 +19,7 @@ render_custom_datatable_SLVER <- function(#input_reactives,
   
   
     conditionally_transform <- function(df) {
-    if (is_year_table == TRUE) {
+    if (is_year_table == TRUE & is_advanced_table == FALSE) {
       df %>%
         pivot_wider(names_from = year, values_from = value) %>%
         select(-c(table_no_ui, table, category)) %>%
@@ -28,16 +30,22 @@ render_custom_datatable_SLVER <- function(#input_reactives,
       df %>% 
         pivot_wider(names_from = unit, values_from = value) %>%
         select(-c(table_no_ui, table, category))
-    }else {
+    } else if (is_advanced_table == TRUE & is_year_table == TRUE){
+      df %>%
+        select(pivot_col) %>%
+        pivot_wider(names_from = year, values_from = value)
+    }
+      else {
       df %>%
         select(-c(table_no_ui, table, category))
       }
     }
 
-
     #lapply(input_reactives, req)
     req(data_reactive)
-if(is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table_number,]) != 1 & table_number != 13){ 
+    
+    
+    if(is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table_number,]) != 1 & table_number != 13){ 
   #  for Costs tab, no need to join the references
     reshaped_table <- data_reactive  %>%
       filter(table_no_ui == table_number) %>% 
@@ -46,7 +54,14 @@ if(is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table
       select(where(select_fun)) %>% #NOTE: This will delete columns with NAs so if you send it empty data watch out
       #mutate(unit = map_chr(unit, ~ references_vector[.x] %||% .x)) %>%
       rename(any_of(references_vector))
-    } else {
+    } else if (is_advanced_table == TRUE & is_year_table == TRUE){
+      reshaped_table <- data_reactive  %>%
+        filter(table_no_ui == table_number) %>% 
+        conditionally_transform() %>% 
+        ungroup() %>%
+        #select(where(select_fun)) %>% #NOTE: This will delete columns with NAs so if you send it empty data watch out
+        rename(any_of(references_vector))
+    }else {
       reshaped_table <- data_reactive  %>%
         filter(table_no_ui == table_number) %>% 
         conditionally_transform() %>% 
@@ -58,6 +73,10 @@ if(is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table
         #mutate(unit = map_chr(unit, ~ references_vector[.x] %||% .x)) %>%
         rename(any_of(references_vector))
     } 
+    
+    # browser()
+    
+    
 
     returnDT<-datatable(
       reshaped_table,
