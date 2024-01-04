@@ -1517,7 +1517,8 @@ ui <- function(request) {
 
                   nav_panel(title = "Cost effectiveness",
                             fluidRow(
-                              radioButtons("cost_view", "Level of detail:",
+                              radioButtons(inputId = "cost_view",
+                                           "Level of detail:",
                                            c("Detail results" = "detail", "Summary results" = "summary")),
                               p("All results are reported in terms of annual change per $M investment."),
                               h3("Bicycle & Pedestrian"),
@@ -3408,13 +3409,13 @@ server <- function(input, output, session) {
   
   # note that the tables below are not using the editable table function
   
- # adrienne working here
+ # adrienne working here - error I'm getting is that it's not finding inputs
   
   
   output$bikeped_costs_outputs_tbl <- renderDT({
     req(rvs_out$cost_output)
- #   req(input$cost_view)
-    
+    req(input$cost_view)
+
     render_custom_datatable_costs_outputs(
       data_reactive = rvs_out$cost_output,
       table_number = 1,

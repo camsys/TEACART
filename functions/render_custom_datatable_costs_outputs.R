@@ -1,10 +1,11 @@
-# new function
+# new function for outputs - adrienne working here
 render_custom_datatable_costs_outputs <- function(data_reactive,
                                                   table_number,
                                                   page_length) {
 
   print(paste0('RUNNING: Rendering cost putput table ', table_number))
-
+  
+  req(input$cost_view)
 
   # function to drop empty columns - note that this deletes columns with NAs
   # so if it gets empty data watch out
