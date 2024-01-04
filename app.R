@@ -1670,6 +1670,7 @@ server <- function(input, output, session) {
   
   rv <- reactiveValues()
   rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
+  rvs_out <- read_output_tables(".\\data\\3.Model_Outputs.xlsx")
   
   # Initiate or Upload User Inputs -------------------------------------------
   
@@ -3407,25 +3408,31 @@ server <- function(input, output, session) {
   
   # note that the tables below are not using the editable table function
   
-  # adrienne working here
-  # output$bikeped_costs_outputs_tbl <- renderDT({
-  #   if(input$cost_view == "detail") {
-  #     bikeped
-  #   } else {
-  #     
-  #   }
-  # 
-  #   datatable(bikeped_costs_outputs,
-  #             extensions = c('RowGroup','Buttons'),
-  #             options = list(rowGroup = list(columns = c(0)),
-  #                            columnDefs = list(list(visible = FALSE,
-  #                                                   targets = c(0))),
-  #                            autoWidth = TRUE,
-  #                            width = '100%',
-  #                            dom = 'tB',
-  #                            buttons = c('copy', 'csv', 'excel', 'pdf')),
-  #             rownames = FALSE) |>
-  #     formatRound(c(3:7),1)})
+ # adrienne working here
+  
+  
+  output$bikeped_costs_outputs_tbl <- renderDT({
+    req(rvs_out$cost_output)
+ #   req(input$cost_view)
+    
+    render_custom_datatable_costs_outputs(
+      data_reactive = rvs_out$cost_output,
+      table_number = 1,
+      page_length = 21
+      )})
+  
+    # renderDT({
+    # datatable(bikeped_costs_outputs,
+    #           extensions = c('RowGroup','Buttons'),
+    #           options = list(rowGroup = list(columns = c(0)),
+    #                          columnDefs = list(list(visible = FALSE,
+    #                                                 targets = c(0))),
+    #                          autoWidth = TRUE,
+    #                          width = '100%',
+    #                          dom = 'tB',
+    #                          buttons = c('copy', 'csv', 'excel', 'pdf')),
+    #           rownames = FALSE) |>
+    #   formatRound(c(3:7),1)})
   
   output$transit_fixed_costs_outputs_tbl <- renderDT(transit_fixed_costs_outputs,
                                                      rownames = FALSE)
