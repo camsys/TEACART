@@ -241,14 +241,9 @@ ui <- function(request) {
         accordion(
           accordion_panel(
                "Transit: Increased Fixed Route Service (new Vehicles Operating in Maximum Service)",
-               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-               tempor incididunt ut labore et dolore magna aliqua. Ut enim ad 
-               minim veniam, quis nostrud exercitation ullamco laboris nisi ut 
-               aliquip ex ea commodo consequat. Duis aute irure dolor in 
-               reprehenderit in voluptate velit esse cillum dolore eu fugiat 
-               nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
-               sunt in culpa qui officia deserunt mollit anim id est laborum."
-               ),
+               HTML("This category represents additions of <b>new fixed route service vehicles operated in maximum service (VOMS).</b> 
+               Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
+               )),
           open = FALSE
         ),
         ),
