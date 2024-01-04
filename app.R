@@ -3384,7 +3384,7 @@ server <- function(input, output, session) {
   })
   
   
-  # server costs outputs ----------------------------------------------------
+  # server cost effectiveness outputs ----------------------------------------------------
   
   costs_outputs_names <- c("bikeped_costs_outputs",
                            "transit_fixed_costs_outputs",
@@ -3407,19 +3407,25 @@ server <- function(input, output, session) {
   
   # note that the tables below are not using the editable table function
   
-  output$bikeped_costs_outputs_tbl <- renderDT({
-    if(input$cost_)
-    datatable(bikeped_costs_outputs,
-              extensions = c('RowGroup','Buttons'),
-              options = list(rowGroup = list(columns = c(0)),
-                             columnDefs = list(list(visible = FALSE,
-                                                    targets = c(0))),
-                             autoWidth = TRUE,
-                             width = '100%',
-                             dom = 'tB',
-                             buttons = c('copy', 'csv', 'excel', 'pdf')),
-              rownames = FALSE) |>
-      formatRound(c(3:7),1)})
+  # adrienne working here
+  # output$bikeped_costs_outputs_tbl <- renderDT({
+  #   if(input$cost_view == "detail") {
+  #     bikeped
+  #   } else {
+  #     
+  #   }
+  # 
+  #   datatable(bikeped_costs_outputs,
+  #             extensions = c('RowGroup','Buttons'),
+  #             options = list(rowGroup = list(columns = c(0)),
+  #                            columnDefs = list(list(visible = FALSE,
+  #                                                   targets = c(0))),
+  #                            autoWidth = TRUE,
+  #                            width = '100%',
+  #                            dom = 'tB',
+  #                            buttons = c('copy', 'csv', 'excel', 'pdf')),
+  #             rownames = FALSE) |>
+  #     formatRound(c(3:7),1)})
   
   output$transit_fixed_costs_outputs_tbl <- renderDT(transit_fixed_costs_outputs,
                                                      rownames = FALSE)
