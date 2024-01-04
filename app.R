@@ -263,14 +263,10 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Transit: Increased Demand Response Service (new Vehicles Operating in Maximum Service)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of any <b>new demand response service vehicles operated in maximum service (VOMS).</b> 
+              Demand response service vehicles include non-fixed route services that are initiated by customers and require advanced scheduling, 
+                        such as vehicles provided by public entities, nonprofits, and private providers."
+                   ),
 
                  ),
                  open = FALSE
@@ -292,14 +288,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Fleet Electrification (number of vehicles replaced)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
+                        with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
 
                  ),
                  open = FALSE
@@ -321,14 +311,10 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Public Transportation: Bus Priority Treatment (number of units)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of miles of <b>new bus priority treatment</b>. Bus priority treatment refers 
+                        to the improvement of transit speed and reliability between stops by changing the designation of street space. 
+                        Some examples include a bus-only lane, which assigns exclusive street space to buses, and a bus approach lane, 
+                        which assigns exclusive street spaces to buses as they approach an intersection.",)
 
                  ),
                  open = FALSE
@@ -350,14 +336,7 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Public Transportation: Rail (new Vehicles Operating in Maximum Service / VOMS)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>.",)
 
                  ),
                  open = FALSE
@@ -380,14 +359,9 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Travel Demand Management / TDM (number of units)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents the <b>number of employees covered through the TDM Program Outreach </b>. 
+                   TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
+                   reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",)
 
                  ),
                  open = FALSE
@@ -409,14 +383,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Micromobility (number of units)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents the <b>number of e-bikes funded </b> through the implementation of <b> e-bike subsidies </b>. 
+                   An e-bike subsidy reimburses part of the cost of an e-bike.",)
 
                  ),
                  open = FALSE
@@ -438,14 +406,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Traffic Operations",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>improvements made to traffic operations at intersections </b>, 
+                   such as new or retimed signals or new roundabouts.",)
 
                  ),
                  open = FALSE
@@ -467,14 +429,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents <b>replacement of any fossil fuel medium or heavy-duty vehicles with electric vehicles</b>, 
+                   with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle.",)
 
                  ),
                  open = FALSE
@@ -497,14 +453,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Park & Ride Projects",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>new addition or expansion of Park and Ride spaces</b>. A Park and Ride space 
+                   allows private transport users to park their vehicles at a large parking space and continue their commute via public transport.",)
 
                  ),
                  open = FALSE
@@ -526,14 +476,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "EV Charging Infrastructure",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
+                   EV charging ports supply electric power for recharging electric vehicles.",)
 
                  ),
                  open = FALSE
@@ -555,14 +499,7 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Freight Intermodal Facilities",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>intermodal freight investment</b>, expressed in millions of dollars.",)
 
                  ),
                  open = FALSE
@@ -585,14 +522,7 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Roadway Expansion",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of any <b>new lane-miles of roadways.</b>",)
 
                  ),
                  open = FALSE
