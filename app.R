@@ -1467,6 +1467,10 @@ ui <- function(request) {
 
 # outputs tab ui ----------------------------------------------------------
 
+
+# baseline outputs ui -----------------------------------------------------
+
+
       nav_panel(title = "Outputs",
                 navset_card_pill(
                   placement = "above",
@@ -1478,6 +1482,11 @@ ui <- function(request) {
                             DT::dataTableOutput("baseline_outputs")
                             
                   ),
+                  
+
+# scenario and strategy summary ui ----------------------------------------
+
+                  
                   nav_panel(title = "Scenario and Strategy Summary",
                             fluidRow(
                               p(""),
@@ -1503,9 +1512,13 @@ ui <- function(request) {
                               column(6,
                                      plotlyOutput("emission_change_graph", width = "auto", height = "auto"))),
                   ),
+
+# cost effectiveness ui ---------------------------------------------------
+
                   nav_panel(title = "Cost effectiveness",
                             fluidRow(
-                              p(""),
+                              radioButtons("cost_view", "Level of detail:",
+                                           c("Detail results" = "detail", "Summary results" = "summary")),
                               p("All results are reported in terms of annual change per $M investment."),
                               h3("Bicycle & Pedestrian"),
                               p(""),
@@ -3395,6 +3408,7 @@ server <- function(input, output, session) {
   # note that the tables below are not using the editable table function
   
   output$bikeped_costs_outputs_tbl <- renderDT({
+    if(input$cost_)
     datatable(bikeped_costs_outputs,
               extensions = c('RowGroup','Buttons'),
               options = list(rowGroup = list(columns = c(0)),
