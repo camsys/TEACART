@@ -68,8 +68,6 @@ reshaping_assmp <- function(user_data,
 
   modified_data <- modified_data[, colSums(!is.na(modified_data)) > 0] #  ## drop all na column
   
-  browser()
-
   col_list <- c(colnames(modified_data)[-ncol(modified_data)])
   
   # another loop to join value from references.
@@ -83,8 +81,6 @@ reshaping_assmp <- function(user_data,
       rename(!!var := field)  }
   
   modified_data[modified_data == ""] <- NA
-
-  browser()
   
   y_names = col_list
   x_names = c(colnames( rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']][colSums(!is.na( rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']])) > 0])) 
@@ -94,9 +90,7 @@ reshaping_assmp <- function(user_data,
     left_join(modified_data, by = setNames(y_names,x_names)) %>% # setNames(y,x) 
     select(-contains("var")) %>%
     mutate(value = as.numeric(value))
-  
-  browser()
-  
+
    return(updated_data)
 }
 
@@ -104,8 +98,84 @@ reshaping_assmp <- function(user_data,
 ## reshape cost still working on. 
 reshaping_cost <- function(user_data,
                    rvs,
-                   tbl_no){
+                   num_col,
+                   tbl_no,
+                   unit1,
+                   unit2 = NA,
+                   unit3 = NA,
+                   unit4 = NA,
+                   col_list = c()){
   # reshape the data
+  no_row =  nrow(user_data)/length(unique(user_data$col))
+  modified_data <- data.frame(matrix(nrow = no_row))
+  
+  for (i in 1:length(unique(user_data$col))) {
+    col_name <- paste0("var", i)
+    modified_data[[col_name]] = user_data$value[user_data$col == i-1]
+  }
+  
+  cols_to_pivot <- tail(names(modified_data), num_col)
+  
+  if(num_col == 1){
+    colnames(modified_data)[ncol(modified_data)] <- 'value'
+    modified_data <- modified_data %>% 
+      select_if(~any(!is.na(.))) %>%
+      mutate(value = as.numeric(value))
+    
+  } else if (num_col > 1){
+  modified_data <- modified_data %>% 
+    select_if(~any(!is.na(.))) %>%
+    pivot_longer(cols = cols_to_pivot, names_to = c("unit"), values_to = "value")%>%
+    mutate(value = as.numeric(value))}
+
+  if (num_col == 2){
+    modified_data <- modified_data %>%
+      mutate(unit = case_when(unit == paste0('var',length(unique(user_data$col)) - 1) ~ unit1,
+                              unit == paste0('var',length(unique(user_data$col)) ) ~ unit2
+                                ))
+  } else if (num_col == 3){
+    modified_data <- modified_data %>%
+      mutate(unit = case_when(unit == paste0('var',length(unique(user_data$col)) - 2) ~ unit1,
+                              unit == paste0('var',length(unique(user_data$col)) - 1) ~ unit2,
+                              unit == paste0('var',length(unique(user_data$col))) ~ unit3
+      ))
+  } else {
+    for (var in c(names(modified_data)[1:(ncol(modified_data)-1)])){
+      y_col = c('description')
+      x_col = c(var)
+      modified_data <- modified_data %>%
+        left_join(references,setNames(y_col,x_col)) %>%
+        mutate(field = ifelse(is.na(field),get(var),field)) %>%
+        select(-var) %>%
+        rename(!!var := field)  }
+  }
+    
+  # create the join list for setnames
+  if(length(col_list) == 3){
+    y_names = c('var1','var2','unit')
+  }else if (length(col_list) == 4) { 
+    y_names = c('var1','var2','var3','unit')
+  }else if(length(col_list) == 2){ # when three columns are needed for joining
+    y_names = c('var1','unit')
+  } else if(length(col_list) == 1){ # when three columns are needed for joining
+    y_names = c('var1')}
+  x_names = col_list
+
+  modified_data[modified_data == ""] <- NA
+
+  updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']] %>%
+    left_join(modified_data, by = setNames(y_names,x_names)) %>% # setNames(y,x) 
+    select(-contains("var"))  
+  return(updated_data)
+  
+}
+
+# reshape advanced table
+reshaping_advanced <- function(user_data,
+                            rvs,
+                            tbl_no,
+                            col_list = c()){
+  
   no_row =  nrow(user_data)/length(unique(user_data$col))
   modified_data <- data.frame(matrix(nrow = no_row))
   
@@ -116,12 +186,43 @@ reshaping_cost <- function(user_data,
   
   browser()
   
-  cols_to_pivot <- names(modified_data)[3:ncol(modified_data)]
+  if (tbl_no %in% c(1,2)){
+  modified_data <- modified_data[, colSums(!is.na(modified_data)) > 0] %>%
+    pivot_longer(cols = !(var1), names_to = 'year') %>%
+    mutate(year = as.numeric(gsub("var", "", year))+ 2019)
+  } else {
+    names(modified_data)[length(names(modified_data))]<-"value"     ## change the last column name to value
+    
+    modified_data <- modified_data[, colSums(!is.na(modified_data)) > 0] #  ## drop all na column
+    
+    # match with references
+    for (var in c(colnames(modified_data)[-ncol(modified_data)])){
+      y_col = c('description')
+      x_col = c(var)
+      modified_data <- modified_data %>%
+        left_join(references,setNames(y_col,x_col)) %>%
+        mutate(field = ifelse(is.na(field),get(var),field)) %>%
+        select(-var) %>%
+        rename(!!var := field)  }
+  }
   
-  modified_data <- modified_data %>% 
-    select_if(~any(!is.na(.))) %>%
-    pivot_longer(cols = cols_to_pivot, names_to = c("unit"), values_to = "value")%>%
-    mutate(value = as.numeric(value))
+  if (!('unit' %in% col_list) & tbl_no > 2){
+    y_names = c(colnames(modified_data)[-ncol(modified_data)])
+    y_names = y_names[y_names != 'value']  
+    } else {
+    y_names = c(colnames(modified_data))
+    y_names = y_names[y_names != 'value']  
+  }
+  x_names = c(col_list)
+  
   
   browser()
+  updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']] %>%
+    left_join(modified_data, by = setNames(y_names,x_names)) %>% # setNames(y,x) 
+    select(-contains("var")) 
+  
+  browser()
+  
+  return(updated_data)
 }
+

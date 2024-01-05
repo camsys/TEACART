@@ -8,6 +8,8 @@ library(tidyverse)
 ### some objects are tables, some are lists
 ### lists are easier to pull values from, tables are easier to visualize and push to front end
 
+# used to read in input reactives - check with Qi to see if we still need this,
+# looks like it's only being used in the upload function
 read_user_inputs_excel <- function(filename){
 
   Baseline <- read_excel(path = filename, sheet = "Baseline") %>% as.vector()
@@ -23,6 +25,7 @@ read_user_inputs_excel <- function(filename){
               "Projects" = Projects))
 }
 
+# used to read in reactive values (rvs)
 read_user_inputs_version2 <- function(filename){
   
   Baseline <- read_excel(path = filename, sheet = "Baseline") %>% as.vector()
@@ -42,18 +45,16 @@ read_user_inputs_version2 <- function(filename){
   return(reactive_data)
 }
 
-### KEY INPUTS -----------------------------------------------------------------
-# Key_Inputs <- read_excel("2.User_Inputs.xlsx", sheet = "Key_Inputs") %>% as.vector()
-# 
-# ### COST PARAMETERS ------------------------------------------------------------
-# Cost_Parameters <- read_excel("2.User_Inputs.xlsx", sheet = "Cost_Parameters")
-# 
-# ### ASSUMPTIONS ----------------------------------------------------------------
-# Assumptions <- read_excel("2.User_Inputs.xlsx", sheet = "Assumptions")
-# 
-# ### BASELINE PARAMETERS --------------------------------------------------------
-# Baseline_Parameters <- read_excel("2.User_Inputs.xlsx", sheet = "Baseline_Parameters")
-# 
-# ### CAPITAL_PROJECT_INPUTS -----------------------------------------------------
-# Capital_Project_Inputs <- read_excel("2.User_Inputs.xlsx", sheet = "Capital_Project_Inputs") %>%
-#   filter(state == my_state)
+# used to initially create the output tables
+read_output_tables <- function(filename){
+  
+  cost_output <- read_excel(path = filename, sheet = "costs")
+  baseline_output <- read_excel(path = filename, sheet = "baseline")
+  
+  reactive_data <- reactiveValues(
+    "cost_output" = cost_output,
+    "baseline_output" = baseline_output
+  )
+  
+  return(reactive_data)
+}

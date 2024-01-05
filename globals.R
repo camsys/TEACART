@@ -140,6 +140,7 @@ Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
   replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0))
 
 
+# used to rename headers and units during table rendering
 references <- read_excel(".\\data\\2.User_Inputs.xlsx",
                          sheet ="References",
                          col_names = TRUE)
@@ -147,6 +148,8 @@ references <- read_excel(".\\data\\2.User_Inputs.xlsx",
 references_vector <- setNames(references$field, references$description)
 rev_references_vector <- setNames(references$description, references$field)
 
+
+# these are used to reset tables in the UI
 initial_projects <- read_excel(".\\data\\2.User_Inputs.xlsx",
                                sheet ="Projects",
                                col_names = TRUE)

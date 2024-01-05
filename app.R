@@ -241,14 +241,9 @@ ui <- function(request) {
         accordion(
           accordion_panel(
                "Transit: Increased Fixed Route Service (new Vehicles Operating in Maximum Service)",
-               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-               tempor incididunt ut labore et dolore magna aliqua. Ut enim ad 
-               minim veniam, quis nostrud exercitation ullamco laboris nisi ut 
-               aliquip ex ea commodo consequat. Duis aute irure dolor in 
-               reprehenderit in voluptate velit esse cillum dolore eu fugiat 
-               nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
-               sunt in culpa qui officia deserunt mollit anim id est laborum."
-               ),
+               HTML("This category represents additions of <b>new fixed route service vehicles operated in maximum service (VOMS).</b> 
+               Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
+               )),
           open = FALSE
         ),
         ),
@@ -268,14 +263,10 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Transit: Increased Demand Response Service (new Vehicles Operating in Maximum Service)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of any <b>new demand response service vehicles operated in maximum service (VOMS).</b> 
+              Demand response service vehicles include non-fixed route services that are initiated by customers and require advanced scheduling, 
+                        such as vehicles provided by public entities, nonprofits, and private providers."
+                   ),
 
                  ),
                  open = FALSE
@@ -297,14 +288,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Fleet Electrification (number of vehicles replaced)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
+                        with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
 
                  ),
                  open = FALSE
@@ -326,14 +311,10 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Public Transportation: Bus Priority Treatment (number of units)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of miles of <b>new bus priority treatment</b>. Bus priority treatment refers 
+                        to the improvement of transit speed and reliability between stops by changing the designation of street space. 
+                        Some examples include a bus-only lane, which assigns exclusive street space to buses, and a bus approach lane, 
+                        which assigns exclusive street spaces to buses as they approach an intersection.",)
 
                  ),
                  open = FALSE
@@ -355,14 +336,7 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Public Transportation: Rail (new Vehicles Operating in Maximum Service / VOMS)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>.",)
 
                  ),
                  open = FALSE
@@ -385,14 +359,9 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Travel Demand Management / TDM (number of units)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents the <b>number of employees covered through the TDM Program Outreach </b>. 
+                   TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
+                   reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",)
 
                  ),
                  open = FALSE
@@ -414,14 +383,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Micromobility (number of units)",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents the <b>number of e-bikes funded </b> through the implementation of <b> e-bike subsidies </b>. 
+                   An e-bike subsidy reimburses part of the cost of an e-bike.",)
 
                  ),
                  open = FALSE
@@ -443,14 +406,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Traffic Operations",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>improvements made to traffic operations at intersections </b>, 
+                   such as new or retimed signals or new roundabouts.",)
 
                  ),
                  open = FALSE
@@ -472,14 +429,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents <b>replacement of any fossil fuel medium or heavy-duty vehicles with electric vehicles</b>, 
+                   with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle.",)
 
                  ),
                  open = FALSE
@@ -502,14 +453,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Park & Ride Projects",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>new addition or expansion of Park and Ride spaces</b>. A Park and Ride space 
+                   allows private transport users to park their vehicles at a large parking space and continue their commute via public transport.",)
 
                  ),
                  open = FALSE
@@ -531,14 +476,8 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "EV Charging Infrastructure",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
+                   EV charging ports supply electric power for recharging electric vehicles.",)
 
                  ),
                  open = FALSE
@@ -560,14 +499,7 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Freight Intermodal Facilities",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents any <b>intermodal freight investment</b>, expressed in millions of dollars.",)
 
                  ),
                  open = FALSE
@@ -590,14 +522,7 @@ ui <- function(request) {
                accordion(
                  accordion_panel(
                    "Roadway Expansion",
-                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                   sed do eiusmod tempor incididunt ut labore et dolore magna
-                   aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                   ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                   Duis aute irure dolor in reprehenderit in voluptate velit
-                   esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                   sint occaecat cupidatat non proident, sunt in culpa qui
-                   officia deserunt mollit anim id est laborum.",
+                   HTML("This category represents addition of any <b>new lane-miles of roadways.</b>",)
 
                  ),
                  open = FALSE
@@ -1377,7 +1302,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Title",
+                             "Freight Rail",
                              "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
                              sed do eiusmod tempor incididunt ut labore et dolore magna
                              aliqua. Ut enim ad minim veniam, quis nostrud exercitation
@@ -1467,6 +1392,10 @@ ui <- function(request) {
 
 # outputs tab ui ----------------------------------------------------------
 
+
+# baseline outputs ui -----------------------------------------------------
+
+
       nav_panel(title = "Outputs",
                 navset_card_pill(
                   placement = "above",
@@ -1478,6 +1407,11 @@ ui <- function(request) {
                             DT::dataTableOutput("baseline_outputs")
                             
                   ),
+                  
+
+# scenario and strategy summary ui ----------------------------------------
+
+                  
                   nav_panel(title = "Scenario and Strategy Summary",
                             fluidRow(
                               p(""),
@@ -1503,9 +1437,14 @@ ui <- function(request) {
                               column(6,
                                      plotlyOutput("emission_change_graph", width = "auto", height = "auto"))),
                   ),
+
+# cost effectiveness ui ---------------------------------------------------
+
                   nav_panel(title = "Cost effectiveness",
                             fluidRow(
-                              p(""),
+                              radioButtons(inputId = "cost_view",
+                                           "Level of detail:",
+                                           c("Detail results" = "detail", "Summary results" = "summary")),
                               p("All results are reported in terms of annual change per $M investment."),
                               h3("Bicycle & Pedestrian"),
                               p(""),
@@ -1657,6 +1596,7 @@ server <- function(input, output, session) {
   
   rv <- reactiveValues()
   rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
+  rvs_out <- read_output_tables(".\\data\\3.Model_Outputs.xlsx")
   
   # Initiate or Upload User Inputs -------------------------------------------
   
@@ -1669,8 +1609,9 @@ server <- function(input, output, session) {
     
     # Assign each table in user_inputs to rv
     for(name in names(user_inputs)) {
-      rv[[name]] <- user_inputs[[name]]
+      rvs[[name]] <- user_inputs[[name]]
     }
+    
   }, ignoreNULL = F, ignoreInit = F)
 
   # Download user inputs -------------------------------------------------------
@@ -1681,11 +1622,14 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       
-      # browser()
-      return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
+      references <- read_xlsx(".\\data\\2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
+      
+            return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Assumptions" = rvs$Assumptions,
                                            "Baseline" = rvs$Baseline,
-                                           "Projects" = rvs$Projects), 
+                                           "Projects" = rvs$Projects,
+                                           "Advanced" = rvs$Advanced,
+                                           "References" = references), 
                            file = file))
     }
   )
@@ -1729,12 +1673,11 @@ server <- function(input, output, session) {
   #create project tables -----------------------------------------------------------
   
   # rendering bike ped table
-
+  
   output$bikeped_projs_tbl <- renderDT({
     #req(rvs$Projects)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
-    #temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
-    
+
     render_custom_datatable_SLVER(
       data_reactive = temp_send,
       table_number = 1,
@@ -1909,7 +1852,7 @@ server <- function(input, output, session) {
     render_custom_datatable_SLVER(
       data_reactive = temp_send,
       table_number = 11,
-      non_editable_cols = c(0,1),
+      non_editable_cols = c(0),
       page_length = 1,
       comma_rows = 0,
       percent_rows = integer(0),
@@ -2281,7 +2224,7 @@ server <- function(input, output, session) {
     data_reactive = rvs$Assumptions,
     table_number = 1,
     is_year_table = FALSE,
-    non_editable_cols = c(0, 1),  #checkpoint
+    non_editable_cols = c(0, 1),  
     page_length = 10,
     comma_rows = integer(0),
     percent_rows = integer(0),
@@ -2346,7 +2289,7 @@ server <- function(input, output, session) {
       table_number = 5,
       is_year_table = FALSE,
       non_editable_cols = c(0, 1),
-      page_length = 10,
+      page_length = 16,
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = integer(0),
@@ -2377,7 +2320,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Assumptions,
       table_number = 7,
       is_year_table = FALSE,
-      non_editable_cols = c(0, 1),
+      non_editable_cols = c(0),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2583,16 +2526,16 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
 
-
     output$bikeped_costs_tbl <- renderDT({
     req(rvs$Costs)
-    
+
     render_custom_datatable_SLVER(
       data_reactive = rvs$Costs,
       table_number = 1,
       is_year_table = FALSE,
-      non_editable_cols = c(0:2),
-      page_length = 10,
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:1),
+      page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = c(0:10),
@@ -2607,7 +2550,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 2,
       is_year_table = FALSE,
-      non_editable_cols = c(0:3),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:2),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2622,7 +2566,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 3,
       is_year_table = FALSE,
-      non_editable_cols = c(0:3),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:2),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2637,6 +2582,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 4,
       is_year_table = FALSE,
+      is_cost_table = TRUE,
       non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
@@ -2652,7 +2598,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 5,
       is_year_table = FALSE,
-      non_editable_cols = c(0:2),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:1),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2667,6 +2614,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 6,
       is_year_table = FALSE,
+      is_cost_table = TRUE,
       non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
@@ -2682,6 +2630,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 7,
       is_year_table = FALSE,
+      is_cost_table = TRUE,
       non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
@@ -2697,7 +2646,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 8,
       is_year_table = FALSE,
-      non_editable_cols = c(0:3),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:2),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2712,7 +2662,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 9,
       is_year_table = FALSE,
-      non_editable_cols = c(0:2),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:1),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2720,13 +2671,18 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
   })
   
+  # output$pnr_costs_tbl <- create_table(pnr_costs,
+  #                                      list(target = 'row',
+  #                                           disable = list(columns = c(0,1)),
+  #                                           autoWidth = TRUE))
   output$pnr_costs_tbl <- renderDT({
     req(rvs$Costs)
-    
+
     render_custom_datatable_SLVER(
       data_reactive = rvs$Costs,
       table_number = 10,
       is_year_table = FALSE,
+      is_cost_table = TRUE,
       non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
@@ -2742,7 +2698,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 11,
       is_year_table = FALSE,
-      non_editable_cols = c(0:1),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2757,7 +2714,8 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 12,
       is_year_table = FALSE,
-      non_editable_cols = c(0:2),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:1),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -2767,19 +2725,20 @@ server <- function(input, output, session) {
   
   output$fuel_costs_tbl <- renderDT({
     req(rvs$Costs)
-    
+
     render_custom_datatable_SLVER(
       data_reactive = rvs$Costs,
       table_number = 13,
       is_year_table = FALSE,
-      non_editable_cols = c(0:1),
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = c(0:10),
       decimal_rows = integer(0))
   })
-  
+
   output$intermodal_costs_tbl <- renderDT({
     req(rvs$Costs)
     
@@ -2787,6 +2746,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Costs,
       table_number = 14,
       is_year_table = FALSE,
+      is_cost_table = TRUE,
       non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
@@ -2859,10 +2819,15 @@ server <- function(input, output, session) {
   observeEvent(input$bikeped_costs_tbl_cell_edit, {
     req(rvs$Costs)
 
-    browser()
     rvs$Costs[rvs$Costs$table_no_ui == 1,] <- reshaping_cost(input$bikeped_costs_tbl_cell_edit,
-                                                                          rvs$Costs,
-                                                                          tbl_no = 1)
+                                                             rvs$Costs,
+                                                             num_col = 2,
+                                                             tbl_no = 1,
+                                                             unit1 = 'per_mile_cost',
+                                                             unit2 = 'per_mile_maintain_cost',
+                                                             col_list = c('area_type',
+                                                                          'cap_proj_type',
+                                                                          'unit'))
   })
   
 
@@ -2872,120 +2837,182 @@ server <- function(input, output, session) {
     req(rvs$Costs)
     
     rvs$Costs[rvs$Costs$table_no_ui == 2,] <- reshaping_cost(input$transit_fixed_costs_tbl_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 2)
+                                                             rvs$Costs,
+                                                             num_col = 3, # how many numeric columns 
+                                                             tbl_no = 2,
+                                                             unit1 = 'per_veh_cap_cost',
+                                                             unit2 = 'per_VRM_fuel_cost',
+                                                             unit3 = 'per_VRM_onm_cost',
+                                                             col_list = c('area_type',
+                                                                          'fuel_type',
+                                                                          'unit'))
   })
   
   ## observe change to transit_dr_costs
-  observeEvent(input$transit_dr_costs_cell_edit, {
+  observeEvent(input$transit_dr_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 3,] <- reshaping_cost(input$transit_dr_costs_cell_edit,
+        rvs$Costs[rvs$Costs$table_no_ui == 3,] <- reshaping_cost(input$transit_dr_costs_tbl_cell_edit,
                                                              rvs$Costs,
-                                                             tbl_no = 3)
+                                                             tbl_no = 3,
+                                                             num_col = 3, # how many numeric columns,
+                                                             unit1 = 'per_veh_cap_cost',
+                                                             unit2 = 'per_VRM_fuel_cost',
+                                                             unit3 = 'per_VRM_onm_cost',
+                                                             col_list = c('area_type',
+                                                                          'fuel_type',
+                                                                          'transit_mode',
+                                                                          'unit'))
   })
   
   ## observe change to pub_trans_priority_costs
-  observeEvent(input$pub_trans_priority_costs_cell_edit, {
-    req(rvs$Costs)
+  observeEvent(input$pub_trans_priority_costs_tbl_cell_edit, {
+    req(rvs$Costs)  
     
-    rvs$Costs[rvs$Costs$table_no_ui == 4,] <- reshaping_cost(input$pub_trans_priority_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 4)
-  })
-  
-  # qi - is this right? switches from cost to assmp
-  ## observe change to tdm_costs
-  observeEvent(input$tdm_costs_cell_edit, {
-    req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 5,] <- reshaping_assmp(input$tdm_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 5)
+    rvs$Costs[rvs$Costs$table_no_ui == 4,] <- reshaping_cost(input$pub_trans_priority_costs_tbl_cell_edit,
+                                                             rvs$Costs,
+                                                             tbl_no = 4,
+                                                             num_col = 1,
+                                                             col_list = c('unit')
+                                                             )
   })
   
   
   ## observe change to pub_trans_rail_costs
-  observeEvent(input$pub_trans_rail_costs_cell_edit, {
+  observeEvent(input$pub_trans_rail_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 6,] <- reshaping_assmp(input$pub_trans_rail_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 5,] <- reshaping_cost(input$pub_trans_rail_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 6)
+                                                              tbl_no = 5,
+                                                              num_col = 3, # how many numeric columns,
+                                                              unit1 = 'per_veh_cap_cost',
+                                                              unit2 = 'per_VRM_fuel_cost',
+                                                              unit3 = 'per_VRM_onm_cost',
+                                                              col_list = c('fuel_type',
+                                                                           'transit_mode',
+                                                                           'unit')
+                                                              )
+  })
+  
+
+  ## observe change to pub_trans_rail_costs
+  observeEvent(input$tdm_costs_tbl_cell_edit, {
+    req(rvs$Costs)
+    
+    rvs$Costs[rvs$Costs$table_no_ui == 6,] <- reshaping_cost(input$tdm_costs_tbl_cell_edit,
+                                                             rvs$Costs,
+                                                             tbl_no = 6,
+                                                             num_col = 1,
+                                                             col_list = c('unit'))
   })
   
   ## observe change to micro_costs
-  observeEvent(input$micro_costs_cell_edit, {
+  observeEvent(input$micro_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 7,] <- reshaping_assmp(input$micro_costs_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 7)
+    rvs$Costs[rvs$Costs$table_no_ui == 7,] <- reshaping_cost(input$micro_costs_tbl_cell_edit,
+                                                             rvs$Costs,
+                                                             tbl_no = 7,
+                                                             num_col = 1,
+                                                             col_list = c('unit'))
   })
   
   ## observe change to traffic_ops_costs
-  observeEvent(input$traffic_ops_costs_cell_edit, {
+  observeEvent(input$traffic_ops_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 8,] <- reshaping_assmp(input$traffic_ops_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 8,] <- reshaping_cost(input$traffic_ops_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 8)
+                                                              tbl_no = 8,
+                                                              num_col = 2, # how many numeric columns,
+                                                              unit1 = 'annual_maintenance_cost',
+                                                              unit2 = 'cost_per_improvement',
+                                                              col_list = c('road_class',
+                                                                           'area_type',
+                                                                           'cap_proj_type',
+                                                                           'unit'))
   })
   
   
   ## observe change to mhdev_costs
-  observeEvent(input$mhdev_costs_cell_edit, {
+  observeEvent(input$mhdev_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 9,] <- reshaping_assmp(input$mhdev_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 9,] <- reshaping_cost(input$mhdev_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 9)
+                                                              tbl_no = 9,
+                                                              num_col = 3, # how many numeric columns,
+                                                              unit1 = 'per_VRM_fuel_cost',
+                                                              unit2 = 'per_mile_onm_cost',
+                                                              unit3 = 'per_veh_cap_cost',
+                                                              col_list = c('fuel_type',
+                                                                           'veh_type',
+                                                                           'unit'))
   })
   
   
   ## observe change to pnr_costs
-  observeEvent(input$pnr_costs_cell_edit, {
+  observeEvent(input$pnr_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 10,] <- reshaping_assmp(input$pnr_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 10,] <- reshaping_cost(input$pnr_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 10)
+                                                              tbl_no = 10,
+                                                              num_col = 1,
+                                                              col_list = c('unit'))
   })
   
   ## observe change to evsi_costs
-  observeEvent(input$evsi_costs_cell_edit, {
+  observeEvent(input$evsi_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 11,] <- reshaping_assmp(input$evsi_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 11,] <- reshaping_cost(input$evsi_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 11)
+                                                              tbl_no = 11,
+                                                              num_col = 2, # how many numeric columns,
+                                                              unit1 = 'per_unit_hardware_cost',
+                                                              unit2 = 'per_unit_installation_cost',
+                                                              col_list = c('DCFC_level',
+                                                                           'unit'))
   })
   
   ## observe change to roadway_expand_costs
-  observeEvent(input$roadway_expand_costs_cell_edit, {
+  observeEvent(input$roadway_expand_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 12,] <- reshaping_assmp(input$roadway_expand_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 12,] <- reshaping_cost(input$roadway_expand_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 12)
+                                                              tbl_no = 12,
+                                                              num_col = 2, # how many numeric columns,
+                                                              unit1 = 'per_ln_mile_cap_cost',
+                                                              unit2 = 'per_ln_mile_cost',
+                                                              col_list = c('road_class',
+                                                                           'area_type',
+                                                                           'unit'))
   })
   
   ## observe change to fuel_costs
-  observeEvent(input$fuel_costs_cell_edit, {
+  observeEvent(input$fuel_costs_tbl_cell_edit, {
     req(rvs$Costs)
-    
-    rvs$Costs[rvs$Costs$table_no_ui == 13,] <- reshaping_assmp(input$fuel_costs_cell_edit,
+
+    rvs$Costs[rvs$Costs$table_no_ui == 13,] <- reshaping_cost(input$fuel_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 13)
+                                                              tbl_no = 13,
+                                                              num_col = 1, # how many numeric columns,
+                                                              col_list = c('fuel_type'))
   })
+ 
   
   ## observe change to intermodal_costs
-  observeEvent(input$intermodal_costs_cell_edit, {
+  observeEvent(input$intermodal_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 14,] <- reshaping_assmp(input$intermodal_costs_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 14,] <- reshaping_cost(input$intermodal_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 14)
+                                                              tbl_no = 14,
+                                                              num_col = 1,
+                                                              col_list = c('unit'))
   }) # end of reshaping
 
 # observe reset buttons for costs -----------------------------------------
@@ -3093,6 +3120,7 @@ server <- function(input, output, session) {
   rownames(dat) <- rowNames
   
   output$scenario_tbl <- renderDT({
+    browser()
     datatable(
       dat,
       escape = FALSE,
@@ -3140,7 +3168,6 @@ server <- function(input, output, session) {
   })
   
   
-  
   # server advanced inputs ---------------------------------------------------------
   
   advanced_names <- c("ev_forecast_sheet",
@@ -3156,41 +3183,108 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
-  output$ev_forecast_sheet_tbl <- create_table(ev_forecast_sheet,
-                                               list(target = 'row',
-                                                    disable = list(columns = c(0)),
-                                                    autoWidth = TRUE))
+  output$ev_forecast_sheet_tbl <- renderDT({
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 1,
+      is_year_table = TRUE,
+      is_advanced_table = TRUE,
+      non_editable_cols = c(0), 
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0),
+      pivot_col = c('year','veh_type','value'))
+  })
   
-  output$vmt_forecast_sheet_tbl <- create_table(vmt_forecast_sheet,
-                                                list(target = 'row',
-                                                     disable = list(columns = c(0)),
-                                                     autoWidth = TRUE))
+  output$vmt_forecast_sheet_tbl <- renderDT({
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 2,
+      is_year_table = TRUE,
+      is_advanced_table = TRUE,
+      non_editable_cols = c(0),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0),
+      pivot_col = c('year','veh_type','value'))
+  })
   
-  output$onroad_fuel_tech_frac_sheet_tbl <- create_table(onroad_fuel_tech_frac_sheet,
-                                                         list(target = 'row',
-                                                              disable = list(columns = c(0,1)),
-                                                              autoWidth = TRUE))
-  
-  output$pass_rail_sheet_tbl <- create_table(pass_rail_sheet,
-                                             list(target = 'row',
-                                                  disable = list(columns = c(0,1)),
-                                                  autoWidth = TRUE))
-  
-  output$freight_rail_sheet_tbl <- create_table(freight_rail_sheet,
-                                                list(target = 'row',
-                                                     disable = list(columns = c(0)),
-                                                     autoWidth = TRUE))
-  
-  output$construction_sheet_tbl <- create_table(construction_sheet,
-                                                list(target = 'row',
-                                                     disable = list(columns = c(0)),
-                                                     autoWidth = TRUE))
-  
+  output$onroad_fuel_tech_frac_sheet_tbl <- renderDT({
+
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 3,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1,2),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+ 
+  output$pass_rail_sheet_tbl <- renderDT({
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 4,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+ 
+  output$freight_rail_sheet_tbl <- renderDT({
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 5,
+      is_year_table = FALSE,
+      non_editable_cols = c(0),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+
+  output$construction_sheet_tbl <- renderDT({
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 6,
+      is_year_table = FALSE,
+      non_editable_cols = c(0),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
   output$fuel_apportionment_sheet_tbl <- create_table(fuel_apportionment_sheet,
                                                       list(target = 'row',
                                                            disable = list(columns = c(0)),
                                                            autoWidth = TRUE))
-  
+  output$fuel_apportionment_sheet_tbl <- renderDT({
+    
+    render_custom_datatable_SLVER(
+      data_reactive = rvs$Advanced,
+      table_number = 7,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
   ## make editable -----------------------------------------------------------
   
   
@@ -3205,7 +3299,76 @@ server <- function(input, output, session) {
   })
   
   
+  # reshaping ev_forecast_sheet_tbl  #checkpoint
+  
+  observeEvent(input$ev_forecast_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 1,] <- reshaping_advanced(input$ev_forecast_sheet_tbl_cell_edit,
+                                                                          rvs$Advanced,
+                                                                          tbl_no = 1,
+                                                                          col_list = c('veh_type','year'))
+  })
+  
+  # reshaping vmt_forecast_sheet_tbl
+  observeEvent(input$vmt_forecast_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 2,] <- reshaping_advanced(input$vmt_forecast_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 2,
+                                                                       col_list = c('veh_type','year'))
+  })
+  
+  #reshaping onroad_fuel_tech_frac_sheet_tbl
+  observeEvent(input$onroad_fuel_tech_frac_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 3,] <- reshaping_advanced(input$onroad_fuel_tech_frac_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 3,
+                                                                       col_list = c('transit_mode','fuel_type'))
+  })
+  
+  #reshaping pass_rail_sheet_tbl
+  observeEvent(input$pass_rail_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 4,] <- reshaping_advanced(input$pass_rail_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 4,
+                                                                       col_list = c('mode_service','unit'))
+  })
+  
+  #reshaping freight_rail_sheet_tbl
+  observeEvent(input$freight_rail_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 5,] <- reshaping_advanced(input$freight_rail_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 5,
+                                                                       col_list = c('unit'))
+  })
+  
+  #reshaping construction_sheet_tbl
+  observeEvent(input$construction_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 6,] <- reshaping_advanced(input$construction_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 6,
+                                                                       col_list = c('unit'))
+  })
 
+  #reshaping pass_rail_sheet_tbl
+  observeEvent(input$fuel_apportionment_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 7,] <- reshaping_advanced(input$fuel_apportionment_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 7,
+                                                                       col_list = c('veh_type'))
+  })
 # observe reset buttons for advanced inputs -------------------------------
 
 
@@ -3279,7 +3442,7 @@ server <- function(input, output, session) {
   })
   
   
-  # server costs outputs ----------------------------------------------------
+  # server cost effectiveness outputs ----------------------------------------------------
   
   costs_outputs_names <- c("bikeped_costs_outputs",
                            "transit_fixed_costs_outputs",
@@ -3302,18 +3465,31 @@ server <- function(input, output, session) {
   
   # note that the tables below are not using the editable table function
   
+ # adrienne working here - error I'm getting is that it's not finding inputs
+  
+  
   output$bikeped_costs_outputs_tbl <- renderDT({
-    datatable(bikeped_costs_outputs,
-              extensions = c('RowGroup','Buttons'),
-              options = list(rowGroup = list(columns = c(0)),
-                             columnDefs = list(list(visible = FALSE,
-                                                    targets = c(0))),
-                             autoWidth = TRUE,
-                             width = '100%',
-                             dom = 'tB',
-                             buttons = c('copy', 'csv', 'excel', 'pdf')),
-              rownames = FALSE) |>
-      formatRound(c(3:7),1)})
+    req(rvs_out$cost_output)
+    req(input$cost_view)
+
+    render_custom_datatable_costs_outputs(
+      data_reactive = rvs_out$cost_output,
+      table_number = 1,
+      page_length = 21
+      )})
+  
+    # renderDT({
+    # datatable(bikeped_costs_outputs,
+    #           extensions = c('RowGroup','Buttons'),
+    #           options = list(rowGroup = list(columns = c(0)),
+    #                          columnDefs = list(list(visible = FALSE,
+    #                                                 targets = c(0))),
+    #                          autoWidth = TRUE,
+    #                          width = '100%',
+    #                          dom = 'tB',
+    #                          buttons = c('copy', 'csv', 'excel', 'pdf')),
+    #           rownames = FALSE) |>
+    #   formatRound(c(3:7),1)})
   
   output$transit_fixed_costs_outputs_tbl <- renderDT(transit_fixed_costs_outputs,
                                                      rownames = FALSE)
@@ -3424,9 +3600,11 @@ server <- function(input, output, session) {
   #source("processing_scripts/processing_RoadwayExp.R", local = TRUE)
   #check for tables being edited
   
+
   source("processing_scripts/processing_freight.R", local = T)
   source("processing_scripts/processing_EVSE.R", local = T)
-  #rvs update from different inputs
+
+    #rvs update from different inputs
   #key_inputs update
   key_inputs_listen <- reactive({
     list(input$state_input,
@@ -3445,19 +3623,33 @@ server <- function(input, output, session) {
   
   observeEvent(key_inputs_listen(),{
     #browser()
-    print("RUNNING: Update rvs$Baseline key inputs")
-    rvs$Baseline$state <- input$state_input
-    rvs$Baseline$base_year <- input$base_year
-    rvs$Baseline$horizon_year_1 <- input$horizon_year_1
-    rvs$Baseline$horizon_year_2 <- input$horizon_year_2
-    rvs$Baseline$horizon_year_3 <- input$horizon_year_3
-    rvs$Baseline$trans_system_scope <- input$transportation_scope
-    rvs$Baseline$include_electricity <- input$scope_emissions #do these match?
-    rvs$Baseline$include_upstream_fuels <- input$scope_fuels
-    rvs$Baseline$vmt_forecast <- input$vmt_forecast_input
-    rvs$Baseline$vmt_nhs <- input$vmt_nhs
-    rvs$Baseline$veh_elec_baseline <- input$ev_baseline_input
-    rvs$Baseline$elec_grid_emissions_net_zero <- input$grid_emissions_input
+    # print("RUNNING: Update rvs$Baseline key inputs")
+    # rvs$Baseline$state <- input$state_input
+    # rvs$Baseline$base_year <- input$base_year
+    # rvs$Baseline$horizon_year_1 <- input$horizon_year_1
+    # rvs$Baseline$horizon_year_2 <- input$horizon_year_2
+    # rvs$Baseline$horizon_year_3 <- input$horizon_year_3
+    # rvs$Baseline$trans_system_scope <- input$transportation_scope
+    # rvs$Baseline$include_electricity <- input$scope_emissions #do these match?
+    # rvs$Baseline$include_upstream_fuels <- input$scope_fuels
+    # rvs$Baseline$vmt_forecast <- input$vmt_forecast_input
+    # rvs$Baseline$vmt_nhs <- input$vmt_nhs
+    # rvs$Baseline$veh_elec_baseline <- input$ev_baseline_input
+    # rvs$Baseline$elec_grid_emissions_net_zero <- input$grid_emissions_input
+    # 
+    rvs$Baseline <- data.frame(state = input$state_input,
+                               base_year = input$base_year,
+                               horizon_year_1 = input$horizon_year_1,
+                               horizon_year_2 = input$horizon_year_2,
+                               horizon_year_3 = input$horizon_year_3,
+                               trans_system_scope = input$transportation_scope,
+                               include_electricity = input$scope_emissions,
+                               include_upstream_fuels = input$scope_fuels,
+                               # vmt_nhs = input$vmt_nhs,
+                               vmt_forecast = input$vmt_forecast_input,
+                               veh_elec_baseline = input$ev_baseline_input,
+                               elec_grid_emissions_net_zero = input$grid_emissions_input
+                               )
   })
   
 }
@@ -3465,3 +3657,9 @@ server <- function(input, output, session) {
 # Run the application
 shinyApp(ui, server)
 
+# ,
+# include_upstream_fuels = input$scope_fuels,
+# vmt_forecast = input$vmt_forecast_input,
+# vmt_nhs = input$vmt_nhs,
+# veh_elec_baseline = input$ev_baseline_input,
+# elec_grid_emissions_net_zero = input$grid_emissions_input
