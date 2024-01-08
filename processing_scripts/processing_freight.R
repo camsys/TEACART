@@ -54,23 +54,16 @@ intermodal_investment_factor_rail <- 1021459
 output_freight <- reactive({
   req(EmRate_by_Tech(), VMT_Forecast())
   # browser()
-  VMT_Type_Tech_BASE_grouped <- 
-    Tech_Frac_Vision %>%
-    left_join(select(VMT_Forecast(), veh_type, year, state_vmt), by = join_by(veh_type, year)) %>%
-    mutate(state_vmt_by_subtype = state_vmt * aeo_tech_frac) %>%
-    filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks"), veh_subtype %in% c("Diesel", "Gasoline")) %>%
-    group_by(year) %>%
-    summarize(veh_type, veh_subtype, state_pct_of_category = state_vmt_by_subtype / sum(state_vmt_by_subtype), 
-              .groups = "drop")
   
   emrate_freight <-
     EmRate_by_Tech() %>% filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks"), str_detect(fuel_type, "ICE")) %>%
     mutate(veh_subtype = str_remove(fuel_type, " ICE")) %>%
     select(veh_type, veh_subtype, year, emission_rate) %>%
-    left_join(VMT_Type_Tech_BASE_grouped, by = join_by(veh_type, veh_subtype, year)) %>%
+    left_join(VMT_Type_Tech_Conventional_MDHD(), by = join_by(veh_type, veh_subtype, year)) %>%
     mutate(state_emission_rate = emission_rate * state_pct_of_category) %>%
     filter(!(veh_type == "Heavy Duty Trucks" & veh_subtype == "Gasoline")) %>%
-    summarize("emissions_avg" = sum(state_emission_rate), .by = c(year))
+    mutate(veh_supertype = "Medium/Heavy Duty Vehicles", fuel_supertype = "Conventional") %>%
+    summarize("emissions_avg" = sum(state_emission_rate), .by = c(veh_supertype, fuel_supertype, year))
   
   emissions_avg_rail <-
     as.numeric(pull(filter(rv$Advanced, unit == "energy_intensity"), value)) / 128500 * 1000 * 
@@ -81,7 +74,6 @@ output_freight <- reactive({
     filter(category == "Freight Intermodal Facilities") %>% 
     select(year, charge_port_detail, unit, value) %>% ### needs to be renamed DCFC level
     pivot_wider(names_from = unit, values_from = value)
-  
   
   ## table to return
   capital_inputs %>% 
