@@ -280,3 +280,66 @@ VMT_Forecast <- reactive({
     mutate(state_vmt = VMT_AEO * state_pct_of_national) # state VMT forecast
 })
 
+VMT_Type_Tech_Base <- reactive({
+  Tech_Frac_Vision %>%
+    left_join(select(VMT_Forecast(), veh_type, year, state_vmt), by = join_by(veh_type, year)) %>%
+    mutate(state_vmt_by_subtype = state_vmt * aeo_tech_frac)
+})
+
+### The below tables summarize the VMT_Type_Tech_Base
+### It's in different tables because these categories are actually overlapping which is weird but maybe there's a reason
+### You can check that it summarizes summarize(total = sum(state_pct_of_category), .by = c(year))
+
+VMT_Type_Tech_LDV <- reactive({
+  VMT_Type_Tech_Base() %>%
+    filter(veh_type %in% c("Passenger Cars", "Light Duty Trucks")) %>% 
+    summarize(veh_type, veh_subtype, state_vmt_by_subtype, state_pct_of_category = state_vmt_by_subtype / sum(state_vmt_by_subtype), 
+              .by = year) %>%
+    mutate(veh_category = "Light Duty Vehicles")
+})
+
+VMT_Type_Tech_MDHD <- reactive({
+  VMT_Type_Tech_Base() %>%
+    filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks")) %>% 
+    summarize(veh_type, veh_subtype, state_vmt_by_subtype, state_pct_of_category = state_vmt_by_subtype / sum(state_vmt_by_subtype), 
+              .by = year) %>%
+    mutate(veh_category = "Medium/Heavy Duty Vehicles")
+})
+
+VMT_Type_Tech_Conventional_LDV <- reactive({
+  VMT_Type_Tech_Base() %>%
+    filter((veh_type == "Passenger Cars" & veh_subtype == "Gasoline ICE") |
+             (veh_type == "Light Duty Trucks" & veh_subtype == "Gasoline ICE")) %>%
+    summarize(veh_type, veh_subtype, state_vmt_by_subtype, state_pct_of_category = state_vmt_by_subtype / sum(state_vmt_by_subtype), 
+              .by = year) %>%
+    mutate(veh_category = "Conventional LDV")
+})
+
+VMT_Type_Tech_Conventional_MDHD <- reactive({
+  VMT_Type_Tech_Base() %>%
+    filter((veh_type == "Medium Duty Trucks" & veh_subtype == "Diesel") |
+             (veh_type == "Medium Duty Trucks" & veh_subtype == "Gasoline") | 
+             (veh_type == "Heavy Duty Trucks" & veh_subtype == "Diesel")) %>%
+    summarize(veh_type, veh_subtype, state_vmt_by_subtype, state_pct_of_category = state_vmt_by_subtype / sum(state_vmt_by_subtype), 
+              .by = year) %>%
+    mutate(veh_category = "Conventional MDHD")
+})
+
+VMT_Type_Tech_Electric_LDV <- reactive({
+  VMT_Type_Tech_Base() %>%
+    filter(veh_subtype %in% c("EV100", "EV200", "EV300")) %>%
+    summarize(veh_type, veh_subtype, state_vmt_by_subtype, state_pct_of_category = state_vmt_by_subtype / sum(state_vmt_by_subtype), 
+              .by = year) %>%
+    mutate(veh_category = "Electric LDV")
+})
+
+VMT_Type_Tech_Electric_MDHD <- reactive({
+  VMT_Type_Tech_Base() %>%
+    filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks") & veh_subtype == "Electric") %>% 
+    summarize(veh_type, veh_subtype, state_vmt_by_subtype, state_pct_of_category = state_vmt_by_subtype / sum(state_vmt_by_subtype), 
+              .by = year) %>%
+    mutate(veh_category = "Electric MDHD")
+})
+
+
+
