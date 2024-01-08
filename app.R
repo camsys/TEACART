@@ -1189,7 +1189,7 @@ ui <- function(request) {
                   p(""),
                   h3("Scenario Testing"),
                   p(""),
-                  DT::dataTableOutput("scenario_tbl")
+                  DT::DTOutput("scenario_tbl")
                 )
       ),
 
@@ -1633,7 +1633,8 @@ server <- function(input, output, session) {
                                            "Baseline" = rvs$Baseline,
                                            "Projects" = rvs$Projects,
                                            "Advanced" = rvs$Advanced,
-                                           "References" = references), 
+                                           "References" = references,
+                                           "Scenarios" = rvs$Scenarios), 
                            file = file))
     }
   )
@@ -3090,7 +3091,7 @@ server <- function(input, output, session) {
                       "Park and Ride",
                       "Transit Electrification",
                       "MD/HD Truck Replacement",
-                      "Electric Vehicle Charging Infra.",
+                      "Electric Vehicle Charging Infraucture",
                       "Intermodal Freight Investment",
                       "Traffic Operations",
                       "Roadway Expansion",
@@ -3103,74 +3104,124 @@ server <- function(input, output, session) {
   }
   rowNames <- vapply(strategy_names, rowName, character(1))
   
+  # dat <- data.frame(
+  #   vapply(strategy_names, function(scenario){
+  #     as.character(
+  #       checkboxInput(paste0("col1-", gsub(" ", "", scenario)), label = NULL)
+  #     )
+  #   }, character(1)),
+  #   vapply(strategy_names, function(scenario){
+  #     as.character(
+  #       checkboxInput(paste0("col2-", gsub(" ", "", scenario)), label = NULL)
+  #     )
+  #   }, character(1))
+  # )
   dat <- data.frame(
-    vapply(strategy_names, function(scenario){
-      as.character(
-        checkboxInput(paste0("col1-", gsub(" ", "", scenario)), label = NULL)
-      )
-    }, character(1)),
-    vapply(strategy_names, function(scenario){
-      as.character(
-        checkboxInput(paste0("col2-", gsub(" ", "", scenario)), label = NULL)
-      )
-    }, character(1))
+    Assumptions = c(strategy_names),
+    Scenario1 = rep(FALSE, 12),
+    Scenario2 = rep(FALSE, 12)
   )
   
-  names(dat) <- c(
-    as.character(checkboxInput("col1", label = "Scenario 1")),
-    as.character(checkboxInput("col2", label = "Scenario 2"))
-  )
+  # names(dat) <- c(
+  #   as.character(checkboxInput("col1", label = "Scenario 1")),
+  #   as.character(checkboxInput("col2", label = "Scenario 2"))
+  # )
   
-  rownames(dat) <- rowNames
+  # rownames(dat) <- rowNames
   
+  # Create a reactive data frame
+  reactive_scenario <- reactiveVal(dat)
+  
+  selected_scenario <- reactiveValues(rows = NULL)
+  
+  # output$scenario_tbl <- renderDT({
+  #   browser()
+  #   datatable(
+  #     dat,
+  #     escape = FALSE,
+  #     select = "none",
+  #     options = list(
+  #       columnDefs = list(list(targets = c(1, 2),
+  #                              orderable = FALSE,
+  #                              className = "dt-center")
+  #       ),
+  #       pageLength = 12,
+  #       initComplete = JS(
+  #         "function() {",
+  #         "  $('#col1').on('click', function(){",
+  #         "    var cboxes = $('[id^=col1-]');",
+  #         "    var checked = $('#col1').is(':checked');",
+  #         "    cboxes.each(function(i, cbox) {",
+  #         "      $(cbox).prop('checked', checked);",
+  #         "    });",
+  #         "  });",
+  #         "  $('#col2').on('click', function(){",
+  #         "    var cboxes = $('[id^=col2-]');",
+  #         "    var checked = $('#col2').is(':checked');",
+  #         "    cboxes.each(function(i, cbox) {",
+  #         "      $(cbox).prop('checked', checked);",
+  #         "    });",
+  #         "  });",
+  #         paste(
+  #           sapply(strategy_names, function(scenario) {
+  #             scenarioId <- gsub(" ", "", scenario)
+  #             sprintf(
+  #               "  $('#row%s').on('click', function(){\n    var cboxes = $('[id$=\\'-%s\\']');\n    var checked = $('#row%s').is(':checked');\n    cboxes.each(function(i, cbox) {\n      $(cbox).prop('checked', checked);\n    });\n  });",
+  #               scenarioId, scenarioId, scenarioId
+  #             )
+  #           }),
+  #           collapse = "\n"
+  #         ),
+  #         "}"
+  #       ),
+  #       preDrawCallback =
+  #         JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
+  #       drawCallback =
+  #         JS('function() { Shiny.bindAll(this.api().table().node()); } ')
+  #     )
+  #   )
+  # })
+  # 
+  
+  # Render the checkbox table
   output$scenario_tbl <- renderDT({
-    browser()
     datatable(
-      dat,
+      reactive_scenario(),
       escape = FALSE,
-      select = "none",
+      #editable = list(target = c(2,3)),
       options = list(
-        columnDefs = list(list(targets = c(1, 2),
-                               orderable = FALSE,
-                               className = "dt-center")
+        pageLength =12,
+        columnDefs = list(
+          list(className = 'dt-center', targets = c(2, 3)),
+          list(render = JS(
+            "function(data, type, row, meta) {",
+            "  if (type === 'display') {",
+            "    return '<input type=\"checkbox\" class=\"checkbox\" ' + (data ? 'checked' : '') + '/>';",
+            "  }",
+            "  return data;",
+            "}"
+          ), targets = c(2, 3))
         ),
-        pageLength = 12,
-        initComplete = JS(
-          "function() {",
-          "  $('#col1').on('click', function(){",
-          "    var cboxes = $('[id^=col1-]');",
-          "    var checked = $('#col1').is(':checked');",
-          "    cboxes.each(function(i, cbox) {",
-          "      $(cbox).prop('checked', checked);",
-          "    });",
-          "  });",
-          "  $('#col2').on('click', function(){",
-          "    var cboxes = $('[id^=col2-]');",
-          "    var checked = $('#col2').is(':checked');",
-          "    cboxes.each(function(i, cbox) {",
-          "      $(cbox).prop('checked', checked);",
-          "    });",
-          "  });",
-          paste(
-            sapply(strategy_names, function(scenario) {
-              scenarioId <- gsub(" ", "", scenario)
-              sprintf(
-                "  $('#row%s').on('click', function(){\n    var cboxes = $('[id$=\\'-%s\\']');\n    var checked = $('#row%s').is(':checked');\n    cboxes.each(function(i, cbox) {\n      $(cbox).prop('checked', checked);\n    });\n  });",
-                scenarioId, scenarioId, scenarioId
-              )
-            }),
-            collapse = "\n"
-          ),
-          "}"
-        ),
-        preDrawCallback =
-          JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
-        drawCallback =
-          JS('function() { Shiny.bindAll(this.api().table().node()); } ')
-      )
+        dom = 'Bfrtip'
+      ),
+      selection = 'multiple'
     )
   })
   
+  # Update the reactive data when boxes are selected
+  observeEvent(input$scenario_tbl_cell_clicked, {
+    info <- input$scenario_tbl_cell_clicked
+    if (!is.null(info$col) && info$col %in% c(2, 3)) {
+      col_name <- colnames(reactive_scenario())[info$col]
+      reactive_scenario_updated <- reactive_scenario()
+      reactive_scenario_updated[info$row, col_name] <- !reactive_scenario_updated[info$row, col_name]
+      reactive_scenario(reactive_scenario_updated)
+    }
+    rvs$Scenarios <- reactive_scenario()
+
+  }) 
+  
+  shinyjs::enable(selector = ".checkbox")
   
   # server advanced inputs ---------------------------------------------------------
   
