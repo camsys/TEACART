@@ -73,6 +73,8 @@ ui <- function(request) {
                 background-color: #f5f0e4 !important;;
             }
         ")),
+        tags$link(rel = "stylesheet", 
+                  href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"),
         tags$style(HTML(
           '
       .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
@@ -211,8 +213,10 @@ ui <- function(request) {
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML('<span style ="font-size: 24px; font-weight: bold;">Bicycle and
-           Pedestrian Lane Miles of New Infrastructure</span>'),
+                                         HTML(paste('<span style ="font-size: 24px; font-weight: bold;">Bicycle and
+           Pedestrian Lane Miles of New Infrastructure  </span>',
+           as.character(tags$i(class = "fa fa-info-circle", title = "Texty text")),
+           sep = "")),
            HTML("This category represents implementation of any <b>two-way miles of new 
            bicycle or pedestrian facility.</b> The default assumption for these 
            project types is that any new bicycle or pedestrian facility would 
