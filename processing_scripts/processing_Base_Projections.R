@@ -33,7 +33,7 @@ electricity_emrate_projecter <- function(eemrate_df, net_zero_year = 2100){
 
 
 #observeEvent 
-eemrate <- reactive({
+eemrate <- reactive({ #this is electricity emission rate
   #browser()
   req(rvs$Baseline$elec_grid_emissions_net_zero)
   req(rvs$Baseline$state)
@@ -48,7 +48,7 @@ eemrate <- reactive({
 
 #joining dataframe together which makes it easier to calcualte things
 
-EmRate_by_Tech <- reactive({
+EmRate_by_Tech <- reactive({ #this is emission rate for all vehicles types
   #browser()
   input_ff_factors <- rvs$Advanced[rvs$Advanced$table_no_ui == 7,] %>% 
     select(veh_type, value) %>%
@@ -78,7 +78,8 @@ EmRate_by_Tech <- reactive({
   
 })
 
-Tech_Frac_Vision <- reactive({
+Tech_Frac_Vision <- reactive({ #this is electiric vehicle projections
+  
   col <- case_match(rvs$Baseline$veh_elec_baseline, !!!ev_forecast_mapping)
   Tech_Frac_Vision_temp <- TechFrac #dont think i need to reassign this to protect the original names
   
@@ -89,17 +90,18 @@ Tech_Frac_Vision <- reactive({
 })
 
 #VMT_Type_Tech_Base <- reactive({ #Need to check
-VMT_Type_Tech_Base<-reactive({
-  
+VMT_Type_Tech_Base <- reactive({ #this is VMT 
+
   state_ch <- rvs$Baseline$state
   nhs_ch <- rvs$Baseline$trans_system_scope
   #browser()
   
   nhs_vals <- filter(NHS_VMT, state == state_ch)
+  tech_frac_temp <- Tech_Frac_Vision()
   
   if(nhs_ch == "Only NHS"){
     
-    VMT_Type_Tech_Base <- Tech_Frac_Vision() %>% 
+    VMT_Type_Tech_Basetemp <- tech_frac_temp %>% 
       left_join(filter(VMT_VehType, state == state_ch), by = c('year','veh_type')) %>%
       mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
       mutate(mmt_by_type = ifelse(veh_supertype == "Light Duty Vehicles", 
@@ -107,30 +109,15 @@ VMT_Type_Tech_Base<-reactive({
                                   nhs_vals$TRK_pct_on_NHS[1]*state_vmt_vehtype * tech_frac_forecast)) 
   } else {
     
-    VMT_Type_Tech_Base <- Tech_Frac_Vision() %>% 
+    VMT_Type_Tech_Basetemp <- tech_frac_temp %>% 
       left_join(filter(VMT_VehType, state == state_ch), by = c('year','veh_type')) %>%
       mutate(mmt_by_type = state_vmt_vehtype * tech_frac_forecast)
     
   }
   
-  return(VMT_Type_Tech_Base)
+  return(VMT_Type_Tech_Basetemp)
   
 })
-
-
-#Testing area ---
-# observeEvent(eemrate_listen(),{
-#   req(EmRate_by_Tech)
-#   #browser()
-#   print('heard')
-#   print("Here's the EEMRATE")
-#   print(eemrate())
-#   print("Here's the by tech")
-#   print(EmRate_by_Tech())
-# })
-
-# This is not complete not sure what we need from this bad boy quite yet
-# Em_OnRoad_BASE <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base)
 
 #passenger rail ----
 observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it in this indeterminate form for now
@@ -274,17 +261,19 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
 
 ### VMT_Forecast ----------------
 ### these tables don't have to be show to the user, but it is helpful to have them as reactive tables
+#### SL - All the below are throwing erros for me I'm commenting out the VMT_Tyep_Tech_Base for now as it's missing 
+#### some key info
 VMT_Forecast <- reactive({
   AEO_VMT %>%
     left_join(y = State_Populations %>% filter(state == rv$Baseline$state) %>% select(year, state_pct_of_national), by = join_by(year)) %>%
     mutate(state_vmt = VMT_AEO * state_pct_of_national) # state VMT forecast
 })
 
-VMT_Type_Tech_Base <- reactive({
-  Tech_Frac_Vision %>%
-    left_join(select(VMT_Forecast(), veh_type, year, state_vmt), by = join_by(veh_type, year)) %>%
-    mutate(state_vmt_by_subtype = state_vmt * aeo_tech_frac)
-})
+# VMT_Type_Tech_Base <- reactive({
+#   Tech_Frac_Vision %>%
+#     left_join(select(VMT_Forecast(), veh_type, year, state_vmt), by = join_by(veh_type, year)) %>%
+#     mutate(state_vmt_by_subtype = state_vmt * aeo_tech_frac)
+# })
 
 ### The below tables summarize the VMT_Type_Tech_Base
 ### It's in different tables because these categories are actually overlapping which is weird but maybe there's a reason

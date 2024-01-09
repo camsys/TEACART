@@ -12,13 +12,14 @@ observeEvent(input$state_input, {
 #light_duty_automobile_emrate_2025 = 311
 #light_duty_automobile_emrate_2030 = 290
 #light_duty_automobile_emrate_2050 = 257
-EmRate_by_Tech <- EmRate_by_Tech() %>%  
-  mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>% View()
+  
+EmRate_by_Tech <- EmRate_by_Tech() %>%
+  mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>% 
   select(year, 
-         veh_type, fuel_type,
+         veh_type, fuel_type, apportionment, uses_electiricity,
          veh_supertype, emission_rate)
 
-VMT_Type_Tech_Base <- VMT_Type_Tech_Base()  %>% 
+VMT_Type_Tech_Base <- VMT_Type_Tech_Base()  %>%
   mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
   select(year, veh_type, veh_subtype,
          veh_supertype, mmt_by_type)
@@ -31,12 +32,11 @@ temp_em_df <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by = c("year","veh_t
   group_by(year, veh_supertype) %>%
   summarise(cat_avg = sum(emission_rate*mmt_by_type, na.rm = TRUE))
 
-#light_duty_automobile_emrate = list(hz1 = temp_em_df$cat_avg[temp_em_df$year == rvs$Baseline$horizon_year_1 & temp_em_df$veh_supertype == "Light Duty Vehicles"],
-#                                    hz2 = temp_em_df$cat_avg[temp_em_df$year == rvs$Baseline$horizon_year_2 & temp_em_df$veh_supertype == "Light Duty Vehicles"],
-#                                    hz3 = temp_em_df$cat_avg[temp_em_df$year == rvs$Baseline$horizon_year_3 & temp_em_df$veh_supertype == "Light Duty Vehicles"])
-# medium_heavy_duty_truck_emrate = list(hz1 = temp_em_df$cat_avg[temp_em_df$year == rvs$Baseline$horizon_year_1 & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"],
-#                                       hz2 = temp_em_df$cat_avg[temp_em_df$year == rvs$Baseline$horizon_year_2 & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"],
-#                                       hz3 = temp_em_df$cat_avg[temp_em_df$year == rvs$Baseline$horizon_year_3 & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"])
+temp_em_df_sub <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by = c("year","veh_type","fuel_type"="veh_subtype", "veh_supertype")) %>% 
+  group_by(year, veh_supertype,uses_electiricity) %>%
+  summarise(cat_avg = sum(emission_rate*mmt_by_type, na.rm = TRUE)) %>%
+  ungroup() %>% group_by(year, veh_supertype) %>%
+  summarise(cat_avg_electricity_per = sum(cat_avg*uses_electiricity)/sum(cat_avg))
 
 #inputs ------
 
@@ -47,9 +47,13 @@ project_df_input <- rvs$Projects[rvs$Projects$table_no_ui == 14, c("year", "area
                       year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
                       year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3))
 
-#hardcode inputs
+#hardcode inputs - I wonder if these should be part of the assumptions? or Capital Inputs?
 car_gallons_hour_delay = 0.4 # this is a hardcoded unmutable (hu) input
-truck_gallons_hour_dealy = 1.7 # this is a hu input
+truck_gallons_hour_delay = 1.7 # this is a hu input
+
+existing_lanes_df <- data.frame(area_type = c("Rural","Rural","Urban","Urban"),
+                                road_class = c("Principal Arterial","Freeway","Principal Arterial","Freeway"),
+                                existing_lanes = c(4,6,4,6))
 
 #fuel factors inputs
 gasoline_CO2_kg_per_gallon = Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type =="Gasoline" & Fuel_Factors_Baselines$units == "fuel_carbon_content"] #7.94 #this is a hu input from Fuel Factors tab
@@ -117,7 +121,7 @@ temp1$tspeed = apply(temp1, 1, tspeed_fun, c1 = "area_type", c2 = "road_class")
 AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "VMT_per_lane_mile"]}
 temp1$VMTperLaneMile = apply(temp1, 1, AADT_fun, c1 = "area_type", c2 = "road_class")
 
-temp1 %>% 
+temp1 %>% left_join(existing_lanes_df) %>%
   mutate(delay_emrate = light_duty_automobile_emrate*car_gallons_hour_delay*7.94*1000*(1-percent_truck_traffic) + medium_heavy_duty_truck_emrate*truck_gallons_hour_delay*7.94*1000*(percent_truck_traffic),
          annual_VMTperLaneMile = VMTperLaneMile*300,
          minutes_delay_saved_perVMT = 0.2*(1-VMT_elasticity)/(1-0.67),
@@ -126,18 +130,18 @@ temp1 %>%
          new_speed = 1/(minutes_per_mile_new*60), #in mph
          speed_change = new_speed - tspeed) %>%
   left_join(project_df_input) %>%
+  left_join(temp_em_df_sub) %>%
   mutate(total_change_VMT = VMT_elasticity*annual_VMTperLaneMile*value,
          VMT_increase = tspeed*total_change_VMT,
-         delay_reduction = -((annual_VMTperLaneMile*existing_lanes*x/2)*(minutes_delay_saved_perVMT/60)*CO2em_per_hour_delay)/1000000,
+         delay_reduction = -((annual_VMTperLaneMile*existing_lanes*value/2)*(minutes_delay_saved_perVMT/60)*delay_emrate)/1000000,
          
          total_change_MTCO2 = VMT_increase + delay_reduction,
-         total_change_direct = total_change_MTCO2,
-         total_change_electricity = 0,
-         total_change_upstream = 0,
-         total_change_mtnox = truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["NOx_g_per_veh_mi_avg"]] / 1000000,
-         total_change_pm25 = (truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["PM25_exhaust_avg"]] +
-                                truck_vmt_affected * Fuel_Factors_Weighted[["Heavy Duty Trucks"]][["PM25_tires_brakes_avg"]]) / 1000000)
+         total_change_electricity = total_change_MTCO2*cat_avg_electricity_per,
+         total_change_direct = total_change_MTCO2-total_change_electricity,
 
+         total_change_upstream = 0,
+         total_change_mtnox = total_change_VMT*1,#'Fuel Factors'!$C$36 x INDEX(EmRate_by_Tech!$C$56:$AE$56, 1, MATCH(C$3, EmRate_by_Tech!$C$1:$AE$1, 0)))/1000000+SUM(C53, C74, C95, C116)*EmRate_by_Tech!$B$111
+         total_change_pm25 = total_change_VMT*1) #'Fuel Factors'!$D$36 x  INDEX(EmRate_by_Tech!$C$56:$AE$56, 1, MATCH(C$3, EmRate_by_Tech!$C$1:$AE$1, 0))+C$125 x 'Fuel Factors'!$E$36)/1000000+SUM(C53, C74, C95, C116)*EmRate_by_Tech!$B$112
 
 
 })
