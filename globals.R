@@ -15,6 +15,12 @@ veh_types_mapping <- c("Passenger Cars" ~ "Light Duty Vehicles",
                        "Medium Duty Trucks" ~ "Medium/Heavy Duty Vehicles", 
                        "Heavy Duty Trucks" ~ "Medium/Heavy Duty Vehicles")
 
+ev_forecast_mapping <- c("AEO Baseline" ~ "AEO_Tech_Frac",
+                         "ACC" ~ "ACC_Tech_Frac",
+                         "ACC II" ~ "ACCII_Tech_Frac",
+                         "ACC II + ACT" ~ "ACCACT_Tech_Frac",
+                         "Custom" ~ "Custom")
+
 ev_fuel_types <- c("EV100","EV200","EV300","SI PHEV 10","SI PHEV 40", "FCV", "EV", "Gasoline PHEV", "Diesel PHEV")
 
 convert_to_nested_list <- function(df){ 
@@ -138,7 +144,6 @@ Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
   expand(Transit_Costs, state_code, transit_mode) %>%
   left_join(Transit_Costs, by = join_by(state_code, transit_mode)) %>%
   replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0))
-
 
 # used to rename headers and units during table rendering
 references <- read_excel(".\\data\\2.User_Inputs.xlsx",
