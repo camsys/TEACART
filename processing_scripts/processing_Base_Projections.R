@@ -49,7 +49,6 @@ eemrate <- reactive({
 #joining dataframe together which makes it easier to calcualte things
 
 EmRate_by_Tech <- reactive({
-  #browser()
   input_ff_factors <- rvs$Advanced[rvs$Advanced$table_no_ui == 7,] %>% 
     select(veh_type, value) %>%
     rename(apportionment = value) %>%
@@ -75,22 +74,20 @@ EmRate_by_Tech <- reactive({
     mutate(emission_rate = (1-apportionment)*fuel_emission_rate+apportionment*electricity_emission_rate)
   
   return(EmRate_by_Tech)
-  
 })
 
-Tech_Frac_Vision <- reactive({
-  col <- case_match(rvs$Baseline$veh_elec_baseline, !!!ev_forecast_mapping)
+Tech_Frac_Vision_temp <- reactive({
+  name = "AEO Baseline" #need to write map or make input value label vector and pull this from rvs$Baseline$veh_elec_baseline
+  col = "AEO_Tech_Frac"
   Tech_Frac_Vision_temp <- TechFrac #dont think i need to reassign this to protect the original names
   
-  names(Tech_Frac_Vision_temp)[names(Tech_Frac_Vision_temp) == col] <- "tech_frac_forecast"
-  Tech_Frac_Vision_temp <- Tech_Frac_Vision_temp %>% select(veh_type, veh_subtype, year, stock_millions, tech_frac_forecast)
-  
+  names(Tech_Frac_Vision_temp)[names(Tech_Frac_Vision_temp) == col] <- "tech_frac"
+  Tech_Frac_Vision_temp <- Tech_Frac_Vision_temp %>% select(veh_type, veh_subtype, year, stock_millions, tech_frac)
   return(Tech_Frac_Vision_temp)
 })
 
 #VMT_Type_Tech_Base <- reactive({ #Need to check
 VMT_Type_Tech_Base<-reactive({
-  
   state_ch <- rvs$Baseline$state
   nhs_ch <- rvs$Baseline$trans_system_scope
   #browser()
@@ -98,19 +95,17 @@ VMT_Type_Tech_Base<-reactive({
   nhs_vals <- filter(NHS_VMT, state == state_ch)
   
   if(nhs_ch == "Only NHS"){
-    
-    VMT_Type_Tech_Base <- Tech_Frac_Vision() %>% 
+    VMT_Type_Tech_Base <- Tech_Frac_Vision_temp() %>% 
       left_join(filter(VMT_VehType, state == state_ch), by = c('year','veh_type')) %>%
+      
       mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
       mutate(mmt_by_type = ifelse(veh_supertype == "Light Duty Vehicles", 
-                                  nhs_vals$LDV_pct_on_NHS[1]*state_vmt_vehtype * tech_frac_forecast,
-                                  nhs_vals$TRK_pct_on_NHS[1]*state_vmt_vehtype * tech_frac_forecast)) 
+                                  nhs_vals$LDV_pct_on_NHS[1]*state_vmt_vehtype * tech_frac,
+                                  nhs_vals$TRK_pct_on_NHS[1]*state_vmt_vehtype * tech_frac)) 
   } else {
-    
-    VMT_Type_Tech_Base <- Tech_Frac_Vision() %>% 
+    VMT_Type_Tech_Base <- Tech_Frac_Vision_temp() %>% 
       left_join(filter(VMT_VehType, state == state_ch), by = c('year','veh_type')) %>%
-      mutate(mmt_by_type = state_vmt_vehtype * tech_frac_forecast)
-    
+      mutate(mmt_by_type = state_vmt_vehtype * tech_frac)
   }
   
   return(VMT_Type_Tech_Base)
@@ -129,7 +124,7 @@ VMT_Type_Tech_Base<-reactive({
 #   print(EmRate_by_Tech())
 # })
 
-# This is not complete not sure what we need from this bad boy quite yet
+# #This is not complete not sure what we need from this bad boy quite yet
 # Em_OnRoad_BASE <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base)
 
 #passenger rail ----
@@ -179,7 +174,8 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
            Electric_LR_CO2eq = LR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content)
 })
 
-#Freight Rail ----
+# #Freight Rail ----------
+
 observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it in this indeterminate form for now
   req('')
   state_ch <- rvs$Baseline$state
@@ -204,7 +200,7 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
   
 })
 
-#Public Transit----
+# #Public Transit----
 observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it in this indeterminate form for now
   
   req('')
