@@ -1,0 +1,282 @@
+---
+title: "Transportation Evaluation and Carbon Reduction Report"
+date: "Date Report Created: `r Sys.Date()`"
+format: pdf
+pdf-engine: xelatex
+mainfont: "Arial"
+fontsize: 11pt
+
+editor: visual
+---
+
+## 1.Introduction
+
+The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a comprehensive and dynamic tool aimed at assisting states with selecting and prioritizing transportation capital program investments to effectively support greenhouse gas (GHG) reduction. The tool is designed to accept inputs typically available during the programming process. It provides key outputs including:
+
+-A baseline inventory and forecast of GHG emissions.
+
+-GHG impacts of a capital program or a hypothetical set of capital projects.
+
+-Information on cost-effectiveness of various project types.
+
+TEA-CART is a planning-level tool. It is designed to accept relatively simple inputs, typically available at the long-range planning or programming stage, characterizing the number, size, context, and type of transportation projects that could reduce GHG emissions. As such, TEA-CART relies on data that is typical for projects of a given type. In practice, individual projects may results in a wide range of GHG effects. For more detailed, project-specific evaluation, users may want to refer to project-specific tools such as the Federal Highway Administration Congestion Mitigation and Air Quality Program (CMAQ) Emissions Calculator Toolkit.
+
+```{r, message=FALSE, warning=FALSE}
+#| echo: false
+#| #| warning: false
+#| 
+
+# intall packages
+library(shiny)
+library(readxl) 
+library(DT)
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+
+# functions: 
+multiplesheets <- function(fname) { 
+  sheets <- readxl::excel_sheets(fname) 
+  tibble <- lapply(sheets, function(x) readxl::read_excel(fname, sheet = x, skip = 1)) 
+  data_frame <- lapply(tibble, as.data.frame) 
+  names(data_frame) <- sheets 
+  #print(data_frame) 
+} 
+
+pagebreak <- function() {
+  if (knitr::is_latex_output()) {
+        return("\\newpage")
+  }
+  else {
+        return('<div style="page-break-before: always;" />')
+  }
+}
+
+
+# end of functions
+
+# set up dummy data for now
+path = 'C:/Users/qsi/Desktop/TEA-CART/costs_outputs.xlsx'
+ #dummydata<- multiplesheets(path)
+
+```
+
+`r pagebreak()`
+
+## 2.Parameters
+
+This report is created using the following metrics:
+
+```{r, results="asis",fig.align = 'left'}
+#| echo: false
+#| warning: false
+
+
+print(tagList(
+      cat(
+        paste0('State: ', 'South Dakota',  "  \n\n  ",
+               'Base Year: ', '2021',  "  \n\n  ",
+               'Horizon Year(s): ','2030,2050', "  \n\n  ",
+               'Transportation System Scope: ','All Roadways', "  \n\n  ",
+               'Include Electricity: ','Yes', "  \n\n  ",
+               'Include Upstream Fuels: ','No', "  \n\n  ",
+               'Scenarios: ',"Scenario 1, Scenario 2", "  \n\n  "
+               
+      ))))
+
+
+# add section for all edited parameter
+```
+
+`r pagebreak()`
+
+## 3.Output & Summary
+
+### 3.1 Baseline GHG Forecast
+
+#### 3.1.1 Transportation GHG Forecast
+
+```{r, results="asis",fig.align = 'left'}
+#| echo: false
+#| warning: false
+
+# load dummy data
+path2 <- 'C:/Users/qsi/Desktop/TEA-CART/dummy_output.xlsx'
+#dummydata<- multiplesheets(path2)
+
+GHG_forecast <- readxl::read_excel(path2, sheet = 'GHG Forecast') %>%
+    pivot_longer(cols = !(`Emissions (MT CO2e)`), names_to = c("year"), values_to = 'Emission')
+
+fig_list <- c("Total (Onroad Vehicles)", "Total (All Transportation)")
+
+for ( var in fig_list){
+  data_temp <- GHG_forecast %>%
+    filter(`Emissions (MT CO2e)` == var)
+  
+  print(ggplot(data_temp,
+               aes( y = Emission,
+                   x = year,
+                   group=1))+
+    geom_line(color = '#E69F00',size =1) + geom_point(color = '#E69F00',size =3) + 
+      scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) + 
+      ylab("CO2e Emission Amount") +
+      ggtitle(paste0(var,' CO2e Emission')) + 
+      theme_classic())
+print(tagList(cat("  \n\n  ")))
+      print(tagList(cat("  \\newpage  ")))
+      print(tagList(cat("  \n\n  ")))
+  }
+
+
+
+```
+
+`r pagebreak()`
+
+#### 3.1.2 Transportation Emission by Source and Year
+
+```{r, results="asis",fig.align = 'left'}
+#| echo: false
+#| warning: false
+
+source_list <- c(head(unique(GHG_forecast$`Emissions (MT CO2e)`),6))
+year_list <- c(unique(GHG_forecast$year))
+
+for ( var in year_list){
+  data_temp <- GHG_forecast %>%
+    filter(`Emissions (MT CO2e)` %in% source_list, year == var) %>%
+    mutate(fraction = Emission/sum(Emission),
+           ymax =  cumsum(fraction),
+           ymin = c(0, head(ymax, n=-1)),
+           labelPosition = (ymax + ymin)/ 2,
+           `Emission Source` = paste0(`Emissions (MT CO2e)` ," (",round(fraction *100,digits = 1), " %",")"))
+  
+  print(ggplot(data_temp,
+               aes(ymax=ymax,
+                   ymin=ymin,
+                   xmax=4,
+                   xmin=3,
+                   fill= `Emission Source`))+
+          geom_rect() + 
+          scale_fill_brewer(palette = 'RdYlBu') +
+          # geom_text( x=3.5,
+          #             aes(y=labelPosition,
+          #                 label=label),
+          #             size=5,
+          #             check_overlap = TRUE,
+          #             )+
+          coord_polar(theta="y") +
+          xlim(c(2, 4))+
+          ggtitle(paste0('Transportation Emission: ',var))+
+          theme_void()
+
+        )
+print(tagList(cat("  \n\n  ")))
+      print(tagList(cat("  \\newpage  ")))
+      print(tagList(cat("  \n\n  ")))
+}
+
+
+
+
+    
+
+```
+
+`r pagebreak()`
+
+### 3.2 Scenario and Strategy Summary
+
+```{r, results="asis",fig.align = 'left'}
+#| echo: false
+#| warning: false
+
+# load dummy data
+path2 <- 'C:/Users/qsi/Documents/GitHub/TEA.CART/inst/app/www/static_files/scenario_simplified.xlsx'
+#dummydata<- multiplesheets(path2)
+
+scenarioresults <- readxl::read_excel(path2)
+
+indicators <- unique(scenarioresults$indicator)
+
+for (i in indicators){
+  data_temp <- scenarioresults %>%
+    filter(indicator == i, !is.na(mt_reduction))%>%
+    mutate(year = as.character(year))
+  
+  print(ggplot(data_temp,
+               aes(fill = scenario,
+                   y = mt_reduction,
+                   x = year))+
+    geom_bar(position="dodge", stat="identity")+
+       scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) + 
+      ylab("Emission Change Amount") +
+      ggtitle(paste0(i,' Change')) + 
+            theme_classic())
+  print(tagList(cat("  \n\n  ")))
+      print(tagList(cat("  \\newpage  ")))
+      print(tagList(cat("  \n\n  ")))
+}
+```
+
+`r pagebreak()`
+
+### 3.3 Cost Effectiveness
+
+```{r, results="asis",fig.align = 'left'}
+#| echo: false
+#| warning: false
+
+# not sure why for -loop doesn't work when knit. 
+tab_list <- c('bikeped',"transit_fixed",'transit_dr',"pub_trans_bus","transit_zeb", "pub_trans_rail","tdm","micro","traffic_ops","mhdev", "pnr","evsi","roadway","intermodal")
+
+title_list <- c('Bicycle and Pedestrian',
+                'Transit: Increased Fixed Route Service',
+                'Transit: Increased Demand Response Service',
+                'Transit: Fleet Electrification',
+                'Public Transportation: Bus Priority Treatment',
+                'Public Transportation: Rail',
+                'Travel Demand Management',
+                'Micromobility',
+                'Traffic Operations - Intersection',
+                'Medium and Heavy Duty Vehicle Replacement (Electrification)',
+                'Park and Ride',
+                'EV Charging Infrastructure',
+                'Roadway Expansion',
+                'Freight - Intermodal Investment'
+                )
+
+num = 1
+for (var in tab_list){
+    df <- readxl::read_excel(path, sheet = var, skip = 1)
+ print(tagList(
+      cat("####","Assumption: ",  title_list[num], "\n\n")))
+ if(ncol(df) == 12){
+ print(df %>%
+   select(1,8:ncol(.)) %>%
+  rename_with(~str_remove(.,'Summary.')) %>%
+    knitr::kable(booktabs = T, escape = F,linesep = "",align = "l", format = 'latex') %>%
+   kableExtra::kable_styling(full_width = F,
+                             position = "l")%>%
+    column_spec(1,width = "3.3cm"))
+cat("\n\n\\pagebreak\n")
+writeLines("")
+
+ } else { # the intermodal strategy only has 10 columns
+    print(df %>%
+   select(6:ncol(.)) %>%
+  rename_with(~str_remove(.,'Summary.')) %>%
+    knitr::kable(booktabs = T, escape = F,linesep = "",align = "l", format = 'latex') %>%
+   kableExtra::kable_styling(full_width = F,
+                             position = "l"))
+cat("\n\n\\pagebreak\n")
+writeLines("")
+
+ }
+  num = num +1
+
+}
+
+```

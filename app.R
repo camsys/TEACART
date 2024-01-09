@@ -11,7 +11,8 @@ library(shinyWidgets)
 library(htmltools)
 library(plotly)
 library(shiny)
-
+library(shinyjs)
+library(tinytex)
 
 
 # load source files -------------------------------------------------------
@@ -3708,6 +3709,90 @@ server <- function(input, output, session) {
                                elec_grid_emissions_net_zero = input$grid_emissions_input
                                )
   })
+  
+  # output$pdf_report <- downloadHandler(
+  #   filename = function(){
+  #     paste("Summary Report",
+  #           Sys.Date(),
+  #           ".pdf",
+  #           sep="")},
+  #   content = function(file){
+  #       #data <- # placeholder now 
+  #       #mutate(center = unlist(center))
+  #       browser()
+  #       output_file <- file.path(getwd(),  glue::glue("{fn}.pdf"))
+  #       unloadNamespace("kableExtra")
+  #       rmarkdown::render(
+  #         input = file.path(getwd(),"Report_Template.qmd"),
+  #         output_file = output_file,
+  #         params = list(
+  #           state <- input$state_input,
+  #           bsae_year <- input$base_year,
+  #           horizon_year_1 <- input$horizon_year_1,
+  #           horizon_year_2<- input$horizon_year_2,
+  #           horizon_year_3 <- input$horizon_year_3,
+  #           trans_scope <- input$transportation_scope,
+  #           em_scope<- input$scope_emissions,
+  #           fuel_scope <-input$scope_fuels,
+  #           vmt <- input$vmt_forecast_input,
+  #           vmt_nhs <- input$vmt_nhs,
+  #           ev<- input$ev_baseline_input,
+  #           grid_em<- input$grid_emissions_input
+  #         )
+  #       )
+  #       file.copy(glue::glue("{fn}.pdf"), file)
+  #       browser()
+  #       
+  #     
+  #   }
+  # )
+ 
+  output$pdf_report <- downloadHandler(
+    filename = function(){
+          paste("Summary Report",
+                Sys.Date(),
+                ".pdf",
+                sep="")},
+    content = function(file) {
+      browser()
+      # Render the R Markdown file to PDF
+      shiny::withProgress(
+        message = paste0("Downloading", input$dataset, " Data"),
+        value = 0,
+        {
+          shiny::incProgress(1/10)
+          Sys.sleep(1)
+          shiny::incProgress(5/10)
+          unloadNamespace("kableExtra")
+          
+          rmarkdown::render(input = paste0(getwd(),"/Report_Template.qmd"),
+                            output_file = file,
+                            params = list(
+                              state = input$state_input,
+                              bsae_year = input$base_year,
+                              horizon_year_1 = input$horizon_year_1,
+                              horizon_year_2 = input$horizon_year_2,
+                              horizon_year_3 = input$horizon_year_3,
+                              trans_scope = input$transportation_scope,
+                              em_scope = input$scope_emissions,
+                              fuel_scope = input$scope_fuels,
+                              vmt = input$vmt_forecast_input,
+                              vmt_nhs = input$vmt_nhs,
+                              ev = input$ev_baseline_input,
+                              grid_em = input$grid_emissions_input
+                            ),
+                            output_format = "pdf_document",
+                            output_options = list(
+                              keep_tex = TRUE,
+                              verbose = TRUE,
+                              latex_engine = 'xelatex')
+          )
+        }
+      )
+      
+    }
+  )
+
   
 }
 
