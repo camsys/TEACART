@@ -3528,15 +3528,6 @@ server <- function(input, output, session) {
  # adrienne working here - error I'm getting is that it's not finding inputs
   
   
-  output$bikeped_costs_outputs_tbl <- renderDT({
-    req(rvs_out$cost_output)
-    req(input$cost_view)
-
-    render_custom_datatable_costs_outputs(
-      data_reactive = rvs_out$cost_output,
-      table_number = 1,
-      page_length = 21
-      )})
   
     # renderDT({
     # datatable(bikeped_costs_outputs,
@@ -3654,17 +3645,24 @@ server <- function(input, output, session) {
   
 
 
-  #sl working ----
+  #Processing working ----
 
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
-  #source("processing_scripts/processing_RoadwayExp.R", local = TRUE)
-  #check for tables being edited
   
+  #source("processing_scripts/processing_BikePed.R", local = TRUE) #Qi is working on 
+  #source("processing_scripts/processing_OPS.R", local = TRUE)
+  #source("processing_scripts/processing_MDHD.R", local = TRUE) #Gui is working on
+  #source("processing_scripts/processing_Macro.R", local = TRUE) 
+  #source("processing_scripts/processing_Micro.R", local = TRUE) #Qi original - assigned
+  #source("processing_scripts/processing_TransitElec.R", local = TRUE)  #Qi original - Seth assigned
+  #source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi original - Seth assigned
+  #source("processing_scripts/processing_TDM.R", local = TRUE) #Qi original - assigned
+  #source("processing_scripts/processing_ParkRide.R", local = TRUE) #Qi original - assigned
+  source("processing_scripts/processing_freight.R", local = T) #Gui is done
+  source("processing_scripts/processing_EVSE.R", local = T) #Gui is done-ish?
+  #source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Seth is almost done
 
-  source("processing_scripts/processing_freight.R", local = T)
-  source("processing_scripts/processing_EVSE.R", local = T)
-
-    #rvs update from different inputs
+  #rvs update from different inputs
   #key_inputs update
   key_inputs_listen <- reactive({
     list(input$state_input,

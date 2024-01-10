@@ -122,6 +122,7 @@ NTD_Service <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NTD_Service")
 Fuel_Factors <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors")
 Fuel_Factors_Baselines <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Baselines")
 Fuel_Factors_Revision <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Revision") # SL ADDED NEED TO WORK TO COMBINE THESE TWO
+
 Fuel_Factors_Weighted <-
   Fuel_Factors %>% # Different veh types will need different weighting strategies, will likely need to make reactive
   group_by(veh_type) %>% 
@@ -201,7 +202,8 @@ State_Populations <-
 totalvmt_temp <- data.frame()
 for (i in 2022: 2050){
   totalvmt_temp <- VMT_State_Allocation %>% filter(year == i) %>%
-    add_row(state = 'U.S. Total', year = i, state_vmt  = sum(.$state_vmt ))
+    add_row(state = 'U.S. Total', year = i, state_vmt  = sum(.$state_vmt )) %>%
+    filter(state == 'U.S. Total')
 
   VMT_State_Allocation = rbind(VMT_State_Allocation,totalvmt_temp)
 }
