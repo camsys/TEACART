@@ -135,7 +135,7 @@ ui <- function(request) {
                                      
                                      selectInput("state_input",
                                                  "State:",
-                                                 selected = NULL,
+                                                 selected = "Maryland",
                                                  state.name),
                                      numericInput("base_year",
                                                   "Base Year:",
