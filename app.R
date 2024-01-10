@@ -3681,7 +3681,7 @@ server <- function(input, output, session) {
   
   observeEvent(key_inputs_listen(),{
     #browser()
-    # print("RUNNING: Update rvs$Baseline key inputs")
+    print("RUNNING: Update rvs$Baseline key inputs")
     # rvs$Baseline$state <- input$state_input
     # rvs$Baseline$base_year <- input$base_year
     # rvs$Baseline$horizon_year_1 <- input$horizon_year_1
