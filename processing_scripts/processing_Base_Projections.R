@@ -4,7 +4,7 @@
 #This function calcualte the emrate for electricity based on a linear interpolation
 #between base year and the user input net_zero_year
 electricity_emrate_projecter <- function(eemrate_df, net_zero_year = 2100){
-  
+
   eemrate_return <-eemrate_temp<- eemrate_df %>% select(-CO2eq_lbs_MWh) %>%
     mutate(linear_eq = (-1*CO2eq_g_kWh)/(net_zero_year-2021),
            intercept = -1*linear_eq*2021+CO2eq_g_kWh)
@@ -17,26 +17,23 @@ electricity_emrate_projecter <- function(eemrate_df, net_zero_year = 2100){
     mutate(electricity_carbon_content = linear_eq*year+intercept)
   
   eemrate_return$electricity_carbon_content[eemrate_return$year >= net_zero_year] <- 0
-  
-  eemrate_return_fin <- rbind(mutate(eemrate_return,fuel_type="EV100"),
-                              mutate(eemrate_return,fuel_type="EV200")) %>%
-    rbind(mutate(eemrate_return,fuel_type="EV300")) %>%
-    filter(year <= 2050) %>%
-    select(state, year, electricity_carbon_content, fuel_type)
+  eemrate_return_fin<-eemrate_return %>% filter(year <= 2050) %>%
+    select(year, electricity_carbon_content) %>%
+    expand(nesting(year, electricity_carbon_content), veh_subtype = c("EV100","EV200","EV300","SI PHEV 10","SI PHEV 40", "FCV", "EV", "Gasoline PHEV", "Diesel PHEV"))
+
   
   return(eemrate_return_fin)
 }
 
 #Electricity Emmission Rates for the state
-eemrate <- reactive({ #this is electricity emission rate
+electricity_emrate <- reactive({ #this is electricity emission rate
   #browser()
   req(rvs$Baseline$elec_grid_emissions_net_zero)
   req(rvs$Baseline$state)
   zero_em <- rvs$Baseline$elec_grid_emissions_net_zero
   state_ch <- rvs$Baseline$state
   
-  eemrate<-electricity_emrate_projecter(Electricity_EmRate, net_zero_year = zero_em) %>% 
-    filter(state == state_ch)
+  eemrate<-electricity_emrate_projecter(filter(Electricity_EmRate,state == state_ch), net_zero_year = zero_em)
   
   return(eemrate)
 })
@@ -48,11 +45,17 @@ EmRate_by_Tech <- reactive({ #this is emission rate for all vehicles types
   input_ff_factors <- rvs$Advanced[rvs$Advanced$table_no_ui == 7,] %>% 
     select(veh_type, value) %>%
     rename(apportionment = value) %>%
-    mutate(apportionment = as.numeric(apportionment)) #not sure why this step was necessary
+    mutate(apportionment = as.numeric(apportionment)) %>% left_join(
+    rbind(expand(data.frame(),veh_type = c("Passenger Cars", "Light Duty Trucks"), veh_subtype = c("SI PHEV 10","SI PHEV 40")),
+          expand(data.frame(),veh_type = c("Medium Duty Trucks", "Heavy Duty Trucks"), veh_subtype = c("Gasoline PHEV", "Diesel PHEV")))) %>%
+    rbind(
+      rbind(
+        expand(data.frame(),veh_type = c("Passenger Cars", "Light Duty Trucks"), veh_subtype = c("EV100","EV200","EV300"), apportionment = 1),
+        expand(data.frame(),veh_type = c("Medium Duty Trucks", "Heavy Duty Trucks"), veh_subtype = c("EV"), apportionment = 1)))
   
-  eemrate <- eemrate()
+  eemrate <- electricity_emrate()
   
-  EmRate_by_Tech <- left_join(Fuel_Econs, eemrate) %>% select(-state)
+  EmRate_by_Tech <- left_join(Fuel_Econs, eemrate) 
   EmRate_by_Tech <- left_join(EmRate_by_Tech, left_join(Fuel_Factors_Revision,input_ff_factors)) %>% 
     select(-c(fuel_conversion_unit, electricity_conversion_unit,fuel_carbon_content_unit))
   
@@ -64,10 +67,11 @@ EmRate_by_Tech <- reactive({ #this is emission rate for all vehicles types
   #Calculate fuel emission rate, electircity emission rate, and combine based
   #on the apportionment for each vehicle type
   #most of these factors are in the fuel factors sheet
+  ##SL NOTE:: Something is slightly off wit heavy trucks maybe medium as well less than a .1% difference 
   EmRate_by_Tech <- EmRate_by_Tech %>%
     mutate(fuel_emission_rate = (1/mpg_gasoline_eq) * (1000*fuel_carbon_content * fuel_conversion) + fuel_CH4_CO2e_per_mile+fuel_N20_CO2eq_per_mile) %>%
     mutate(electricity_emission_rate = (1/mpg_gasoline_eq) * electricity_carbon_content * electricity_conversion) %>%
-    mutate(emission_rate = (1-apportionment)*fuel_emission_rate+apportionment*electricity_emission_rate)
+    mutate(emission_rate = (1-apportionment*uses_electiricity)*fuel_emission_rate+apportionment*uses_electiricity*electricity_emission_rate)
   
   return(EmRate_by_Tech)
   
@@ -91,29 +95,29 @@ VMT_Type_Tech_Base <- reactive({ #this is VMT
   # VMT_Type_Tech_Base <- reactive({
   #   Tech_Frac_Vision %>%
   #     left_join(select(VMT_Forecast(), veh_type, year, state_vmt), by = join_by(veh_type, year)) %>%
-  #     mutate(mmt_by_supertype = state_vmt * aeo_tech_frac) #this has been renamed to mmt_by_supertype
+  #     mutate(mmt_by_subtype = state_vmt * aeo_tech_frac) #this has been renamed to mmt_by_subtype
   # })
   
   state_ch <- rvs$Baseline$state
   nhs_ch <- rvs$Baseline$trans_system_scope
   #browser()
-  
+  VMT_VehType<-VMT_Forecast() #name is a bit historic probably should be changed
   nhs_vals <- filter(NHS_VMT, state == state_ch)
   tech_frac_temp <- Tech_Frac_Vision()
   
   if(nhs_ch == "Only NHS"){
     
     VMT_Type_Tech_Basetemp <- tech_frac_temp %>% 
-      left_join(filter(VMT_VehType, state == state_ch), by = c('year','veh_type')) %>%
+      left_join(VMT_VehType, by = c('year','veh_type')) %>%
       mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
-      mutate(mmt_by_supertype = ifelse(veh_supertype == "Light Duty Vehicles", 
-                                  nhs_vals$LDV_pct_on_NHS[1]*state_vmt_vehtype * tech_frac_forecast,
-                                  nhs_vals$TRK_pct_on_NHS[1]*state_vmt_vehtype * tech_frac_forecast)) 
+      mutate(mmt_by_subtype = ifelse(veh_supertype == "Light Duty Vehicles", 
+                                  nhs_vals$LDV_pct_on_NHS[1]*state_vmt_AEO * tech_frac_forecast,
+                                  nhs_vals$TRK_pct_on_NHS[1]*state_vmt_AEO * tech_frac_forecast)) 
   } else {
     
     VMT_Type_Tech_Basetemp <- tech_frac_temp %>% 
-      left_join(filter(VMT_VehType, state == state_ch), by = c('year','veh_type')) %>%
-      mutate(mmt_by_supertype = state_vmt_vehtype * tech_frac_forecast)
+      left_join(VMT_VehType, by = c('year','veh_type')) %>%
+      mutate(mmt_by_subtype = state_vmt_AEO * tech_frac_forecast)
     
   }
   
@@ -269,29 +273,81 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
   
 })
 
-# #Fuel Factor Weighted ----
-# Fuel_Factors_Weighted <- observeEvent(input$state_input,{
-#   browser()
-#   VMT_Forecast() %>% View()
-#   Fuel_Factors_Weighted_raw
-# })
+#Fuel Factor Weighted ----
+Fuel_Factors_Weighted <- reactive({
+  
+  temp<-VMT_Forecast() %>% 
+    filter(year == 2022) %>%
+    mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
+    group_by(veh_supertype) %>%
+    mutate(vmt_supertype = sum(state_vmt_AEO)) %>%
+    ungroup() %>% group_by(year, veh_type, veh_supertype) %>% 
+    summarise(veh_type_per_vmt_supertype = state_vmt_AEO/vmt_supertype) %>%
+    ungroup() %>%
+    select(-year)
+    
+  temp_super<-Fuel_Factors_Weighted_raw %>% 
+    left_join(temp) %>% filter(!is.na(veh_supertype)) %>% group_by(veh_supertype) %>% 
+    summarise(across(where(is.numeric), function(x) sum(x*veh_type_per_vmt_supertype))) %>%
+    ungroup() %>% select(-veh_type_per_vmt_supertype) %>% rename(veh_type = veh_supertype) %>% mutate(veh_subtype = "All")
+  
+  Fuel_Factors_Weighted <- rbind(Fuel_Factors_Weighted_raw, temp_super)
+  
+  return(Fuel_Factors_Weighted)
+  })
 
 ### VMT_Forecast ----------------
 ### these tables don't have to be show to the user, but it is helpful to have them as reactive tables
-#### SL - All the below are throwing erros for me I'm commenting out the VMT_Tyep_Tech_Base for now as it's missing 
-#### some key info
 
+CO2e_Category_Averages <- reactive({
+  
+  temp_all<-VMT_Type_Tech_Base() %>%
+    group_by(veh_supertype, year) %>%
+    mutate(pct_supertype = mmt_by_subtype/sum(mmt_by_subtype)) %>%
+    select(veh_supertype, year, veh_type, veh_subtype, pct_supertype)
+  
+  temp_Conventional_LDV<-VMT_Type_Tech_Conventional_LDV() 
+  
+  temp_Conventional_MDHD <- VMT_Type_Tech_Conventional_MDHD() 
+  
+  
+  all_cats_temp<-temp_all %>% left_join(EmRate_by_Tech()) %>% 
+    select(emission_rate, veh_supertype, year, veh_type, veh_subtype, pct_supertype) %>%
+    mutate(CO2e_millions = pct_supertype*emission_rate) %>% 
+    group_by(veh_supertype, year) %>% 
+    summarise(CO2e_millions = sum(CO2e_millions, na.rm = T)) 
 
+  ldv_gas_impf <- temp_Conventional_LDV %>% left_join(EmRate_by_Tech()) %>%
+    select(emission_rate, year, veh_type, veh_subtype, state_pct_of_category) %>%
+    mutate(CO2e_millions = state_pct_of_category *emission_rate) %>%
+    group_by(year) %>% 
+    summarise(CO2e_millions = sum(CO2e_millions, na.rm = T))
+  ldv_gas_impf <- ldv_gas_impf$CO2e_millions[ldv_gas_impf$year == 2022]
 
+  mhdv_conventional_impf <- temp_Conventional_MDHD %>% left_join(EmRate_by_Tech()) %>%
+    select(emission_rate, year, veh_type, veh_subtype, state_pct_of_category) %>%
+    mutate(CO2e_millions = state_pct_of_category *emission_rate) %>%
+    group_by(year) %>%
+    summarise(CO2e_millions = sum(CO2e_millions, na.rm = T))
+  mhdv_conventional_impf<-mhdv_conventional_impf$CO2e_millions[mhdv_conventional_impf$year == 2021]
 
-### The below tables summarize the VMT_Type_Tech_Base
-### It's in different tables because these categories are actually overlapping which is weird but maybe there's a reason
-### You can check that it summarizes summarize(total = sum(state_pct_of_category), .by = c(year))
+  ldv_2022 <- all_cats_temp$CO2e_millions[all_cats_temp$year == 2022 & all_cats_temp$veh_supertype == "Light Duty Vehicles"]
+  mhdv_2022 <- all_cats_temp$CO2e_millions[all_cats_temp$year == 2022 & all_cats_temp$veh_supertype == "Medium/Heavy Duty Vehicles"]
+  
+  all_cats_temp <- all_cats_temp %>% 
+    mutate(base_impf = ifelse(veh_supertype == "Light Duty Vehicles", CO2e_millions/ldv_2022,
+                                       CO2e_millions/ldv_gas_impf)) %>%
+    mutate(delay_impf = ifelse(veh_supertype == "Light Duty Vehicles", CO2e_millions/ldv_gas_impf,
+                               CO2e_millions/mhdv_conventional_impf))
+  
+  return(all_cats_temp)
+  
+})
 
 VMT_Type_Tech_LDV <- reactive({
   VMT_Type_Tech_Base() %>%
     filter(veh_type %in% c("Passenger Cars", "Light Duty Trucks")) %>% 
-    summarize(veh_type, veh_subtype, mmt_by_supertype, state_pct_of_category = mmt_by_supertype / sum(mmt_by_supertype), 
+    summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
               .by = year) %>%
     mutate(veh_category = "Light Duty Vehicles")
 })
@@ -299,7 +355,7 @@ VMT_Type_Tech_LDV <- reactive({
 VMT_Type_Tech_MDHD <- reactive({
   VMT_Type_Tech_Base() %>%
     filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks")) %>% 
-    summarize(veh_type, veh_subtype, mmt_by_supertype, state_pct_of_category = mmt_by_supertype / sum(mmt_by_supertype), 
+    summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
               .by = year) %>%
     mutate(veh_category = "Medium/Heavy Duty Vehicles")
 })
@@ -308,17 +364,17 @@ VMT_Type_Tech_Conventional_LDV <- reactive({
   VMT_Type_Tech_Base() %>%
     filter((veh_type == "Passenger Cars" & veh_subtype == "Gasoline ICE") |
              (veh_type == "Light Duty Trucks" & veh_subtype == "Gasoline ICE")) %>%
-    summarize(veh_type, veh_subtype, mmt_by_supertype, state_pct_of_category = mmt_by_supertype / sum(mmt_by_supertype), 
+    summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
               .by = year) %>%
     mutate(veh_category = "Conventional LDV")
 })
 
 VMT_Type_Tech_Conventional_MDHD <- reactive({
   VMT_Type_Tech_Base() %>%
-    filter((veh_type == "Medium Duty Trucks" & veh_subtype == "Diesel") |
-             (veh_type == "Medium Duty Trucks" & veh_subtype == "Gasoline") | 
-             (veh_type == "Heavy Duty Trucks" & veh_subtype == "Diesel")) %>%
-    summarize(veh_type, veh_subtype, mmt_by_supertype, state_pct_of_category = mmt_by_supertype / sum(mmt_by_supertype), 
+    filter((veh_type == "Medium Duty Trucks" & veh_subtype == "Diesel ICE") |
+             (veh_type == "Medium Duty Trucks" & veh_subtype == "Gasoline ICE") | 
+             (veh_type == "Heavy Duty Trucks" & veh_subtype == "Diesel ICE")) %>%
+    summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
               .by = year) %>%
     mutate(veh_category = "Conventional MDHD")
 })
@@ -326,7 +382,7 @@ VMT_Type_Tech_Conventional_MDHD <- reactive({
 VMT_Type_Tech_Electric_LDV <- reactive({
   VMT_Type_Tech_Base() %>%
     filter(veh_subtype %in% c("EV100", "EV200", "EV300")) %>%
-    summarize(veh_type, veh_subtype, mmt_by_supertype, state_pct_of_category = mmt_by_supertype / sum(mmt_by_supertype), 
+    summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
               .by = year) %>%
     mutate(veh_category = "Electric LDV")
 })
@@ -334,7 +390,7 @@ VMT_Type_Tech_Electric_LDV <- reactive({
 VMT_Type_Tech_Electric_MDHD <- reactive({
   VMT_Type_Tech_Base() %>%
     filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks") & veh_subtype == "Electric") %>% 
-    summarize(veh_type, veh_subtype, mmt_by_supertype, state_pct_of_category = mmt_by_supertype / sum(mmt_by_supertype), 
+    summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
               .by = year) %>%
     mutate(veh_category = "Electric MDHD")
 })

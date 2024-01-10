@@ -1,11 +1,6 @@
-#load packages - delete in final deployment --------
-library(dplyr)
-library(tidyr)
-library(stringr)
 
-observeEvent(input$state_input, {
+output_RoadwayExp <- reactive({
   
-  browser()
 #set inputs - delete in final deployment -------
 
 #these should be pulled from EmRate Tech
@@ -16,32 +11,39 @@ observeEvent(input$state_input, {
 EmRate_by_Tech <- EmRate_by_Tech() %>%
   mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>% 
   select(year, 
-         veh_type, fuel_type, apportionment, uses_electiricity,
+         veh_type, veh_subtype, apportionment, uses_electiricity,
          veh_supertype, emission_rate)
 
 VMT_Type_Tech_Base <- VMT_Type_Tech_Base()  %>%
   mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
   select(year, veh_type, veh_subtype,
-         veh_supertype, mmt_by_type)
+         veh_supertype, mmt_by_subtype)
 
-temp_em_df_delay_improvement <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by = c("year","veh_type","fuel_type"="veh_subtype", "veh_supertype")) %>% 
+temp_em_df_delay_improvement <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by = c("year","veh_type","veh_subtype", "veh_supertype")) %>% 
   group_by(year, veh_supertype) %>%
-  summarise(cat_avg = sum(emission_rate*mmt_by_type))
+  summarise(cat_avg = sum(emission_rate*mmt_by_subtype))
   
-temp_em_df <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by = c("year","veh_type","fuel_type"="veh_subtype", "veh_supertype")) %>% 
-  group_by(year, veh_supertype) %>%
-  summarise(cat_avg = sum(emission_rate*mmt_by_type, na.rm = TRUE))
+# temp_em_df <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by = c("year","veh_type","veh_subtype", "veh_supertype")) %>% 
+#   group_by(year, veh_supertype) %>%
+#   summarise(cat_avg = sum(emission_rate*mmt_by_subtype, na.rm = TRUE))
 
-temp_em_df_sub <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by = c("year","veh_type","fuel_type"="veh_subtype", "veh_supertype")) %>% 
+temp_em_df <- CO2e_Category_Averages()
+
+temp_em_df_sub <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by = c("year","veh_type","veh_subtype", "veh_supertype")) %>% 
   group_by(year, veh_supertype,uses_electiricity) %>%
-  summarise(cat_avg = sum(emission_rate*mmt_by_type, na.rm = TRUE)) %>%
+  summarise(cat_avg = sum(emission_rate*mmt_by_subtype, na.rm = TRUE)) %>%
   ungroup() %>% group_by(year, veh_supertype) %>%
-  summarise(cat_avg_electricity_per = sum(cat_avg*uses_electiricity)/sum(cat_avg))
+  summarise(cat_avg_electricity_per = sum(cat_avg*uses_electiricity)/sum(cat_avg)) %>%
+  group_by(year) %>% summarise(avg_electricity_per = sum(cat_avg_electricity_per))
 
 #inputs ------
 
 #user inputs
-project_df_input <- rvs$Projects[rvs$Projects$table_no_ui == 14, c("year", "area_type", "road_class", "value")] %>%
+project_df_input_temp <- project_df_input <- rvs$Projects[rvs$Projects$table_no_ui == 14, c("year", "area_type", "road_class", "value")] %>%
+  pivot_wider(values_from = value, names_from = year) %>% 
+  mutate(horizon_year_2 = horizon_year_1 + horizon_year_2) %>%
+  mutate(horizon_year_3 = horizon_year_2 + horizon_year_3) %>%
+  pivot_longer(cols = starts_with("horizon_year_"), names_to = "year",values_to = "value") %>%
   mutate(
     year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                       year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
@@ -53,97 +55,68 @@ truck_gallons_hour_delay = 1.7 # this is a hu input
 
 existing_lanes_df <- data.frame(area_type = c("Rural","Rural","Urban","Urban"),
                                 road_class = c("Principal Arterial","Freeway","Principal Arterial","Freeway"),
-                                existing_lanes = c(4,6,4,6))
-
+                                existing_lanes = c(4,6,4,6)) 
 #fuel factors inputs
 gasoline_CO2_kg_per_gallon = Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type =="Gasoline" & Fuel_Factors_Baselines$units == "fuel_carbon_content"] #7.94 #this is a hu input from Fuel Factors tab
 diesel_CO2_kg_per_gallon = Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type =="Diesel" & Fuel_Factors_Baselines$units == "fuel_carbon_content"] #9.4 #this is a hu input from Fuel Factors tab
 
+ff_weighted_temp <- Fuel_Factors_Weighted()
+NOx_LDV <- ff_weighted_temp$NOx_g_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
+PM25_LDV <-ff_weighted_temp$NOx_g_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
 #functions ----
 
-calculate_roadway_expansion_emmision_rates_per_hours_delays <- 
-  function(
-    car_emrate, #this is from EmRate by Tech
-    truck_emrate, #this is from EmRate by Tech
-    percent_truck_traffic = .18, #this changes whether or not it's freeway or arterial
-    
-    car_gallons_hour_delay = 0.4, # this is a hardcoded unmutable (hu) input
-    truck_gallons_hour_dealy = 1.7, # this is a hu input
-    gasoline_CO2_kg_per_gallon = 7.94, #this is a hu input from Fuel Factors tab
-    diesel_CO2_kg_per_gallon = 9.4 #this is a hu input from Fuel Factors tab
-  ){
-    delay_emrate = car_emrate*car_gallons_hour_delay*7.94*1000*(1-percent_truck_traffic) + truck_emrate*truck_gallons_hour_delay*7.94*1000*(percent_truck_traffic)
-    return(delay_emrate)
-  }
+#create dataframe
+temp_output <- data.frame(year = c(rvs$Baseline$horizon_year_1, rvs$Baseline$horizon_year_2, rvs$Baseline$horizon_year_3)) ### Pulls horizon years
+temp_output <- expand(temp_output, year, area_type = c("Urban", "Rural"), road_class = c("Principal Arterial", "Freeway"))
 
-calculate_MT_CO2e_change <- function(
-    total_lane_miles = list(y2025=1,y2035=2,y2050=3),
-    VMTperLaneMile, #roadway depedent
-    VMT_elasticity, #roadway depedent - I HAVE BIG BEN Q! WHY DOES THIS OFTEN EVALUATE TO ZERO FOR VMT CHANGE
-    base_speed, #roadway depedent
-    CO2em_per_hour_delay, #roadway dependent use first fucntion
-    tspeed, #roadway dependent
-    existing_lanes = 6 #roadway dependent
-){
-  annual_VMTperLaneMile = VMTperLaneMile*300
-  minutes_delay_saved_perVMT = 0.2*(1-VMT_elasticity)/(1-0.67)
-  
-  minutes_per_mile_base = 60/base_speed
-  minutes_per_mile_new = minutes_delay_saved_perVMT - minutes_per_mile_base
-  
-  new_speed = 1/(minutes_per_mile_new*60) #in mph
-  speed_change = new_speed - base_speed
-  
-  VMT_change = lapply(total_lane_miles,
-                      function(x) VMT_elasticity*annual_VMTperLaneMile*x)
-  VMT_increase = lapply(VMT_change,
-                        function(x) tspeed*x) # could I combine these two lapply?
-  delay_reduction = lapply(total_lane_miles, 
-                      function(x) -((annual_VMTperLaneMile*existing_lanes*x/2)*(minutes_delay_saved_perVMT/60)*CO2em_per_hour_delay)/1000000)
-  net_CO2_change = list(y2025 = VMT_increase$y2025 + delay_reduction$y2025,
-                        y2030 = VMT_increase$y2030 + delay_reduction$y2030,
-                        y2050 = VMT_increase$y2050 + delay_reduction$y2050)
-  
-}
+#add percent truck traffic
+temp_output$percent_truck_traffic <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"])
 
-temp <- data.frame(year = c(rvs$Baseline$base_year, rvs$Baseline$horizon_year_1, rvs$Baseline$horizon_year_2, rvs$Baseline$horizon_year_3)) ### Pulls horizon years
-temp <- expand(temp, year, area_type = c("Urban", "Rural"), road_class = c("Principal Arterial", "Freeway"))
-temp1<-temp #%>% mutate(percent_truck_traffic = rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == road_class  & rvs$Assumptions$unit == "truck_traffic_pct"])
-temp1 <- temp
-temp1$percent_truck_traffic <- sapply(temp1$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"])
-temp1$light_duty_automobile_emrate <- sapply(temp1$year, function(x) temp_em_df$cat_avg[temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])
-temp1$medium_heavy_duty_truck_emrate <- sapply(temp1$year, function(x) temp_em_df$cat_avg[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"])
-temp1$VMT_elasticity <- sapply(temp1$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"])
-temp1$traveltime_elasticity <- sapply(temp1$area_type, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x & rvs$Assumptions$unit == "VMT_elasticity_trav_time"])
+temp_output$light_duty_automobile_emrate <- sapply(temp_output$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])
+temp_output$medium_heavy_duty_truck_emrate <- sapply(temp_output$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"])
+
+temp_output$ldv_delay_emrate <- sapply(temp_output$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])*gasoline_CO2_kg_per_gallon*1000*car_gallons_hour_delay
+temp_output$mhdv_delay_emrate <- sapply(temp_output$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"])*diesel_CO2_kg_per_gallon*1000*truck_gallons_hour_delay
+temp_output<-temp_output %>%
+  mutate(road_class_delay_emrate = ldv_delay_emrate*(1-percent_truck_traffic)+mhdv_delay_emrate*percent_truck_traffic)
+
+temp_output$VMT_elasticity <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"])
+temp_output$traveltime_elasticity <- sapply(temp_output$area_type, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x & rvs$Assumptions$unit == "VMT_elasticity_trav_time"])
+
 #need to change user input to principal arterial
 tspeed_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "travel_speed_mph"]}
-temp1$tspeed = apply(temp1, 1, tspeed_fun, c1 = "area_type", c2 = "road_class")
+temp_output$tspeed = apply(temp_output, 1, tspeed_fun, c1 = "area_type", c2 = "road_class")
 AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "VMT_per_lane_mile"]}
-temp1$VMTperLaneMile = apply(temp1, 1, AADT_fun, c1 = "area_type", c2 = "road_class")
+temp_output$VMTperLaneMile = apply(temp_output, 1, AADT_fun, c1 = "area_type", c2 = "road_class")
 
-temp1 %>% left_join(existing_lanes_df) %>%
-  mutate(delay_emrate = light_duty_automobile_emrate*car_gallons_hour_delay*7.94*1000*(1-percent_truck_traffic) + medium_heavy_duty_truck_emrate*truck_gallons_hour_delay*7.94*1000*(percent_truck_traffic),
-         annual_VMTperLaneMile = VMTperLaneMile*300,
+temp_output %>% left_join(existing_lanes_df) %>% 
+  mutate(annual_VMTperLaneMile = VMTperLaneMile*300,
          minutes_delay_saved_perVMT = 0.2*(1-VMT_elasticity)/(1-0.67),
          minutes_per_mile_base = 60/tspeed,
-         minutes_per_mile_new = minutes_delay_saved_perVMT - minutes_per_mile_base,
+         minutes_per_mile_new = minutes_per_mile_base - minutes_delay_saved_perVMT,
          new_speed = 1/(minutes_per_mile_new*60), #in mph
-         speed_change = new_speed - tspeed) %>%
-  left_join(project_df_input) %>%
-  left_join(temp_em_df_sub) %>%
+         speed_change = minutes_per_mile_new - minutes_per_mile_base) %>%
+  left_join(project_df_input) %>% 
+  left_join(temp_em_df_sub) %>% 
   mutate(total_change_VMT = VMT_elasticity*annual_VMTperLaneMile*value,
-         VMT_increase = tspeed*total_change_VMT,
-         delay_reduction = -((annual_VMTperLaneMile*existing_lanes*value/2)*(minutes_delay_saved_perVMT/60)*delay_emrate)/1000000,
+         
+         VMT_increase = light_duty_automobile_emrate*total_change_VMT/1000000,#I Have a Ben Q about this why is travel speed used? Itseems like a mistake
+         delay_reduction = -((annual_VMTperLaneMile*existing_lanes*value/2)*(minutes_delay_saved_perVMT/60)*road_class_delay_emrate)/1000000,
          
          total_change_MTCO2 = VMT_increase + delay_reduction,
-         total_change_electricity = total_change_MTCO2*cat_avg_electricity_per,
-         total_change_direct = total_change_MTCO2-total_change_electricity,
+         total_change_electricity = total_change_MTCO2*avg_electricity_per,
+         total_change_direct = total_change_MTCO2-total_change_electricity) %>% 
+  group_by(year) %>% 
+  summarise(
+    total_change_VMT = sum(total_change_VMT),
+    total_change_MTCO2 = sum(total_change_MTCO2),
+    total_change_electricity = sum(total_change_electricity),
+    total_change_direct = sum(total_change_direct),
+    total_change_upstream = 0) #%>%
+    #mutate(total_change_mtnox = total_change_VMT*NOx_LDV*,#LDV Weighted CO2 x LDV Improvement Factor by year x INDEX(EmRate_by_Tech!$C$56:$AE$56, 1, MATCH(C$3, EmRate_by_Tech!$C$1:$AE$1, 0)))/1000000+SUM(C53, C74, C95, C116)*EmRate_by_Tech!$B$111 delay_reudction * improvement factor
+    #       total_change_pm25 = total_change_VMT*1) #'Fuel Factors'!$D$36 x  INDEX(EmRate_by_Tech!$C$56:$AE$56, 1, MATCH(C$3, EmRate_by_Tech!$C$1:$AE$1, 0))+C$125 x 'Fuel Factors'!$E$36)/1000000+SUM(C53, C74, C95, C116)*EmRate_by_Tech!$B$112
 
-         total_change_upstream = 0,
-         total_change_mtnox = total_change_VMT*1,#'Fuel Factors'!$C$36 x INDEX(EmRate_by_Tech!$C$56:$AE$56, 1, MATCH(C$3, EmRate_by_Tech!$C$1:$AE$1, 0)))/1000000+SUM(C53, C74, C95, C116)*EmRate_by_Tech!$B$111
-         total_change_pm25 = total_change_VMT*1) #'Fuel Factors'!$D$36 x  INDEX(EmRate_by_Tech!$C$56:$AE$56, 1, MATCH(C$3, EmRate_by_Tech!$C$1:$AE$1, 0))+C$125 x 'Fuel Factors'!$E$36)/1000000+SUM(C53, C74, C95, C116)*EmRate_by_Tech!$B$112
-
-
+return(temp_output)
 })
 
 

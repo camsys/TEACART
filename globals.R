@@ -162,13 +162,15 @@ NTD_Service <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NTD_Service")
 Fuel_Factors <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors")
 Fuel_Factors_Baselines <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Baselines")
 Fuel_Factors_Revision <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Revision") # SL ADDED NEED TO WORK TO COMBINE THESE TWO
+Fuel_Factors_Weighted_raw <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Weighted")
 
-Fuel_Factors_Weighted_raw <-
-  Fuel_Factors %>% # Different veh types will need different weighting strategies, will likely need to make reactive
-  group_by(veh_type) %>%
-  summarize(NOx_g_per_veh_mi_avg = sum(hd_weight * NOx_g_per_veh_mi, na.rm = T),
-            PM25_exhaust_avg = sum(hd_weight * PM25_exhaust, na.rm = T),
-            PM25_tires_brakes_avg = sum(hd_weight * PM25_tires_brakes, na.rm = T)) 
+#I realized this was misatributing the weighting to heavy duty trucks instead of medium duty see the excel tool
+# Fuel_Factors_Weighted_raw <-
+#   Fuel_Factors %>% # Different veh types will need different weighting strategies, will likely need to make reactive
+#   group_by(veh_type) %>%
+#   summarize(NOx_g_per_veh_mi_avg = sum(hd_weight * NOx_g_per_veh_mi, na.rm = T),
+#             PM25_exhaust_avg = sum(hd_weight * PM25_exhaust, na.rm = T),
+#             PM25_tires_brakes_avg = sum(hd_weight * PM25_tires_brakes, na.rm = T)) 
 
 EV_Forecast <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "EV_Forecast")
 

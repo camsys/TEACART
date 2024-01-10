@@ -3659,8 +3659,8 @@ server <- function(input, output, session) {
   #source("processing_scripts/processing_TDM.R", local = TRUE) #Qi original - assigned
   #source("processing_scripts/processing_ParkRide.R", local = TRUE) #Qi original - assigned
   source("processing_scripts/processing_freight.R", local = T) #Gui is done
-  source("processing_scripts/processing_EVSE.R", local = T) #Gui is done-ish?
-  #source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Seth is almost done
+  source("processing_scripts/processing_EVSE.R", local = T) #Gui is done-ish?\
+  source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Seth is almost done
 
   #rvs update from different inputs
   #key_inputs update
