@@ -39,15 +39,12 @@ temp_em_df_sub <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by = c("year","v
 #inputs ------
 
 #user inputs
-project_df_input_temp <- project_df_input <- rvs$Projects[rvs$Projects$table_no_ui == 14, c("year", "area_type", "road_class", "value")] %>%
-  pivot_wider(values_from = value, names_from = year) %>% 
-  mutate(horizon_year_2 = horizon_year_1 + horizon_year_2) %>%
-  mutate(horizon_year_3 = horizon_year_2 + horizon_year_3) %>%
-  pivot_longer(cols = starts_with("horizon_year_"), names_to = "year",values_to = "value") %>%
-  mutate(
-    year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
-                      year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
-                      year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3))
+project_df_input <- make_project_table_cumulative(rvs$Projects,
+                                                  table_no = 14,
+                                                  cols = c('area_type','road_class'),
+                                                  years_list = c(rvs$Baseline$horizon_year_1,
+                                                                 rvs$Baseline$horizon_year_2,
+                                                                 rvs$Baseline$horizon_year_3))
 
 #hardcode inputs - I wonder if these should be part of the assumptions? or Capital Inputs?
 car_gallons_hour_delay = 0.4 # this is a hardcoded unmutable (hu) input

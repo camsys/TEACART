@@ -1600,7 +1600,7 @@ server <- function(input, output, session) {
   #Source Local Scripts --------------------------------------------------------
   source("functions/render_custom_datatable_SLVER.R", local = T)
   source("functions/reshaping.R", local = T)
-  
+  source("functions/make_project_table_cumulative.R")
   #set reactiveValues ----------------------------------------------------------
   
   rv <- reactiveValues()
@@ -3655,13 +3655,12 @@ server <- function(input, output, session) {
   #source("processing_scripts/processing_Macro.R", local = TRUE) 
   #source("processing_scripts/processing_Micro.R", local = TRUE) #Qi original - assigned
   #source("processing_scripts/processing_TransitElec.R", local = TRUE)  #Qi original - Seth assigned
-  #source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi original - Seth assigned
+  source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi original - Seth is working
   #source("processing_scripts/processing_TDM.R", local = TRUE) #Qi original - assigned
   #source("processing_scripts/processing_ParkRide.R", local = TRUE) #Qi original - assigned
   source("processing_scripts/processing_freight.R", local = T) #Gui is done
   source("processing_scripts/processing_EVSE.R", local = T) #Gui is done-ish?\
-  source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Seth is almost done
-
+  source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Finished
   #rvs update from different inputs
   #key_inputs update
   key_inputs_listen <- reactive({
