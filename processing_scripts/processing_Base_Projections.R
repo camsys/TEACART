@@ -315,7 +315,8 @@ CO2e_Category_Averages <- reactive({
     select(emission_rate, veh_supertype, year, veh_type, veh_subtype, pct_supertype) %>%
     mutate(CO2e_millions = pct_supertype*emission_rate) %>% 
     group_by(veh_supertype, year) %>% 
-    summarise(CO2e_millions = sum(CO2e_millions, na.rm = T)) 
+    summarise(CO2e_millions = sum(CO2e_millions, na.rm = T)) %>%
+    ungroup()
 
   ldv_gas_impf <- temp_Conventional_LDV %>% left_join(EmRate_by_Tech()) %>%
     select(emission_rate, year, veh_type, veh_subtype, state_pct_of_category) %>%
@@ -344,13 +345,13 @@ CO2e_Category_Averages <- reactive({
   
 })
 
-VMT_Type_Tech_LDV <- reactive({
-  VMT_Type_Tech_Base() %>%
-    filter(veh_type %in% c("Passenger Cars", "Light Duty Trucks")) %>% 
-    summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
-              .by = year) %>%
-    mutate(veh_category = "Light Duty Vehicles")
-})
+# VMT_Type_Tech_LDV <- reactive({
+#   VMT_Type_Tech_Base() %>%
+#     filter(veh_type %in% c("Passenger Cars", "Light Duty Trucks")) %>% 
+#     summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
+#               .by = year) %>%
+#     mutate(veh_category = "Light Duty Vehicles")
+# })
 
 VMT_Type_Tech_MDHD <- reactive({
   VMT_Type_Tech_Base() %>%
@@ -395,5 +396,12 @@ VMT_Type_Tech_Electric_MDHD <- reactive({
     mutate(veh_category = "Electric MDHD")
 })
 
-
-
+# # EmRate_by_Tech category average 
+# # Qi: the electricity_carbon_content value is a little bit off, need to check
+# EmRate_by_Tech_LDV_avg <- reactive({
+#   EmRate_by_Tech()  %>% filter(veh_type %in% c('Passenger Cars','Light Duty Trucks')) %>% 
+#   left_join(VMT_Type_Tech_LDV(), by = c('veh_type','veh_subtype',"year")) %>%
+#   mutate(LDV_avg = emission_rate* state_pct_of_category) %>% 
+#   group_by(year) %>% summarise(LDV_avg= sum(LDV_avg))
+# 
+# })
