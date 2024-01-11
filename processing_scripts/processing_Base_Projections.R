@@ -69,6 +69,11 @@ EmRate_by_Tech <- reactive({ #this is emission rate for all vehicles types
   #most of these factors are in the fuel factors sheet
   ##SL NOTE:: Something is slightly off wit heavy trucks maybe medium as well less than a .1% difference 
   EmRate_by_Tech <- EmRate_by_Tech %>%
+    #use gasoline factor for light duty EtOH
+    mutate(fuel_N20_CO2eq_per_mile = ifelse(veh_type == 'Light Duty Trucks' & veh_subtype == 'EtOH',
+                                            unique(EmRate_by_Tech$fuel_N20_CO2eq_per_mile[EmRate_by_Tech$veh_type == 'Light Duty Trucks' &
+                                                                                            EmRate_by_Tech$veh_subtype == 'Gasoline ICE']),
+                                            fuel_N20_CO2eq_per_mile)) %>%
     mutate(fuel_emission_rate = (1/mpg_gasoline_eq) * (1000*fuel_carbon_content * fuel_conversion) + fuel_CH4_CO2e_per_mile+fuel_N20_CO2eq_per_mile) %>%
     mutate(electricity_emission_rate = (1/mpg_gasoline_eq) * electricity_carbon_content * electricity_conversion) %>%
     mutate(emission_rate = (1-apportionment*uses_electiricity)*fuel_emission_rate+apportionment*uses_electiricity*electricity_emission_rate)
@@ -288,6 +293,7 @@ Fuel_Factors_Weighted <- reactive({
     
   temp_super<-Fuel_Factors_Weighted_raw %>% 
     left_join(temp) %>% filter(!is.na(veh_supertype)) %>% group_by(veh_supertype) %>% 
+    filter(!(veh_subtype == 'Gasoline' & veh_type == 'Heavy Duty Trucks')) %>%
     summarise(across(where(is.numeric), function(x) sum(x*veh_type_per_vmt_supertype))) %>%
     ungroup() %>% select(-veh_type_per_vmt_supertype) %>% rename(veh_type = veh_supertype) %>% mutate(veh_subtype = "All")
   

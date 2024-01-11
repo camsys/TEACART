@@ -25,9 +25,8 @@
 #   )  # end of Micro strategy
 
 output_micro <- reactive({
-  #observeEvent(input$state_input,{
+#  observeEvent(input$state_input,{
   
-    browser()
     req(rvs)
     req(emrate_by_tech_ldv())
     req(Fuel_Factors_Weighted())
