@@ -135,7 +135,7 @@ ui <- function(request) {
                                      
                                      selectInput("state_input",
                                                  "State:",
-                                                 selected = NULL,
+                                                 selected = 'Maryland',
                                                  state.name),
                                      numericInput("base_year",
                                                   "Base Year:",
@@ -3527,20 +3527,19 @@ server <- function(input, output, session) {
   
  # adrienne working here - error I'm getting is that it's not finding inputs
   
-  
-  
-    # renderDT({
-    # datatable(bikeped_costs_outputs,
-    #           extensions = c('RowGroup','Buttons'),
-    #           options = list(rowGroup = list(columns = c(0)),
-    #                          columnDefs = list(list(visible = FALSE,
-    #                                                 targets = c(0))),
-    #                          autoWidth = TRUE,
-    #                          width = '100%',
-    #                          dom = 'tB',
-    #                          buttons = c('copy', 'csv', 'excel', 'pdf')),
-    #           rownames = FALSE) |>
-    #   formatRound(c(3:7),1)})
+  output$bikeped_costs_outputs_tbl <- renderDT({
+    browser()
+    datatable(bikeped_costs_outputs,     #output_bikped(),
+              extensions = c('RowGroup','Buttons'),
+              options = list(rowGroup = list(columns = c(0)),
+                             columnDefs = list(list(visible = FALSE,
+                                                    targets = c(0))),
+                             autoWidth = TRUE,
+                             width = '100%',
+                             dom = 'tB',
+                             buttons = c('copy', 'csv', 'excel', 'pdf')),
+                        rownames = FALSE) |>
+                formatRound(c(3:7),1)})
   
   output$transit_fixed_costs_outputs_tbl <- renderDT(transit_fixed_costs_outputs,
                                                      rownames = FALSE)
@@ -3649,15 +3648,14 @@ server <- function(input, output, session) {
 
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
   
-  #source("processing_scripts/processing_BikePed.R", local = TRUE) #Qi is working on 
+  source("processing_scripts/processing_BikePed.R", local = TRUE) #Qi done
   #source("processing_scripts/processing_OPS.R", local = TRUE)
   #source("processing_scripts/processing_MDHD.R", local = TRUE) #Gui is working on
-  #source("processing_scripts/processing_Macro.R", local = TRUE) 
-  #source("processing_scripts/processing_Micro.R", local = TRUE) #Qi original - assigned
-  #source("processing_scripts/processing_TransitElec.R", local = TRUE)  #Qi original - Seth assigned
+  source("processing_scripts/processing_Micro.R", local = TRUE) #Qi done
+  source("processing_scripts/processing_TransitElec.R", local = TRUE)  #Qi working
   #source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi original - Seth assigned
-  #source("processing_scripts/processing_TDM.R", local = TRUE) #Qi original - assigned
-  #source("processing_scripts/processing_ParkRide.R", local = TRUE) #Qi original - assigned
+  source("processing_scripts/processing_TDM.R", local = TRUE) #Qi done
+  source("processing_scripts/processing_ParkRide.R", local = TRUE) #Qi done
   source("processing_scripts/processing_freight.R", local = T) #Gui is done
   source("processing_scripts/processing_EVSE.R", local = T) #Gui is done-ish?\
   source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Seth is almost done
