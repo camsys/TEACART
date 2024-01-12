@@ -15,7 +15,33 @@ veh_types_mapping <- c("Passenger Cars" ~ "Light Duty Vehicles",
                        "Medium Duty Trucks" ~ "Medium/Heavy Duty Vehicles", 
                        "Heavy Duty Trucks" ~ "Medium/Heavy Duty Vehicles")
 
+ev_forecast_mapping <- c("AEO Baseline" ~ "AEO_Tech_Frac",
+                         "ACC" ~ "ACC_Tech_Frac",
+                         "ACC II" ~ "ACCII_Tech_Frac",
+                         "ACC II + ACT" ~ "ACCACT_Tech_Frac",
+                         "Custom" ~ "Custom")
+
+veh_subtype_to_fuel_type_mapping <- c("Gasoline ICE" ~ "Gasoline",
+                                      "EV100" ~ "Electricity",
+                                      "EV200" ~ "Electricity",
+                                      "EV300" ~ "Electricity",
+                                      "EtOH" ~ "Gasoline",
+                                      "Diesel ICE" ~ "Diesel",
+                                      "CNG/LNG/LPG" ~ "Natural Gas",
+                                      "SI HEV on Gas" ~ "Gasoline",
+                                      "SI PHEV 10" ~ "Gasoline",
+                                      "SI PHEV 40" ~ "Gasoline",
+                                      "FCV" ~ "Electricity",
+                                      "CNG" ~ "Natural Gas",
+                                      "EV" ~ "Electricity",
+                                      "Diesel PHEV" ~ "Diesel",
+                                      "Gasoline PHEV" ~ "Gasoline",
+                                      "LPG" ~ "LPG")
+PHEV_fuel_types <- c("SI PHEV 10","SI PHEV 40","Diesel PHEV","Gasoline PHEV")
 ev_fuel_types <- c("EV100","EV200","EV300","SI PHEV 10","SI PHEV 40", "FCV", "EV", "Gasoline PHEV", "Diesel PHEV")
+
+
+
 
 convert_to_nested_list <- function(df){ 
   # Create an empty list
@@ -74,33 +100,73 @@ get_num_primary_keys <- function(df){
 
 ### READ and PROCESS RAW DATA ------------------------- 
 # At very end of project we should consider switching to RData file to minimize processing/startup time
+
+#State Population ----
+#State Population for years 2020, 2030, 2050 - need to project inbetween years
 State_Populations <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "State_Populations")
 
+#have to add the 2050 year somehow for approx to work
+for (var in unique(State_Populations$state)){
+  temp_state <- State_Populations %>% 
+    filter(state == var) %>%
+    add_row(state = var, 
+            year = 2050, 
+            population = (.$population[.$year == 2040] - .$population[.$year == 2030]) + .$population[.$year == 2040]) %>% 
+    filter(year == 2050)
+  State_Populations = rbind(State_Populations,temp_state)
+}
+
+State_Populations <-
+  expand(State_Populations, state, year = rep(2020:2050)) %>%
+  left_join(State_Populations, by = c("state", "year")) %>%
+  group_by(state) %>%
+  mutate(population = approx(year, population, xout = year)$y) %>% 
+  mutate(population_growth = population / population[year == 2020] - 1) %>%
+  group_by(year) %>% 
+  mutate(population_pct_of_national = population / sum(population)) %>% #SL: I think this is being misused
+  ungroup()
+
+#Finsih State Population Processing
+
+#Processing VMT Info----
+
+##This is the percentage of LDV VMT and Heavy Duty Vehicles that occur on the NHS for each state: 2021-2050
 NHS_VMT <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NHS_VMT", range = "A4:R57") %>%
     select(state, LDV_pct_on_NHS, TRK_pct_on_NHS)
 
-VMT_State_Allocation <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "VMT_State_Allocation")
+##This is the VMT for each state from 2021-2050 - raw number not percentage
+VMT_State_Allocation_raw <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "VMT_State_Allocation")
 
+VMT_State_Allocation <- right_join(State_Populations,VMT_State_Allocation_raw, by = c('year','state')) %>%
+  group_by(year) %>% 
+  mutate(us_vmt = sum(state_vmt)) %>%
+  mutate(state_vmt_pct_of_national = state_vmt/us_vmt) %>% #dividing by two removes US Total
+  ungroup()
+  
+##this has millions of vehicles for the whole US by year for veh/vehsubtype 
 Stock_Type_Tech_BASE <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Stock_Type_Tech_BASE") %>%
   pivot_longer(cols = !c(veh_type, veh_subtype), names_to = "year", values_to = "stock_millions") %>%
   mutate(year = as.integer(year))
-# VMT_State_Allocation <- ### Can be calculated but just copied in the sheet that Qi put together
-# State_Populations %>%
-#   left_join(filter(State_VMTs, year == 2021), by = join_by(year, state)) %>%
-#   group_by(state) %>%
-#   mutate(hmm = (1+growth)*state_vmt[year == 2021])
-AEO_VMT <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "AEO_VMT_Base") %>%
-  left_join(summarize(Stock_Type_Tech_BASE, "total_stock_millions" = sum(stock_millions), .by = c(veh_type, year)),
-            by = join_by(veh_type, year)) %>%
-  mutate(VMT_per_veh = VMT_AEO / total_stock_millions,
+
+##This has VMT by veh_type (Assuming all subtypes combined) for 2021 - 2050 with 2020 added as zeros
+AEO_VMT_Base <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "AEO_VMT_Base") #Original Tool Does not include 2020 Numbers - coded as zero
+###this adds VMT per million vehicles aka miles traveled by each veh_type each year 2021-2050 I'M Chaging the Name here!!!
+AEO_VMT <- AEO_VMT_Base %>% 
+  left_join(
+    summarize(Stock_Type_Tech_BASE, "total_stock_millions" = sum(stock_millions), .by = c(veh_type, year)),
+            by = join_by(veh_type, year)
+    ) %>%
+  mutate(#VMT_per_veh = VMT_AEO / total_stock_millions, #find this in the Stock_Type object
          veh_supertype = case_match(veh_type, !!!veh_types_mapping))
-  
+
+#This is a duplicate of the above - original tool had this in the Stock_Type_Tech_Base tab which is why I think it got added twice
 Stock_Type <- AEO_VMT %>%
   group_by(veh_supertype, year) %>%
   summarize("total_VMT" = sum(VMT_AEO, na.rm = T), "total_stock_millions" = sum(total_stock_millions, na.rm = T), .groups = "drop") %>%
-  mutate("VMT_per_veh" = total_VMT / total_stock_millions) %>%
+  mutate("MT_per_vehtype" = total_VMT / total_stock_millions) %>% #was VMT_per_veh and now is MT_per_vhetype
   arrange(desc(veh_supertype))
 
+#Other Data Sources
 HPMS <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "HPMS")
 
 Fuel_Econs <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Econs")
@@ -116,13 +182,15 @@ NTD_Service <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NTD_Service")
 Fuel_Factors <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors")
 Fuel_Factors_Baselines <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Baselines")
 Fuel_Factors_Revision <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Revision") # SL ADDED NEED TO WORK TO COMBINE THESE TWO
-Fuel_Factors_Weighted <-
-  Fuel_Factors %>% # Different veh types will need different weighting strategies, will likely need to make reactive
-  group_by(veh_type) %>% 
-  summarize(NOx_g_per_veh_mi_avg = sum(hd_weight * NOx_g_per_veh_mi, na.rm = T),
-            PM25_exhaust_avg = sum(hd_weight * PM25_exhaust, na.rm = T),
-            PM25_tires_brakes_avg = sum(hd_weight * PM25_tires_brakes, na.rm = T)) %>%
-  convert_to_nested_list()
+Fuel_Factors_Weighted_raw <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Weighted")
+
+#I realized this was misatributing the weighting to heavy duty trucks instead of medium duty see the excel tool
+# Fuel_Factors_Weighted_raw <-
+#   Fuel_Factors %>% # Different veh types will need different weighting strategies, will likely need to make reactive
+#   group_by(veh_type) %>%
+#   summarize(NOx_g_per_veh_mi_avg = sum(hd_weight * NOx_g_per_veh_mi, na.rm = T),
+#             PM25_exhaust_avg = sum(hd_weight * PM25_exhaust, na.rm = T),
+#             PM25_tires_brakes_avg = sum(hd_weight * PM25_tires_brakes, na.rm = T)) 
 
 EV_Forecast <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "EV_Forecast")
 
@@ -138,7 +206,6 @@ Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
   expand(Transit_Costs, state_code, transit_mode) %>%
   left_join(Transit_Costs, by = join_by(state_code, transit_mode)) %>%
   replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0))
-
 
 # used to rename headers and units during table rendering
 references <- read_excel(".\\data\\2.User_Inputs.xlsx",
@@ -169,62 +236,16 @@ initial_advanced <- read_excel(".\\data\\2.User_Inputs.xlsx",
 
 #Additional Calculations ----
 
-#State Population ----
-#have to add the 2050 year somehow for approx to work
-for (var in unique(State_Populations$state)){
-  temp_state <- State_Populations %>% 
-    filter(state == var) %>%
-    add_row(state = var, 
-            year = 2050, 
-            population = (.$population[.$year == 2040] - .$population[.$year == 2030]) + .$population[.$year == 2040]) %>% 
-    filter(year == 2050)
-  State_Populations = rbind(State_Populations,temp_state)
-}
-
-State_Populations <-
-  expand(State_Populations, state, year = rep(2020:2050)) %>%
-  left_join(State_Populations, by = c("state", "year")) %>%
-  group_by(state) %>%
-  mutate(population = approx(year, population, xout = year)$y) %>% 
-  mutate(growth = population / population[year == 2020] - 1) %>%
-  group_by(year) %>% 
-  mutate(state_pct_of_national = population / sum(population)) %>% 
-  ungroup()
-
-#VMT_State_Allocation ----
-# #calculate US Total
-totalvmt_temp <- data.frame()
-for (i in 2022: 2050){
-  totalvmt_temp <- VMT_State_Allocation %>% filter(year == i) %>%
-    add_row(state = 'U.S. Total', year = i, state_vmt  = sum(.$state_vmt ))
-
-  VMT_State_Allocation = rbind(VMT_State_Allocation,totalvmt_temp)
-}
-
-VMT_State_Allocation <- left_join(State_Populations,VMT_State_Allocation, by = c('year','state'))
-
-#add percentage of VMT as portion of total VMT
-VMT_State_Allocation<-VMT_State_Allocation %>%
-  group_by(year) %>%
-  mutate(state_perc = state_vmt/(sum(state_vmt,na.rm = T)/2)) %>% #dividing by two removes US Total
-  ungroup()
-
-## join the vmt for each vehicle types
-VMT_State_Allocation <- merge(VMT_State_Allocation, AEO_VMT, by = 'year', all = TRUE)
-
-VMT_VehType <- VMT_State_Allocation %>% #aka VMT_Forecast
-  mutate(state_vmt_vehtype = VMT_AEO*state_perc)
-
 # right now this only grabs "Vision 2022"
-Tech_Frac_Vision <-   
+Tech_Frac_Vision <-   #you should be calling the reactive version Tech_Frac_Vision()
   Stock_Type_Tech_BASE %>%
   group_by(veh_type, year) %>%
-  mutate(aeo_tech_frac = stock_millions / sum(stock_millions)) %>%
+  mutate(aeo_tech_frac = stock_millions / sum(stock_millions)) %>% #renamed to tech_frac_forecast
   ungroup()
 
 #TechFrac object----
 #I need to match up the columns with what's above for this one
-# GLV 12/21/23: I did the vision 2022 one above, with the helpful code below. We can expand on other options at a later time?
+# GLV 12/21/23: I did the vision 2022 one above, with the helpful code below. We can expand on other options at a later time? - SL, this has been expanded delete this comment when ready
 TechFrac <- Stock_Type_Tech_BASE %>% left_join(EV_Forecast, by = c("veh_type", "year")) %>%
   group_by(year, veh_type) %>%
   #Baseline vision 2022 I think aka AEO

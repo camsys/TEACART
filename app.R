@@ -11,7 +11,8 @@ library(shinyWidgets)
 library(htmltools)
 library(plotly)
 library(shiny)
-
+library(shinyjs)
+library(tinytex)
 
 
 # load source files -------------------------------------------------------
@@ -141,7 +142,7 @@ ui <- function(request) {
                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The state for which you will be conducting analysis.")),
                                                             sep = "")
                                                  ),
-                                                 selected = NULL,
+                                                 selected = "Maryland",
                                                  state.name),
                                      numericInput("base_year",
                                                   HTML(paste('<span style ="font-weight: bold;">Base Year: </span>',
@@ -212,7 +213,11 @@ ui <- function(request) {
                                      p(""),
                                      selectInput("ev_baseline_input",
                                                  "Vehicle Electrification Baseline",
-                                                 c("AEO Baseline","ACC II","ACC II + ACT","Custom"),
+                                                 c("AEO Baseline",
+                                                   "ACC",
+                                                   "ACC II",
+                                                   "ACC II + ACT",
+                                                   "Custom"),
                                                  "AEO Baseline"),
                                      p(""),
                                      numericInput("grid_emissions_input",
@@ -1095,7 +1100,7 @@ ui <- function(request) {
                   p(""),
                   h3("Scenario Testing"),
                   p(""),
-                  DT::dataTableOutput("scenario_tbl")
+                  DT::DTOutput("scenario_tbl")
                 )
       ),
 
@@ -1459,15 +1464,15 @@ server <- function(input, output, session) {
   #Source Local Scripts --------------------------------------------------------
   source("functions/render_custom_datatable_SLVER.R", local = T)
   source("functions/reshaping.R", local = T)
+  source("functions/make_project_table_cumulative.R")
+  
   
   #set reactiveValues ----------------------------------------------------------
-  
   rv <- reactiveValues()
   rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
   rvs_out <- read_output_tables(".\\data\\3.Model_Outputs.xlsx")
   
   # Initiate or Upload User Inputs -------------------------------------------
-  
   observeEvent(input$user_inputs_upload, {
     if(isTruthy(input$user_inputs_upload)){
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
@@ -1497,7 +1502,8 @@ server <- function(input, output, session) {
                                            "Baseline" = rvs$Baseline,
                                            "Projects" = rvs$Projects,
                                            "Advanced" = rvs$Advanced,
-                                           "References" = references), 
+                                           "References" = references,
+                                           "Scenarios" = rvs$Scenarios), 
                            file = file))
     }
   )
@@ -2371,28 +2377,8 @@ server <- function(input, output, session) {
   })  
   
   
-  # costs inputs server ------------------------------------------------------------
-  
-  
-  costs_names <- c("bikeped_costs",
-                   "transit_fixed_costs",
-                   "transit_dr_costs",
-                   "pub_trans_priority_costs",
-                   "tdm_costs",
-                   "pub_trans_rail_costs",
-                   "micro_costs",
-                   "traffic_ops_costs",
-                   "mhdev_costs",
-                   "pnr_costs",
-                   "evsi_costs",
-                   "roadway_expand_costs",
-                   "fuel_costs",
-                   "intermodal_costs")
-  
-  read_static_tables(".\\data\\costs_inputs.xlsx", costs_names)
-  
-  
-  ## create tables -----------------------------------------------------------
+  # COST: inputs server ------------------------------------------------------------
+  ## COST: create input tables -----------------------------------------------------------
 
     output$bikeped_costs_tbl <- renderDT({
     req(rvs$Costs)
@@ -2624,63 +2610,8 @@ server <- function(input, output, session) {
   })
   
   
-  ## make editable -----------------------------------------------------------
-  
-  observeEvent(input$bikeped_costs_edit, {
-    bikeped_costs <<- editData(bikeped_costs, input$bikeped_costs_edit, 'bikeped_costs_tbl')
-  })
-  
-  observeEvent(input$transit_fixed_costs_edit, {
-    transit_fixed_costs <<- editData(transit_fixed_costs, input$transit_fixed_costs_edit, 'transit_fixed_costs_tbl')
-  })
-  
-  observeEvent(input$transit_dr_costs_edit, {
-    transit_dr_costs <<- editData(transit_dr_costs, input$transit_dr_costs_edit, 'transit_dr_costs_tbl')
-  })
-  
-  observeEvent(input$pub_trans_priority_costs_edit, {
-    pub_trans_priority_costs <<- editData(pub_trans_priority_costs, input$pub_trans_priority_costs_edit, 'pub_trans_priority_costs_tbl')
-  })
-  
-  observeEvent(input$pub_trans_rail_costs_edit, {
-    pub_trans_rail_costs <<- editData(pub_trans_rail_costs, input$pub_trans_rail_costs_edit, 'pub_trans_rail_costs_tbl')
-  })
-  
-  observeEvent(input$tdm_costs_edit, {
-    tdm_costs <<- editData(tdm_costs, input$tdm_costs_edit, 'tdm_costs_tbl')
-  })
-  
-  observeEvent(input$micro_costs_edit, {
-    micro_costs <<- editData(micro_costs, input$micro_costs_edit, 'micro_costs_tbl')
-  })
-  
-  observeEvent(input$traffic_ops_costs_edit, {
-    traffic_ops_costs <<- editData(traffic_ops_costs, input$traffic_ops_costs_edit, 'traffic_ops_costs_tbl')
-  })
-  
-  observeEvent(input$mhdev_costs_edit, {
-    mhdev_costs <<- editData(mhdev_costs, input$mhdev_costs_edit, 'mhdev_costs_tbl')
-  })
-  
-  observeEvent(input$pnr_costs_edit, {
-    pnr_costs <<- editData(pnr_costs, input$pnr_costs_edit, 'pnr_costs_tbl')
-  })
-  
-  observeEvent(input$evsi_costs_edit, {
-    evsi_costs <<- editData(evsi_costs, input$evsi_costs_edit, 'evsi_costs_tbl')
-  })
-  
-  observeEvent(input$roadway_expand_costs_edit, {
-    roadway_expand_costs <<- editData(roadway_expand_costs, input$roadway_expand_costs_edit, 'roadway_expand_costs_tbl')
-  })
-  
-  observeEvent(input$fuel_costs_edit, {
-    fuel_costs <<- editData(fuel_costs, input$fuel_costs_edit, 'fuel_costs_tbl')
-  })
-  
-  observeEvent(input$intermodal_costs_edit, {
-    intermodal_costs <<- editData(intermodal_costs, input$intermodal_costs_edit, 'intermodal_costs_tbl')
-  })
+  ## COST: make editable -----------------------------------------------------------
+
   
   #reshaping
   #observe change to bikeped_costs_tbl
@@ -2883,7 +2814,7 @@ server <- function(input, output, session) {
                                                               col_list = c('unit'))
   }) # end of reshaping
 
-# observe reset buttons for costs -----------------------------------------
+  ## COST: observe reset buttons for costs -----------------------------------------
 
 
   observeEvent(input$reset_bikeped_costs_tbl, {
@@ -2954,7 +2885,7 @@ server <- function(input, output, session) {
                       "Park and Ride",
                       "Transit Electrification",
                       "MD/HD Truck Replacement",
-                      "Electric Vehicle Charging Infra.",
+                      "Electric Vehicle Charging Infraucture",
                       "Intermodal Freight Investment",
                       "Traffic Operations",
                       "Roadway Expansion",
@@ -2967,74 +2898,124 @@ server <- function(input, output, session) {
   }
   rowNames <- vapply(strategy_names, rowName, character(1))
   
+  # dat <- data.frame(
+  #   vapply(strategy_names, function(scenario){
+  #     as.character(
+  #       checkboxInput(paste0("col1-", gsub(" ", "", scenario)), label = NULL)
+  #     )
+  #   }, character(1)),
+  #   vapply(strategy_names, function(scenario){
+  #     as.character(
+  #       checkboxInput(paste0("col2-", gsub(" ", "", scenario)), label = NULL)
+  #     )
+  #   }, character(1))
+  # )
   dat <- data.frame(
-    vapply(strategy_names, function(scenario){
-      as.character(
-        checkboxInput(paste0("col1-", gsub(" ", "", scenario)), label = NULL)
-      )
-    }, character(1)),
-    vapply(strategy_names, function(scenario){
-      as.character(
-        checkboxInput(paste0("col2-", gsub(" ", "", scenario)), label = NULL)
-      )
-    }, character(1))
+    Assumptions = c(strategy_names),
+    Scenario1 = rep(FALSE, 12),
+    Scenario2 = rep(FALSE, 12)
   )
   
-  names(dat) <- c(
-    as.character(checkboxInput("col1", label = "Scenario 1")),
-    as.character(checkboxInput("col2", label = "Scenario 2"))
-  )
+  # names(dat) <- c(
+  #   as.character(checkboxInput("col1", label = "Scenario 1")),
+  #   as.character(checkboxInput("col2", label = "Scenario 2"))
+  # )
   
-  rownames(dat) <- rowNames
+  # rownames(dat) <- rowNames
   
+  # Create a reactive data frame
+  reactive_scenario <- reactiveVal(dat)
+  
+  selected_scenario <- reactiveValues(rows = NULL)
+  
+  # output$scenario_tbl <- renderDT({
+  #   browser()
+  #   datatable(
+  #     dat,
+  #     escape = FALSE,
+  #     select = "none",
+  #     options = list(
+  #       columnDefs = list(list(targets = c(1, 2),
+  #                              orderable = FALSE,
+  #                              className = "dt-center")
+  #       ),
+  #       pageLength = 12,
+  #       initComplete = JS(
+  #         "function() {",
+  #         "  $('#col1').on('click', function(){",
+  #         "    var cboxes = $('[id^=col1-]');",
+  #         "    var checked = $('#col1').is(':checked');",
+  #         "    cboxes.each(function(i, cbox) {",
+  #         "      $(cbox).prop('checked', checked);",
+  #         "    });",
+  #         "  });",
+  #         "  $('#col2').on('click', function(){",
+  #         "    var cboxes = $('[id^=col2-]');",
+  #         "    var checked = $('#col2').is(':checked');",
+  #         "    cboxes.each(function(i, cbox) {",
+  #         "      $(cbox).prop('checked', checked);",
+  #         "    });",
+  #         "  });",
+  #         paste(
+  #           sapply(strategy_names, function(scenario) {
+  #             scenarioId <- gsub(" ", "", scenario)
+  #             sprintf(
+  #               "  $('#row%s').on('click', function(){\n    var cboxes = $('[id$=\\'-%s\\']');\n    var checked = $('#row%s').is(':checked');\n    cboxes.each(function(i, cbox) {\n      $(cbox).prop('checked', checked);\n    });\n  });",
+  #               scenarioId, scenarioId, scenarioId
+  #             )
+  #           }),
+  #           collapse = "\n"
+  #         ),
+  #         "}"
+  #       ),
+  #       preDrawCallback =
+  #         JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
+  #       drawCallback =
+  #         JS('function() { Shiny.bindAll(this.api().table().node()); } ')
+  #     )
+  #   )
+  # })
+  # 
+  
+  # Render the checkbox table
   output$scenario_tbl <- renderDT({
-    browser()
     datatable(
-      dat,
+      reactive_scenario(),
       escape = FALSE,
-      select = "none",
+      #editable = list(target = c(2,3)),
       options = list(
-        columnDefs = list(list(targets = c(1, 2),
-                               orderable = FALSE,
-                               className = "dt-center")
+        pageLength =12,
+        columnDefs = list(
+          list(className = 'dt-center', targets = c(2, 3)),
+          list(render = JS(
+            "function(data, type, row, meta) {",
+            "  if (type === 'display') {",
+            "    return '<input type=\"checkbox\" class=\"checkbox\" ' + (data ? 'checked' : '') + '/>';",
+            "  }",
+            "  return data;",
+            "}"
+          ), targets = c(2, 3))
         ),
-        pageLength = 12,
-        initComplete = JS(
-          "function() {",
-          "  $('#col1').on('click', function(){",
-          "    var cboxes = $('[id^=col1-]');",
-          "    var checked = $('#col1').is(':checked');",
-          "    cboxes.each(function(i, cbox) {",
-          "      $(cbox).prop('checked', checked);",
-          "    });",
-          "  });",
-          "  $('#col2').on('click', function(){",
-          "    var cboxes = $('[id^=col2-]');",
-          "    var checked = $('#col2').is(':checked');",
-          "    cboxes.each(function(i, cbox) {",
-          "      $(cbox).prop('checked', checked);",
-          "    });",
-          "  });",
-          paste(
-            sapply(strategy_names, function(scenario) {
-              scenarioId <- gsub(" ", "", scenario)
-              sprintf(
-                "  $('#row%s').on('click', function(){\n    var cboxes = $('[id$=\\'-%s\\']');\n    var checked = $('#row%s').is(':checked');\n    cboxes.each(function(i, cbox) {\n      $(cbox).prop('checked', checked);\n    });\n  });",
-                scenarioId, scenarioId, scenarioId
-              )
-            }),
-            collapse = "\n"
-          ),
-          "}"
-        ),
-        preDrawCallback =
-          JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
-        drawCallback =
-          JS('function() { Shiny.bindAll(this.api().table().node()); } ')
-      )
+        dom = 'Bfrtip'
+      ),
+      selection = 'multiple'
     )
   })
   
+  # Update the reactive data when boxes are selected
+  observeEvent(input$scenario_tbl_cell_clicked, {
+    info <- input$scenario_tbl_cell_clicked
+    if (!is.null(info$col) && info$col %in% c(2, 3)) {
+      col_name <- colnames(reactive_scenario())[info$col]
+      reactive_scenario_updated <- reactive_scenario()
+      reactive_scenario_updated[info$row, col_name] <- !reactive_scenario_updated[info$row, col_name]
+      reactive_scenario(reactive_scenario_updated)
+    }
+    rvs$Scenarios <- reactive_scenario()
+
+  }) 
+  
+  shinyjs::enable(selector = ".checkbox")
   
   # server advanced inputs ---------------------------------------------------------
   
@@ -3335,29 +3316,19 @@ server <- function(input, output, session) {
   
  # adrienne working here - error I'm getting is that it's not finding inputs
   
-  
   output$bikeped_costs_outputs_tbl <- renderDT({
-    req(rvs_out$cost_output)
-    req(input$cost_view)
-
-    render_custom_datatable_costs_outputs(
-      data_reactive = rvs_out$cost_output,
-      table_number = 1,
-      page_length = 21
-      )})
-  
-    # renderDT({
-    # datatable(bikeped_costs_outputs,
-    #           extensions = c('RowGroup','Buttons'),
-    #           options = list(rowGroup = list(columns = c(0)),
-    #                          columnDefs = list(list(visible = FALSE,
-    #                                                 targets = c(0))),
-    #                          autoWidth = TRUE,
-    #                          width = '100%',
-    #                          dom = 'tB',
-    #                          buttons = c('copy', 'csv', 'excel', 'pdf')),
-    #           rownames = FALSE) |>
-    #   formatRound(c(3:7),1)})
+ 
+    datatable(bikeped_costs_outputs,     #output_bikped(),
+              extensions = c('RowGroup','Buttons'),
+              options = list(rowGroup = list(columns = c(0)),
+                             columnDefs = list(list(visible = FALSE,
+                                                    targets = c(0))),
+                             autoWidth = TRUE,
+                             width = '100%',
+                             dom = 'tB',
+                             buttons = c('copy', 'csv', 'excel', 'pdf')),
+                        rownames = FALSE) |>
+                formatRound(c(3:7),1)})
   
   output$transit_fixed_costs_outputs_tbl <- renderDT(transit_fixed_costs_outputs,
                                                      rownames = FALSE)
@@ -3462,17 +3433,23 @@ server <- function(input, output, session) {
   
 
 
-  #sl working ----
+  #Processing working ----
 
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
-  #source("processing_scripts/processing_RoadwayExp.R", local = TRUE)
-  #check for tables being edited
   
-
-  source("processing_scripts/processing_freight.R", local = T)
-  source("processing_scripts/processing_EVSE.R", local = T)
-
-    #rvs update from different inputs
+  source("processing_scripts/processing_BikePed.R", local = TRUE) #Qi done
+  #source("processing_scripts/processing_OPS.R", local = TRUE)
+  #source("processing_scripts/processing_MDHD.R", local = TRUE) #Gui is working on
+  source("processing_scripts/processing_Micro.R", local = TRUE) #Qi done
+  source("processing_scripts/processing_TransitElec.R", local = TRUE)  #Qi working
+  #source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi original - Seth assigned
+  source("processing_scripts/processing_TDM.R", local = TRUE) #Qi done
+  source("processing_scripts/processing_ParkRide.R", local = TRUE) #Qi done
+  source("processing_scripts/processing_freight.R", local = T) #Gui is done
+  source("processing_scripts/processing_EVSE.R", local = T) #Gui is done-ish?\
+  source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Finished
+  source("functions/cost_maker.R", local = TRUE)
+  #rvs update from different inputs
   #key_inputs update
   key_inputs_listen <- reactive({
     list(input$state_input,
@@ -3491,20 +3468,8 @@ server <- function(input, output, session) {
   
   observeEvent(key_inputs_listen(),{
     #browser()
-    # print("RUNNING: Update rvs$Baseline key inputs")
-    # rvs$Baseline$state <- input$state_input
-    # rvs$Baseline$base_year <- input$base_year
-    # rvs$Baseline$horizon_year_1 <- input$horizon_year_1
-    # rvs$Baseline$horizon_year_2 <- input$horizon_year_2
-    # rvs$Baseline$horizon_year_3 <- input$horizon_year_3
-    # rvs$Baseline$trans_system_scope <- input$transportation_scope
-    # rvs$Baseline$include_electricity <- input$scope_emissions #do these match?
-    # rvs$Baseline$include_upstream_fuels <- input$scope_fuels
-    # rvs$Baseline$vmt_forecast <- input$vmt_forecast_input
-    # rvs$Baseline$vmt_nhs <- input$vmt_nhs
-    # rvs$Baseline$veh_elec_baseline <- input$ev_baseline_input
-    # rvs$Baseline$elec_grid_emissions_net_zero <- input$grid_emissions_input
-    # 
+    print("RUNNING: Update rvs$Baseline key inputs")
+
     rvs$Baseline <- data.frame(state = input$state_input,
                                base_year = input$base_year,
                                horizon_year_1 = input$horizon_year_1,
@@ -3519,6 +3484,90 @@ server <- function(input, output, session) {
                                elec_grid_emissions_net_zero = input$grid_emissions_input
                                )
   })
+  
+  # output$pdf_report <- downloadHandler(
+  #   filename = function(){
+  #     paste("Summary Report",
+  #           Sys.Date(),
+  #           ".pdf",
+  #           sep="")},
+  #   content = function(file){
+  #       #data <- # placeholder now 
+  #       #mutate(center = unlist(center))
+  #       browser()
+  #       output_file <- file.path(getwd(),  glue::glue("{fn}.pdf"))
+  #       unloadNamespace("kableExtra")
+  #       rmarkdown::render(
+  #         input = file.path(getwd(),"Report_Template.qmd"),
+  #         output_file = output_file,
+  #         params = list(
+  #           state <- input$state_input,
+  #           bsae_year <- input$base_year,
+  #           horizon_year_1 <- input$horizon_year_1,
+  #           horizon_year_2<- input$horizon_year_2,
+  #           horizon_year_3 <- input$horizon_year_3,
+  #           trans_scope <- input$transportation_scope,
+  #           em_scope<- input$scope_emissions,
+  #           fuel_scope <-input$scope_fuels,
+  #           vmt <- input$vmt_forecast_input,
+  #           vmt_nhs <- input$vmt_nhs,
+  #           ev<- input$ev_baseline_input,
+  #           grid_em<- input$grid_emissions_input
+  #         )
+  #       )
+  #       file.copy(glue::glue("{fn}.pdf"), file)
+  #       browser()
+  #       
+  #     
+  #   }
+  # )
+ 
+  output$pdf_report <- downloadHandler(
+    filename = function(){
+          paste("Summary Report",
+                Sys.Date(),
+                ".pdf",
+                sep="")},
+    content = function(file) {
+      browser()
+      # Render the R Markdown file to PDF
+      shiny::withProgress(
+        message = paste0("Downloading", input$dataset, " Data"),
+        value = 0,
+        {
+          shiny::incProgress(1/10)
+          Sys.sleep(1)
+          shiny::incProgress(5/10)
+          unloadNamespace("kableExtra")
+          
+          rmarkdown::render(input = paste0(getwd(),"/Report_Template.qmd"),
+                            output_file = file,
+                            params = list(
+                              state = input$state_input,
+                              bsae_year = input$base_year,
+                              horizon_year_1 = input$horizon_year_1,
+                              horizon_year_2 = input$horizon_year_2,
+                              horizon_year_3 = input$horizon_year_3,
+                              trans_scope = input$transportation_scope,
+                              em_scope = input$scope_emissions,
+                              fuel_scope = input$scope_fuels,
+                              vmt = input$vmt_forecast_input,
+                              vmt_nhs = input$vmt_nhs,
+                              ev = input$ev_baseline_input,
+                              grid_em = input$grid_emissions_input
+                            ),
+                            output_format = "pdf_document",
+                            output_options = list(
+                              keep_tex = TRUE,
+                              verbose = TRUE,
+                              latex_engine = 'xelatex')
+          )
+        }
+      )
+      
+    }
+  )
+
   
 }
 
