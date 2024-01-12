@@ -21,7 +21,27 @@ ev_forecast_mapping <- c("AEO Baseline" ~ "AEO_Tech_Frac",
                          "ACC II + ACT" ~ "ACCACT_Tech_Frac",
                          "Custom" ~ "Custom")
 
+veh_subtype_to_fuel_type_mapping <- c("Gasoline ICE" ~ "Gasoline",
+                                      "EV100" ~ "Electricity",
+                                      "EV200" ~ "Electricity",
+                                      "EV300" ~ "Electricity",
+                                      "EtOH" ~ "Gasoline",
+                                      "Diesel ICE" ~ "Diesel",
+                                      "CNG/LNG/LPG" ~ "Natural Gas",
+                                      "SI HEV on Gas" ~ "Gasoline",
+                                      "SI PHEV 10" ~ "Gasoline",
+                                      "SI PHEV 40" ~ "Gasoline",
+                                      "FCV" ~ "Electricity",
+                                      "CNG" ~ "Natural Gas",
+                                      "EV" ~ "Electricity",
+                                      "Diesel PHEV" ~ "Diesel",
+                                      "Gasoline PHEV" ~ "Gasoline",
+                                      "LPG" ~ "LPG")
+PHEV_fuel_types <- c("SI PHEV 10","SI PHEV 40","Diesel PHEV","Gasoline PHEV")
 ev_fuel_types <- c("EV100","EV200","EV300","SI PHEV 10","SI PHEV 40", "FCV", "EV", "Gasoline PHEV", "Diesel PHEV")
+
+
+
 
 convert_to_nested_list <- function(df){ 
   # Create an empty list

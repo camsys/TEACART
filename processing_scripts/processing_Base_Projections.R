@@ -38,7 +38,7 @@ electricity_emrate <- reactive({ #this is electricity emission rate
   return(eemrate)
 })
 
-#EmRate_by_Tech
+#EmRate_by_Tech ----
 EmRate_by_Tech <- reactive({ #this is emission rate for all vehicles types
  
   
@@ -82,7 +82,130 @@ EmRate_by_Tech <- reactive({ #this is emission rate for all vehicles types
   
 })
 
-#Tech_Frac_Vision - all 
+#Other Em_Rate tables that are useful
+#This is the Category Averages excel rows 49 through 57 for the most part
+CO2e_Category_Averages <- reactive({
+  
+  temp_all<-VMT_Type_Tech_Base() %>%
+    group_by(veh_supertype, year) %>%
+    mutate(pct_supertype = mmt_by_subtype/sum(mmt_by_subtype)) %>%
+    select(veh_supertype, year, veh_type, veh_subtype, pct_supertype)
+  
+  temp_Conventional_LDV<-VMT_Type_Tech_Conventional_LDV() 
+  
+  temp_Conventional_MDHD <- VMT_Type_Tech_Conventional_MDHD() 
+  
+  
+  all_cats_temp<-temp_all %>% left_join(EmRate_by_Tech()) %>% 
+    select(emission_rate, veh_supertype, year, veh_type, veh_subtype, pct_supertype) %>%
+    mutate(CO2e_millions = pct_supertype*emission_rate) %>% 
+    group_by(veh_supertype, year) %>% 
+    summarise(CO2e_millions = sum(CO2e_millions, na.rm = T)) %>%
+    ungroup()
+  
+  ldv_gas_impf <- temp_Conventional_LDV %>% left_join(EmRate_by_Tech()) %>%
+    select(emission_rate, year, veh_type, veh_subtype, state_pct_of_category) %>%
+    mutate(CO2e_millions = state_pct_of_category *emission_rate) %>%
+    group_by(year) %>% 
+    summarise(CO2e_millions = sum(CO2e_millions, na.rm = T))
+  ldv_gas_impf <- ldv_gas_impf$CO2e_millions[ldv_gas_impf$year == 2022]
+  
+  mhdv_conventional_impf <- temp_Conventional_MDHD %>% left_join(EmRate_by_Tech()) %>%
+    select(emission_rate, year, veh_type, veh_subtype, state_pct_of_category) %>%
+    mutate(CO2e_millions = state_pct_of_category *emission_rate) %>%
+    group_by(year) %>%
+    summarise(CO2e_millions = sum(CO2e_millions, na.rm = T))
+  mhdv_conventional_impf<-mhdv_conventional_impf$CO2e_millions[mhdv_conventional_impf$year == 2021]
+  
+  ldv_2022 <- all_cats_temp$CO2e_millions[all_cats_temp$year == 2022 & all_cats_temp$veh_supertype == "Light Duty Vehicles"]
+  mhdv_2022 <- all_cats_temp$CO2e_millions[all_cats_temp$year == 2022 & all_cats_temp$veh_supertype == "Medium/Heavy Duty Vehicles"]
+  
+  
+  
+  all_cats_temp <- all_cats_temp %>% 
+    mutate(base_impf = ifelse(veh_supertype == "Light Duty Vehicles", CO2e_millions/ldv_2022,
+                              CO2e_millions/ldv_gas_impf)) %>%
+    mutate(delay_impf = ifelse(veh_supertype == "Light Duty Vehicles", CO2e_millions/ldv_gas_impf,
+                               CO2e_millions/mhdv_conventional_impf))
+  
+  return(all_cats_temp)
+  
+})
+
+#This is PHEV Emission Apportionment ex-rows 59 - 86
+PHEV_Em_Apportionment <- reactive({
+  
+  temp_em_rate <- EmRate_by_Tech()
+  temp_em_rate <- temp_em_rate %>%
+    filter(paste0(veh_type, "-", veh_subtype) %in% c("Passenger Cars-SI PHEV 10",
+                                                     "Light Duty Trucks-SI PHEV 10",
+                                                     "Medium Duty Trucks-Gasoline PHEV",
+                                                     "Heavy Duty Trucks-Gasoline PHEV")) %>%
+    select(year, veh_type, apportionment, fuel_emission_rate, electricity_emission_rate) %>%
+    mutate(fuel_em_apportioned = fuel_emission_rate*(1-apportionment),
+           e_em_apportioned = electricity_emission_rate*apportionment,
+           PHEV_elc_per_em = e_em_apportioned/(fuel_em_apportioned+e_em_apportioned))
+  
+  return(temp_em_rate)
+})
+
+#This is the Local Pollutant to CO2 Ratios ex-rows 109 - 115
+pollutant_t_CO2ratio <- reactive({
+  temp_cat_avg <- CO2e_Category_Averages()
+  ldv_2021_co2e <- temp_cat_avg$CO2e_millions[temp_cat_avg$veh_supertype == "Light Duty Vehicles" & temp_cat_avg$year == 2021]
+  mhd_2021_co2e <- temp_cat_avg$CO2e_millions[temp_cat_avg$veh_supertype == "Medium/Heavy Duty Vehicles" & temp_cat_avg$year == 2021]
+  
+  temp_ff <- Fuel_Factors_Weighted()
+  temp_ff<-temp_ff[temp_ff$veh_type %in% c("Light Duty Vehicles", "Medium/Heavy Duty Vehicles"),]
+  
+  temp_ff<-temp_ff %>% 
+    rename(veh_supertype = veh_type) %>%
+    mutate(NOx_CO2_ratio = ifelse(veh_supertype == "Light Duty Vehicles", NOx_g_per_veh_mi/ldv_2021_co2e,NOx_g_per_veh_mi/mhd_2021_co2e),
+           PM25_CO2_ratio = ifelse(veh_supertype == "Light Duty Vehicles", PM25_exhaust_per_veh_mi/ldv_2021_co2e,PM25_exhaust_per_veh_mi/mhd_2021_co2e)) %>%
+    select(veh_supertype, NOx_CO2_ratio, PM25_CO2_ratio)
+  return(temp_ff)
+})
+
+#Em_OnRoad_Base
+Em_OnRoad_Base <- reactive({
+  temp_eob<- left_join(VMT_Type_Tech_Base()[,c('veh_type','veh_subtype','year','mmt_by_subtype')],
+                       EmRate_by_Tech()[,c('veh_type','veh_subtype','year','emission_rate')]) %>%
+    left_join(PHEV_Em_Apportionment()[,c('veh_type','year','PHEV_elc_per_em')])
+  
+  temp_eob<-temp_eob %>% 
+    mutate(fuel_type = case_match(veh_subtype, !!!veh_subtype_to_fuel_type_mapping)) %>%
+    mutate(phev_bin = !(veh_subtype %in% PHEV_fuel_types)) %>%
+    mutate(uses_electiricity = as.numeric(veh_subtype %in% ev_fuel_types)) %>%
+    mutate(emissions = ifelse(phev_bin, mmt_by_subtype*emission_rate, (1-PHEV_elc_per_em)*mmt_by_subtype*emission_rate)) %>%
+    mutate(ev_emissions = ifelse(phev_bin,   uses_electiricity*mmt_by_subtype*emission_rate, uses_electiricity*(PHEV_elc_per_em)*mmt_by_subtype*emission_rate))
+    
+  em_on_road_base<-rbind(
+      temp_eob,
+      temp_eob %>% filter(!phev_bin) %>% mutate(emissions = ev_emissions) %>% mutate(fuel_type = "Electricity")
+    ) %>%
+    group_by(veh_type, fuel_type, year) %>%
+    summarise(MT_CO2e_direct= sum(emissions)) %>% 
+    left_join(Fuel_Factors_Baselines[Fuel_Factors_Baselines$units == "upstream_life_cycle_factor",c("fuel_type","value")]) %>%
+    mutate(MT_CO2e_upstream = value*MT_CO2e_direct) %>% select(-value)
+  
+  return(em_on_road_base)
+  })
+
+#This is from Em_OnRoad_Base line 82
+e_emmissions_apportionment <- reactive({
+  temp_e <- Em_OnRoad_Base() %>%
+    mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
+    group_by(veh_supertype, year, fuel_type) %>%
+    summarise(electricity_per_em_temp = sum(MT_CO2e_direct)) %>%
+    ungroup() %>% group_by(veh_supertype,year) %>%
+    mutate(electricity_per_em = electricity_per_em_temp/sum(electricity_per_em_temp)) %>%
+    filter(fuel_type == "Electricity") %>%
+    filter(veh_supertype == "Light Duty Trucks") %>%
+    select(veh_supertype, electricity_per_em)
+  return(temp_e)
+})
+
+#Tech_Frac_Vision ---- 
 Tech_Frac_Vision <- reactive({ #this is electiric vehicle projections
   
   col <- case_match(rvs$Baseline$veh_elec_baseline, !!!ev_forecast_mapping)
@@ -94,49 +217,7 @@ Tech_Frac_Vision <- reactive({ #this is electiric vehicle projections
   return(Tech_Frac_Vision_temp)
 })
 
-#VMT_Type_Tech_Base <- reactive({ #Need to check
-VMT_Type_Tech_Base <- reactive({ #this is VMT 
 
-  # VMT_Type_Tech_Base <- reactive({
-  #   Tech_Frac_Vision %>%
-  #     left_join(select(VMT_Forecast(), veh_type, year, state_vmt), by = join_by(veh_type, year)) %>%
-  #     mutate(mmt_by_subtype = state_vmt * aeo_tech_frac) #this has been renamed to mmt_by_subtype
-  # })
-  
-  state_ch <- rvs$Baseline$state
-  nhs_ch <- rvs$Baseline$trans_system_scope
-  #browser()
-  VMT_VehType<-VMT_Forecast() #name is a bit historic probably should be changed
-  nhs_vals <- filter(NHS_VMT, state == state_ch)
-  tech_frac_temp <- Tech_Frac_Vision()
-  
-  if(nhs_ch == "Only NHS"){
-    
-    VMT_Type_Tech_Basetemp <- tech_frac_temp %>% 
-      left_join(VMT_VehType, by = c('year','veh_type')) %>%
-      mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
-      mutate(mmt_by_subtype = ifelse(veh_supertype == "Light Duty Vehicles", 
-                                  nhs_vals$LDV_pct_on_NHS[1]*state_vmt_AEO * tech_frac_forecast,
-                                  nhs_vals$TRK_pct_on_NHS[1]*state_vmt_AEO * tech_frac_forecast)) 
-  } else {
-    
-    VMT_Type_Tech_Basetemp <- tech_frac_temp %>% 
-      left_join(VMT_VehType, by = c('year','veh_type')) %>%
-      mutate(mmt_by_subtype = state_vmt_AEO * tech_frac_forecast)
-    
-  }
-  
-  return(VMT_Type_Tech_Basetemp)
-  
-})
-
-VMT_Forecast <- reactive({
-  
-  AEO_VMT %>%
-    left_join(filter(VMT_State_Allocation, state == rvs$Baseline$state) %>% select(year, state_vmt_pct_of_national), by = join_by(year)) %>%
-    mutate(state_vmt_AEO = VMT_AEO * state_vmt_pct_of_national) # state VMT forecast 
-  
-})
 
 #passenger rail ----
 observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it in this indeterminate form for now
@@ -302,63 +383,55 @@ Fuel_Factors_Weighted <- reactive({
   return(Fuel_Factors_Weighted)
   })
 
-### VMT_Forecast ----------------
+
+### VMT Tables ----------------
 ### these tables don't have to be show to the user, but it is helpful to have them as reactive tables
 
-CO2e_Category_Averages <- reactive({
+#VMT Type Tech Base ----
+VMT_Type_Tech_Base <- reactive({ #this is VMT 
   
-  temp_all<-VMT_Type_Tech_Base() %>%
-    group_by(veh_supertype, year) %>%
-    mutate(pct_supertype = mmt_by_subtype/sum(mmt_by_subtype)) %>%
-    select(veh_supertype, year, veh_type, veh_subtype, pct_supertype)
+  # VMT_Type_Tech_Base <- reactive({
+  #   Tech_Frac_Vision %>%
+  #     left_join(select(VMT_Forecast(), veh_type, year, state_vmt), by = join_by(veh_type, year)) %>%
+  #     mutate(mmt_by_subtype = state_vmt * aeo_tech_frac) #this has been renamed to mmt_by_subtype
+  # })
   
-  temp_Conventional_LDV<-VMT_Type_Tech_Conventional_LDV() 
+  state_ch <- rvs$Baseline$state
+  nhs_ch <- rvs$Baseline$trans_system_scope
+  #browser()
+  VMT_VehType<-VMT_Forecast() #name is a bit historic probably should be changed
+  nhs_vals <- filter(NHS_VMT, state == state_ch)
+  tech_frac_temp <- Tech_Frac_Vision()
   
-  temp_Conventional_MDHD <- VMT_Type_Tech_Conventional_MDHD() 
+  if(nhs_ch == "Only NHS"){
+    
+    VMT_Type_Tech_Basetemp <- tech_frac_temp %>% 
+      left_join(VMT_VehType, by = c('year','veh_type')) %>%
+      mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
+      mutate(mmt_by_subtype = ifelse(veh_supertype == "Light Duty Vehicles", 
+                                     nhs_vals$LDV_pct_on_NHS[1]*state_vmt_AEO * tech_frac_forecast,
+                                     nhs_vals$TRK_pct_on_NHS[1]*state_vmt_AEO * tech_frac_forecast)) 
+  } else {
+    
+    VMT_Type_Tech_Basetemp <- tech_frac_temp %>% 
+      left_join(VMT_VehType, by = c('year','veh_type')) %>%
+      mutate(mmt_by_subtype = state_vmt_AEO * tech_frac_forecast)
+    
+  }
   
-  
-  all_cats_temp<-temp_all %>% left_join(EmRate_by_Tech()) %>% 
-    select(emission_rate, veh_supertype, year, veh_type, veh_subtype, pct_supertype) %>%
-    mutate(CO2e_millions = pct_supertype*emission_rate) %>% 
-    group_by(veh_supertype, year) %>% 
-    summarise(CO2e_millions = sum(CO2e_millions, na.rm = T)) %>%
-    ungroup()
-
-  ldv_gas_impf <- temp_Conventional_LDV %>% left_join(EmRate_by_Tech()) %>%
-    select(emission_rate, year, veh_type, veh_subtype, state_pct_of_category) %>%
-    mutate(CO2e_millions = state_pct_of_category *emission_rate) %>%
-    group_by(year) %>% 
-    summarise(CO2e_millions = sum(CO2e_millions, na.rm = T))
-  ldv_gas_impf <- ldv_gas_impf$CO2e_millions[ldv_gas_impf$year == 2022]
-
-  mhdv_conventional_impf <- temp_Conventional_MDHD %>% left_join(EmRate_by_Tech()) %>%
-    select(emission_rate, year, veh_type, veh_subtype, state_pct_of_category) %>%
-    mutate(CO2e_millions = state_pct_of_category *emission_rate) %>%
-    group_by(year) %>%
-    summarise(CO2e_millions = sum(CO2e_millions, na.rm = T))
-  mhdv_conventional_impf<-mhdv_conventional_impf$CO2e_millions[mhdv_conventional_impf$year == 2021]
-
-  ldv_2022 <- all_cats_temp$CO2e_millions[all_cats_temp$year == 2022 & all_cats_temp$veh_supertype == "Light Duty Vehicles"]
-  mhdv_2022 <- all_cats_temp$CO2e_millions[all_cats_temp$year == 2022 & all_cats_temp$veh_supertype == "Medium/Heavy Duty Vehicles"]
-  
-  all_cats_temp <- all_cats_temp %>% 
-    mutate(base_impf = ifelse(veh_supertype == "Light Duty Vehicles", CO2e_millions/ldv_2022,
-                                       CO2e_millions/ldv_gas_impf)) %>%
-    mutate(delay_impf = ifelse(veh_supertype == "Light Duty Vehicles", CO2e_millions/ldv_gas_impf,
-                               CO2e_millions/mhdv_conventional_impf))
-  
-  return(all_cats_temp)
+  return(VMT_Type_Tech_Basetemp)
   
 })
 
-# VMT_Type_Tech_LDV <- reactive({
-#   VMT_Type_Tech_Base() %>%
-#     filter(veh_type %in% c("Passenger Cars", "Light Duty Trucks")) %>% 
-#     summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
-#               .by = year) %>%
-#     mutate(veh_category = "Light Duty Vehicles")
-# })
+VMT_Forecast <- reactive({
+  
+  AEO_VMT %>%
+    left_join(filter(VMT_State_Allocation, state == rvs$Baseline$state) %>% select(year, state_vmt_pct_of_national), by = join_by(year)) %>%
+    mutate(state_vmt_AEO = VMT_AEO * state_vmt_pct_of_national) # state VMT forecast 
+  
+})
 
+#THe following are category breakouts
 VMT_Type_Tech_MDHD <- reactive({
   VMT_Type_Tech_Base() %>%
     filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks")) %>% 

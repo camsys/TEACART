@@ -1601,14 +1601,14 @@ server <- function(input, output, session) {
   source("functions/render_custom_datatable_SLVER.R", local = T)
   source("functions/reshaping.R", local = T)
   source("functions/make_project_table_cumulative.R")
-  #set reactiveValues ----------------------------------------------------------
   
+  
+  #set reactiveValues ----------------------------------------------------------
   rv <- reactiveValues()
   rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
   rvs_out <- read_output_tables(".\\data\\3.Model_Outputs.xlsx")
   
   # Initiate or Upload User Inputs -------------------------------------------
-  
   observeEvent(input$user_inputs_upload, {
     if(isTruthy(input$user_inputs_upload)){
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
@@ -2513,28 +2513,8 @@ server <- function(input, output, session) {
   })  
   
   
-  # costs inputs server ------------------------------------------------------------
-  
-  
-  costs_names <- c("bikeped_costs",
-                   "transit_fixed_costs",
-                   "transit_dr_costs",
-                   "pub_trans_priority_costs",
-                   "tdm_costs",
-                   "pub_trans_rail_costs",
-                   "micro_costs",
-                   "traffic_ops_costs",
-                   "mhdev_costs",
-                   "pnr_costs",
-                   "evsi_costs",
-                   "roadway_expand_costs",
-                   "fuel_costs",
-                   "intermodal_costs")
-  
-  read_static_tables(".\\data\\costs_inputs.xlsx", costs_names)
-  
-  
-  ## create tables -----------------------------------------------------------
+  # COST: inputs server ------------------------------------------------------------
+  ## COST: create input tables -----------------------------------------------------------
 
     output$bikeped_costs_tbl <- renderDT({
     req(rvs$Costs)
@@ -2766,63 +2746,8 @@ server <- function(input, output, session) {
   })
   
   
-  ## make editable -----------------------------------------------------------
-  
-  observeEvent(input$bikeped_costs_edit, {
-    bikeped_costs <<- editData(bikeped_costs, input$bikeped_costs_edit, 'bikeped_costs_tbl')
-  })
-  
-  observeEvent(input$transit_fixed_costs_edit, {
-    transit_fixed_costs <<- editData(transit_fixed_costs, input$transit_fixed_costs_edit, 'transit_fixed_costs_tbl')
-  })
-  
-  observeEvent(input$transit_dr_costs_edit, {
-    transit_dr_costs <<- editData(transit_dr_costs, input$transit_dr_costs_edit, 'transit_dr_costs_tbl')
-  })
-  
-  observeEvent(input$pub_trans_priority_costs_edit, {
-    pub_trans_priority_costs <<- editData(pub_trans_priority_costs, input$pub_trans_priority_costs_edit, 'pub_trans_priority_costs_tbl')
-  })
-  
-  observeEvent(input$pub_trans_rail_costs_edit, {
-    pub_trans_rail_costs <<- editData(pub_trans_rail_costs, input$pub_trans_rail_costs_edit, 'pub_trans_rail_costs_tbl')
-  })
-  
-  observeEvent(input$tdm_costs_edit, {
-    tdm_costs <<- editData(tdm_costs, input$tdm_costs_edit, 'tdm_costs_tbl')
-  })
-  
-  observeEvent(input$micro_costs_edit, {
-    micro_costs <<- editData(micro_costs, input$micro_costs_edit, 'micro_costs_tbl')
-  })
-  
-  observeEvent(input$traffic_ops_costs_edit, {
-    traffic_ops_costs <<- editData(traffic_ops_costs, input$traffic_ops_costs_edit, 'traffic_ops_costs_tbl')
-  })
-  
-  observeEvent(input$mhdev_costs_edit, {
-    mhdev_costs <<- editData(mhdev_costs, input$mhdev_costs_edit, 'mhdev_costs_tbl')
-  })
-  
-  observeEvent(input$pnr_costs_edit, {
-    pnr_costs <<- editData(pnr_costs, input$pnr_costs_edit, 'pnr_costs_tbl')
-  })
-  
-  observeEvent(input$evsi_costs_edit, {
-    evsi_costs <<- editData(evsi_costs, input$evsi_costs_edit, 'evsi_costs_tbl')
-  })
-  
-  observeEvent(input$roadway_expand_costs_edit, {
-    roadway_expand_costs <<- editData(roadway_expand_costs, input$roadway_expand_costs_edit, 'roadway_expand_costs_tbl')
-  })
-  
-  observeEvent(input$fuel_costs_edit, {
-    fuel_costs <<- editData(fuel_costs, input$fuel_costs_edit, 'fuel_costs_tbl')
-  })
-  
-  observeEvent(input$intermodal_costs_edit, {
-    intermodal_costs <<- editData(intermodal_costs, input$intermodal_costs_edit, 'intermodal_costs_tbl')
-  })
+  ## COST: make editable -----------------------------------------------------------
+
   
   #reshaping
   #observe change to bikeped_costs_tbl
@@ -3025,7 +2950,7 @@ server <- function(input, output, session) {
                                                               col_list = c('unit'))
   }) # end of reshaping
 
-# observe reset buttons for costs -----------------------------------------
+  ## COST: observe reset buttons for costs -----------------------------------------
 
 
   observeEvent(input$reset_bikeped_costs_tbl, {
@@ -3528,7 +3453,7 @@ server <- function(input, output, session) {
  # adrienne working here - error I'm getting is that it's not finding inputs
   
   output$bikeped_costs_outputs_tbl <- renderDT({
-    browser()
+ 
     datatable(bikeped_costs_outputs,     #output_bikped(),
               extensions = c('RowGroup','Buttons'),
               options = list(rowGroup = list(columns = c(0)),
@@ -3659,6 +3584,7 @@ server <- function(input, output, session) {
   source("processing_scripts/processing_freight.R", local = T) #Gui is done
   source("processing_scripts/processing_EVSE.R", local = T) #Gui is done-ish?\
   source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Finished
+  source("functions/cost_maker.R", local = TRUE)
   #rvs update from different inputs
   #key_inputs update
   key_inputs_listen <- reactive({
@@ -3679,19 +3605,7 @@ server <- function(input, output, session) {
   observeEvent(key_inputs_listen(),{
     #browser()
     print("RUNNING: Update rvs$Baseline key inputs")
-    # rvs$Baseline$state <- input$state_input
-    # rvs$Baseline$base_year <- input$base_year
-    # rvs$Baseline$horizon_year_1 <- input$horizon_year_1
-    # rvs$Baseline$horizon_year_2 <- input$horizon_year_2
-    # rvs$Baseline$horizon_year_3 <- input$horizon_year_3
-    # rvs$Baseline$trans_system_scope <- input$transportation_scope
-    # rvs$Baseline$include_electricity <- input$scope_emissions #do these match?
-    # rvs$Baseline$include_upstream_fuels <- input$scope_fuels
-    # rvs$Baseline$vmt_forecast <- input$vmt_forecast_input
-    # rvs$Baseline$vmt_nhs <- input$vmt_nhs
-    # rvs$Baseline$veh_elec_baseline <- input$ev_baseline_input
-    # rvs$Baseline$elec_grid_emissions_net_zero <- input$grid_emissions_input
-    # 
+
     rvs$Baseline <- data.frame(state = input$state_input,
                                base_year = input$base_year,
                                horizon_year_1 = input$horizon_year_1,
