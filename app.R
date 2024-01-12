@@ -91,8 +91,12 @@ ui <- function(request) {
                                   options = list(container = "body"),
                                   placement = "right"),
                         downloadButton("user_inputs_download", "Download User Inputs"),
-                        p("Remember to save and download data regularly while
-                          entering or updating values. "),
+                        HTML("<p>
+                            Remember to save and download data regularly while entering data.<br>
+                            <p>
+                            Pressing CTRL + ENTER finishes entering 
+                            data for one table. Enter data for one table at 
+                            a time."),
                         nav_spacer(),
                         nav_spacer(),
                         nav_spacer(),
@@ -133,39 +137,57 @@ ui <- function(request) {
                                      p("Select the state, years, and scope of baseline GHG forecast."),
                                      
                                      selectInput("state_input",
-                                                 "State:",
+                                                 HTML(paste('<span style ="font-weight: bold;">State: </span>',
+                                                            as.character(tags$i(class = "fa fa-info-circle", title = "The state for which you will be conducting analysis.")),
+                                                            sep = "")
+                                                 ),
                                                  selected = NULL,
                                                  state.name),
                                      numericInput("base_year",
-                                                  "Base Year:",
+                                                  HTML(paste('<span style ="font-weight: bold;">Base Year: </span>',
+                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The first year of analysis and the reference point for assessing baseline trends.")),
+                                                             sep = "")
+                                                  ),
                                                   value = 2021,
                                                   min = 2021,
                                                   max = 2050,
                                                   step = 1),
                                      p(" "),
                                      numericInput("horizon_year_1",
-                                                  "Horizon Year 1:",
+                                                  HTML(paste('<span style ="font-weight: bold;">Horizon Year 1: </span>',
+                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The first (future) year for which projects may be entered and the first year for which TEA-CART will generate outputs.")),
+                                                             sep = "")
+                                                  ),
                                                   value = 2025,
                                                   min = 2021,
                                                   max = 2050,
                                                   step = 1),
                                      p(" "),
                                      numericInput("horizon_year_2",
-                                                  "Horizon Year 2:",
+                                                  HTML(paste('<span style ="font-weight: bold;">Horizon Year 2: </span>',
+                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The second (future) year for which projects may be entered and the second year for which TEA-CART will generate outputs.")),
+                                                             sep = "")
+                                                  ),
                                                   value = 2030,
                                                   min = 2021,
                                                   max = 2050,
                                                   step = 1),
                                      p(""),
                                      numericInput("horizon_year_3",
-                                                  "Horizon Year 3:",
+                                                  HTML(paste('<span style ="font-weight: bold;">Horizon Year 3: </span>',
+                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The third (future) year for which projects may be entered and the third year for which TEA-CART will generate outputs.")),
+                                                             sep = "")
+                                                  ),
                                                   value = 2050,
                                                   min = 2021,
                                                   max = 2050,
                                                   step = 1),
                                      p(""),
                                      selectInput("transportation_scope",
-                                                 "Transportation System Scope:",
+                                                 HTML(paste('<span style ="font-weight: bold;">Transportation System Scope: </span>',
+                                                            as.character(tags$i(class = "fa fa-info-circle", title = "The scope of your analysis with respect to the roadways. Only emissions from on-road travel are covered by TEA-CART.")),
+                                                            sep = "")
+                                                 ),
                                                  c("All Roadways","NHS Only"),
                                                  "All Roadways"),
                                      p(""),
@@ -552,8 +574,14 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Bicycle and Pedestrian Parameters",
-                             "Increasing the prior drive mode share will result 
-                in a larger reduction in VMT reduction and CO2."
+                             HTML("<p>
+                                  This category includes the following data types:<br>
+                                  <p>
+                                  (i) <b>Prior drive mode share of new walkers / bikers</b>, which represents the fraction of new walkers / bikers who would have previously driven a car. This is calculated as a percentage of the new walkers / bikers or “persons per square mile” (ppsm) within the different area types defined.<br>
+                                  <p>
+                                  (ii) <b>Average trip length</b>, which represents the average Walk and / or Bike trip length in miles.<br>
+                                  <p>
+                                  (iii) <b>Annualization</b>, which represents the annual number of days multiplier for the mode-shift to walking / biking.")
                            ),
                 open = FALSE
                          ),
@@ -574,14 +602,20 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Transit Parameters",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("
+                                  <p>This category includes the following data types for transit vehicles:<br>
+                                  <p>
+                                  (i) <b>On-Road Vehicle Fuel Economy</b>, which represents the miles a transit vehicle is able to travel based on its fuel source. This is calculated in miles per gallon of gasoline equivalent (mpgge).<br>
+                                  <p>
+                                  (ii) <b>Average trip length</b>, which represents the average length of the personal vehicle trip displaced by transit, in miles.<br>
+                                  <p>
+                                  (iii) <b>Average pax-mi per vehicle-mile (load factor)</b>, which represents the average number of passengers on board a transit vehicle at any given time. This is calculated as the ratio of passenger miles traveled to transit vehicle miles traveled, also known as the load factor.<br>
+                                  <p>
+                                  (iv) <b>Prior drive mode share of new riders</b>, which represents the fraction of new transit riders who would have previously driven a car. This is calculated as a the number of new riders who would have driven, divided by the total number of new riders.<br>
+                                  <p>
+                                  (v) <b>Vehicle Revenue Mile per Vehicle</b>, which represents the annual miles that a transit vehicle is scheduled to travel or actually travels while in revenue service.<br>
+                                  <p>
+                                  (vi) <b>Bus Priority Factors</b>, which include bus priority % travel time change, bus ridership elasticity with respect to travel time, number of routes affected, number of daily buses per route, percentage of route-hours affected, and weekday annualization."),
                              
                            ),
                            open = FALSE
@@ -602,15 +636,9 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Travel Demand Management (TDM) Parameters",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
-                             
+                             HTML("
+                                  <p>
+                                  This category represents the <b>travel demand management data</b> from the Commuter Reduction Program, which includes the average reduction in one-person-vehicle driving, average work trip length during automobile use, and the corresponding annualization factor."),
                            ),
                            open = FALSE
                          ),
@@ -631,14 +659,9 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Micromobility Parameters",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("
+                                  <p>
+                                  <b>Micromobility Data</b>: This category represents the strategy parameters corresponding to E-bike subsidies, including e-bike cost, subsidy coverage of cost, bike trips per week, average trip length, and share of e-bikers previously driving automobiles."),
 
                            ),
                            open = FALSE
@@ -660,16 +683,20 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Traffic Operations & Roadway Expansion Parameters",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
-                             
-                           ),
+                             HTML("
+                                  <p>
+                                  This category includes the following strategy parameters related to <b>traffic operations and roadway expansion</b>:<br>
+                                  <p>
+                                  (i) <b>Annual Average Daily Traffic (AADT)</b>, which represents the total volume of vehicle traffic on a road or highway averaged over 365 days.<br>
+                                  <p>
+                                  (ii) <b>Percent Truck Traffic (%)</b>, which represents the percentage of trucks in each facility type.<br>
+                                  <p>
+                                  (iii) <b>VMT per lane-mile</b>, which represents the vehicle miles traveled per lane of roadway in each facility type.<br>
+                                  <p>
+                                  (iv) <b>Travel Speed</b>, which represents the average travel speed of vehicles in miles per hour in each facility type.<br>
+                                  <p>
+                                  (v) <b>Induced Travel Elasticities</b>, which are the percent change in VMT with respect to percent change in lane-miles or travel time for each facility type."),
+                             ),
                            open = FALSE
                          ),
                   ),
@@ -689,14 +716,10 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Medium & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("
+                                  <p>
+                                  This category represents the <b>miles driven per replaced medium and heavy duty vehicle per year</b>.
+                                  "),
 
                            ),
                            open = FALSE
@@ -718,14 +741,9 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Park & Ride Parameters",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("
+                                  <p>
+                                  This category represents the <b>utilization of park and ride spaces.</b>"),
                              
                            ),
                            open = FALSE
@@ -747,16 +765,8 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Electric Vehicle Charging Infrastructure Parameters",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
-
-                           ),
+                             HTML("This category represents the <b>elasticity of the number of vehicle sales with respect to the number of charging ports</b>."),
+                             ),
                            open = FALSE
                          ),
                   ),
@@ -784,14 +794,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Bicycle & Pedestrian Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This category represents the <b>overall cost per mile and annual maintenance cost per mile</b> of bicycle or pedestrian facility being implemented."),
 
                            ),
                            open = FALSE
@@ -813,16 +816,8 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Transit: Fixed Route Service Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
-
-                           ),
+                             HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new fixed route service vehicles."),
+                             ),
                            open = FALSE
                          ),
                   ),
@@ -841,14 +836,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Transit: Demand Response (DR) Service Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new demand response service vehicles."),
 
                            ),
                            open = FALSE
@@ -869,14 +857,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Public Transportation: Bus Priority Treatment Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This category represents the <b>cost per mile of red paint</b> for addition of miles of new bus priority treatment."),
 
                            ),
                            open = FALSE
@@ -897,14 +878,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Public Transportation: Rail Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new rail vehicles operating in annual maximum service (VOMS)."),
 
                            ),
                            open = FALSE
@@ -926,14 +900,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Travel Demand Management (TDM) Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This category represents the <b>cost per employee</b> of the TDM Program Outreach."),
 
                            ),
                            open = FALSE
@@ -954,15 +921,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Micromobility Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
-                             
+                             HTML("This category represents the <b>subsidy provided per e-bike.</b>"),
                            ),
                            open = FALSE
                          ),
@@ -983,14 +942,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Traffic Operations - Intersection Improvement Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This category represents the <b>cost per improvement</b> for any improvements made to traffic operations at intersections."),
                              
                            ),
                            open = FALSE
@@ -1012,14 +964,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Medium and Heavy Duty Vehicle Replacement Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium and heavy-duty vehicles replaced with new electric vehicles."),
 
                            ),
                            open = FALSE
@@ -1041,14 +986,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Park & Ride Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This category represents the <b>cost per space</b> for any new addition or expansion of Park and Ride spaces."),
 
                            ),
                            open = FALSE
@@ -1070,15 +1008,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "EV Charging Infrastructure Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
-
+                             HTML("This category represents the <b>hardware cost per port</b> and <b>installation cost per port</b> for any new addition or expansion of EV charging ports."),
                            ),
                            open = FALSE
                          ),
@@ -1099,15 +1029,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Roadway Expansion Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
-
+                             HTML("This category represents the <b>capital cost per lane-mile</b> and <b>annual maintenance cost per lane-mile</b> for addition of any new lane-miles of roadways."),
                            ),
                            open = FALSE
                          ),
@@ -1128,15 +1050,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Fuel Price (2022$)",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
-
+                             HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."),
                            ),
                            open = FALSE
                          ),
@@ -1157,15 +1071,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Intermodal Freight Investment Costs",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
-
+                             HTML("This category represents the <b>cost of any intermodal investment.</b>"),
                            ),
                            open = FALSE
                          ),
@@ -1204,7 +1110,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Custom Forecast: Percent of on-road vehicles that are EVs",
-                             "Enter values as a whole number (differently stated, type '55' in a cell to indicate '55%')."
+                             HTML("This represents the vehicle electrification forecast used for baseline projections. This is represented by the percentage of electric vehicles that are EVs.")
                            ),
                            open = FALSE
                          ),
@@ -1224,14 +1130,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Custom Forecast: Vehicles Miled Traveled (VMT)",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This represents the vehicle miles traveled (VMT) forecast used for baseline projections."),
 
                            ),
                            open = FALSE
@@ -1252,14 +1151,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Onroad Public Transit - Fuel Technology Fraction",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This represents the type and fraction of assumed fuel technologies used by on-road public transit."),
 
                            ),
                            open = FALSE
@@ -1280,14 +1172,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Passenger Rail",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This represents the type of assumed fuel technologies used by passenger rail systems."),
 
                            ),
                            open = FALSE
@@ -1307,14 +1192,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Freight Rail",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This represents the assumed annual growth rate of freight rail and the energy intensity as measured in British thermal units (BTU) per ton-mile."),
 
                            ),
                            open = FALSE
@@ -1336,14 +1214,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Construction and Maintenance",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This represents the estimated emissions from construction and maintenance activities."),
 
                            ),
                            open = FALSE
@@ -1364,14 +1235,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Fuel Apportionments",
-                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna
-                             aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                             ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                             Duis aute irure dolor in reprehenderit in voluptate velit
-                             esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                             sint occaecat cupidatat non proident, sunt in culpa qui
-                             officia deserunt mollit anim id est laborum.",
+                             HTML("This represents the percentage of plug-in hybrid electric vehicle (PHEV) miles driven on electricity."),
 
                            ),
                            open = FALSE
