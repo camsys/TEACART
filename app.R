@@ -578,7 +578,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Bicycle & Pedestrian Costs",
+                             "Costs 1 | Bicycle & Pedestrian Costs",
                              HTML("This category represents the <b>overall cost per mile and annual maintenance cost per mile</b> of bicycle or pedestrian facility being implemented."),
 
                            ),
@@ -586,7 +586,7 @@ ui <- function(request) {
                          ),
                   ),
                   column(2,
-                         actionButton("reset_bikeped_costs_tbl", "Reset Bike Ped Costs", class = "btn-custom")
+                         actionButton("reset_bikeped_costs_tbl", "Reset Costs 1", class = "btn-custom")
                   ),
 
                 ),
@@ -600,14 +600,14 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Transit: Fixed Route Service Costs",
+                             "Costs 2 | Transit: Fixed Route Service Costs",
                              HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new fixed route service vehicles."),
                              ),
                            open = FALSE
                          ),
                   ),
                   column(2,
-                         actionButton("reset_transit_fixed_costs_tbl", "Reset Transit Fixed Route Costs", class = "btn-custom")
+                         actionButton("reset_transit_fixed_costs_tbl", "Reset Costs 2", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -620,7 +620,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Transit: Demand Response (DR) Service Costs",
+                             "Costs 3 | Transit: Demand Response (DR) Service Costs",
                              HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new demand response service vehicles."),
 
                            ),
@@ -628,7 +628,7 @@ ui <- function(request) {
                          ),
                   ),
                   column(2,
-                         actionButton("reset_transit_dr_costs_tbl", "Reset Transit DR Costs", class = "btn-custom")
+                         actionButton("reset_transit_dr_costs_tbl", "Reset Costs 3", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -641,7 +641,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Public Transportation: Bus Priority Treatment Costs",
+                             "Costs 5 | Public Transportation: Bus Priority Treatment Costs",
                              HTML("This category represents the <b>cost per mile of red paint</b> for addition of miles of new bus priority treatment."),
 
                            ),
@@ -649,7 +649,7 @@ ui <- function(request) {
                          ),
                   ),
                   column(2,
-                         actionButton("reset_pub_trans_priority_costs_tbl", "Reset Bus Priority Costs", class = "btn-custom")
+                         actionButton("reset_pub_trans_priority_costs_tbl", "Reset Costs 5", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -662,7 +662,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Public Transportation: Rail Costs",
+                             "Costs 6 | Public Transportation: Rail Costs",
                              HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new rail vehicles operating in annual maximum service (VOMS)."),
 
                            ),
@@ -670,7 +670,7 @@ ui <- function(request) {
                          ),
                   ),
                   column(2,
-                         actionButton("reset_pub_trans_rail_costs_tbl", "Reset Rail Costs", class = "btn-custom")
+                         actionButton("reset_pub_trans_rail_costs_tbl", "Reset Costs 6", class = "btn-custom")
                   ),
 
                 ),
@@ -684,7 +684,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Travel Demand Management (TDM) Costs",
+                             "Costs 7 | Travel Demand Management (TDM) Costs",
                              HTML("This category represents the <b>cost per employee</b> of the TDM Program Outreach."),
 
                            ),
@@ -692,7 +692,7 @@ ui <- function(request) {
                          ),
                   ),
                   column(2,
-                         actionButton("reset_tdm_costs_tbl", "Reset TDM Costs", class = "btn-custom")
+                         actionButton("reset_tdm_costs_tbl", "Reset Costs 7", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -705,14 +705,14 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Micromobility Costs",
+                             "Costs 8 | Micromobility Costs",
                              HTML("This category represents the <b>subsidy provided per e-bike.</b>"),
                            ),
                            open = FALSE
                          ),
                   ),
                   column(2,
-                         actionButton("reset_micro_costs_tbl", "Reset Micromobility Costs", class = "btn-custom")
+                         actionButton("reset_micro_costs_tbl", "Reset Costs 8", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -726,7 +726,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Traffic Operations - Intersection Improvement Costs",
+                             "Costs 9 | Traffic Operations - Intersection Improvement Costs",
                              HTML("This category represents the <b>cost per improvement</b> for any improvements made to traffic operations at intersections."),
                              
                            ),
@@ -734,7 +734,7 @@ ui <- function(request) {
                          ),
                   ),
                   column(2,
-                         actionButton("reset_traffic_ops_costs_tbl", "Reset Traffic Ops Costs", class = "btn-custom")
+                         actionButton("reset_traffic_ops_costs_tbl", "Reset Costs 9", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -748,7 +748,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Medium and Heavy Duty Vehicle Replacement Costs",
+                             "Costs 10 | Medium and Heavy Duty Vehicle Replacement Costs",
                              HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium and heavy-duty vehicles replaced with new electric vehicles."),
 
                            ),
@@ -756,7 +756,7 @@ ui <- function(request) {
                          ),
                   ),
                   column(2,
-                         actionButton("reset_mhdev_costs_tbl", "Reset MHDV Costs", class = "btn-custom")
+                         actionButton("reset_mhdev_costs_tbl", "Reset Costs 10", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -770,7 +770,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Park & Ride Costs",
+                             "Costs 11 | Park & Ride Costs",
                              HTML("This category represents the <b>cost per space</b> for any new addition or expansion of Park and Ride spaces."),
 
                            ),
@@ -778,7 +778,7 @@ ui <- function(request) {
                          ),
                   ),
                   column(2,
-                         actionButton("reset_pnr_costs_tbl", "Reset Park & Ride Costs", class = "btn-custom")
+                         actionButton("reset_pnr_costs_tbl", "Reset Costs 11", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -792,20 +792,40 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "EV Charging Infrastructure Costs",
+                             "Costs 12 | EV Charging Infrastructure Costs",
                              HTML("This category represents the <b>hardware cost per port</b> and <b>installation cost per port</b> for any new addition or expansion of EV charging ports."),
                            ),
                            open = FALSE
                          ),
                   ),
                   column(2,
-                         actionButton("reset_evsi_costs_tbl", "Reset EV Charging Infrastructure Costs", class = "btn-custom")
+                         actionButton("reset_evsi_costs_tbl", "Reset Costs 12", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
                   DT::dataTableOutput("evsi_costs_tbl")
                 ),
                 
+                # intermodal freight investment costs
+                
+                fluidRow(
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Costs 13 | Intermodal Freight Investment Costs",
+                             HTML("This category represents the <b>cost of any intermodal investment.</b>"),
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_intermodal_costs_tbl", "Reset Costs 13", class = "btn-custom")
+                  ),
+                  
+                ),
+                fluidRow(
+                  DT::dataTableOutput("intermodal_costs_tbl")
+                ),
                 
                 # roadway expansion costs
                 
@@ -813,14 +833,14 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Roadway Expansion Costs",
+                             "Costs 14 | Roadway Expansion Costs",
                              HTML("This category represents the <b>capital cost per lane-mile</b> and <b>annual maintenance cost per lane-mile</b> for addition of any new lane-miles of roadways."),
                            ),
                            open = FALSE
                          ),
                   ),
                   column(2,
-                         actionButton("reset_roadway_expand_costs_tbl", "Reset Roadway Expansion Costs", class = "btn-custom")
+                         actionButton("reset_roadway_expand_costs_tbl", "Reset Costs 14", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -834,14 +854,14 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Fuel Price (2022$)",
+                             "Costs 15 | Fuel Price (2022$)",
                              HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."),
                            ),
                            open = FALSE
                          ),
                   ),
                   column(2,
-                         actionButton("reset_fuel_costs_tbl", "Reset Fuel Price (2022)", class = "btn-custom")
+                         actionButton("reset_fuel_costs_tbl", "Reset Costs 15", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -849,26 +869,7 @@ ui <- function(request) {
                 ),
                 
                 
-                # intermodal freight investment costs
-                
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Intermodal Freight Investment Costs",
-                             HTML("This category represents the <b>cost of any intermodal investment.</b>"),
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_intermodal_costs_tbl", "Reset Intermodal Freight Investment Costs", class = "btn-custom")
-                  ),
 
-                ),
-                fluidRow(
-                  DT::dataTableOutput("intermodal_costs_tbl")
-                ),
       ),
 
 # assumptions tab ui ------------------------------------------------------
@@ -1460,7 +1461,7 @@ theme_set(theme_bw(base_size = 16))
 
 server <- function(input, output, session) {
   #Source Local Scripts --------------------------------------------------------
-  source("functions/render_custom_datatable_SLVER.R", local = T)
+  source("functions/render_custom_datatable.R", local = T)
   source("functions/reshaping.R", local = T)
   source("functions/make_project_table_cumulative.R")
   
@@ -1550,7 +1551,7 @@ server <- function(input, output, session) {
     #req(rvs$Projects)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
 
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 1,
       non_editable_cols = c(0, 1, 2),
@@ -1568,7 +1569,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
     data_reactive = temp_send,
     table_number = 2,
     non_editable_cols = c(0, 1, 2, 3),
@@ -1585,7 +1586,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 3,
       non_editable_cols = c(0, 1, 2, 3),
@@ -1602,7 +1603,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 4,
       non_editable_cols = c(0, 1, 2, 3),
@@ -1619,7 +1620,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 5,
       non_editable_cols = c(0),
@@ -1636,7 +1637,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 6,
       non_editable_cols = c(0,1,2),
@@ -1653,7 +1654,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 7,
       non_editable_cols = c(0),
@@ -1670,7 +1671,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 8,
       non_editable_cols = c(0),
@@ -1687,7 +1688,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 9,
       non_editable_cols = c(0,1,2),
@@ -1704,7 +1705,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 10,
       non_editable_cols = c(0,1,2),
@@ -1721,7 +1722,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 11,
       non_editable_cols = c(0),
@@ -1738,7 +1739,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 12,
       non_editable_cols = c(0,1),
@@ -1755,7 +1756,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 13,
       non_editable_cols = c(0),
@@ -1772,7 +1773,7 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = temp_send,
       table_number = 14,
       non_editable_cols = c(0,1,2),
@@ -2092,7 +2093,7 @@ server <- function(input, output, session) {
   output$bikeped_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
     data_reactive = rvs$Assumptions,
     table_number = 1,
     is_year_table = FALSE,
@@ -2108,7 +2109,7 @@ server <- function(input, output, session) {
   output$transit_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Assumptions,
       table_number = 2,
       is_year_table = FALSE,
@@ -2124,7 +2125,7 @@ server <- function(input, output, session) {
   output$tdm_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Assumptions,
       table_number = 3,
       is_year_table = FALSE,
@@ -2140,7 +2141,7 @@ server <- function(input, output, session) {
   output$micro_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Assumptions,
       table_number = 4,
       is_year_table = FALSE,
@@ -2156,7 +2157,7 @@ server <- function(input, output, session) {
   output$traffic_ops_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Assumptions,
       table_number = 5,
       is_year_table = FALSE,
@@ -2172,7 +2173,7 @@ server <- function(input, output, session) {
   output$mhdv_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Assumptions,
       table_number = 6,
       is_year_table = FALSE,
@@ -2188,7 +2189,7 @@ server <- function(input, output, session) {
   output$pnr_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Assumptions,
       table_number = 7,
       is_year_table = FALSE,
@@ -2204,7 +2205,7 @@ server <- function(input, output, session) {
   output$evsi_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Assumptions,
       table_number = 8,
       is_year_table = FALSE,
@@ -2381,7 +2382,7 @@ server <- function(input, output, session) {
     output$bikeped_costs_tbl <- renderDT({
     req(rvs$Costs)
 
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 1,
       is_year_table = FALSE,
@@ -2398,7 +2399,7 @@ server <- function(input, output, session) {
   output$transit_fixed_costs_tbl <- renderDT({
     req(rvs$Costs)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 2,
       is_year_table = FALSE,
@@ -2414,7 +2415,7 @@ server <- function(input, output, session) {
   output$transit_dr_costs_tbl <- renderDT({
     req(rvs$Costs)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 3,
       is_year_table = FALSE,
@@ -2430,7 +2431,7 @@ server <- function(input, output, session) {
   output$pub_trans_priority_costs_tbl <- renderDT({
     req(rvs$Costs)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 4,
       is_year_table = FALSE,
@@ -2446,7 +2447,7 @@ server <- function(input, output, session) {
   output$pub_trans_rail_costs_tbl <- renderDT({
     req(rvs$Costs)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 5,
       is_year_table = FALSE,
@@ -2462,7 +2463,7 @@ server <- function(input, output, session) {
   output$tdm_costs_tbl <- renderDT({
     req(rvs$Costs)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 6,
       is_year_table = FALSE,
@@ -2478,7 +2479,7 @@ server <- function(input, output, session) {
   output$micro_costs_tbl <- renderDT({
     req(rvs$Costs)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 7,
       is_year_table = FALSE,
@@ -2494,7 +2495,7 @@ server <- function(input, output, session) {
   output$traffic_ops_costs_tbl <- renderDT({
     req(rvs$Costs)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 8,
       is_year_table = FALSE,
@@ -2510,7 +2511,7 @@ server <- function(input, output, session) {
   output$mhdev_costs_tbl <- renderDT({
     req(rvs$Costs)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 9,
       is_year_table = FALSE,
@@ -2530,7 +2531,7 @@ server <- function(input, output, session) {
   output$pnr_costs_tbl <- renderDT({
     req(rvs$Costs)
 
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 10,
       is_year_table = FALSE,
@@ -2546,7 +2547,7 @@ server <- function(input, output, session) {
   output$evsi_costs_tbl <- renderDT({
     req(rvs$Costs)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 11,
       is_year_table = FALSE,
@@ -2562,7 +2563,7 @@ server <- function(input, output, session) {
   output$roadway_expand_costs_tbl <- renderDT({
     req(rvs$Costs)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 12,
       is_year_table = FALSE,
@@ -2578,7 +2579,7 @@ server <- function(input, output, session) {
   output$fuel_costs_tbl <- renderDT({
     req(rvs$Costs)
 
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 13,
       is_year_table = FALSE,
@@ -2594,7 +2595,7 @@ server <- function(input, output, session) {
   output$intermodal_costs_tbl <- renderDT({
     req(rvs$Costs)
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 14,
       is_year_table = FALSE,
@@ -3031,7 +3032,7 @@ server <- function(input, output, session) {
   ## create tables -----------------------------------------------------------
   
   output$ev_forecast_sheet_tbl <- renderDT({
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 1,
       is_year_table = TRUE,
@@ -3046,7 +3047,7 @@ server <- function(input, output, session) {
   })
   
   output$vmt_forecast_sheet_tbl <- renderDT({
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 2,
       is_year_table = TRUE,
@@ -3062,7 +3063,7 @@ server <- function(input, output, session) {
   
   output$onroad_fuel_tech_frac_sheet_tbl <- renderDT({
 
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 3,
       is_year_table = FALSE,
@@ -3076,7 +3077,7 @@ server <- function(input, output, session) {
  
   output$pass_rail_sheet_tbl <- renderDT({
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 4,
       is_year_table = FALSE,
@@ -3090,7 +3091,7 @@ server <- function(input, output, session) {
  
   output$freight_rail_sheet_tbl <- renderDT({
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 5,
       is_year_table = FALSE,
@@ -3104,7 +3105,7 @@ server <- function(input, output, session) {
 
   output$construction_sheet_tbl <- renderDT({
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 6,
       is_year_table = FALSE,
@@ -3121,7 +3122,7 @@ server <- function(input, output, session) {
                                                            autoWidth = TRUE))
   output$fuel_apportionment_sheet_tbl <- renderDT({
     
-    render_custom_datatable_SLVER(
+    render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 7,
       is_year_table = FALSE,
