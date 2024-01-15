@@ -238,7 +238,7 @@ ui <- function(request) {
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Bicycle and
+                                         HTML(paste('Projects 1 | Bicycle and
            Pedestrian Lane Miles of New Infrastructure ',
            as.character(tags$i(class = "fa fa-info-circle", title = "Hover text")),
            sep = "")),
@@ -253,7 +253,7 @@ ui <- function(request) {
                                      ),
                               ),
            column(2,
-                  actionButton("reset_bikeped_projs_tbl", "Reset Bike Ped Projects", class = "btn-custom"),
+                  actionButton("reset_bikeped_projs_tbl", "Reset Projects 1", class = "btn-custom"),
            ),
                             ),
            fluidRow(
@@ -269,7 +269,7 @@ ui <- function(request) {
         column(10,
         accordion(
           accordion_panel(
-               "Transit: Increased Fixed Route Service (new Vehicles Operating in Maximum Service)",
+               "Projects 2 | Transit: Increased Fixed Route Service (new Vehicles Operating in Maximum Service)",
                HTML("This category represents additions of <b>new fixed route service vehicles operated in maximum service (VOMS).</b> 
                Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
                )),
@@ -277,7 +277,7 @@ ui <- function(request) {
         ),
         ),
         column(2,
-               actionButton("reset_transit_fixed_projs_tbl", "Reset Transit Fixed Projects", class = "btn-custom")
+               actionButton("reset_transit_fixed_projs_tbl", "Reset Projects 2", class = "btn-custom")
                ),
         ),
         fluidRow(
@@ -291,7 +291,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Transit: Increased Demand Response Service (new Vehicles Operating in Maximum Service)",
+                   "Projects 3 | Transit: Increased Demand Response Service (new Vehicles Operating in Maximum Service)",
                    HTML("This category represents addition of any <b>new demand response service vehicles operated in maximum service (VOMS).</b> 
               Demand response service vehicles include non-fixed route services that are initiated by customers and require advanced scheduling, 
                         such as vehicles provided by public entities, nonprofits, and private providers."
@@ -302,7 +302,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_transit_dr_projs_tbl", "Reset Transit DR Projects", class = "btn-custom")
+               actionButton("reset_transit_dr_projs_tbl", "Reset Projects 3", class = "btn-custom")
         ),
 
       ),
@@ -316,7 +316,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Fleet Electrification (number of vehicles replaced)",
+                   "Projects 4 | Fleet Electrification (number of vehicles replaced)",
                    HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
                         with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
 
@@ -325,7 +325,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_transit_el_projs_tbl", "Reset Fleet Electrification Projects", class = "btn-custom")
+               actionButton("reset_transit_el_projs_tbl", "Reset Projects 4", class = "btn-custom")
         ),
 
       ),
@@ -339,7 +339,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Public Transportation: Bus Priority Treatment (number of units)",
+                   "Projects 5 | Public Transportation: Bus Priority Treatment (number of units)",
                    HTML("This category represents addition of miles of <b>new bus priority treatment</b>. Bus priority treatment refers 
                         to the improvement of transit speed and reliability between stops by changing the designation of street space. 
                         Some examples include a bus-only lane, which assigns exclusive street space to buses, and a bus approach lane, 
@@ -350,7 +350,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_transit_bus_projs_tbl", "Reset Bus Priority Treatment Projects", class = "btn-custom")
+               actionButton("reset_transit_bus_projs_tbl", "Reset Projects 5", class = "btn-custom")
         ),
 
       ),
@@ -364,7 +364,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Public Transportation: Rail (new Vehicles Operating in Maximum Service / VOMS)",
+                   "Projects 6 | Public Transportation: Rail (new Vehicles Operating in Maximum Service / VOMS)",
                    HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>.",)
 
                  ),
@@ -372,7 +372,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_public_rail_projs_tbl", "Reset Rail VOMS Projects", class = "btn-custom")
+               actionButton("reset_public_rail_projs_tbl", "Reset Projects 6", class = "btn-custom")
         ),
 
       ),
@@ -387,7 +387,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Travel Demand Management / TDM (number of units)",
+                   "Projects 7 | Travel Demand Management / TDM (number of units)",
                    HTML("This category represents the <b>number of employees covered through the TDM Program Outreach </b>. 
                    TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
                    reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",)
@@ -397,7 +397,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_tdm_projs_tbl", "Reset TDM Projects", class = "btn-custom")
+               actionButton("reset_tdm_projs_tbl", "Reset Projects 7", class = "btn-custom")
         ),
 
       ),
@@ -411,7 +411,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Micromobility (number of units)",
+                   "Projects 8 | Micromobility (number of units)",
                    HTML("This category represents the <b>number of e-bikes funded </b> through the implementation of <b> e-bike subsidies </b>. 
                    An e-bike subsidy reimburses part of the cost of an e-bike.",)
 
@@ -420,7 +420,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_micro_projs_tbl", "Reset Micromobility Projects", class = "btn-custom")
+               actionButton("reset_micro_projs_tbl", "Reset Projects 8", class = "btn-custom")
         ),
 
       ),
@@ -434,7 +434,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Traffic Operations",
+                   "Projects 9 | Traffic Operations",
                    HTML("This category represents any <b>improvements made to traffic operations at intersections </b>, 
                    such as new or retimed signals or new roundabouts.",)
 
@@ -443,7 +443,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_traffic_ops_projs_tbl", "Reset Traffic Operations Projects", class = "btn-custom")
+               actionButton("reset_traffic_ops_projs_tbl", "Reset Projects 9", class = "btn-custom")
         ),
 
       ),
@@ -457,7 +457,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
+                   "Projects 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
                    HTML("This category represents <b>replacement of any fossil fuel medium or heavy-duty vehicles with electric vehicles</b>, 
                    with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle.",)
 
@@ -466,7 +466,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_mhdev_projs_tbl", "Reset MHDV Replacement Projects", class = "btn-custom")
+               actionButton("reset_mhdev_projs_tbl", "Reset Projects 10", class = "btn-custom")
         ),
 
       ),
@@ -481,7 +481,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Park & Ride Projects",
+                   "Projects 11 | Park & Ride Projects",
                    HTML("This category represents any <b>new addition or expansion of Park and Ride spaces</b>. A Park and Ride space 
                    allows private transport users to park their vehicles at a large parking space and continue their commute via public transport.",)
 
@@ -490,7 +490,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_pnr_projs_tbl", "Reset P&R Projects", class = "btn-custom")
+               actionButton("reset_pnr_projs_tbl", "Reset Projects 11", class = "btn-custom")
         ),
 
       ),
@@ -504,7 +504,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "EV Charging Infrastructure",
+                   "Projects 12 | EV Charging Infrastructure",
                    HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
                    EV charging ports supply electric power for recharging electric vehicles.",)
 
@@ -513,7 +513,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_evsi_projs_tbl", "Reset EV Charging Projects", class = "btn-custom")
+               actionButton("reset_evsi_projs_tbl", "Reset Projects 13", class = "btn-custom")
         ),
 
       ),
@@ -527,7 +527,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Freight Intermodal Facilities",
+                   "Projects 13 | Freight Intermodal Facilities",
                    HTML("This category represents any <b>intermodal freight investment</b>, expressed in millions of dollars.",)
 
                  ),
@@ -535,7 +535,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_freight_projs_tbl", "Reset Freight Intermodal Facilities Projects", class = "btn-custom")
+               actionButton("reset_freight_projs_tbl", "Reset Projects 13", class = "btn-custom")
         ),
 
       ),
@@ -550,7 +550,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Roadway Expansion",
+                   "Projects 14 | Roadway Expansion",
                    HTML("This category represents addition of any <b>new lane-miles of roadways.</b>",)
 
                  ),
@@ -558,7 +558,7 @@ ui <- function(request) {
                ),
         ),
         column(2,
-               actionButton("reset_expansion_projs_tbl", "Reset Roadway Expansion Projects", class = "btn-custom")
+               actionButton("reset_expansion_projs_tbl", "Reset Projects 14", class = "btn-custom")
         ),
 
       ),
