@@ -66,12 +66,10 @@ ui <- function(request) {
       tags$head(
         tags$style(HTML("
             .accordion-button.collapsed {
-                background-color: #f5f0e4;
+                background-color: #e3ebd5;
             }
-        ")),
-        tags$style(HTML("
             .btn-custom {
-                background-color: #f5f0e4 !important;;
+                background-color: #e3ebd5 !important;;
             }
         ")),
         tags$link(rel = "stylesheet", 
@@ -240,9 +238,9 @@ ui <- function(request) {
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('<span style ="font-size: 24px; font-weight: bold;">Bicycle and
-           Pedestrian Lane Miles of New Infrastructure  </span>',
-           as.character(tags$i(class = "fa fa-info-circle", title = "Texty text")),
+                                         HTML(paste('Bicycle and
+           Pedestrian Lane Miles of New Infrastructure ',
+           as.character(tags$i(class = "fa fa-info-circle", title = "Hover text")),
            sep = "")),
            HTML("This category represents implementation of any <b>two-way miles of new 
            bicycle or pedestrian facility.</b> The default assumption for these 
@@ -570,224 +568,6 @@ ui <- function(request) {
       
                   ),
 
-# assumptions tab ui ------------------------------------------------------
-      nav_panel(title = "Assumptions",
-                
-                # bike ped parameters
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Bicycle and Pedestrian Parameters",
-                             HTML("<p>
-                                  This category includes the following data types:<br>
-                                  <p>
-                                  (i) <b>Prior drive mode share of new walkers / bikers</b>, which represents the fraction of new walkers / bikers who would have previously driven a car. This is calculated as a percentage of the new walkers / bikers or “persons per square mile” (ppsm) within the different area types defined.<br>
-                                  <p>
-                                  (ii) <b>Average trip length</b>, which represents the average Walk and / or Bike trip length in miles.<br>
-                                  <p>
-                                  (iii) <b>Annualization</b>, which represents the annual number of days multiplier for the mode-shift to walking / biking.")
-                           ),
-                open = FALSE
-                         ),
-                  ),
-                column(2,
-                       actionButton("reset_bikeped_assmps_tbl", "Reset Bike Ped Parameters", class = "btn-custom")
-                ),
-                
-                ),
-                fluidRow(
-                  DT::dataTableOutput("bikeped_assmps_tbl")
-                ),
-                
-                
-                # transit parameters
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Transit Parameters",
-                             HTML("
-                                  <p>This category includes the following data types for transit vehicles:<br>
-                                  <p>
-                                  (i) <b>On-Road Vehicle Fuel Economy</b>, which represents the miles a transit vehicle is able to travel based on its fuel source. This is calculated in miles per gallon of gasoline equivalent (mpgge).<br>
-                                  <p>
-                                  (ii) <b>Average trip length</b>, which represents the average length of the personal vehicle trip displaced by transit, in miles.<br>
-                                  <p>
-                                  (iii) <b>Average pax-mi per vehicle-mile (load factor)</b>, which represents the average number of passengers on board a transit vehicle at any given time. This is calculated as the ratio of passenger miles traveled to transit vehicle miles traveled, also known as the load factor.<br>
-                                  <p>
-                                  (iv) <b>Prior drive mode share of new riders</b>, which represents the fraction of new transit riders who would have previously driven a car. This is calculated as a the number of new riders who would have driven, divided by the total number of new riders.<br>
-                                  <p>
-                                  (v) <b>Vehicle Revenue Mile per Vehicle</b>, which represents the annual miles that a transit vehicle is scheduled to travel or actually travels while in revenue service.<br>
-                                  <p>
-                                  (vi) <b>Bus Priority Factors</b>, which include bus priority % travel time change, bus ridership elasticity with respect to travel time, number of routes affected, number of daily buses per route, percentage of route-hours affected, and weekday annualization."),
-                             
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_transit_assmps_tbl", "Reset Transit Parameters", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("transit_assmps_tbl")
-                ),
-                
-                
-                # tdm parameters
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Travel Demand Management (TDM) Parameters",
-                             HTML("
-                                  <p>
-                                  This category represents the <b>travel demand management data</b> from the Commuter Reduction Program, which includes the average reduction in one-person-vehicle driving, average work trip length during automobile use, and the corresponding annualization factor."),
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_tdm_assmps_tbl", "Reset TDM Parameters", class = "btn-custom")
-                  ),
-                  
-                ),
-                fluidRow(
-                  DT::dataTableOutput("tdm_assmps_tbl")
-                ),
-                
-                
-                # micromobility parameters
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Micromobility Parameters",
-                             HTML("
-                                  <p>
-                                  <b>Micromobility Data</b>: This category represents the strategy parameters corresponding to E-bike subsidies, including e-bike cost, subsidy coverage of cost, bike trips per week, average trip length, and share of e-bikers previously driving automobiles."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_micro_assmps_tbl", "Reset Micromobility Parameters", class = "btn-custom")
-                  ),
-
-                ),
-                fluidRow(
-                  DT::dataTableOutput("micro_assmps_tbl")
-                ),
-                
-                
-                # traffic ops paramaters
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Traffic Operations & Roadway Expansion Parameters",
-                             HTML("
-                                  <p>
-                                  This category includes the following strategy parameters related to <b>traffic operations and roadway expansion</b>:<br>
-                                  <p>
-                                  (i) <b>Annual Average Daily Traffic (AADT)</b>, which represents the total volume of vehicle traffic on a road or highway averaged over 365 days.<br>
-                                  <p>
-                                  (ii) <b>Percent Truck Traffic (%)</b>, which represents the percentage of trucks in each facility type.<br>
-                                  <p>
-                                  (iii) <b>VMT per lane-mile</b>, which represents the vehicle miles traveled per lane of roadway in each facility type.<br>
-                                  <p>
-                                  (iv) <b>Travel Speed</b>, which represents the average travel speed of vehicles in miles per hour in each facility type.<br>
-                                  <p>
-                                  (v) <b>Induced Travel Elasticities</b>, which are the percent change in VMT with respect to percent change in lane-miles or travel time for each facility type."),
-                             ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_traffic_ops_assmps_tbl", "Reset Traffic Ops & Expansion Parameters", class = "btn-custom")
-                  ),
-                  
-                ),
-                fluidRow(
-                  DT::dataTableOutput("traffic_ops_assmps_tbl")
-                ),
-                
-                
-                # MHDV parameters
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Medium & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
-                             HTML("
-                                  <p>
-                                  This category represents the <b>miles driven per replaced medium and heavy duty vehicle per year</b>.
-                                  "),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_mhdv_assmps_tbl", "Reset MHDV Parameters", class = "btn-custom")
-                  ),
-
-                ),
-                fluidRow(
-                  DT::dataTableOutput("mhdv_assmps_tbl")
-                ),
-                
-                
-                # P&R parameters
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Park & Ride Parameters",
-                             HTML("
-                                  <p>
-                                  This category represents the <b>utilization of park and ride spaces.</b>"),
-                             
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_pnr_assmps_tbl", "Reset Park & Ride Parameters", class = "btn-custom")
-                  ),
-                  
-                ),
-                fluidRow(
-                  DT::dataTableOutput("pnr_assmps_tbl")
-                ),
-                
-                
-                # evsi parameters
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Electric Vehicle Charging Infrastructure Parameters",
-                             HTML("This category represents the <b>elasticity of the number of vehicle sales with respect to the number of charging ports</b>."),
-                             ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_evsi_assmps_tbl", "Reset Electric Vehicle Charging Parameters", class = "btn-custom")
-                  ),
-
-                ),
-                fluidRow(
-                  DT::dataTableOutput("evsi_assmps_tbl")
-                )
-                
-                
-                
-                
-      ),
 
 
 # costs tab ui ------------------------------------------------------------
@@ -1091,6 +871,224 @@ ui <- function(request) {
                 ),
       ),
 
+# assumptions tab ui ------------------------------------------------------
+nav_panel(title = "Assumptions",
+          
+          # bike ped parameters
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Bicycle and Pedestrian Parameters",
+                       HTML("<p>
+                                  This category includes the following data types:<br>
+                                  <p>
+                                  (i) <b>Prior drive mode share of new walkers / bikers</b>, which represents the fraction of new walkers / bikers who would have previously driven a car. This is calculated as a percentage of the new walkers / bikers or “persons per square mile” (ppsm) within the different area types defined.<br>
+                                  <p>
+                                  (ii) <b>Average trip length</b>, which represents the average Walk and / or Bike trip length in miles.<br>
+                                  <p>
+                                  (iii) <b>Annualization</b>, which represents the annual number of days multiplier for the mode-shift to walking / biking.")
+                     ),
+                     open = FALSE
+                   ),
+            ),
+            column(2,
+                   actionButton("reset_bikeped_assmps_tbl", "Reset Bike Ped Parameters", class = "btn-custom")
+            ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("bikeped_assmps_tbl")
+          ),
+          
+          
+          # transit parameters
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Transit Parameters",
+                       HTML("
+                                  <p>This category includes the following data types for transit vehicles:<br>
+                                  <p>
+                                  (i) <b>On-Road Vehicle Fuel Economy</b>, which represents the miles a transit vehicle is able to travel based on its fuel source. This is calculated in miles per gallon of gasoline equivalent (mpgge).<br>
+                                  <p>
+                                  (ii) <b>Average trip length</b>, which represents the average length of the personal vehicle trip displaced by transit, in miles.<br>
+                                  <p>
+                                  (iii) <b>Average pax-mi per vehicle-mile (load factor)</b>, which represents the average number of passengers on board a transit vehicle at any given time. This is calculated as the ratio of passenger miles traveled to transit vehicle miles traveled, also known as the load factor.<br>
+                                  <p>
+                                  (iv) <b>Prior drive mode share of new riders</b>, which represents the fraction of new transit riders who would have previously driven a car. This is calculated as a the number of new riders who would have driven, divided by the total number of new riders.<br>
+                                  <p>
+                                  (v) <b>Vehicle Revenue Mile per Vehicle</b>, which represents the annual miles that a transit vehicle is scheduled to travel or actually travels while in revenue service.<br>
+                                  <p>
+                                  (vi) <b>Bus Priority Factors</b>, which include bus priority % travel time change, bus ridership elasticity with respect to travel time, number of routes affected, number of daily buses per route, percentage of route-hours affected, and weekday annualization."),
+                       
+                     ),
+                     open = FALSE
+                   ),
+            ),
+            column(2,
+                   actionButton("reset_transit_assmps_tbl", "Reset Transit Parameters", class = "btn-custom")
+            ),
+          ),
+          fluidRow(
+            DT::dataTableOutput("transit_assmps_tbl")
+          ),
+          
+          
+          # tdm parameters
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Travel Demand Management (TDM) Parameters",
+                       HTML("
+                                  <p>
+                                  This category represents the <b>travel demand management data</b> from the Commuter Reduction Program, which includes the average reduction in one-person-vehicle driving, average work trip length during automobile use, and the corresponding annualization factor."),
+                     ),
+                     open = FALSE
+                   ),
+            ),
+            column(2,
+                   actionButton("reset_tdm_assmps_tbl", "Reset TDM Parameters", class = "btn-custom")
+            ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("tdm_assmps_tbl")
+          ),
+          
+          
+          # micromobility parameters
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Micromobility Parameters",
+                       HTML("
+                                  <p>
+                                  <b>Micromobility Data</b>: This category represents the strategy parameters corresponding to E-bike subsidies, including e-bike cost, subsidy coverage of cost, bike trips per week, average trip length, and share of e-bikers previously driving automobiles."),
+                       
+                     ),
+                     open = FALSE
+                   ),
+            ),
+            column(2,
+                   actionButton("reset_micro_assmps_tbl", "Reset Micromobility Parameters", class = "btn-custom")
+            ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("micro_assmps_tbl")
+          ),
+          
+          
+          # traffic ops paramaters
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Traffic Operations & Roadway Expansion Parameters",
+                       HTML("
+                                  <p>
+                                  This category includes the following strategy parameters related to <b>traffic operations and roadway expansion</b>:<br>
+                                  <p>
+                                  (i) <b>Annual Average Daily Traffic (AADT)</b>, which represents the total volume of vehicle traffic on a road or highway averaged over 365 days.<br>
+                                  <p>
+                                  (ii) <b>Percent Truck Traffic (%)</b>, which represents the percentage of trucks in each facility type.<br>
+                                  <p>
+                                  (iii) <b>VMT per lane-mile</b>, which represents the vehicle miles traveled per lane of roadway in each facility type.<br>
+                                  <p>
+                                  (iv) <b>Travel Speed</b>, which represents the average travel speed of vehicles in miles per hour in each facility type.<br>
+                                  <p>
+                                  (v) <b>Induced Travel Elasticities</b>, which are the percent change in VMT with respect to percent change in lane-miles or travel time for each facility type."),
+                     ),
+                     open = FALSE
+                   ),
+            ),
+            column(2,
+                   actionButton("reset_traffic_ops_assmps_tbl", "Reset Traffic Ops & Expansion Parameters", class = "btn-custom")
+            ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("traffic_ops_assmps_tbl")
+          ),
+          
+          
+          # MHDV parameters
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Medium & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
+                       HTML("
+                                  <p>
+                                  This category represents the <b>miles driven per replaced medium and heavy duty vehicle per year</b>.
+                                  "),
+                       
+                     ),
+                     open = FALSE
+                   ),
+            ),
+            column(2,
+                   actionButton("reset_mhdv_assmps_tbl", "Reset MHDV Parameters", class = "btn-custom")
+            ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("mhdv_assmps_tbl")
+          ),
+          
+          
+          # P&R parameters
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Park & Ride Parameters",
+                       HTML("
+                                  <p>
+                                  This category represents the <b>utilization of park and ride spaces.</b>"),
+                       
+                     ),
+                     open = FALSE
+                   ),
+            ),
+            column(2,
+                   actionButton("reset_pnr_assmps_tbl", "Reset Park & Ride Parameters", class = "btn-custom")
+            ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("pnr_assmps_tbl")
+          ),
+          
+          
+          # evsi parameters
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Electric Vehicle Charging Infrastructure Parameters",
+                       HTML("This category represents the <b>elasticity of the number of vehicle sales with respect to the number of charging ports</b>."),
+                     ),
+                     open = FALSE
+                   ),
+            ),
+            column(2,
+                   actionButton("reset_evsi_assmps_tbl", "Reset Electric Vehicle Charging Parameters", class = "btn-custom")
+            ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("evsi_assmps_tbl")
+          )
+          
+          
+          
+          
+),
 
 # scenarios tab ui --------------------------------------------------------
       nav_panel(title = "Scenarios",
