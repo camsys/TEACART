@@ -70,7 +70,7 @@ ui <- function(request) {
             }
             .btn-custom {
                 background-color: #e3ebd5 !important;;
-            }
+            } 
         ")),
         tags$link(rel = "stylesheet", 
                   href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"),

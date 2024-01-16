@@ -28,8 +28,8 @@ render_custom_datatable <- function(#input_reactives,
           rename_with(~as.character(rvs$Baseline$horizon_year_3), horizon_year_3) 
     } else if (is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table_number,]) != 1 & table_number != 13){
       df %>% 
-        pivot_wider(names_from = unit, values_from = value) %>%
-        select(-c(table_no_ui, table, category))
+        select(-c(table_no_ui, table_no_ui_revised, cost_type, table, category)) %>%
+        pivot_wider(names_from = unit, values_from = value)
     } else if (is_advanced_table == TRUE & is_year_table == TRUE){
       df %>%
         select(pivot_col) %>%
