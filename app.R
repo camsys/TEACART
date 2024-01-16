@@ -91,11 +91,13 @@ ui <- function(request) {
                                   placement = "right"),
                         downloadButton("user_inputs_download", "Download User Inputs"),
                         HTML("<p>
-                            Remember to save and download data regularly while entering data.<br>
-                            <p>
-                            Pressing CTRL + ENTER finishes entering 
-                            data for one table. Enter data for one table at 
-                            a time."),
+                             A few reminders:
+                             <ul>
+                            <li>Download data regularly while entering data - if you need to leave the app before finishing, reupload it to resume editing.</li>
+                            <li>Pressing CTRL + ENTER finishes entering 
+                            data for one table.</li>
+                            <li>Enter data for one table at 
+                            a time.</li></ul>"),
                         nav_spacer(),
                         nav_spacer(),
                         nav_spacer(),
@@ -118,7 +120,7 @@ ui <- function(request) {
                       types."))),
       h3("Version"),
       p("Based on TEA-CART Excel Model Version 1.8"),
-      p("Shiny App last updated December 13, 2023"),
+      p("Shiny App last updated January 15, 2024"),
       p("draft User Interface (UI) under development by Cambridge Systematics, Inc."),
       p("under contract to Georgetown Climate Center"),
       p("© Georgetown Climate Center"),
@@ -136,14 +138,14 @@ ui <- function(request) {
                                      p("Select the state, years, and scope of baseline GHG forecast."),
                                      
                                      selectInput("state_input",
-                                                 HTML(paste('<span style ="font-weight: bold;">State: </span>',
+                                                 HTML(paste('State: ',
                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The state for which you will be conducting analysis.")),
                                                             sep = "")
                                                  ),
                                                  selected = "Maryland",
                                                  state.name),
                                      numericInput("base_year",
-                                                  HTML(paste('<span style ="font-weight: bold;">Base Year: </span>',
+                                                  HTML(paste('Base Year: ',
                                                              as.character(tags$i(class = "fa fa-info-circle", title = "The first year of analysis and the reference point for assessing baseline trends.")),
                                                              sep = "")
                                                   ),
@@ -153,7 +155,7 @@ ui <- function(request) {
                                                   step = 1),
                                      p(" "),
                                      numericInput("horizon_year_1",
-                                                  HTML(paste('<span style ="font-weight: bold;">Horizon Year 1: </span>',
+                                                  HTML(paste('Horizon Year 1: ',
                                                              as.character(tags$i(class = "fa fa-info-circle", title = "The first (future) year for which projects may be entered and the first year for which TEA-CART will generate outputs.")),
                                                              sep = "")
                                                   ),
@@ -163,7 +165,7 @@ ui <- function(request) {
                                                   step = 1),
                                      p(" "),
                                      numericInput("horizon_year_2",
-                                                  HTML(paste('<span style ="font-weight: bold;">Horizon Year 2: </span>',
+                                                  HTML(paste('Horizon Year 2: ',
                                                              as.character(tags$i(class = "fa fa-info-circle", title = "The second (future) year for which projects may be entered and the second year for which TEA-CART will generate outputs.")),
                                                              sep = "")
                                                   ),
@@ -173,7 +175,7 @@ ui <- function(request) {
                                                   step = 1),
                                      p(""),
                                      numericInput("horizon_year_3",
-                                                  HTML(paste('<span style ="font-weight: bold;">Horizon Year 3: </span>',
+                                                  HTML(paste('Horizon Year 3: ',
                                                              as.character(tags$i(class = "fa fa-info-circle", title = "The third (future) year for which projects may be entered and the third year for which TEA-CART will generate outputs.")),
                                                              sep = "")
                                                   ),
@@ -183,7 +185,7 @@ ui <- function(request) {
                                                   step = 1),
                                      p(""),
                                      selectInput("transportation_scope",
-                                                 HTML(paste('<span style ="font-weight: bold;">Transportation System Scope: </span>',
+                                                 HTML(paste('Transportation System Scope: ',
                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The scope of your analysis with respect to the roadways. Only emissions from on-road travel are covered by TEA-CART.")),
                                                             sep = "")
                                                  ),
@@ -880,7 +882,7 @@ nav_panel(title = "Assumptions",
             column(10,
                    accordion(
                      accordion_panel(
-                       "Bicycle and Pedestrian Parameters",
+                       "Assumptions 1 | Bicycle and Pedestrian Parameters",
                        HTML("<p>
                                   This category includes the following data types:<br>
                                   <p>
@@ -894,7 +896,7 @@ nav_panel(title = "Assumptions",
                    ),
             ),
             column(2,
-                   actionButton("reset_bikeped_assmps_tbl", "Reset Bike Ped Parameters", class = "btn-custom")
+                   actionButton("reset_bikeped_assmps_tbl", "Reset Assumptions 1", class = "btn-custom")
             ),
             
           ),
@@ -908,7 +910,7 @@ nav_panel(title = "Assumptions",
             column(10,
                    accordion(
                      accordion_panel(
-                       "Transit Parameters",
+                       "Assumptions 2 | Transit Parameters",
                        HTML("
                                   <p>This category includes the following data types for transit vehicles:<br>
                                   <p>
@@ -929,7 +931,7 @@ nav_panel(title = "Assumptions",
                    ),
             ),
             column(2,
-                   actionButton("reset_transit_assmps_tbl", "Reset Transit Parameters", class = "btn-custom")
+                   actionButton("reset_transit_assmps_tbl", "Reset Assumptions 2", class = "btn-custom")
             ),
           ),
           fluidRow(
@@ -942,7 +944,7 @@ nav_panel(title = "Assumptions",
             column(10,
                    accordion(
                      accordion_panel(
-                       "Travel Demand Management (TDM) Parameters",
+                       "Assumptions 3 | Travel Demand Management (TDM) Parameters",
                        HTML("
                                   <p>
                                   This category represents the <b>travel demand management data</b> from the Commuter Reduction Program, which includes the average reduction in one-person-vehicle driving, average work trip length during automobile use, and the corresponding annualization factor."),
@@ -951,7 +953,7 @@ nav_panel(title = "Assumptions",
                    ),
             ),
             column(2,
-                   actionButton("reset_tdm_assmps_tbl", "Reset TDM Parameters", class = "btn-custom")
+                   actionButton("reset_tdm_assmps_tbl", "Reset Assumptions 3", class = "btn-custom")
             ),
             
           ),
@@ -965,7 +967,7 @@ nav_panel(title = "Assumptions",
             column(10,
                    accordion(
                      accordion_panel(
-                       "Micromobility Parameters",
+                       "Assumptions 4 | Micromobility Parameters",
                        HTML("
                                   <p>
                                   <b>Micromobility Data</b>: This category represents the strategy parameters corresponding to E-bike subsidies, including e-bike cost, subsidy coverage of cost, bike trips per week, average trip length, and share of e-bikers previously driving automobiles."),
@@ -975,7 +977,7 @@ nav_panel(title = "Assumptions",
                    ),
             ),
             column(2,
-                   actionButton("reset_micro_assmps_tbl", "Reset Micromobility Parameters", class = "btn-custom")
+                   actionButton("reset_micro_assmps_tbl", "Reset Assumptions 4", class = "btn-custom")
             ),
             
           ),
@@ -989,7 +991,7 @@ nav_panel(title = "Assumptions",
             column(10,
                    accordion(
                      accordion_panel(
-                       "Traffic Operations & Roadway Expansion Parameters",
+                       "Assumptions 5 | Traffic Operations & Roadway Expansion Parameters",
                        HTML("
                                   <p>
                                   This category includes the following strategy parameters related to <b>traffic operations and roadway expansion</b>:<br>
@@ -1008,7 +1010,7 @@ nav_panel(title = "Assumptions",
                    ),
             ),
             column(2,
-                   actionButton("reset_traffic_ops_assmps_tbl", "Reset Traffic Ops & Expansion Parameters", class = "btn-custom")
+                   actionButton("reset_traffic_ops_assmps_tbl", "Reset Assumptions 5", class = "btn-custom")
             ),
             
           ),
@@ -1022,7 +1024,7 @@ nav_panel(title = "Assumptions",
             column(10,
                    accordion(
                      accordion_panel(
-                       "Medium & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
+                       "Assumptions 6 | Medium & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
                        HTML("
                                   <p>
                                   This category represents the <b>miles driven per replaced medium and heavy duty vehicle per year</b>.
@@ -1033,7 +1035,7 @@ nav_panel(title = "Assumptions",
                    ),
             ),
             column(2,
-                   actionButton("reset_mhdv_assmps_tbl", "Reset MHDV Parameters", class = "btn-custom")
+                   actionButton("reset_mhdv_assmps_tbl", "Reset Assumptions 6", class = "btn-custom")
             ),
             
           ),
@@ -1047,7 +1049,7 @@ nav_panel(title = "Assumptions",
             column(10,
                    accordion(
                      accordion_panel(
-                       "Park & Ride Parameters",
+                       "Assumptions 7 | Park & Ride Parameters",
                        HTML("
                                   <p>
                                   This category represents the <b>utilization of park and ride spaces.</b>"),
@@ -1057,7 +1059,7 @@ nav_panel(title = "Assumptions",
                    ),
             ),
             column(2,
-                   actionButton("reset_pnr_assmps_tbl", "Reset Park & Ride Parameters", class = "btn-custom")
+                   actionButton("reset_pnr_assmps_tbl", "Reset Assumptions 7", class = "btn-custom")
             ),
             
           ),
@@ -1071,14 +1073,14 @@ nav_panel(title = "Assumptions",
             column(10,
                    accordion(
                      accordion_panel(
-                       "Electric Vehicle Charging Infrastructure Parameters",
+                       "Assumptions 8 | Electric Vehicle Charging Infrastructure Parameters",
                        HTML("This category represents the <b>elasticity of the number of vehicle sales with respect to the number of charging ports</b>."),
                      ),
                      open = FALSE
                    ),
             ),
             column(2,
-                   actionButton("reset_evsi_assmps_tbl", "Reset Electric Vehicle Charging Parameters", class = "btn-custom")
+                   actionButton("reset_evsi_assmps_tbl", "Reset Assumptions 8", class = "btn-custom")
             ),
             
           ),
@@ -1300,12 +1302,7 @@ nav_panel(title = "Assumptions",
                               )),
                             fluidRow(
                               column(6,
-                                     DT::DTOutput('emission_change_tbl'),
-                                     fluidRow(
-                                       column(6,
-                                              br(),
-                                              downloadButton('downloadscenario_result', 'Download Results'))
-                                     )),
+                                     DT::DTOutput('emission_change_tbl')),
                               column(6,
                                      plotlyOutput("emission_change_graph", width = "auto", height = "auto"))),
                   ),
