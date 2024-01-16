@@ -2097,7 +2097,6 @@ server <- function(input, output, session) {
     data_reactive = rvs$Assumptions,
     table_number = 1,
     is_year_table = FALSE,
-    is_cost_table = FALSE,
     non_editable_cols = c(0, 1),  
     page_length = 10,
     comma_rows = integer(0),
