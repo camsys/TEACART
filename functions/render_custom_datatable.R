@@ -37,7 +37,7 @@ render_custom_datatable <- function(#input_reactives,
     }
       else {
       df %>%
-        select(-c(table_no_ui, table, category))
+        select(-c(table_no_ui, table_no_ui_revised, cost_type, table, category))
       }
     }
 

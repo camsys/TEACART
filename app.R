@@ -269,7 +269,7 @@ ui <- function(request) {
         column(10,
         accordion(
           accordion_panel(
-               "Projects 2 | Transit: Increased Fixed Route Service (new Vehicles Operating in Maximum Service)",
+               "Projects 2 | Transit: Increased Fixed Route Service",
                HTML("This category represents additions of <b>new fixed route service vehicles operated in maximum service (VOMS).</b> 
                Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
                )),
@@ -291,7 +291,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Projects 3 | Transit: Increased Demand Response Service (new Vehicles Operating in Maximum Service)",
+                   "Projects 3 | Transit: Increased Demand Response Service",
                    HTML("This category represents addition of any <b>new demand response service vehicles operated in maximum service (VOMS).</b> 
               Demand response service vehicles include non-fixed route services that are initiated by customers and require advanced scheduling, 
                         such as vehicles provided by public entities, nonprofits, and private providers."
@@ -316,7 +316,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Projects 4 | Fleet Electrification (number of vehicles replaced)",
+                   "Projects 4 | Fleet Electrification",
                    HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
                         with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
 
@@ -339,7 +339,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Projects 5 | Public Transportation: Bus Priority Treatment (number of units)",
+                   "Projects 5 | Public Transportation: Bus Priority Treatment",
                    HTML("This category represents addition of miles of <b>new bus priority treatment</b>. Bus priority treatment refers 
                         to the improvement of transit speed and reliability between stops by changing the designation of street space. 
                         Some examples include a bus-only lane, which assigns exclusive street space to buses, and a bus approach lane, 
@@ -364,7 +364,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Projects 6 | Public Transportation: Rail (new Vehicles Operating in Maximum Service / VOMS)",
+                   "Projects 6 | Public Transportation: Rail",
                    HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>.",)
 
                  ),
@@ -387,7 +387,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Projects 7 | Travel Demand Management / TDM (number of units)",
+                   "Projects 7 | Travel Demand Management / TDM",
                    HTML("This category represents the <b>number of employees covered through the TDM Program Outreach </b>. 
                    TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
                    reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",)
@@ -411,7 +411,7 @@ ui <- function(request) {
         column(10,
                accordion(
                  accordion_panel(
-                   "Projects 8 | Micromobility (number of units)",
+                   "Projects 8 | Micromobility",
                    HTML("This category represents the <b>number of e-bikes funded </b> through the implementation of <b> e-bike subsidies </b>. 
                    An e-bike subsidy reimburses part of the cost of an e-bike.",)
 
@@ -854,7 +854,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 15 | Fuel Price (2022$)",
+                             "Costs 15 | Fuel Price",
                              HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."),
                            ),
                            open = FALSE
@@ -2097,6 +2097,7 @@ server <- function(input, output, session) {
     data_reactive = rvs$Assumptions,
     table_number = 1,
     is_year_table = FALSE,
+    is_cost_table = FALSE,
     non_editable_cols = c(0, 1),  
     page_length = 10,
     comma_rows = integer(0),
@@ -2105,6 +2106,7 @@ server <- function(input, output, session) {
     decimal_rows = 2:7)
   })
   
+
   
   output$transit_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
@@ -2391,7 +2393,7 @@ server <- function(input, output, session) {
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
-      currency_rows = c(0:10),
+      currency_rows = c(0:21),
       decimal_rows = integer(0))
   })
 
