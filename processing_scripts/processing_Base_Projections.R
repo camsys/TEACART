@@ -217,11 +217,13 @@ Tech_Frac_Vision <- reactive({ #this is electiric vehicle projections
   return(Tech_Frac_Vision_temp)
 })
 
-
+# observeEvent(input$state_input,{
+#   browser()
+# })
 
 #passenger rail ----
-observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it in this indeterminate form for now
-  req('')
+passenger_rail_miles <- reactive({ #not sure where we need this so I'm leaving it in this indeterminate form for now
+  #req('')
   state_ch <- rvs$Baseline$state
   #browser()
   #passenger rail inputs
@@ -234,16 +236,6 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
                                                         rvs$Assumptions$unit == "avg_trip_miles"] # maybe move this to advanced sorry
   
   
-  input_BTU_per_gallon_diesel <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" &
-                                                                Fuel_Factors_Baselines$units == "fuel_conversion_BTU"] # also get from advanced oops
-  input_BTU_per_kWh <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "electricity" &
-                                                      Fuel_Factors_Baselines$units == "fuel_conversion_BTU"] #3414 #From Fuel Factors/Base inputs
-  input_Diesel_CO2_kg_per_gallon <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" &
-                                                                   Fuel_Factors_Baselines$units == "fuel_carbon_content"] #9.4 #From Fuel Factors
-  input_Locomotives_CH4_gCO2eq_per_gallon <- Fuel_Factors$CH4_g_per_gallon[Fuel_Factors$fuel_type=="Diesel" & Fuel_Factors$veh_type=="Locomotives"]*Warming_Potential$GWP[Warming_Potential$Gas == "CH4"]
-  input_Locomotives_N20_gCO2eq_per_gallon <- Fuel_Factors$N20_g_per_gallon[Fuel_Factors$fuel_type=="Diesel" & Fuel_Factors$veh_type=="Locomotives"]*Warming_Potential$GWP[Warming_Potential$Gas == "N20"] 
-  
-  
   Passenger_Rail_State_Mileage <- Passenger_Rail_State_Mileage %>% 
     filter(state == state_ch)  %>%
     mutate(amtrak_miles = amtrak_riders*input_AmTrak_AvgTripLength)
@@ -254,16 +246,32 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
     Passenger_Rail = rbind(Passenger_Rail, Passenger_Rail_temp)
   }
   
+  return(Passenger_Rail)
+  })
+
+passenger_rail_fuel_factors <- reactive({
+  
+  input_BTU_per_gallon_diesel <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" &
+                                                                Fuel_Factors_Baselines$units == "fuel_conversion_BTU"] # also get from advanced oops
+  input_BTU_per_kWh <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "electricity" &
+                                                      Fuel_Factors_Baselines$units == "fuel_conversion_BTU"] #3414 #From Fuel Factors/Base inputs
+  input_Diesel_CO2_kg_per_gallon <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" &
+                                                                   Fuel_Factors_Baselines$units == "fuel_carbon_content"] #9.4 #From Fuel Factors
+  input_Locomotives_CH4_gCO2eq_per_gallon <- Fuel_Factors$CH4_g_per_gallon[Fuel_Factors$fuel_type=="Diesel" & Fuel_Factors$veh_type=="Locomotives"]*Warming_Potential$GWP[Warming_Potential$Gas == "CH4"]
+  input_Locomotives_N20_gCO2eq_per_gallon <- Fuel_Factors$N20_g_per_gallon[Fuel_Factors$fuel_type=="Diesel" & Fuel_Factors$veh_type=="Locomotives"]*Warming_Potential$GWP[Warming_Potential$Gas == "N20"] 
+  
   Passenger_Rail_FuelFactors <- Passenger_Rail_FuelFactors %>%
     mutate(Diesel_Amtrak_CO2eq = amtrak_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_gallon_diesel)*(input_Diesel_CO2_kg_per_gallon*1000+input_Locomotives_CH4_gCO2eq_per_gallon+input_Locomotives_N20_gCO2eq_per_gallon),
            Diesel_CR_CO2eq = CR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_gallon_diesel)*(input_Diesel_CO2_kg_per_gallon*1000+input_Locomotives_CH4_gCO2eq_per_gallon+input_Locomotives_N20_gCO2eq_per_gallon),
            Diesel_HR_CO2eq = HR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_gallon_diesel)*(input_Diesel_CO2_kg_per_gallon*1000+input_Locomotives_CH4_gCO2eq_per_gallon+input_Locomotives_N20_gCO2eq_per_gallon),
            Diesel_LR_CO2eq = LR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_gallon_diesel)*(input_Diesel_CO2_kg_per_gallon*1000+input_Locomotives_CH4_gCO2eq_per_gallon+input_Locomotives_N20_gCO2eq_per_gallon)) %>%
-    left_join(eemrate() %>% select(year, electricity_carbon_content) %>% filter(duplicated(.)))%>%
+    left_join(electricity_emrate() %>% select(year, electricity_carbon_content) %>% filter(duplicated(.)))%>%
     mutate(Electric_Amtrak_CO2eq = amtrak_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content,
            Electric_CR_CO2eq = CR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content,
            Electric_HR_CO2eq = HR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content,
            Electric_LR_CO2eq = LR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content)
+  
+  return(Passenger_Rail_FuelFactors)
 })
 
 #Freight Rail ----
