@@ -40,8 +40,14 @@ veh_subtype_to_fuel_type_mapping <- c("Gasoline ICE" ~ "Gasoline",
 PHEV_fuel_types <- c("SI PHEV 10","SI PHEV 40","Diesel PHEV","Gasoline PHEV")
 ev_fuel_types <- c("EV100","EV200","EV300","SI PHEV 10","SI PHEV 40", "FCV", "EV", "Gasoline PHEV", "Diesel PHEV")
 
-
-
+get_horizon_years <- function(df, my_rv) { ### converts from horizon_year_1 to 2025 for example. Gui 1/22/24
+  if (!("year" %in% colnames(df))) {stop("Year not a column of this dataframe")}
+  df %>%
+    mutate(year = case_match(year, 
+                             "horizon_year_1" ~ my_rv[["Baseline"]][["horizon_year_1"]],
+                             "horizon_year_2" ~ my_rv[["Baseline"]][["horizon_year_1"]],
+                             "horizon_year_3" ~ my_rv[["Baseline"]][["horizon_year_1"]]))
+}
 
 convert_to_nested_list <- function(df){ 
   # Create an empty list
@@ -186,11 +192,11 @@ Fuel_Factors_Weighted_raw <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fue
 
 #I realized this was misatributing the weighting to heavy duty trucks instead of medium duty see the excel tool
 # Fuel_Factors_Weighted_raw <-
-#   Fuel_Factors %>% # Different veh types will need different weighting strategies, will likely need to make reactive
-#   group_by(veh_type) %>%
-#   summarize(NOx_g_per_veh_mi_avg = sum(hd_weight * NOx_g_per_veh_mi, na.rm = T),
-#             PM25_exhaust_avg = sum(hd_weight * PM25_exhaust, na.rm = T),
-#             PM25_tires_brakes_avg = sum(hd_weight * PM25_tires_brakes, na.rm = T)) 
+  # Fuel_Factors %>% # Different veh types will need different weighting strategies, will likely need to make reactive
+  # group_by(veh_type) %>%
+  # summarize(NOx_g_per_veh_mi_avg = sum(hd_weight * NOx_g_per_veh_mi, na.rm = T),
+  #           PM25_exhaust_avg = sum(hd_weight * PM25_exhaust, na.rm = T),
+  #           PM25_tires_brakes_avg = sum(hd_weight * PM25_tires_brakes, na.rm = T))
 
 EV_Forecast <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "EV_Forecast")
 

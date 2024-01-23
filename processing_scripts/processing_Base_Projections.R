@@ -391,7 +391,6 @@ Fuel_Factors_Weighted <- reactive({
   return(Fuel_Factors_Weighted)
   })
 
-
 ### VMT Tables ----------------
 ### these tables don't have to be show to the user, but it is helpful to have them as reactive tables
 
@@ -439,7 +438,7 @@ VMT_Forecast <- reactive({
   
 })
 
-#THe following are category breakouts
+### category breakouts needed for EVSE -------
 VMT_Type_Tech_MDHD <- reactive({
   VMT_Type_Tech_Base() %>%
     filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks")) %>% 
@@ -477,18 +476,49 @@ VMT_Type_Tech_Electric_LDV <- reactive({
 
 VMT_Type_Tech_Electric_MDHD <- reactive({
   VMT_Type_Tech_Base() %>%
-    filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks") & veh_subtype == "Electric") %>% 
+    filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks") & veh_subtype == "EV") %>% 
     summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
               .by = year) %>%
     mutate(veh_category = "Electric MDHD")
 })
 
-# # EmRate_by_Tech category average 
-# # Qi: the electricity_carbon_content value is a little bit off, need to check
-# EmRate_by_Tech_LDV_avg <- reactive({
-#   EmRate_by_Tech()  %>% filter(veh_type %in% c('Passenger Cars','Light Duty Trucks')) %>% 
-#   left_join(VMT_Type_Tech_LDV(), by = c('veh_type','veh_subtype',"year")) %>%
-#   mutate(LDV_avg = emission_rate* state_pct_of_category) %>% 
-#   group_by(year) %>% summarise(LDV_avg= sum(LDV_avg))
-# 
-# })
+### EmRate_by_Tech category average 
+
+EmRate_Conventional_LDV <- reactive({
+  EmRate_by_Tech() %>% 
+    filter(veh_subtype == "Gasoline ICE", veh_type %in% c("Passenger Cars", "Light Duty Trucks")) %>%
+    select(veh_type, veh_subtype, year, emission_rate) %>%
+    left_join(VMT_Type_Tech_Conventional_LDV(), by = join_by(veh_type, veh_subtype, year), relationship = "one-to-one") %>%
+    summarize("emrate_category_avg" = weighted.mean(emission_rate, state_pct_of_category), .by = c("veh_category", "year"))
+})
+
+EmRate_Conventional_MDHD <- reactive({
+  EmRate_by_Tech() %>% 
+    filter((veh_type == "Medium Duty Trucks" & veh_subtype == "Diesel ICE") |
+             (veh_type == "Medium Duty Trucks" & veh_subtype == "Gasoline ICE") | 
+             (veh_type == "Heavy Duty Trucks" & veh_subtype == "Diesel ICE")) %>%
+    select(veh_type, veh_subtype, year, emission_rate) %>%
+    left_join(VMT_Type_Tech_Conventional_MDHD(), by = join_by(veh_type, veh_subtype, year), relationship = "one-to-one") %>%
+    summarize("emrate_category_avg" = weighted.mean(emission_rate, state_pct_of_category), .by = c("veh_category", "year"))
+})
+
+EmRate_Electric_LDV <- reactive({ ### excel doesn't grab all electric vehicles - but I think it should be this way?
+  EmRate_by_Tech() %>% 
+    filter(veh_subtype %in% c("EV100", "EV200", "EV300")) %>%
+    select(veh_type, veh_subtype, year, emission_rate) %>%
+    left_join(VMT_Type_Tech_Electric_LDV(), by = join_by(veh_type, veh_subtype, year), relationship = "one-to-one") %>%
+    summarize("emrate_category_avg" = weighted.mean(emission_rate, state_pct_of_category), .by = c("veh_category", "year"))
+})
+
+
+# electric mdhd # has problem
+EmRate_Electric_MDHD <- reactive({
+  EmRate_by_Tech() %>% 
+    filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks") & veh_subtype == "EV") %>%
+    select(veh_type, veh_subtype, year, emission_rate) %>%
+    left_join(VMT_Type_Tech_Electric_MDHD(), by = join_by(veh_type, veh_subtype, year), relationship = "one-to-one") %>%
+    summarize("emrate_category_avg" = weighted.mean(emission_rate, state_pct_of_category), .by = c("veh_category", "year"))
+})
+
+## Qi: the electricity_carbon_content value is a little bit off, need to check
+

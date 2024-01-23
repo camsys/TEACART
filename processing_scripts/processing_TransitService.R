@@ -221,11 +221,11 @@ library(tidyverse)
 # #end of transit service strategy calculation
 
 
-#output_TransitService <- reactive({
+output_TransitService <- reactive({
 
-   observeEvent(input$state_input,{
+   # observeEvent(input$state_input,{
   
-  browser()
+  # browser()
   # req(EmRate_by_Tech())
   # req(VMT_Type_Tech_Base())
   # req(rvs)
