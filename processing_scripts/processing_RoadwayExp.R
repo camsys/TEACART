@@ -197,11 +197,11 @@ cost_output_RoadwayExp <- reactive({
   temp_output <- temp_output %>% left_join(existing_lanes_df) %>% 
     mutate(minutes_delay_saved_perVMT = 0.2*(1-VMT_elasticity)/(1-0.67),
            total_change_VMT = VMTperLaneMile*300*VMT_elasticity,
-           total_change_MTCO2 = (VMTperLaneMile*300*existing_lanes*.5)*(minutes_delay_saved_perVMT/60)*road_class_delay_emrate+VMTperLaneMile*300*VMT_elasticity*light_duty_automobile_emrate, #I think this eq is wrong in excel
-           total_change_mtnox = total_change_MTCO2*NOx_LDV,
-           total_change_pm25 = total_change_MTCO2*(PM25_LDV_exhaust+PM25_LDV_tirebrakes),
+           total_change_gGHG = (VMTperLaneMile*300*existing_lanes*.5)*(minutes_delay_saved_perVMT/60)*road_class_delay_emrate+VMTperLaneMile*300*VMT_elasticity*light_duty_automobile_emrate, #I think this eq is wrong in excel
+           total_change_gnox = total_change_MTCO2*NOx_LDV,
+           total_change_gpm25 = total_change_MTCO2*(PM25_LDV_exhaust+PM25_LDV_tirebrakes),
            total_change_newtrips = 0,
-           unit = "new lane") %>%
+           unit = "new_lane") %>%
     select(year, area_type, road_class, total_change_MTCO2, total_change_VMT, total_change_mtnox, total_change_pm25, total_change_newtrips)
   
   return(temp_output)

@@ -6,74 +6,115 @@ library(tidyverse)
 ### READ -----------------------------------------------------------------------
 
 ## strategy OPS
-Strategy_Parameters <-
-  read_csv('Data Extracts/Strategy_Parameters.csv')  |>  
-  select(-custom, -strategy) |>  ### strategy is not needed to uniquely identify parameter
-  reshape2::melt() |> 
-  reshape2::acast(list("subcat", "parameters"))
+# Strategy_Parameters <-
+#   read_csv('Data Extracts/Strategy_Parameters.csv')  |>  
+#   select(-custom, -strategy) |>  ### strategy is not needed to uniquely identify parameter
+#   reshape2::melt() |> 
+#   reshape2::acast(list("subcat", "parameters"))
+# 
+# capital_inputs_ops <-
+#   read_excel("TEACART_v1.8_Local_shiny.xlsx",
+#              sheet = "Capital Project Inputs", range = "B84:J87", 
+#              col_names = c("improvement_type", "facility_area_type", "a", "b", "c", "d", "2025", "2030", "2050")) |> 
+#   select(-(3:6)) |> 
+#   pivot_longer(cols = !(improvement_type:facility_area_type), names_to = "year", values_to = "total_signals")
+observeEvent(input$state_input, {
+  
+  browser()
+  
+EmRate_by_Tech <- EmRate_by_Tech() %>%
+  mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>% 
+  select(year, 
+         veh_type, veh_subtype, apportionment, uses_electiricity,
+         veh_supertype, emission_rate)
 
-capital_inputs_ops <-
-  read_excel("TEACART_v1.8_Local_shiny.xlsx",
-             sheet = "Capital Project Inputs", range = "B84:J87", 
-             col_names = c("improvement_type", "facility_area_type", "a", "b", "c", "d", "2025", "2030", "2050")) |> 
-  select(-(3:6)) |> 
-  pivot_longer(cols = !(improvement_type:facility_area_type), names_to = "year", values_to = "total_signals")
+VMT_Type_Tech_Base <- VMT_Type_Tech_Base()  %>%
+  mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
+  select(year, veh_type, veh_subtype,
+         veh_supertype, mmt_by_subtype)
 
-corridor_length <- 1
-signals_per_mile <- 2
-corridor_travel_time_change <- -0.12
-fuel_factor_gasoline <- 7.94
-fuel_factor_diesel <- 9.4
-fuel_factor_ldv_weighted <- c("nox" = 0.235,
-                              "pm25_exhaust" = 0.005,
-                              "pm25_tiresBrakes" = 0.004)
-roundabout_effect <- -0.0665628668793441
-emrate_mediumHeavy_2025 <- 982.773
-emrate_mediumHeavy_2030 <- 885.522
-emrate_mediumHeavy_2050 <- 738.655
-emrate_light <- c("2025" = 311.451,
-                  "2030" = 289.950,
-                  "2050" = 256.867)
-emrate_mediumHeavy <- c("2025" = 982.773,
-                        "2030" = 885.522,
-                        "2050" = 738.655)
-emrate_improvement_factor_light <- c("2025" = 0.9418909,
-                                     "2030" = 0.8768672,
-                                     "2050" = 0.7768180)
-emrate_improvement_factor_mediumHeavy <- c("2025" = 0.9392860,
-                                           "2030" = 0.8463381,
-                                           "2050" = 0.7059704)
-emrate_improvement_factor_ldv <- c("2025" = 0.950296506,
-                                   "2030" = 0.884692579,
-                                   "2050" = 0.783750527)
-emrate_nox_ratio <- 0.000710
-emrate_pm25_ratio <- 0.000015424
-electricity_pct_of_emissions <- c("2025" = 0.008212732,
-                                  "2030" = 0.012639971,
-                                  "2050" = 0.006652690)
+temp_em_df_delay_improvement <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by = c("year","veh_type","veh_subtype", "veh_supertype")) %>% 
+  group_by(year, veh_supertype) %>%
+  summarise(cat_avg = sum(emission_rate*mmt_by_subtype))
 
-### REFERENCE EXCEL ------------------------------------------------------------
-# H8 = fuel_factor_gasoline
-# H9 = fuel_factor_diesel
-# C36 = cuml_2025
-# C47 = Strategy_Parameters["Average AADT", "Principal Arterial - Urban"]+
-#       (Strategy_Parameters["Average AADT", "Principal Arterial - Urban"]*
-#       corridor_travel_time_change*Strategy_Parameters["Induced Travel Elasticities", "VMT w/r/t travel time (urban)"])
-# C38 = corridor_length
-# C39 = signals_per_mile
-# C14 = C43 = Strategy_Parameters["Average AADT", "Principal Arterial - Urban"]
-# c46 = C28 = Strategy_Parameters["Induced Travel Elasticities", "VMT w/r/t travel time (urban)"]
-# C49 = C36*(C47-C43)*(C38/C39)*365
-# C45 = C43 * C44
-# C44 = -(C38/C40) + (C38/C42)
-# C40 = C18 = Strategy_Parameters["Travel Speed (mph)", "Principal Arterial - Rural"]
-# C42 = C18/(1+C41)
-# C41 = corridor_travel_time_change
-# C11 = C9*C23+C8*(1-C23)
-# C9 = H9 * emrate_improvement_factor_mediumHeavy_2025
-# C23 = Strategy_Parameters["Percent Truck Traffic (%)", "Arterial"]
-# C8 = H8 * emrate_improvement_factor_light_2025
-# C103 = total_change_vmt
+# temp_em_df <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by = c("year","veh_type","veh_subtype", "veh_supertype")) %>% 
+#   group_by(year, veh_supertype) %>%
+#   summarise(cat_avg = sum(emission_rate*mmt_by_subtype, na.rm = TRUE))
+
+temp_em_df <- CO2e_Category_Averages()
+
+temp_em_df_sub <- e_emmissions_apportionment() %>% select(-veh_supertype)
+
+
+#inputs ------
+
+#user inputs
+project_df_input <- make_project_table_cumulative(rvs$Projects,
+                                                  table_no = 14,
+                                                  cols = c('area_type','road_class'),
+                                                  years_list = c(rvs$Baseline$horizon_year_1,
+                                                                 rvs$Baseline$horizon_year_2,
+                                                                 rvs$Baseline$horizon_year_3))
+
+#hardcode inputs - I wonder if these should be part of the assumptions? or Capital Inputs?
+car_gallons_hour_delay = 0.4 # this is a hardcoded unmutable (hu) input
+truck_gallons_hour_delay = 1.7 # this is a hu input
+
+#fuel factors inputs
+gasoline_CO2_kg_per_gallon = Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type =="Gasoline" & Fuel_Factors_Baselines$units == "fuel_carbon_content"] #7.94 #this is a hu input from Fuel Factors tab
+diesel_CO2_kg_per_gallon = Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type =="Diesel" & Fuel_Factors_Baselines$units == "fuel_carbon_content"] #9.4 #this is a hu input from Fuel Factors tab
+
+ff_weighted_temp <- Fuel_Factors_Weighted()
+NOx_LDV <- ff_weighted_temp$NOx_g_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
+PM25_LDV_exhaust <-ff_weighted_temp$PM25_exhaust_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
+PM25_LDV_tirebrakes <-ff_weighted_temp$PM25_tires_brakes_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
+
+ptco2_temp <- pollutant_t_CO2ratio()
+NOx_CO2_ratio <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Light Duty Vehicles"]
+PM25_CO2_ratio <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Light Duty Vehicles"]
+
+#functions ----
+
+#create dataframe
+temp_output <- data.frame(year = c(rvs$Baseline$horizon_year_1, rvs$Baseline$horizon_year_2, rvs$Baseline$horizon_year_3)) ### Pulls horizon years
+temp_output <- expand(temp_output, year, area_type = c("Urban", "Rural"), road_class = c("Principal Arterial", "Freeway"))
+
+#add percent truck traffic
+temp_output$percent_truck_traffic <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"])
+
+temp_output$light_duty_automobile_emrate <- sapply(temp_output$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])
+temp_output$medium_heavy_duty_truck_emrate <- sapply(temp_output$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"])
+
+temp_output$ldv_delay_emrate <- sapply(temp_output$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])*gasoline_CO2_kg_per_gallon*1000*car_gallons_hour_delay
+temp_output$mhdv_delay_emrate <- sapply(temp_output$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"])*diesel_CO2_kg_per_gallon*1000*truck_gallons_hour_delay
+temp_output<-temp_output %>%
+  mutate(road_class_delay_emrate = ldv_delay_emrate*(1-percent_truck_traffic)+mhdv_delay_emrate*percent_truck_traffic)
+
+temp_output$ldv_impf <- sapply(temp_output$year, function(x) temp_em_df$base_impf [temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])
+
+
+temp_output$VMT_elasticity <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"])
+temp_output$traveltime_elasticity <- sapply(temp_output$area_type, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x & rvs$Assumptions$unit == "VMT_elasticity_trav_time"])
+
+#need to change user input to principal arterial
+tspeed_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "travel_speed_mph"]}
+temp_output$tspeed = apply(temp_output, 1, tspeed_fun, c1 = "area_type", c2 = "road_class")
+AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "VMT_per_lane_mile"]}
+temp_output$VMTperLaneMile = apply(temp_output, 1, AADT_fun, c1 = "area_type", c2 = "road_class")
+
+project_signal <- make_project_table_cumulative(rvs$Projects[rvs$Projects$unit == "new_retimed_signal",],
+                              table_no = 9, 
+                              cols = c("area_type","road_class"), 
+                              years_list = c(rvs$Baseline$horizon_year_1,
+                                             rvs$Baseline$horizon_year_2,
+                                             rvs$Baseline$horizon_year_3))
+
+project_roundabout <- make_project_table_cumulative(rvs$Projects[rvs$Projects$unit == "new_roundabouts",],
+                                                table_no = 9, 
+                                                cols = c("area_type","road_class"),  
+                                                years_list = c(rvs$Baseline$horizon_year_1,
+                                                               rvs$Baseline$horizon_year_2,
+                                                               rvs$Baseline$horizon_year_3))
 
 ### FUNCTIONS ------------------------------------------------------------------
 
@@ -160,3 +201,5 @@ output_summarized <-
 #                 .names = "vmt_change_{.col}")
 #   ) %>%
 #   mutate(delay_reduction)
+
+})

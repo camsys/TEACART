@@ -4,9 +4,10 @@
 make_project_table_cumulative <- function(projects_df, table_no, cols = NULL, years_list = c(2025,2030,2050)){
   
   projects_df %>%
+  #rvs$Projects[rvs$Projects$table_no_ui == 9&rvs$Projects$unit == "new_retimed_signal",] %>% View()
     filter(table_no_ui == table_no) %>%
     select(cols, "value", "year") %>%
-    pivot_wider(values_from = value, names_from = year) %>% 
+    pivot_wider(values_from = value, names_from = year) %>% View()
     mutate(horizon_year_2 = horizon_year_1 + horizon_year_2) %>%
     mutate(horizon_year_3 = horizon_year_2 + horizon_year_3) %>%
     pivot_longer(cols = starts_with("horizon_year_"), names_to = "year",values_to = "value") %>%
