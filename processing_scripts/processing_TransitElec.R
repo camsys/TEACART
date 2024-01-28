@@ -78,7 +78,7 @@
 # 
 
 
-output_bikped <- reactive({
+output_transitElec <- reactive({
 #  observeEvent(input$state_input,{
   
     #browser()
@@ -146,7 +146,7 @@ output_bikped <- reactive({
       select(-table_no_ui,-unit,-category, -table)
      
    
-    output_transitelect <- Capital_Project_Inputs_transit_elec %>%
+    transitelect_output <- Capital_Project_Inputs_transit_elec %>%
       left_join(Assumptions_transitelect,by = c('area_type','transit_mode')) %>%
       rename(avg_pax_mi_per_veh_mi = value) %>% 
       select(-table_no_ui,-unit,-category, - table, - transit_category) %>%
@@ -181,64 +181,7 @@ output_bikped <- reactive({
                                    sum(.$affected_VRM[.$transit_mode == 'Demand Response' & .$year == rvs$Baseline$horizon_year_3])*unique(na.omit(.$onroad_elect_emrate[.$merge_col == 'Demand Response: Electric' & .$year == rvs$Baseline$horizon_year_3]))/1000000)) %>%
       mutate(total_change_mtnox = -affected_VRM *fuelfact_MHD_NOx/1000000,
              total_change_pm25 = -affected_VRM *fuelfact_MHD_PM25/1000000)
-
-    #check
-    # result <- output_transitelect %>% group_by(year) %>%
-    #   summarise(total_change_MTCO2 = sum(na.omit(total_change_MTCO2)),
-    #             total_change_mtnox = sum(na.omit(total_change_mtnox)),
-    #             total_change_pm25 = sum(na.omit(total_change_pm25)))
-
     
-
-    
-    
-    # Capital_Project_Inputs_transit_elec <- read.csv('./Data Extracts/Capital_Project_Inputs_transit_elec.csv') %>%
-      #   mutate(VOMS_2050 = VOMS_2025 + VOMS_2030 + VOMS_2050,
-      #          VOMS_2030 = VOMS_2025 + VOMS_2030) %>% # calculate cumulative value
-      #   pivot_longer(cols = !(category:typefull), names_to = c("year"),names_pattern = "_(\\d+)", values_to = 'VOMS') %>%
-  
-      #   left_join(.,Strategy_Parameters[Strategy_Parameters$subcat == 'Average pax-mi per vehicle-mile (load factor)', c('parameters','selected_value')], by = c('typefull' = 'parameters')) %>%
-      #   left_join(.,elect_emrate, by = 'year') %>%
-      #   rename(pax_mi_fact = selected_value) %>% 
-      #   mutate(merge_col = paste0(veh_type, ": ",vehicle_fuel_type)) %>%
-    
-      #   left_join(.,Strategy_Parameters[Strategy_Parameters$subcat == 'On-Road Vehicle Fuel Economy (mpgge)', c('parameters','selected_value')], by = c( 'merge_col' = 'parameters')) %>%
-      #   rename(fuel_econ = selected_value) %>%
-      #   mutate(allyear_emrate = case_when(merge_col == 'Bus: Diesel' ~ 1/fuel_econ * fuelconv_ditoga * fuelfact_disblend*1000 + fuelfact_disCH4 +  fuelfact_disN20,
-      #                                     merge_col == 'Bus: CNG' ~ 1/fuel_econ * fuelconv_cfCNGtoGas * fuelfact_cng * 1000 + fuelfact_cngCH4 + fuelfact_cngN20,
-    #                                     merge_col == 'Demand Response: Gasoline' ~ 1/fuel_econ * fuelfact_gasblend * 1000 + fuelfact_gasCH4 + fuelfact_gasN20,
-    #                                     merge_col == 'Demand Response: CNG' ~ 1/fuel_econ *fuelconv_cfCNGtoGas * fuelfact_cng * 1000 + fuelfact_cngCH4 + fuelfact_cngN20),
-    #          onroad_elect_emrate = case_when(merge_col %in% c('Bus: Electric','Demand Response: Electric') ~ 1/fuel_econ *fuelconv_kwHtoga * elect_emrate)) %>%
-    #left_join(., Strategy_Parameters[Strategy_Parameters$subcat == 'Vehicle Revenue Mile per Vehicle', c('parameters','selected_value')], by = c('typefull' = 'parameters')) %>%
-    #   rename(avg_vrm = selected_value) %>%
-    
-    #   mutate(affected_VRM = VOMS * avg_vrm,
-    #          ## calculate CO2 change
-    #          total_CO2_change = -affected_VRM * allyear_emrate/1000000) %>%
-    
-    #   add_row(category = 'Total: Bus CO2 change', 
-    #           year = c('2025','2030','2050'),
-    #           total_CO2_change = c(sum(.$affected_VRM[grepl("Bus",.$typefull) & .$year == '2025'])*na.omit(.$onroad_elect_emrate[.$merge_col == 'Bus: Electric' & .$year == '2025']) /1000000,
-    #                                sum(.$affected_VRM[grepl("Bus",.$typefull) & .$year == '2030'])*na.omit(.$onroad_elect_emrate[.$merge_col == 'Bus: Electric' & .$year == '2030']) /1000000,
-    #                                sum(.$affected_VRM[grepl("Bus",.$typefull) & .$year == '2050'])*na.omit(.$onroad_elect_emrate[.$merge_col == 'Bus: Electric' & .$year == '2050']) /1000000)) %>%
-    #   add_row(category = 'Total: Demand Response change CO2 change',
-    #           year = c('2025','2030','2050'),
-    #           total_CO2_change = c(sum(.$affected_VRM[grepl("Demand Response",.$typefull) & .$year == '2025'])*na.omit(.$onroad_elect_emrate[.$merge_col == 'Demand Response: Electric' & .$year == '2025'])/1000000,
-    #                                sum(.$affected_VRM[grepl("Demand Response",.$typefull) & .$year == '2030'])*na.omit(.$onroad_elect_emrate[.$merge_col == 'Demand Response: Electric' & .$year == '2030'])/1000000,
-    #                                sum(.$affected_VRM[grepl("Demand Response",.$typefull) & .$year == '2050'])*na.omit(.$onroad_elect_emrate[.$merge_col == 'Demand Response: Electric' & .$year == '2050'])/1000000)) %>%
-    #   # calcualte total NOX change, this is calcualted as a sum
-    #   mutate(total_NOx_change = 0,
-    #          total_PM25_change = 0) %>% # placeholders
-    #   add_row(category = "Totals: Total Change NOx PM25",
-    #           year = c('2025','2030','2050'),
-    #           total_NOx_change = c(-sum(.$affected_VRM[.$year == '2025'], na.rm = TRUE)*fuelfact_MHD_NOx/1000000,
-    #                                -sum(.$affected_VRM[.$year == '2030'], na.rm = TRUE)*fuelfact_MHD_NOx/1000000,
-    #                                -sum(.$affected_VRM[.$year == '2050'], na.rm = TRUE)*fuelfact_MHD_NOx/1000000),
-    #           total_PM25_change = c(-sum(.$affected_VRM[.$year == '2025'], na.rm = TRUE)*fuelfact_MHD_PM25/1000000,
-    #                                 -sum(.$affected_VRM[.$year == '2030'], na.rm = TRUE)*fuelfact_MHD_PM25/1000000,
-    #                                 -sum(.$affected_VRM[.$year == '2050'], na.rm = TRUE)*fuelfact_MHD_PM25/1000000)) %>%
-    #   mutate_if(is.numeric, list(~replace_na(., 0)))
-    # #end of transit service strategy calculation
-    
+    return(transitelect_output)
     
     })
