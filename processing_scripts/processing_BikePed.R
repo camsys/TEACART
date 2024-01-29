@@ -3,7 +3,7 @@ output_bikped <- reactive({
   #observeEvent(input$state_input,{
   
    
-  # browser()
+   #browser()
   req(EmRate_by_Tech())
   req(VMT_Type_Tech_Base())
   req(rvs)
@@ -21,11 +21,13 @@ output_bikped <- reactive({
   
   # calculate the Displaced Auto mile/yr
   Bicycle_and_Pedestrian_base <- Bike_Ped %>% 
-    mutate(annual_displaced_auto_miles = case_when(area_type == 'Core' ~ -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Core ( greater than 10,000 ppsm)']*
-                                                                             Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
-                                                                                   daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
-                                                                             Assumptions_bikdped$value[Assumptions_bikdped$element == 'Core ( greater than 10,000 ppsm)'])*
-                                                     Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor'],
+    mutate(
+      annual_displaced_auto_miles = 
+        case_when(area_type == 'Core' ~ -(daily_new_bicyclists*
+                                            Assumptions_bikdped$value[Assumptions_bikdped$element == 'Core ( greater than 10,000 ppsm)']*
+                                            Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
+                                            daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
+                                            Assumptions_bikdped$value[Assumptions_bikdped$element == 'Core ( greater than 10,000 ppsm)'])*Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor'],
                                                   area_type == 'Urban' ~  -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Urban (4,000 - 10,000 ppsm)']*
                                                                               Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
                                                                               daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
@@ -68,10 +70,63 @@ output_bikped <- reactive({
 }
 )
 
+# observeEvent(input$state_input,{
+#   browser()
+# })
+
+cost_output_bikeped <- reactive({
+  Assumptions_bikdped <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 1,] 
+  
+  emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light Duty Vehicles')
+  
+  fuel_factorNox <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
+  fuel_factorPMe <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
+  fuel_factorPMtb <- Fuel_Factors_Weighted()$PM25_tires_brakes_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
+  
+  # calculate the Displaced Auto mile/yr
+  Bicycle_and_Pedestrian_base <- Bike_Ped %>% 
+    mutate(annual_displaced_auto_miles = case_when(area_type == 'Core' ~ -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Core ( greater than 10,000 ppsm)']*
+                                                                             Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
+                                                                             daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
+                                                                             Assumptions_bikdped$value[Assumptions_bikdped$element == 'Core ( greater than 10,000 ppsm)'])*
+                                                     Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor'],
+                                                   area_type == 'Urban' ~  -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Urban (4,000 - 10,000 ppsm)']*
+                                                                               Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
+                                                                               daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
+                                                                               Assumptions_bikdped$value[Assumptions_bikdped$element == 'Urban (4,000 - 10,000 ppsm)'])*
+                                                     Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor'],
+                                                   area_type == 'Suburban' ~  -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Suburban (500 - 4,000 ppsm)']*
+                                                                                  Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
+                                                                                  daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
+                                                                                  Assumptions_bikdped$value[Assumptions_bikdped$element == 'Suburban (500 - 4,000 ppsm)'])*
+                                                     Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor'],
+                                                   area_type == 'Rural' ~  -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Rural ( less than 500 ppsm)']*
+                                                                               Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
+                                                                               daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
+                                                                               Assumptions_bikdped$value[Assumptions_bikdped$element == 'Rural ( less than 500 ppsm)'])*
+                                                     Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor']
+    )) 
+  
+  output_bikeped_cost <- Bicycle_and_Pedestrian_base %>%
+    mutate(total_change_gGHG = annual_displaced_auto_miles * emrate_by_tech_ldv$CO2e_millions[emrate_by_tech_ldv$year == input$horizon_year_1],  # this number is little bit off dur to discrepencies in emrate by tech ldv
+           total_change_VMT = annual_displaced_auto_miles,
+           total_change_gnox = annual_displaced_auto_miles * emrate_by_tech_ldv$base_impf[emrate_by_tech_ldv$year == input$horizon_year_1] * fuel_factorNox,
+           total_change_gpm25 = annual_displaced_auto_miles * emrate_by_tech_ldv$base_impf[emrate_by_tech_ldv$year == input$horizon_year_1] * fuel_factorPMe + 
+             fuel_factorPMtb * annual_displaced_auto_miles,
+           total_change_newtrips = daily_new_bicyclists  + daily_new_walkers )
+  
+  return(output_bikeped_cost)
+})
+
+# 
+# total_change_VMT = VMTperLaneMile*300*VMT_elasticity,
+# total_change_gGHG = (VMTperLaneMile*300*existing_lanes*.5)*(minutes_delay_saved_perVMT/60)*road_class_delay_emrate+VMTperLaneMile*300*VMT_elasticity*light_duty_automobile_emrate, #I think this eq is wrong in excel
+# total_change_gnox = total_change_MTCO2*NOx_LDV,
+# total_change_gpm25 = total_change_MTCO2*(PM25_LDV_exhaust+PM25_LDV_tirebrakes),
+# 
 
 
-
-library(dplyr)
+#library(dplyr)
 # library(tidyverse)
 
 # ## strategy 1: bicycle and pedestrian:

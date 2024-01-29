@@ -300,9 +300,10 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
 })
 
 #Public Transit----
-observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it in this indeterminate form for now
+
+Public_Transit <- reactive({
+#observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it in this indeterminate form for now
   
-  req('')
   input_MB_app_diesel<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Bus" & rvs$Advanced$fuel_type == "Diesel"] #these are apportionment for each public transit fueel type in baseline parameters
   input_MB_app_CNG<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Bus" & rvs$Advanced$fuel_type == "CNG"]
   input_MB_app_Electric<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Bus" & rvs$Advanced$fuel_type == "Electric"]
@@ -334,7 +335,8 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
                                                                          Fuel_Factors$veh_type == "Heavy Duty Trucks"]#0.238 From fuel Factors
   input_HeavyDutryTruck_Diesel_NOX_gCO2e_per_mile <- Fuel_Factors$GWP_N20_g_per_mi[Fuel_Factors$fuel_type == "Diesel" &
                                                                                      Fuel_Factors$veh_type == "Heavy Duty Trucks"] #12.844
-
+  input_Diesel_CO2_kg_per_gallon <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" &
+                                                                   Fuel_Factors_Baselines$units == "fuel_carbon_content"] #9.4 #From Fuel Factors
   state_ch <- rvs$Baseline$state
   
   Public_Transit <- Public_Transit_data %>%
@@ -347,7 +349,7 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
                            }
   
   Public_Transit <- Public_Transit %>%
-    left_join(eemrate() %>% select(year, electricity_carbon_content) %>% filter(duplicated(.))) %>% #the filter duplciated is just removing different vehicle types with the same values
+    left_join(eemrate %>% select(year, electricity_carbon_content) %>% filter(duplicated(.))) %>% #the filter duplciated is just removing different vehicle types with the same values
     mutate(MB_diesel_emintensity = (1/MB_diesel_mpgge)*input_gal_diesel_per_gasoline_eq*input_Diesel_CO2_kg_per_gallon*1000 + input_HeavyDutyTruck_Diesel_CH4_gCO2e_per_mile + input_HeavyDutryTruck_Diesel_NOX_gCO2e_per_mile,
            MB_cng_emintensity = (1/MB_cng_mpgge),
            MB_electric_emintensity = (1/MB_electric_mpgge)*electricity_carbon_content,
@@ -355,7 +357,7 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
            DR_cng_emintensity = (1/DR_cng_mpgge),
            DR_electric_emintensity = (1/DR_electric_mpgge)*electricity_carbon_content ,
            CR_diesel_emintensity = (1/CR_diesel_mpgge),
-           CR_CNG_emintensity =  (1/CR_CNG_mpgge),
+           CR_CNG_emintensity =  (1/CR_cng_mpgge),
            CR_electric_emintensity =  (1/CR_electric_mpgge)*electricity_carbon_content
            ) %>%
     mutate(MB_Diesel_Emrate = MB_revenue_miles) %>%
@@ -365,7 +367,13 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
            Electric_HR_CO2eq = HR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content,
            Electric_LR_CO2eq = LR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content)
   
+  return(Public_Transit)
+  
 })
+
+# observeEvent(input$state_input,{
+#   browser()
+# })
 
 #Fuel Factor Weighted ----
 Fuel_Factors_Weighted <- reactive({
