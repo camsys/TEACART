@@ -95,13 +95,13 @@
 
 ### REACTIVE ----------
 
-observeEvent(list(EmRate_by_Tech(), VMT_Forecast()), { ### uncomment this line and browser and comment below to test!
-# output_EVSE <- reactive({
-  browser()
+# observeEvent(list(EmRate_by_Tech(), VMT_Forecast()), { ### uncomment this line and browser and comment below to test!
+output_EVSE <- reactive({
+  # browser()
   elasticities_by_port_type <- #strategy_params_evse
     rvs$Assumptions %>% 
     filter(table == "EV Charging Infrastructure") %>% 
-    select(DCFC_level, unit, value) %>% 
+    select(charge_port_detail, unit, value) %>% 
     pivot_wider(names_from = "unit", values_from = "value")
   
   capital_inputs <-
@@ -119,7 +119,7 @@ observeEvent(list(EmRate_by_Tech(), VMT_Forecast()), { ### uncomment this line a
   
   Stock <- Stock_Type %>% filter(year %in% c(rvs$Baseline$horizon_year_1, rvs$Baseline$horizon_year_2, rvs$Baseline$horizon_year_3)) ## annual miles
   
-  CalculatedPorts <- capital_inputs %>% left_join(elasticities_by_port_type, by = join_by("charge_port_detail" == "DCFC_level")) %>% 
+  CalculatedPorts <- capital_inputs %>% left_join(elasticities_by_port_type, by = join_by("charge_port_detail")) %>% 
     mutate(calculated_ports = new_ports * veh_sales_elasticity_wrt_ports)
     
   vmt_affected <-

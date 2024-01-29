@@ -467,6 +467,10 @@ public_transit_emissions <- reactive({ #not sure where we need this so I'm leavi
   return(Public_Transit)
 })
 
+# observeEvent(input$state_input,{
+#   browser()
+# })
+
 #Fuel Factor Weighted ----
 Fuel_Factors_Weighted <- reactive({
   
