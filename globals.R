@@ -45,8 +45,8 @@ get_horizon_years <- function(df, my_rv) { ### converts from horizon_year_1 to 2
   df %>%
     mutate(year = case_match(year, 
                              "horizon_year_1" ~ my_rv[["Baseline"]][["horizon_year_1"]],
-                             "horizon_year_2" ~ my_rv[["Baseline"]][["horizon_year_1"]],
-                             "horizon_year_3" ~ my_rv[["Baseline"]][["horizon_year_1"]]))
+                             "horizon_year_2" ~ my_rv[["Baseline"]][["horizon_year_2"]],
+                             "horizon_year_3" ~ my_rv[["Baseline"]][["horizon_year_3"]]))
 }
 
 convert_to_nested_list <- function(df){ 
