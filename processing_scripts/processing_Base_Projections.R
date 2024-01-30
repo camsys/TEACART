@@ -168,6 +168,7 @@ pollutant_t_CO2ratio <- reactive({
 
 #Em_OnRoad_Base
 Em_OnRoad_Base <- reactive({
+  #SETH I want to change this so electricity emissions are pulled out better. Gotta check what it might effect with the group
   temp_eob<- left_join(VMT_Type_Tech_Base()[,c('veh_type','veh_subtype','year','mmt_by_subtype')],
                        EmRate_by_Tech()[,c('veh_type','veh_subtype','year','emission_rate')]) %>%
     left_join(PHEV_Em_Apportionment()[,c('veh_type','year','PHEV_elc_per_em')])
@@ -189,8 +190,34 @@ Em_OnRoad_Base <- reactive({
     mutate(MT_CO2e_upstream = value*MT_CO2e_direct) %>% select(-value)
   
   return(em_on_road_base)
-  })
-
+  }) #Check if Qi is using this
+Em_OnRoad_Base_up <- reactive({
+  #SETH I want to change this so electricity emissions are pulled out better. Gotta check what it might effect with the group
+  temp_eob<- left_join(VMT_Type_Tech_Base()[,c('veh_type','veh_subtype','year','mmt_by_subtype')],
+                       EmRate_by_Tech()[,c('veh_type','veh_subtype','year','emission_rate')]) %>%
+    left_join(PHEV_Em_Apportionment()[,c('veh_type','year','PHEV_elc_per_em')])
+  
+  temp_eob<-temp_eob %>% 
+    mutate(fuel_type = case_match(veh_subtype, !!!veh_subtype_to_fuel_type_mapping)) %>%
+    mutate(phev_bin = !(veh_subtype %in% PHEV_fuel_types)) %>%
+    mutate(uses_electiricity = as.numeric(veh_subtype %in% ev_fuel_types)) %>%
+    mutate(emissions = ifelse(phev_bin, mmt_by_subtype*emission_rate, (1-PHEV_elc_per_em)*mmt_by_subtype*emission_rate)) %>%
+    mutate(ev_emissions = ifelse(phev_bin,   uses_electiricity*mmt_by_subtype*emission_rate, uses_electiricity*(PHEV_elc_per_em)*mmt_by_subtype*emission_rate))
+  
+  em_on_road_base<-temp_eob %>%
+    group_by(veh_type,fuel_type, year) %>%
+    summarise(MT_CO2e_direct= sum(emissions),
+              MT_CO2e_electricity = sum(ev_emissions)) %>% 
+    left_join(Fuel_Factors_Baselines[Fuel_Factors_Baselines$units == "upstream_life_cycle_factor",c("fuel_type","value")]) %>%
+    mutate(MT_CO2e_upstream = value*MT_CO2e_direct) %>% select(-value) %>%
+    mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
+    group_by(veh_supertype, year) %>%
+    summarise(MT_CO2e_direct= sum(MT_CO2e_direct, na.rm = T),
+              MT_CO2e_electricity = sum(MT_CO2e_electricity, na.rm = T),
+              MT_CO2e_upstream = sum(MT_CO2e_upstream, na.rm = T)) 
+  
+  return(em_on_road_base)
+})
 #This is from Em_OnRoad_Base line 82
 e_emmissions_apportionment <- reactive({
   temp_e <- Em_OnRoad_Base() %>%
@@ -217,13 +244,10 @@ Tech_Frac_Vision <- reactive({ #this is electiric vehicle projections
   return(Tech_Frac_Vision_temp)
 })
 
-# observeEvent(input$state_input,{
-#   browser()
-# })
-
 #passenger rail ----
 passenger_rail_miles <- reactive({ #not sure where we need this so I'm leaving it in this indeterminate form for now
   #req('')
+  #The data for the amtrak riders is wronge NOTE gonna ask Qi about this
   state_ch <- rvs$Baseline$state
   #browser()
   #passenger rail inputs
@@ -265,7 +289,7 @@ passenger_rail_fuel_factors <- reactive({
            Diesel_CR_CO2eq = CR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_gallon_diesel)*(input_Diesel_CO2_kg_per_gallon*1000+input_Locomotives_CH4_gCO2eq_per_gallon+input_Locomotives_N20_gCO2eq_per_gallon),
            Diesel_HR_CO2eq = HR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_gallon_diesel)*(input_Diesel_CO2_kg_per_gallon*1000+input_Locomotives_CH4_gCO2eq_per_gallon+input_Locomotives_N20_gCO2eq_per_gallon),
            Diesel_LR_CO2eq = LR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_gallon_diesel)*(input_Diesel_CO2_kg_per_gallon*1000+input_Locomotives_CH4_gCO2eq_per_gallon+input_Locomotives_N20_gCO2eq_per_gallon)) %>%
-    left_join(electricity_emrate() %>% select(year, electricity_carbon_content) %>% filter(duplicated(.)))%>%
+    left_join(electricity_emrate() %>% select(year, electricity_carbon_content) %>% filter(!duplicated(year)))%>%
     mutate(Electric_Amtrak_CO2eq = amtrak_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content,
            Electric_CR_CO2eq = CR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content,
            Electric_HR_CO2eq = HR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content,
@@ -274,13 +298,39 @@ passenger_rail_fuel_factors <- reactive({
   return(Passenger_Rail_FuelFactors)
 })
 
+passenger_rail_emissions <- reactive({
+  temp<-passenger_rail_miles() %>% 
+    left_join(passenger_rail_fuel_factors()) %>%
+    mutate(
+      amtrak_em_diesel = amtrak_miles*Diesel_Amtrak_CO2eq/1000000,
+      amtrak_em_electricity = amtrak_miles*Electric_Amtrak_CO2eq/1000000,
+      cr_em_diesel = commuterrail_miles*Diesel_CR_CO2eq/1000000,
+      cr_em_electricity = commuterrail_miles*Electric_CR_CO2eq/1000000,
+      hr_em_diesel = heavyrail_miles*Diesel_HR_CO2eq/1000000,
+      hr_em_electricity = heavyrail_miles*Electric_HR_CO2eq/1000000,
+      lr_em_diesel = lightrail_miles*Diesel_LR_CO2eq/1000000,
+      lr_em_electricity = lightrail_miles*Electric_LR_CO2eq/1000000
+    ) %>% #filter(year == 2021) %>% 
+    mutate(
+      MT_CO2e_direct = amtrak_em_diesel*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Amtrak"&rvs$Advanced$unit == "energy_source"]=="Diesel")+
+        cr_em_diesel*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Commuter Rail"&rvs$Advanced$unit == "energy_source"]=="Diesel")+
+        hr_em_diesel*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Heavy Rail"&rvs$Advanced$unit == "energy_source"]=="Diesel")+
+        lr_em_diesel*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Light Rail"&rvs$Advanced$unit == "energy_source"]=="Diesel"),
+      MT_CO2e_electricity = amtrak_em_electricity*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Amtrak"&rvs$Advanced$unit == "energy_source"]=="Electric")+
+        cr_em_electricity*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Commuter Rail"&rvs$Advanced$unit == "energy_source"]=="Electric")+
+        hr_em_electricity*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Heavy Rail"&rvs$Advanced$unit == "energy_source"]=="Electric")+
+        lr_em_electricity*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Light Rail"&rvs$Advanced$unit == "energy_source"]=="Electric"),
+    ) %>% View()
+    select(year,MT_CO2e_direct,MT_CO2e_electricity)
+})
+
 #Freight Rail ----
-observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it in this indeterminate form for now
-  req('')
+freight_rail_emissions <- reactive({ #not sure where we need this so I'm leaving it in this indeterminate form for now
+
   state_ch <- rvs$Baseline$state
   #browser()
   #Freight rail inputs
-  input_FR_GrowthRate <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 5 & rvs$Advanced$unit == "growth_rate"]
+  input_FR_GrowthRate <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 5 & rvs$Advanced$unit == "growth_rate"] %>% as.numeric()
   input_FR_BTU_per_tonmile <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 5 & rvs$Advanced$unit == "energy_intensity"] %>% as.numeric()
   input_BTU_per_gallon_diesel <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" &
                                                                    Fuel_Factors_Baselines$units == "fuel_conversion_BTU"]
@@ -288,34 +338,40 @@ observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it 
                                                                       Fuel_Factors_Baselines$units == "fuel_carbon_content"]
 
   #need to add state filter to save memory
-  Freight_Rail <- Freight_Rail_Data
+  Freight_Rail <- Freight_Rail_Data %>%
+    filter(state == state_ch)
+  
   for(yr in 2020:2050){
-    fr_temp <- Freight_Rail_Data %>% mutate(year= yr) %>%
+    fr_temp <- Freight_Rail_Data %>% filter(state == state_ch) %>% mutate(year= yr) %>%
       mutate(FR_million_tonmiles = FR_million_tonmiles*(1+input_FR_GrowthRate)^(yr-2019))
     Freight_Rail <- rbind(Freight_Rail, fr_temp)
   }
   
-  Freight_Rail <- Freight_Rail %>% mutate(FR_Diesel_Em = input_FR_BTU_per_tonmile/input_BTU_per_gallon_diesel*input_Diesel_CO2_kg_per_gallon*1000)
+  #NOTE for Ben: The excel sheet seems to not refer to the right state's million ton-miles for this one
+  Freight_Rail <- Freight_Rail %>% 
+    mutate(em_rate = input_FR_BTU_per_tonmile/input_BTU_per_gallon_diesel*input_Diesel_CO2_kg_per_gallon*1000) %>%
+    mutate(MT_CO2e_direct = em_rate*FR_million_tonmiles) %>%
+    select(year, MT_CO2e_direct)
   
+  return(Freight_Rail)
 })
 
 #Public Transit----
-
-Public_Transit <- reactive({
-#observeEvent(input$state_input,{ #not sure where we need this so I'm leaving it in this indeterminate form for now
+public_transit_emissions <- reactive({ #not sure where we need this so I'm leaving it in this indeterminate form for now
+ 
+  #these are apportionment for each public transit fuel type in baseline parameters
+  input_MB_app_diesel<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Bus" & rvs$Advanced$fuel_type == "Diesel"] %>% as.numeric()
+  input_MB_app_CNG<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Bus" & rvs$Advanced$fuel_type == "CNG"]%>% as.numeric()
+  input_MB_app_Electric<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Bus" & rvs$Advanced$fuel_type == "Electric"]%>% as.numeric()
   
-  input_MB_app_diesel<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Bus" & rvs$Advanced$fuel_type == "Diesel"] #these are apportionment for each public transit fueel type in baseline parameters
-  input_MB_app_CNG<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Bus" & rvs$Advanced$fuel_type == "CNG"]
-  input_MB_app_Electric<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Bus" & rvs$Advanced$fuel_type == "Electric"]
-  
-  input_DR_app_diesel<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Demand Response" & rvs$Advanced$fuel_type == "Diesel"] #these are apportionment for each public transit fueel type in baseline parameters
-  input_DR_app_CNG<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Demand Response" & rvs$Advanced$fuel_type == "CNG"]
-  input_DR_app_Electric<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Demand Response" & rvs$Advanced$fuel_type == "Electric"]
+  input_DR_app_gasoline<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Demand Response" & rvs$Advanced$fuel_type == "Gasoline"] %>% as.numeric()#these are apportionment for each public transit fuel type in baseline parameters
+  input_DR_app_CNG<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Demand Response" & rvs$Advanced$fuel_type == "CNG"]%>% as.numeric()
+  input_DR_app_Electric<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Demand Response" & rvs$Advanced$fuel_type == "Electric"]%>% as.numeric()
   
   
-  input_CB_app_diesel <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Commuter Bus" & rvs$Advanced$fuel_type == "Diesel"] #these are apportionment for each public transit fueel type in baseline parameters
-  input_CB_app_CNG<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Commuter Bus" & rvs$Advanced$fuel_type == "CNG"]
-  input_CB_app_Electric<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Commuter Bus" & rvs$Advanced$fuel_type == "Electric"]
+  input_CB_app_diesel <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Commuter Bus" & rvs$Advanced$fuel_type == "Diesel"]%>% as.numeric() #these are apportionment for each public transit fueel type in baseline parameters
+  input_CB_app_CNG<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Commuter Bus" & rvs$Advanced$fuel_type == "CNG"]%>% as.numeric()
+  input_CB_app_Electric<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Commuter Bus" & rvs$Advanced$fuel_type == "Electric"]%>% as.numeric()
   
   # #need to implement the custom or default code ig
   MB_diesel_mpgge <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_mode == "Bus" & rvs$Assumptions$fuel_type == "Diesel" & rvs$Assumptions$unit == "veh_fuel_economy"]
@@ -324,51 +380,91 @@ Public_Transit <- reactive({
   DR_gasoline_mpgge <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_mode == "Demand Response" & rvs$Assumptions$fuel_type == "Gasoline" & rvs$Assumptions$unit == "veh_fuel_economy"]
   DR_cng_mpgge <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_mode == "Demand Response" & rvs$Assumptions$fuel_type == "CNG" & rvs$Assumptions$unit == "veh_fuel_economy"]
   DR_electric_mpgge <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_mode == "Demand Response" & rvs$Assumptions$fuel_type == "Electric" & rvs$Assumptions$unit == "veh_fuel_economy"]
-  CR_diesel_mpgge <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_mode == "Commuter Bus" & rvs$Assumptions$fuel_type == "Diesel" & rvs$Assumptions$unit == "veh_fuel_economy"]
-  CR_cng_mpgge <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_mode == "Commuter Bus" & rvs$Assumptions$fuel_type == "CNG" & rvs$Assumptions$unit == "veh_fuel_economy"]
-  CR_electric_mpgge <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_mode == "Commuter Bus" & rvs$Assumptions$fuel_type == "Electric" & rvs$Assumptions$unit == "veh_fuel_economy"]
+  CB_diesel_mpgge <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_mode == "Commuter Bus" & rvs$Assumptions$fuel_type == "Diesel" & rvs$Assumptions$unit == "veh_fuel_economy"]
+  CB_cng_mpgge <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_mode == "Commuter Bus" & rvs$Assumptions$fuel_type == "CNG" & rvs$Assumptions$unit == "veh_fuel_economy"]
+  CB_electric_mpgge <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_mode == "Commuter Bus" & rvs$Assumptions$fuel_type == "Electric" & rvs$Assumptions$unit == "veh_fuel_economy"]
   
-
-  input_gal_diesel_per_gasoline_eq <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" &
-                                                                      Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"] #0.893 From baseline parameters
-  input_HeavyDutyTruck_Diesel_CH4_gCO2e_per_mile <- Fuel_Factors$GWP_CH4_g_per_mi[Fuel_Factors$fuel_type == "Diesel" &
-                                                                         Fuel_Factors$veh_type == "Heavy Duty Trucks"]#0.238 From fuel Factors
-  input_HeavyDutryTruck_Diesel_NOX_gCO2e_per_mile <- Fuel_Factors$GWP_N20_g_per_mi[Fuel_Factors$fuel_type == "Diesel" &
-                                                                                     Fuel_Factors$veh_type == "Heavy Duty Trucks"] #12.844
+  #MB
+  input_Diesel_per_Gasoline_eq <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" &
+                                                                      Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"] 
   input_Diesel_CO2_kg_per_gallon <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" &
-                                                                   Fuel_Factors_Baselines$units == "fuel_carbon_content"] #9.4 #From Fuel Factors
+                                                                     Fuel_Factors_Baselines$units == "fuel_carbon_content"] 
+  
+  input_HeavyDutyTruck_Diesel_CH4_gCO2e_per_mile <- Fuel_Factors$GWP_CH4_g_per_mi[Fuel_Factors$fuel_type == "Diesel" &
+                                                                         Fuel_Factors$veh_type == "Heavy Duty Trucks"]
+  input_HeavyDutryTruck_Diesel_NOX_gCO2e_per_mile <- Fuel_Factors$GWP_N20_g_per_mi[Fuel_Factors$fuel_type == "Diesel" &
+                                                                                     Fuel_Factors$veh_type == "Heavy Duty Trucks"] 
+  
+  input_CNG_per_Gasoline_eq <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "CNG" &
+                                                             Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"] 
+  input_CNG_CO2_kg_per_gallon <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "CNG" &
+                                                                   Fuel_Factors_Baselines$units == "fuel_carbon_content"] 
+  input_HeavyDutyTruck_CNG_CH4_gCO2e_per_mile <- Fuel_Factors$GWP_CH4_g_per_mi[Fuel_Factors$fuel_type == "CNG" &
+                                                                                    Fuel_Factors$veh_type == "Heavy Duty Trucks"]
+  input_HeavyDutryTruck_CNG_NOX_gCO2e_per_mile <- Fuel_Factors$GWP_N20_g_per_mi[Fuel_Factors$fuel_type == "CNG" &
+                                                                                     Fuel_Factors$veh_type == "Heavy Duty Trucks"] 
+  input_Electricity_per_Gasoline_eq <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "electricity" &
+                                                                 Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"] 
+  input_Gasoline_CO2_kg_per_gallon <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Gasoline" &
+                                                                   Fuel_Factors_Baselines$units == "fuel_carbon_content"] 
+  input_LightDutyTruck_Gasoline_CH4_gCO2e_per_mile <- Fuel_Factors$GWP_CH4_g_per_mi[Fuel_Factors$fuel_type == "Gasoline" &
+                                                                                    Fuel_Factors$veh_type == "Light Duty Trucks"]
+  input_LightDutryTruck_Gasoline_NOX_gCO2e_per_mile <- Fuel_Factors$GWP_N20_g_per_mi[Fuel_Factors$fuel_type == "Gasoline" &
+                                                                                     Fuel_Factors$veh_type == "Light Duty Trucks"] 
+  
+  input_up_Gasoline <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Gasoline" &
+                                                      Fuel_Factors_Baselines$units == "upstream_life_cycle_factor"] 
+  input_up_Diesel <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" &
+                                                    Fuel_Factors_Baselines$units == "upstream_life_cycle_factor"] 
+  input_up_CNG <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "CNG" &
+                                                 Fuel_Factors_Baselines$units == "upstream_life_cycle_factor"] 
+    
   state_ch <- rvs$Baseline$state
   
   Public_Transit <- Public_Transit_data %>%
-    mutate(year = 2019) %>%
     filter(State == state_ch)
   
   for(yr in 2020:2050){
-    Public_Transit_temp = Public_Transit_data %>% mutate(year = yr)
+    Public_Transit_temp = Public_Transit_data %>%filter(State == state_ch)%>% mutate(year = yr) %>% filter(year == yr)
     Public_Transit = rbind(Public_Transit, Public_Transit_temp)
                            }
   
+  
+  #NOTE FOR BEN: Issue here where the excel sheet is referencing the on-road vehcile economy for Bus: Diesel instead of COmmuter BUs: Diesel in public transit tab
   Public_Transit <- Public_Transit %>%
-    left_join(eemrate %>% select(year, electricity_carbon_content) %>% filter(duplicated(.))) %>% #the filter duplciated is just removing different vehicle types with the same values
-    mutate(MB_diesel_emintensity = (1/MB_diesel_mpgge)*input_gal_diesel_per_gasoline_eq*input_Diesel_CO2_kg_per_gallon*1000 + input_HeavyDutyTruck_Diesel_CH4_gCO2e_per_mile + input_HeavyDutryTruck_Diesel_NOX_gCO2e_per_mile,
-           MB_cng_emintensity = (1/MB_cng_mpgge),
-           MB_electric_emintensity = (1/MB_electric_mpgge)*electricity_carbon_content,
-           DR_gasoline_emintensity = (1/DR_gasoline_mpgge),
-           DR_cng_emintensity = (1/DR_cng_mpgge),
-           DR_electric_emintensity = (1/DR_electric_mpgge)*electricity_carbon_content ,
-           CR_diesel_emintensity = (1/CR_diesel_mpgge),
-           CR_CNG_emintensity =  (1/CR_cng_mpgge),
-           CR_electric_emintensity =  (1/CR_electric_mpgge)*electricity_carbon_content
-           ) %>%
-    mutate(MB_Diesel_Emrate = MB_revenue_miles) %>%
-    left_join(eemrate() %>% select(year, electricity_carbon_content) %>% filter(duplicated(.)))%>%
-    mutate(Electric_Amtrak_CO2eq = Amtrak_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content,
-           Electric_CR_CO2eq = CR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content,
-           Electric_HR_CO2eq = HR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content,
-           Electric_LR_CO2eq = LR_Energy_Intensity_BTUPerPaxMil*(1/input_BTU_per_kWh)*electricity_carbon_content)
-  
+    left_join(electricity_emrate() %>% select(year, electricity_carbon_content) %>% filter(!duplicated(year))) %>% #the filter duplciated is just removing different vehicle types with the same values
+    mutate(MB_diesel_emintensity = (1/MB_diesel_mpgge)*input_Diesel_per_Gasoline_eq*input_Diesel_CO2_kg_per_gallon*1000 + input_HeavyDutyTruck_Diesel_CH4_gCO2e_per_mile + input_HeavyDutryTruck_Diesel_NOX_gCO2e_per_mile,
+           MB_cng_emintensity = (1/MB_cng_mpgge)*input_CNG_per_Gasoline_eq*input_CNG_CO2_kg_per_gallon*1000 + input_HeavyDutyTruck_CNG_CH4_gCO2e_per_mile + input_HeavyDutryTruck_CNG_NOX_gCO2e_per_mile,
+           MB_electric_emintensity = (1/MB_electric_mpgge)*input_Electricity_per_Gasoline_eq*electricity_carbon_content,
+           
+           DR_gasoline_emintensity = (1/DR_gasoline_mpgge)*input_Gasoline_CO2_kg_per_gallon*1000 + input_LightDutyTruck_Gasoline_CH4_gCO2e_per_mile + input_LightDutryTruck_Gasoline_NOX_gCO2e_per_mile,
+           DR_cng_emintensity = (1/DR_cng_mpgge)*input_CNG_per_Gasoline_eq*input_CNG_CO2_kg_per_gallon*1000 + input_HeavyDutyTruck_CNG_CH4_gCO2e_per_mile + input_HeavyDutryTruck_CNG_NOX_gCO2e_per_mile,
+           DR_electric_emintensity = (1/DR_electric_mpgge)*input_Electricity_per_Gasoline_eq*electricity_carbon_content,
+           
+           CB_diesel_emintensity = (1/CB_diesel_mpgge)*input_Diesel_per_Gasoline_eq*input_Diesel_CO2_kg_per_gallon*1000 + input_HeavyDutyTruck_Diesel_CH4_gCO2e_per_mile + input_HeavyDutryTruck_Diesel_NOX_gCO2e_per_mile,
+           CB_cng_emintensity =  (1/CB_cng_mpgge)*input_CNG_per_Gasoline_eq*input_CNG_CO2_kg_per_gallon*1000 + input_HeavyDutyTruck_CNG_CH4_gCO2e_per_mile + input_HeavyDutryTruck_CNG_NOX_gCO2e_per_mile,
+           CB_electric_emintensity =  (1/CB_electric_mpgge)*input_Electricity_per_Gasoline_eq*electricity_carbon_content
+           ) %>% 
+    filter(year >= 2021) %>%
+    mutate(
+      MB_Emissions_Direct = (MB_diesel_emintensity*input_MB_app_diesel+MB_cng_emintensity*input_MB_app_CNG)*mb_revmiles/1000000,
+      MB_Emissions_Electricity = (MB_electric_emintensity*input_MB_app_Electric)*mb_revmiles/1000000,
+      MB_Emissions_Upstream = (MB_diesel_emintensity*input_MB_app_diesel*input_up_Diesel+MB_cng_emintensity*input_MB_app_CNG*input_up_CNG)*mb_revmiles/1000000,
+      
+      DR_Emissions_Direct = (DR_gasoline_emintensity*input_DR_app_gasoline+DR_cng_emintensity*input_DR_app_CNG)*dr_revmiles/1000000,
+      DR_Emissions_Electricity = (DR_electric_emintensity*input_DR_app_Electric)*dr_revmiles/1000000,
+      DR_Emissions_Upstream = (DR_gasoline_emintensity*input_DR_app_gasoline*input_up_Gasoline+DR_cng_emintensity*input_DR_app_CNG*input_up_CNG)*dr_revmiles/1000000,
+      
+      
+      CB_Emissions_Direct = (CB_diesel_emintensity*input_CB_app_diesel+CB_cng_emintensity*input_CB_app_CNG+CB_electric_emintensity*input_CB_app_Electric)*cb_revmiles/1000000,
+      CB_Emissions_Electricity = (CB_electric_emintensity*input_CB_app_Electric)*cb_revmiles/1000000,
+      CB_Emissions_Upstream = (CB_diesel_emintensity*input_CB_app_diesel*input_up_Diesel+CB_cng_emintensity*input_CB_app_CNG*input_up_CNG)*cb_revmiles/1000000,
+    ) %>% 
+    mutate(MT_CO2e_direct  = MB_Emissions_Direct+DR_Emissions_Direct+CB_Emissions_Direct,
+           MT_CO2e_electricity   = MB_Emissions_Electricity+DR_Emissions_Electricity+CB_Emissions_Electricity,
+           MT_CO2e_upstream = MB_Emissions_Upstream+DR_Emissions_Upstream+CB_Emissions_Upstream) %>%
+    select(year, MT_CO2e_direct, MT_CO2e_electricity, MT_CO2e_upstream )
   return(Public_Transit)
-  
 })
 
 # observeEvent(input$state_input,{
@@ -398,6 +494,106 @@ Fuel_Factors_Weighted <- reactive({
   
   return(Fuel_Factors_Weighted)
   })
+
+#Final Baseline Return 
+baseline_ghg_forecast <- reactive({
+  use_e = rvs$Baseline$include_electricity
+  use_up = rvs$Baseline$include_upstream_fuels
+  
+ temp<- Em_OnRoad_Base_up() %>%
+    filter(year %in% c(2021, 
+                       rvs$Baseline$horizon_year_1,
+                       rvs$Baseline$horizon_year_2,
+                       rvs$Baseline$horizon_year_3)) %>%
+    mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% 
+    select(veh_supertype,year, Emissions) %>%
+    
+    rbind(
+      
+      public_transit_emissions()%>%
+        filter(year %in% c(2021, 
+                           rvs$Baseline$horizon_year_1,
+                           rvs$Baseline$horizon_year_2,
+                           rvs$Baseline$horizon_year_3)) %>%
+        mutate(veh_supertype = "Public Transit") %>%
+        mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% 
+        select(veh_supertype,year, Emissions)
+      
+    ) %>%
+    rbind(
+      
+      passenger_rail_emissions() %>%
+        filter(year %in% c(2021, 
+                           rvs$Baseline$horizon_year_1,
+                           rvs$Baseline$horizon_year_2,
+                           rvs$Baseline$horizon_year_3)) %>%
+        mutate(veh_supertype = "Passenger Rail") %>%
+        mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity)%>% 
+        select(veh_supertype,year, Emissions)
+      
+    ) %>%
+    rbind(
+      
+      freight_rail_emissions()%>%
+        filter(year %in% c(2021, 
+                           rvs$Baseline$horizon_year_1,
+                           rvs$Baseline$horizon_year_2,
+                           rvs$Baseline$horizon_year_3)) %>%
+        mutate(veh_supertype = "Freight Rail") %>%
+        mutate(Emissions = MT_CO2e_direct)%>% 
+        select(veh_supertype,year, Emissions)
+    ) %>%
+    pivot_wider(names_from= year, values_from = Emissions)
+ 
+ return(temp)
+})
+
+line_plot <- function(df_in){
+  df_in <- baseline_ghg_forecast()
+  
+  df_temp <- df_in %>% mutate(year = as.numeric(year))
+  
+  lplot <- plot_ly(df_temp, x = ~year, y = ~Emissions, type = 'scatter', mode = 'lines', 
+                   color = ~(veh_supertype),
+                   linetype = ~(veh_supertype),
+                   name = ~veh_supertype,
+                   hovertemplate = paste0('Year: %{x}<br>', 
+                                          'Emissions (MT CO2e:%{y:.2s} <br>')) %>%
+    layout(xaxis = list(title = 'Year'),
+           yaxis = list(title = "Emisions", separatethousands= TRUE)) %>%
+    config(displayModeBar = FALSE)
+  
+  return(lplot)
+  
+}
+pie_plot <- function(df_in){
+  #df_in <- baseline_ghg_forecast() %>% filter(year == 2021)
+  
+  comm_plot <- df_in %>% plot_ly(source = "sourceName") %>% 
+    add_pie(labels = ~veh_supertype, 
+            values = ~Emissions, 
+            automargin = TRUE, 
+            key = ~veh_supertype, hole = 0.6, sort = TRUE, 
+            direction = "clockwise",
+            hovertemplate = ~paste("%{label} <br>", paste0(round(Emissions, digits = 0)," MT CO2e"), "</br> %{percent} <extra></extra>"), 
+            marker = list(colors = ~veh_supertype, line = list(color = "#595959", width = 1)), 
+            #textfont = list(family = "Arial", size = 10), 
+            textposition = "none") %>%
+    layout(
+      showlegend = TRUE, autosize = T) %>% 
+    config(displaylogo = FALSE, 
+           modeBarButtonsToRemove = c("zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d", "toggleSpikelines", "hoverCompareCartesian", "hoverClosestGeo", "hoverClosest3d", "hoverClosestGeo", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "hoverClosestCartesian")#,
+           # toImageButtonOptions= list(filename = saveName,
+           #                            width = saveWidth,
+           #                            height =  saveHeight)
+    )
+}
+output$baseline_line_graph <- renderPlotly({
+  req(baseline_ghg_forecast())
+  
+  
+  line_plot(baseline_ghg_forecast())
+})
 
 ### VMT Tables ----------------
 ### these tables don't have to be show to the user, but it is helpful to have them as reactive tables
