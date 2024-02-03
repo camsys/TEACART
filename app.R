@@ -206,13 +206,14 @@ ui <- function(request) {
                                      p(""),
                                      selectInput("scope_emissions",
                                                  "Emissions Scope: Include Electricity",
-                                                 c("Yes","No"),
-                                                 "Yes"),
+                                                 
+                                                 choices = c("Yes" = 1, "No" = 0),
+                                                 selected = "Yes"),
                                      p(""),
                                      selectInput("scope_fuels",
-                                                 "Emissions Scope: Include Upstream Fuels",
-                                                 c("Yes","No"),
-                                                 "No"),
+                                                 "Scope Emissions: Include Upstream Fuels",
+                                                 choices = c("Yes" = 1, "No" = 0),
+                                                 selected = "No"),
                                      bsTooltip("scope_fuels",
                                                "Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG.",
                                                "right",
@@ -1324,9 +1325,22 @@ nav_panel(title = "Assumptions",
                                  horizons selected in the Baseline 
                                  tab."),
                             h3("Transportation GHG Forecast"),
-                            
+                            fluidRow(width = 12,
+                                     column(width = 6,
+                                            plotlyOutput("baseline_ghg_line", width = "auto", height = "auto")
+                                     ),
+                                     column(width = 6,
+                                            plotlyOutput("baseline_ghg_pie", width = "auto", height = "auto")
+                                     )
+                                     ),
+                            fluidRow(width = 12,
+                                     column(width = 10),
+                                     column(width = 2, 
+                                     selectInput("pie_graph_year","", choices = c("2021","2025","2030","2050")))
+                                     ),
+                            fluidRow(
                             DT::dataTableOutput("baseline_outputs")
-                            
+                            )
                   ),
                   
 
@@ -2072,11 +2086,9 @@ server <- function(input, output, session) {
 
 # observe reset buttons on projects ---------------------------------------------------
 
-
   observeEvent(input$reset_bikeped_projs_tbl, {
     rvs$Projects[rvs$Projects$table_no_ui == 1,] <- initial_projects[initial_projects$table_no_ui == 1, ]
   })  
-  
   
   observeEvent(input$reset_transit_fixed_projs_tbl, {
     rvs$Projects[rvs$Projects$table_no_ui == 2,] <- initial_projects[initial_projects$table_no_ui == 2, ]
@@ -2129,8 +2141,6 @@ server <- function(input, output, session) {
   observeEvent(input$reset_expansion_projs_tbl, {
     rvs$Projects[rvs$Projects$table_no_ui == 14,] <- initial_projects[initial_projects$table_no_ui == 14, ]
   })  
-  
-
 
   # server assumptions ------------------------------------------------------
   
@@ -2182,7 +2192,6 @@ server <- function(input, output, session) {
       decimal_rows = c(0:17,19:46))
   })
   
-  
   output$tdm_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
@@ -2197,7 +2206,6 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = c(0:2))
   })
-  
   
   output$micro_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
@@ -2214,7 +2222,6 @@ server <- function(input, output, session) {
       decimal_rows = c(0:4))
   })
   
-  
   output$traffic_ops_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
@@ -2229,7 +2236,6 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = c(0:15))
   })
-  
   
   output$mhdv_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
@@ -2246,7 +2252,6 @@ server <- function(input, output, session) {
       decimal_rows = c(0:15))
   })
   
-  
   output$pnr_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
@@ -2261,7 +2266,6 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = c(0:15))
   })
-  
   
   output$evsi_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
@@ -2278,7 +2282,6 @@ server <- function(input, output, session) {
       decimal_rows = c(0:15))
   })
   
-  
   ## make tables editable ----------------------------------------------------
   
   assumptions_names <- c("bikeped_assmps",
@@ -2290,9 +2293,12 @@ server <- function(input, output, session) {
                          "pnr_assmps",
                          "evsi_assmps")
   
+  
+  #NOTE CAN THIS BE REMOVED?
   observeEvent(input$bikeped_assmps_edit, {
     bikeped_assmps <<- editData(bikeped_assmps, input$bikeped_assmps_edit, 'bikeped_assmps_tbl')
   })
+  #NOT CAN THIS BE REMOVED?
   
   # observe edits to bikeped_assmps
   observeEvent(input$bikeped_assmps_tbl_cell_edit, {
@@ -2302,7 +2308,6 @@ server <- function(input, output, session) {
                                                                        rvs$Assumptions,
                                                                        tbl_no = 1)
   })
-  
   
   #observe edits to transit_assmps
   observeEvent(input$transit_assmps_tbl_cell_edit, {
@@ -2340,7 +2345,6 @@ server <- function(input, output, session) {
                                                                              rvs$Assumptions,
                                                                              tbl_no = 5)
   })
-  
   
   #observe edits to mhdv_assmps
   observeEvent(input$mhdv_assmps_tbl_cell_edit, {
@@ -3315,31 +3319,50 @@ server <- function(input, output, session) {
   # server baseline outputs -------------------------------------------------
   
   # dummy data - copy pasta
-  data_sample <- c(
-    "Emissions (MT CO2e),2021,2025,2030,2050",
-    "Light Duty Vehicles,16926661,17657202,17122996,16561171",
-    "Medium and Heavy Duty Trucks,5594752,5580876,5264095,5261935",
-    "Public Transit,120934,120934,120934,120934",
-    "Passenger Rail,76608,76608,76608,76608",
-    "Freight Rail,56162,57720,59729,68485",
-    "Construction and Maintenance,0,0,0,0",
-    "Total (Onroad Vehicles),22521413,23238078,22387092,21823105",
-    "Total (All Transportation),22775117,23493340,22644362,22089133",
-    "Change from Base Year (%),,3%,-1%,-3%"
-  )
-  
-  dt <- rbindlist(lapply(data_sample, function(x) data.table(t(strsplit(x, ",")[[1]]))), use.names = TRUE, fill = TRUE)
-  
-  # better names, dropping first row, changing data stored as character to numeric
-  setnames(dt, unlist(dt[1,]))
-  dt <- dt[-1]
-  numeric_columns <- names(dt)[!names(dt) %in% c("Emissions (MT CO2e)", "Change from Base Year (%)")]
-  dt[, (numeric_columns) := lapply(.SD, function(x) as.numeric(gsub(",", "", x))), .SDcols = numeric_columns]
-  
-  # next time just upload a table
+  # data_sample <- c(
+  #   "Emissions (MT CO2e),2021,2025,2030,2050",
+  #   "Light Duty Vehicles,16926661,17657202,17122996,16561171",
+  #   "Medium and Heavy Duty Trucks,5594752,5580876,5264095,5261935",
+  #   "Public Transit,120934,120934,120934,120934",
+  #   "Passenger Rail,76608,76608,76608,76608",
+  #   "Freight Rail,56162,57720,59729,68485",
+  #   "Construction and Maintenance,0,0,0,0",
+  #   "Total (Onroad Vehicles),22521413,23238078,22387092,21823105",
+  #   "Total (All Transportation),22775117,23493340,22644362,22089133",
+  #   "Change from Base Year (%),,3%,-1%,-3%"
+  # )
+  # 
+  # dt <- rbindlist(lapply(data_sample, function(x) data.table(t(strsplit(x, ",")[[1]]))), use.names = TRUE, fill = TRUE)
+  # 
+  # # better names, dropping first row, changing data stored as character to numeric
+  # setnames(dt, unlist(dt[1,]))
+  # dt <- dt[-1]
+  # numeric_columns <- names(dt)[!names(dt) %in% c("Emissions (MT CO2e)", "Change from Base Year (%)")]
+  # dt[, (numeric_columns) := lapply(.SD, function(x) as.numeric(gsub(",", "", x))), .SDcols = numeric_columns]
+  # 
+  # # next time just upload a table
   
   output$baseline_outputs <- renderDT({
-    DT::datatable(dt,
+    req(baseline_ghg_forecast())
+    dt <- baseline_ghg_forecast()
+    
+    dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+      filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+      summarise(across(where(is.numeric),sum)) %>%
+      mutate(veh_supertype = "Total (Onroad Vehicles)")
+    dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+      #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+      summarise(across(where(is.numeric),sum))
+    growth <- dt_all[[1,1]]
+    dt_growth <- dt_all %>% 
+      mutate(across(where(is.numeric), ~(.x - growth)/growth, .names = "{.col}")) %>%
+      mutate(veh_supertype = "Total (All Transportation)")
+    dt_all <- dt_all %>% 
+      mutate(veh_supertype = "Total (All Transportation)")
+    dt_fin <- rbind(dt, dt_onroad, dt_all, dt_growth) %>%
+      rename("Emissions" = "veh_supertype")
+    
+    DT::datatable(dt_fin,
                   escape = FALSE,
                   options = list(pageLength = 10,
                                  autoWidth = FALSE,
@@ -3350,6 +3373,60 @@ server <- function(input, output, session) {
                   rownames = FALSE)
   })
   
+  output$baseline_ghg_line <- renderPlotly({
+
+    df_lines <- baseline_ghg_forecast_all_years() %>% 
+      filter(year >= 2021) %>%
+      group_by(year) %>% summarise(Emissions = sum(Emissions))
+    
+    df_in <- baseline_ghg_forecast() %>% 
+      ungroup() %>% summarise(across(where(is.numeric), sum)) %>%
+      pivot_longer(everything(), values_to = "Emissions", names_to = "year")
+    df_points <- df_in %>% mutate(year = as.numeric(year))
+    
+    lplot <- plot_ly(df_lines, x = ~year, y = ~Emissions, type = 'scatter', mode = 'lines',
+                     hoverinfo = 'skip') %>%
+      add_trace(df_points, x = ~df_points$year, y = ~df_points$Emissions, type = 'scatter', mode = 'markers',
+                connectgaps = FALSE,
+                text = c("Base Year","Horizon Year 1","Horizon Year 2", "Horizon Year 3"),
+
+                hovertemplate = paste0('%{text}: %{x}<br>', 
+                                       'Emissions: %{y:.2s} <br>'),
+                name = "") %>%
+      layout(showlegend = FALSE,
+             xaxis = list(title = 'Year'),
+             yaxis = list(title = "Emisions", separatethousands= TRUE)) %>%
+      config(displayModeBar = FALSE) 
+
+    return(lplot)
+  })
+  
+  output$baseline_ghg_pie <- renderPlotly({
+    #browser()
+    yr <- input$pie_graph_year
+    df_in <- baseline_ghg_forecast() 
+    df_in <- df_in %>% ungroup() %>% select(veh_supertype, yr) %>%
+      rename("Emissions" = yr)
+    
+    comm_plot <- df_in %>% plot_ly(source = "sourceName") %>% 
+      add_pie(labels = ~veh_supertype, 
+              values = ~Emissions, 
+              automargin = TRUE, 
+              key = ~veh_supertype, hole = 0.6, sort = TRUE, 
+              direction = "clockwise",
+              hovertemplate = ~paste("%{label} <br>", paste0(round(Emissions, digits = 0)," CO2e"), "</br> %{percent} <extra></extra>"), 
+              marker = list(colors = ~veh_supertype, line = list(color = "#595959", width = 1)), 
+              #textfont = list(family = "Arial", size = 10), 
+              textposition = "none") %>%
+      layout(
+        showlegend = TRUE, autosize = T) %>% 
+      config(displaylogo = FALSE, 
+             modeBarButtonsToRemove = c("zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d", "toggleSpikelines", "hoverCompareCartesian", "hoverClosestGeo", "hoverClosest3d", "hoverClosestGeo", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "hoverClosestCartesian")#,
+             # toImageButtonOptions= list(filename = saveName,
+             #                            width = saveWidth,
+             #                            height =  saveHeight)
+      )
+  })
   
   # server cost effectiveness outputs ----------------------------------------------------
   
@@ -3496,7 +3573,6 @@ server <- function(input, output, session) {
   #Processing working ----
 
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
-  
   source("processing_scripts/processing_BikePed.R", local = TRUE) #Qi done
   source("processing_scripts/processing_OPS.R", local = TRUE)
   source("processing_scripts/processing_MDHD.R", local = TRUE) #Gui done - needs cost
@@ -3543,6 +3619,8 @@ server <- function(input, output, session) {
                                veh_elec_baseline = input$ev_baseline_input,
                                elec_grid_emissions_net_zero = input$grid_emissions_input
                                )
+    
+    updateSelectInput(inputId = "pie_graph_year", label = "", choices = c(input$base_year, input$horizon_year_1, input$horizon_year_2, input$horizon_year_3))
   })
   
   # output$pdf_report <- downloadHandler(
@@ -3581,7 +3659,7 @@ server <- function(input, output, session) {
   #     
   #   }
   # )
- 
+
   output$pdf_report <- downloadHandler(
     filename = function(){
           paste("Summary Report",

@@ -214,7 +214,6 @@ Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
   expand(Transit_Costs, state_code, transit_mode) %>%
   left_join(Transit_Costs, by = join_by(state_code, transit_mode)) %>%
   replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0))
-Public_Transit_data <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Public_Transit_data")
 
 # used to rename headers and units during table rendering
 references <- read_excel(".\\data\\2.User_Inputs.xlsx",
