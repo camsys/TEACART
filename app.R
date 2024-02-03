@@ -102,6 +102,10 @@ ui <- function(request) {
                         nav_spacer(),
                         nav_spacer(),
                         downloadButton("pdf_report","Download Summary Report")),
+      
+
+# welcome page ------------------------------------------------------------
+      
       nav_panel(title = "Welcome",
                 p(),
                 #    h2("Transportation Evaluation and Carbon Reduction Tool (TEA-CART)"),
@@ -125,9 +129,17 @@ ui <- function(request) {
       p("under contract to Georgetown Climate Center"),
       p("© Georgetown Climate Center"),
       ),
+
+# baseline inputs ---------------------------------------------------------
+
+      
       nav_panel(title = "Inputs",
                 navset_card_pill(
+                  
                   nav_panel(title = "Baseline",
+                            fluidRow(HTML("<p>Please enter <b>key inputs</b> below to define the timing and scope of your TEA-CART analysis, including: State, Base Year, Horizon Years, Geographic Scope, and Emissions Scope.<br>
+                                          <p>
+                                          For specific information on the key inputs, mouse over the <q>i</q> icon next to each input.")),
                             fluidRow(
                               DT::dataTableOutput("test_data")
                             ),
@@ -193,12 +205,12 @@ ui <- function(request) {
                                                  "All Roadways"),
                                      p(""),
                                      selectInput("scope_emissions",
-                                                 "Include Electricity",
+                                                 "Emissions Scope: Include Electricity",
                                                  c("Yes","No"),
                                                  "Yes"),
                                      p(""),
                                      selectInput("scope_fuels",
-                                                 "Include Upstream Fuels",
+                                                 "Emissions Scope: Include Upstream Fuels",
                                                  c("Yes","No"),
                                                  "No"),
                                      bsTooltip("scope_fuels",
@@ -207,12 +219,12 @@ ui <- function(request) {
                                                options = list(container = "body")),
                                      p(""),
                                      selectInput("vmt_forecast_input",
-                                                 "VMT Forecast",
+                                                 "VMT Forecast:",
                                                  c("Default","Custom"),
                                                  "Default"),
                                      p(""),
                                      selectInput("ev_baseline_input",
-                                                 "Vehicle Electrification Baseline",
+                                                 "Vehicle Electrification Baseline:",
                                                  c("AEO Baseline",
                                                    "ACC",
                                                    "ACC II",
@@ -221,7 +233,7 @@ ui <- function(request) {
                                                  "AEO Baseline"),
                                      p(""),
                                      numericInput("grid_emissions_input",
-                                                  "Electricity Grid Emissions Net-Zero Year",
+                                                  "Electricity Grid Emissions Net-Zero Year:",
                                                   value = 2025,
                                                   min = 2021,
                                                   max = 2050,
@@ -233,6 +245,18 @@ ui <- function(request) {
 
 # projects tab ui ---------------------------------------------------------
                   nav_panel(title = "Projects",
+                            fluidRow(
+                              HTML("<p>Please select <b>project-level inputs</b> for 
+                                   one or more of the project categories shown 
+                                   below, keeping in mind the following two 
+                                   rules when entering project-level inputs:<br>
+                                   <p>
+                                   i) All projects are assumed to be “constructed” or “in operation” by the corresponding horizon year. For example, if the user inputs 2 miles of new bicycle lanes under the first horizon year (e.g., 2025) in the “New” category of additions / replacements, it is assumed that those bike lanes will be fully constructed by 2025.<br>
+                                   <p>
+                                   ii) Project inputs from one year are automatically coded to “carry over” into future years. This can be seen in the “Cumulative” category of additions / replacements, where, for every horizon year after the first year, the values represent the total new projects implemented in prior horizon years.<br>
+                                   <p>
+                                   More information on the input categories can be found by clicking on the pull-down arrow next to each project category."
+                                   ),),
                             
           # bike ped
                             
@@ -272,7 +296,7 @@ ui <- function(request) {
         accordion(
           accordion_panel(
                "Projects 2 | Transit: Increased Fixed Route Service",
-               HTML("This category represents additions of <b>new fixed route service vehicles operated in maximum service (VOMS).</b> 
+               HTML("This category represents additions of <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
                Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
                )),
           open = FALSE
@@ -574,6 +598,13 @@ ui <- function(request) {
 
 # costs tab ui ------------------------------------------------------------
       nav_panel(title = "Costs",
+                fluidRow(HTML("<p>This section provides information on 
+                              the <b>cost inputs</b> for the project categories 
+                              shown below. Please click on the different fields 
+                              to overwrite the default values with any custom 
+                              values provided by the user.<br>
+                              <p>
+                              More information on the categories can be found by clicking the pull-down arrow next to each category.")),
                 
                 # bike ped costs
                 fluidRow(
@@ -876,6 +907,11 @@ ui <- function(request) {
 
 # assumptions tab ui ------------------------------------------------------
 nav_panel(title = "Assumptions",
+          fluidRow(HTML("<p>This section provides information on the <b>input assumptions</b> for the categories shown below. These inputs affect the GHG impact and effectiveness of each strategy category. Please click on the different fields to overwrite the default values with any custom values provided by the user.<br>
+                        <p>
+                        More information on the categories can be found by clicking the pull-down arrow next to each category.")
+            
+          ),
           
           # bike ped parameters
           fluidRow(
@@ -1095,8 +1131,13 @@ nav_panel(title = "Assumptions",
 
 # scenarios tab ui --------------------------------------------------------
       nav_panel(title = "Scenarios",
-                
-                
+                fluidRow(HTML("<p>This tab provides the different 
+                              possible strategies provided in the 
+                              TEA-CART analysis. Please select the 
+                              desired combination of strategies 
+                              to be used as forecast “scenarios.” 
+                              The resulting output can be used to 
+                              compare up to two different scenarios.")),
                 fluidRow(
                   p(""),
                   h3("Scenario Testing"),
@@ -1109,14 +1150,15 @@ nav_panel(title = "Assumptions",
 
 # advanced tab ui ---------------------------------------------------------
       nav_panel(title = "Advanced",
+                HTML("<p>This tab allows users to input advanced custom assumptions."),
                 
                 # custom forecast advanced
                 fluidRow(
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Custom Forecast: Percent of on-road vehicles that are EVs",
-                             HTML("This represents the vehicle electrification forecast used for baseline projections. This is represented by the percentage of electric vehicles that are EVs.")
+                             "Custom Forecast: Electric Vehicles (EVs)",
+                             HTML("This represents the vehicle electrification forecast used for baseline projections. This is represented by the percentage of vehicles that are EVs.")
                            ),
                            open = FALSE
                          ),
@@ -1135,7 +1177,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Custom Forecast: Vehicles Miled Traveled (VMT)",
+                             "Custom Forecast: Vehicle Miles Traveled (VMT)",
                              HTML("This represents the vehicle miles traveled (VMT) forecast used for baseline projections."),
 
                            ),
@@ -1262,7 +1304,8 @@ nav_panel(title = "Assumptions",
                 
                 
       )
-                )),
+                ) # end navset card pill
+),
 
 # outputs tab ui ----------------------------------------------------------
 
@@ -1276,6 +1319,10 @@ nav_panel(title = "Assumptions",
                   nav_panel(title = "Baseline GHG Forecast",
                             
                             h2("Baseline GHG Forecast"),
+                            HTML("This tab provides a projection 
+                                 of baseline emissions for the time 
+                                 horizons selected in the Baseline 
+                                 tab."),
                             h3("Transportation GHG Forecast"),
                             
                             DT::dataTableOutput("baseline_outputs")
@@ -1287,6 +1334,21 @@ nav_panel(title = "Assumptions",
 
                   
                   nav_panel(title = "Scenario and Strategy Summary",
+                            HTML("<p>This tab reports the scenario- and 
+                                 strategy-level outputs for greenhouse gas 
+                                 emissions (metric tons of carbon dioxide 
+                                 equivalent or MT CO2e); vehicle miles traveled 
+                                 (VMT); local pollution from oxides of nitrogen 
+                                 (NOx) and fine particulate matter (PM2.5); 
+                                 and daily active trips.<br>
+                                 <p>
+                                 For the Scenario Summary, please select the 
+                                 desired indicator to compare upto two 
+                                 different scenarios with the baseline forecast.<br>
+                                 <p>
+                                 For the Strategy Summary, please select the 
+                                 desired scenario and indicator to view the 
+                                 changes at the strategy level."),
                             fluidRow(
                               p(""),
                               title = "Select Indicator",
@@ -1310,6 +1372,7 @@ nav_panel(title = "Assumptions",
 # cost effectiveness ui ---------------------------------------------------
 
                   nav_panel(title = "Cost effectiveness",
+                            HTML("This tab allows users to review the cost-effectiveness of each strategy, as measured by the change in annual output of the indicator (e.g. MT CO2e) per $1 million of investment. All cost-effectiveness information is dependent on information entered in the Inputs tab."),
                             fluidRow(
                               radioButtons(inputId = "cost_view",
                                            "Level of detail:",
