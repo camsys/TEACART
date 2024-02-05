@@ -3448,6 +3448,7 @@ server <- function(input, output, session) {
   source("functions/cost_maker.R", local = TRUE)
   #rvs update from different inputs
   #key_inputs update
+  
   key_inputs_listen <- reactive({
     list(input$state_input,
          input$base_year,

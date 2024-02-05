@@ -495,7 +495,7 @@ Fuel_Factors_Weighted <- reactive({
   return(Fuel_Factors_Weighted)
   })
 
-#Final Baseline Return 
+#Final Baseline Return # for 
 baseline_ghg_forecast <- reactive({
   use_e = rvs$Baseline$include_electricity
   use_up = rvs$Baseline$include_upstream_fuels

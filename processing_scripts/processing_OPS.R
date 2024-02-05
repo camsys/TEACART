@@ -1,7 +1,7 @@
 
 observeEvent(input$state_input, {
   
-  browser()
+  #browser()
   
 EmRate_by_Tech <- EmRate_by_Tech() %>%
   mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>% 
