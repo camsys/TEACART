@@ -3454,6 +3454,7 @@ server <- function(input, output, session) {
  # seth working here - error I'm getting is that it's not finding inputs
   
   output$bikeped_costs_outputs_tbl <- renderDT({
+    browser()
  
     datatable(bikeped_costs_outputs,     #output_bikped(),
               extensions = c('RowGroup','Buttons'),
@@ -3578,17 +3579,18 @@ server <- function(input, output, session) {
   source("processing_scripts/processing_MDHD.R", local = TRUE) #Gui done - needs cost
   source("processing_scripts/processing_Micro.R", local = TRUE) #Qi done
   source("processing_scripts/processing_TransitElec.R", local = TRUE)  #Qi done
-  source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi done (confirm with Ben)
+  source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi done
   source("processing_scripts/processing_TDM.R", local = TRUE) #Qi done
   source("processing_scripts/processing_ParkRide.R", local = TRUE) #Qi done
   source("processing_scripts/processing_freight.R", local = T) #Gui done - needs cost
   source("processing_scripts/processing_EVSE.R", local = T) #Gui done - needs cost
   source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Finished
   source("functions/cost_maker.R", local = TRUE)
+
   #rvs update from different inputs
   #key_inputs update
-  
-  key_inputs_listen <- reactive({
+
+    key_inputs_listen <- reactive({
     list(input$state_input,
          input$base_year,
          input$horizon_year_1,
