@@ -12,16 +12,44 @@
   # output_table <- cost_output_RoadwayExp()
   # ini_cost_table <- rvs$Costs[rvs$Costs$table_no_ui == tab_no,]
 
+sum_fun <- function(x,meas,val,high,med,low,prefix){
+  
+  me <- x[meas] %>% as.numeric()
+  va <- x[val] %>% as.numeric()
+  
+  if(me==0){
+    return(NA)
+  } else if(-1*me > 0 & va < 0){
+    return('***')
+  } else if(-1*me < 0){
+    return(paste0(prefix, " Increase"))
+  } else if(-1*me/va > high){
+    return("Very High")
+  } else if(-1*me/va > med){
+    return("High")
+  } else if(-1*me/va > low){
+    return("Medium")
+  } else if(-1*me/va <= low){
+    return("Low")
+  } else {return("Seth you fool you idiot")}
+  
+}
 
 cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltered by table number
                           output_table, #this it the processing output
-                          cols, #these are the columns of the rvs cost table that are necessary to get the individual rows e.g. road_class, area_type, etc
+                          col_sel, #these are the columns of the rvs cost table that are necessary to get the individual rows e.g. road_class, area_type, etc
                           proj_life, #not sure if we should be pulling this in through a table in Raw Data?
                           var1_scalar = NULL, #this is only neccesary for transit table
-                          var2_scalar = NULL#this is only neccesary for transit table
+                          var2_scalar = NULL,#this is only neccesary for transit table
+                          style
                           ){
   #real input
-  cols <- c(cols, 'cost_type') #add cost type to the columns that will be used for groupin
+  cols <- c(col_sel, 'cost_type') #add cost type to the columns that will be used for groupin
+  
+  if("facility_type" %in% names(output_table)){
+    output_table <- output_table %>% rename("cap_proj_type" = "facility_type")
+    type_name = "facility_type"
+  }
   
   #IF Else is for indicating transit or other tables
   #This function basically calcualtes the cost parameters page by getting the annualized cost with is usually capital cost/project life + variable cost
@@ -48,39 +76,19 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
   
   #This function is applied to each row to estimate the summary value based on supplied high, medium, low values
   #The high medium low values are the same for each project type
-  sum_fun <- function(x,meas,val,high,med,low,prefix){
-    me <- x[meas] %>% as.numeric()
-    va <- x[val] %>% as.numeric()
-    
-    if(me==0){
-      return(NA)
-    } else if(-1*me > 0 & va < 0){
-      return('***')
-    } else if(-1*me < 0){
-      return(paste0(prefix, " Increase"))
-    } else if(-1*me/va > high){
-      return("Very High")
-    } else if(-1*me/va > med){
-      return("High")
-    } else if(-1*me/va > low){
-      return("Medium")
-    } else if(-1*me/va <= low){
-      return("Low")
-    } else {return("Seth you fool you idiot")}
-    
-  }
+
 
   #This is where the non-summary output comes from
   temp_table <- left_join(output_table, cost_table) %>%
-    mutate(MTCO2_per_1m = ifelse(total_change_MTCO2 == 0, NA, -1*total_change_MTCO2/annual_cost),
+    mutate(gGHG_per_1m = ifelse(total_change_gGHG == 0, NA, -1*total_change_gGHG/annual_cost),
            VMT_per_1m = ifelse(total_change_VMT  == 0, NA, -1*total_change_VMT/(annual_cost/1000000)),
-           nox_per_1m = ifelse(total_change_mtnox  == 0, NA, -1*total_change_mtnox/(annual_cost)),
-           pm25_per_1m = ifelse(total_change_pm25  == 0, NA, -1*total_change_pm25/(annual_cost)),
+           nox_per_1m = ifelse(total_change_gnox  == 0, NA, -1*total_change_gnox/(annual_cost)),
+           pm25_per_1m = ifelse(total_change_gpm25  == 0, NA, -1*total_change_gpm25/(annual_cost)),
            newtrips_per_1m = ifelse(total_change_newtrips == 0, NA, -1*total_change_newtrips/(annual_cost/1000000)))
   
   #This is where the summary function is applied for each different column type
-  temp_table$MTCO2_sum <- apply(temp_table, 1, sum_fun,
-                                meas = "total_change_MTCO2",
+  temp_table$MTGHG_sum <- apply(temp_table, 1, sum_fun,
+                                meas = "total_change_gGHG",
                                 val = "annual_cost",
                                 high = 2000,
                                 med = 1000,
@@ -93,15 +101,15 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
                               med = 5000000*1000000,
                               low = 1000000*1000000,
                               prefix = "VMT")
-  temp_table$nox_sum <- apply(temp_table, 1, sum_fun,
-                              meas = "total_change_mtnox",
+  temp_table$MTnox_sum <- apply(temp_table, 1, sum_fun,
+                              meas = "total_change_gnox",
                               val = "annual_cost",
                               high = 10,
                               med = 5,
                               low = 1,
                               prefix = "NOx")
-  temp_table$pm25_sum <- apply(temp_table, 1, sum_fun,
-                               meas = "total_change_pm25",
+  temp_table$MTpm25_sum <- apply(temp_table, 1, sum_fun,
+                               meas = "total_change_gpm25",
                                val = "annual_cost",
                                high = .1,
                                med = 0.05,
@@ -114,8 +122,43 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
                                    med = 5000*1000000,
                                    low = 1000*1000000,
                                    prefix = "Daily Trips")
-
-
   
+  if(style == "summary"){
+    
+    temp_table <- temp_table %>% 
+      #rename(type_name = cap_proj_type) %>%
+      select(c(col_sel, 
+               'MTGHG_sum',
+               'VMT_sum',
+               'MTnox_sum',
+               'MTpm25_sum',
+               'newtrips_sum')) %>%
+      rename(type_name = "cap_proj_type") %>%
+      rename('Summary MT GHG' = 'MTGHG_sum',
+             'Summary VMT' = 'VMT_sum',
+             'Summary MT NOx' = 'MTnox_sum',
+             'Summary MT PM2.5' = 'MTpm25_sum',
+             'Summary Daily Active Trips' = 'newtrips_sum')
+    
+  } else if(style == "detail"){
+    
+    temp_table <- temp_table  %>% 
+      #rename(type_name = cap_proj_type) %>%
+      select(c(col_sel,
+             'gGHG_per_1m',
+             'VMT_per_1m',
+             'nox_per_1m',
+             'pm25_per_1m',
+             'newtrips_per_1m')) %>%
+      rename(type_name = "cap_proj_type") %>%
+      rename("MT GHG" = 'gGHG_per_1m',
+             "VMT" = 'VMT_per_1m',
+             "MT NOx" = 'nox_per_1m',
+             "MT PM2.5" = 'pm25_per_1m',
+             "Daily Active Trips" = 'newtrips_per_1m')
+    
+  }
+
+return(temp_table)
   
 }

@@ -3116,8 +3116,8 @@ server <- function(input, output, session) {
   
   
   ## create tables -----------------------------------------------------------
-  
-  output$ev_forecast_sheet_tbl <- renderDT({
+
+    output$ev_forecast_sheet_tbl <- renderDT({
     render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 1,
@@ -3153,6 +3153,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Advanced,
       table_number = 3,
       is_year_table = FALSE,
+      is_advanced_table = TRUE,
       non_editable_cols = c(0, 1,2),
       page_length = 10,
       comma_rows = integer(0),
@@ -3202,11 +3203,8 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
-  output$fuel_apportionment_sheet_tbl <- create_table(fuel_apportionment_sheet,
-                                                      list(target = 'row',
-                                                           disable = list(columns = c(0)),
-                                                           autoWidth = TRUE))
-  output$fuel_apportionment_sheet_tbl <- renderDT({
+
+    output$fuel_apportionment_sheet_tbl <- renderDT({
     
     render_custom_datatable(
       data_reactive = rvs$Advanced,
@@ -3222,15 +3220,15 @@ server <- function(input, output, session) {
   ## make editable -----------------------------------------------------------
   
   
-  
-  observeEvent(input$ev_forecast_edit, {
-    ev_forecast <<- editData(ev_forecast, input$ev_forecast_edit, 'ev_forecast_tbl')
-  })
-  
-  
-  observeEvent(input$vmt_forecast_edit, {
-    vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
-  })
+  #I think these two top events should be removed
+  # observeEvent(input$ev_forecast_edit, {
+  #   ev_forecast <<- editData(ev_forecast, input$ev_forecast_edit, 'ev_forecast_tbl')
+  # })
+  # 
+  # 
+  # observeEvent(input$vmt_forecast_edit, {
+  #   vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
+  # })
   
   
   # reshaping ev_forecast_sheet_tbl  #checkpoint
@@ -3451,43 +3449,123 @@ server <- function(input, output, session) {
  # seth working here - error I'm getting is that it's not finding inputs
   
   output$bikeped_costs_outputs_tbl <- renderDT({
-    browser()
- 
-    datatable(bikeped_costs_outputs,     #output_bikped(),
-              extensions = c('RowGroup','Buttons'),
-              options = list(rowGroup = list(columns = c(0)),
-                             columnDefs = list(list(visible = FALSE,
-                                                    targets = c(0))),
-                             autoWidth = TRUE,
-                             width = '100%',
-                             dom = 'tB',
-                             buttons = c('copy', 'csv', 'excel', 'pdf')),
-                        rownames = FALSE) |>
-                formatRound(c(3:7),1)})
+    print("RENDERING: Cost Output Table BikePed")
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==1,],
+      output_table = cost_output_bikeped(),
+      col_sel = c('area_type','cap_proj_type'),
+      proj_life = 30,
+      #val1_scalar = ,
+      #val2_scalar = ,
+      style = input$cost_view
+      )
+    
+    #print(temp)
+    
+    datatable(temp)
+    
+    # datatable(temp,
+    #           extensions = c('RowGroup','Buttons'),
+    #           options = list(rowGroup = list(columns = c(0)),
+    #                          columnDefs = list(list(visible = FALSE,
+    #                                                 targets = c(0))),
+    #                          autoWidth = TRUE,
+    #                          width = '100%',
+    #                          dom = 'tB',
+    #                          buttons = c('copy', 'csv', 'excel', 'pdf')),
+    #                     rownames = FALSE) |>
+    #             formatRound(c(3:7),1)
+    
+    })
+  observeEvent(input$state_input, {browser()})
   
-  output$transit_fixed_costs_outputs_tbl <- renderDT(transit_fixed_costs_outputs,
-                                                     rownames = FALSE)
+  output$transit_fixed_costs_outputs_tbl <- renderDT({
+    print("RENDERING: Transit Fixed")
+    req('')
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
+      output_table = cost_output_transitservice(),
+      col_sel = c('area_type','fuel_type','transit_mode'),
+      proj_life = 12,
+      var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Urban'& rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+      var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Rural'&rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+      style = input$cost_view
+    )
+
+    datatable(temp)})
   
-  output$transit_dr_costs_outputs_tbl <- renderDT(transit_dr_costs_outputs,
-                                                  rownames = FALSE)
+  output$transit_dr_costs_outputs_tbl <- renderDT({
+    req("")
+    print("RENDERING: Transit Fixed")
+    temp <- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
+    output_table = cost_output_transitservice(),
+    col_sel = c('area_type','fuel_type','transit_mode'),
+    proj_life = 12,
+    var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Urban'& rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+    var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Rural'&rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+    style = input$cost_view)
+    datatable(temp)})
   
-  output$pub_trans_priority_costs_outputs_tbl <- renderDT(pub_trans_priority_costs_outputs,
-                                                          rownames = FALSE)
+  output$pub_trans_priority_costs_outputs_tbl <- renderDT({   
+    temp <- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
+    output_table = cost_output_transitservice(),
+    col_sel = c('area_type','fuel_type','transit_mode'),
+    proj_life = 12,
+    var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Urban'& rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+    var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Rural'&rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+    style = input$cost_view)
+    datatable(temp)})
   
-  output$transit_zeb_costs_outputs_tbl <- renderDT(transit_zeb_costs_outputs,
-                                                   rownames = FALSE)
+  output$transit_zeb_costs_outputs_tbl <- renderDT({   
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
+      output_table = cost_output_transitservice(),
+      col_sel = c('area_type','fuel_type','transit_mode'),
+      proj_life = 12,
+      var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Urban'& rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+      var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Rural'&rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+      style = input$cost_view)
+    datatable(temp)})
   
-  output$pub_trans_rail_costs_outputs_tbl <- renderDT(pub_trans_rail_costs_outputs,
-                                                      rownames = FALSE)
+  output$pub_trans_rail_costs_outputs_tbl <- renderDT({   
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
+      output_table = cost_output_transitservice(),
+      col_sel = c('area_type','fuel_type','transit_mode'),
+      proj_life = 12,
+      var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Urban'& rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+      var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Rural'&rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+      style = input$cost_view)
+    datatable(temp)})
   
-  output$tdm_costs_outputs_tbl <- renderDT(tdm_costs_outputs,
-                                           rownames = FALSE)
+  output$tdm_costs_outputs_tbl <- renderDT({   
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==6,],
+      output_table = cost_output_TDM(),
+      col_sel = c(),
+      proj_life = 1,
+      style = input$cost_view)
+    datatable(temp)})
   
-  output$micro_costs_outputs_tbl <- renderDT(micro_costs_outputs,
-                                             rownames = FALSE)
+  output$micro_costs_outputs_tbl <- renderDT({   
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==7,],
+      output_table = cost_output_micro(),
+      col_sel = c(),
+      proj_life = 6,
+      style = input$cost_view)
+    datatable(temp)})
   
-  output$traffic_ops_costs_outputs_tbl <- renderDT(traffic_ops_costs_outputs,
-                                                   rownames = FALSE)
+  output$traffic_ops_costs_outputs_tbl <- renderDT({   
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,],
+      output_table = cost_output_micro(),
+      col_sel = c(),
+      proj_life = 6,
+      style = input$cost_view)
+    datatable(temp)})
   
   output$mhdev_costs_outputs_tbl <- renderDT(mhdev_costs_outputs,
                                              rownames = FALSE)

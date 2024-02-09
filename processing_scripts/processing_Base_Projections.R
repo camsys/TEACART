@@ -112,6 +112,7 @@ CO2e_Category_Averages <- reactive({
   
   mhdv_conventional_impf <- temp_Conventional_MDHD %>% left_join(EmRate_by_Tech()) %>%
     select(emission_rate, year, veh_type, veh_subtype, state_pct_of_category) %>%
+    mutate(CO2e_millions = state_pct_of_category *emission_rate) %>%
     group_by(year) %>%
     summarise(CO2e_millions = sum(CO2e_millions, na.rm = T))
   mhdv_conventional_impf<-mhdv_conventional_impf$CO2e_millions[mhdv_conventional_impf$year == 2021]
@@ -322,6 +323,7 @@ passenger_rail_emissions <- reactive({
         lr_em_electricity*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Light Rail"&rvs$Advanced$unit == "energy_source"]=="Electric"),
     ) %>%
     select(year,MT_CO2e_direct,MT_CO2e_electricity)
+  return(temp)
 })
 
 #Freight Rail ----
@@ -509,6 +511,8 @@ construction_and_maintenance <- reactive({
    left_join(join) %>% 
    mutate(MT_CO2e_direct = de_c*base_impf,
           MT_CO2e_upstream = ue_c*base_impf)
+ 
+ return(c_m)
 
  })
 #Final Baseline Return 
@@ -575,6 +579,7 @@ baseline_ghg_forecast <- reactive({
  
  return(temp)
 })
+
 baseline_ghg_forecast_all_years <- reactive({
   use_e = rvs$Baseline$include_electricity %>% as.numeric()
   use_up = rvs$Baseline$include_upstream_fuels %>% as.numeric()
