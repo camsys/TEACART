@@ -29,7 +29,7 @@ temp_em_df_delay_improvement <- left_join(EmRate_by_Tech, VMT_Type_Tech_Base, by
 
 temp_em_df <- CO2e_Category_Averages()
 
-temp_em_df_sub <- e_emmissions_apportionment() %>% select(-veh_supertype)
+temp_em_df_sub <- e_emmissions_apportionment() %>% ungroup()
 
 
 #inputs ------
