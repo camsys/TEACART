@@ -227,8 +227,9 @@ e_emmissions_apportionment <- reactive({
     ungroup() %>% group_by(veh_supertype,year) %>%
     mutate(electricity_per_em = electricity_per_em_temp/sum(electricity_per_em_temp)) %>%
     filter(fuel_type == "Electricity") %>%
-    filter(veh_supertype == "Light Duty Trucks") %>%
-    select(veh_supertype, electricity_per_em)
+    filter(veh_supertype == "Light Duty Vehicles") %>%
+    ungroup() %>%
+    select(year, electricity_per_em)
   return(temp_e)
 })
 
@@ -473,10 +474,6 @@ public_transit_emissions <- reactive({ #not sure where we need this so I'm leavi
   
   return(Public_Transit)
 })
-
-# observeEvent(input$state_input,{
-#   browser()
-# })
 
 #Fuel Factor Weighted ----
 Fuel_Factors_Weighted <- reactive({

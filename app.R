@@ -35,17 +35,7 @@ for (file in all_files) {
 source("globals.R")
 source("read_from_user_inputs.R")
 
-
-# create a graph ----------------------------------------------------------
-
-
-create_graph <- function(data, indicator){
-}
-
-
-
 # ui ----------------------------------------------------------------------
-
 
 ui <- function(request) {
   tagList(
@@ -1283,7 +1273,7 @@ nav_panel(title = "Assumptions",
                                      column(width = 6,
                                             plotlyOutput("baseline_ghg_line", width = "auto", height = "auto")
                                      ),
-                                     column(width = 6,
+                                     column(width = 6, #move year to top put these two in a card, title pie chart mention year, title drop down "Select year"
                                             plotlyOutput("baseline_ghg_pie", width = "auto", height = "auto")
                                      )
                                      ),
@@ -1477,11 +1467,47 @@ server <- function(input, output, session) {
   source("functions/reshaping.R", local = T)
   source("functions/make_project_table_cumulative.R")
   
-  
   #set reactiveValues ----------------------------------------------------------
   rv <- reactiveValues()
   rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
   rvs_out <- read_output_tables(".\\data\\3.Model_Outputs.xlsx")
+  
+  #update and record 
+  #key_inputs updater ----------------------------------------------------------
+  key_inputs_listen <- reactive({
+    list(input$state_input,
+         input$base_year,
+         input$horizon_year_1,
+         input$horizon_year_2,
+         input$horizon_year_3,
+         input$transportation_scope,
+         input$scope_emissions,
+         input$scope_fuels,
+         input$vmt_forecast_input,
+         input$vmt_nhs,
+         input$ev_baseline_input,
+         input$grid_emissions_input)
+  })
+  
+  observeEvent(key_inputs_listen(),{
+    print("RUNNING: Update rvs$Baseline key inputs")
+    
+    rvs$Baseline <- data.frame(state = input$state_input,
+                               base_year = input$base_year,
+                               horizon_year_1 = input$horizon_year_1,
+                               horizon_year_2 = input$horizon_year_2,
+                               horizon_year_3 = input$horizon_year_3,
+                               trans_system_scope = input$transportation_scope,
+                               include_electricity = input$scope_emissions,
+                               include_upstream_fuels = input$scope_fuels,
+                               # vmt_nhs = input$vmt_nhs,
+                               vmt_forecast = input$vmt_forecast_input,
+                               veh_elec_baseline = input$ev_baseline_input,
+                               elec_grid_emissions_net_zero = input$grid_emissions_input
+    )
+    
+    updateSelectInput(inputId = "pie_graph_year", label = "", choices = c(input$base_year, input$horizon_year_1, input$horizon_year_2, input$horizon_year_3))
+  })
   
   # Initiate or Upload User Inputs -------------------------------------------
   observeEvent(input$user_inputs_upload, {
@@ -1555,9 +1581,7 @@ server <- function(input, output, session) {
   read_static_tables(".\\data\\projects.xlsx", projects_names)
   
   
-  #create project tables -----------------------------------------------------------
-  
-  # rendering bike ped table
+  # Project Tables: Render ------------------------------------------------------
   
   output$bikeped_projs_tbl <- renderDT({
     #req(rvs$Projects)
@@ -1574,7 +1598,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
 
   output$transit_fixed_projs_tbl <- renderDT({
     
@@ -1797,9 +1820,8 @@ server <- function(input, output, session) {
     
   })
 
-# Observe Table Edits to projects ---------------------------------------------------------
-
-    # observe edits to the bikeped_projs
+  # Project Tables: Observe and update edits to projects ------------------------
+  # observe edits to the bikeped_projs
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
     req(rvs$Projects)
 
@@ -1812,8 +1834,7 @@ server <- function(input, output, session) {
                                                                        horizon_year_2 = input$horizon_year_2,
                                                                        horizon_year_3 = input$horizon_year_3)
   })
-  
- 
+
   # observe edits to the transit_fixed_projs
   observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
     req(rvs$Projects)
@@ -2004,6 +2025,7 @@ server <- function(input, output, session) {
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
     
   })
+  
   # observe edits to the expansion_projs_tbl table
   observeEvent(input$expansion_projs_tbl_cell_edit, {
     
@@ -2021,8 +2043,7 @@ server <- function(input, output, session) {
     
   })
 
-
-# observe reset buttons on projects ---------------------------------------------------
+  # observe reset buttons on projects ---------------------------------------------------
 
   observeEvent(input$reset_bikeped_projs_tbl, {
     rvs$Projects[rvs$Projects$table_no_ui == 1,] <- initial_projects[initial_projects$table_no_ui == 1, ]
@@ -3256,30 +3277,6 @@ server <- function(input, output, session) {
   
   # server baseline outputs -------------------------------------------------
   
-  # dummy data - copy pasta
-  # data_sample <- c(
-  #   "Emissions (MT CO2e),2021,2025,2030,2050",
-  #   "Light Duty Vehicles,16926661,17657202,17122996,16561171",
-  #   "Medium and Heavy Duty Trucks,5594752,5580876,5264095,5261935",
-  #   "Public Transit,120934,120934,120934,120934",
-  #   "Passenger Rail,76608,76608,76608,76608",
-  #   "Freight Rail,56162,57720,59729,68485",
-  #   "Construction and Maintenance,0,0,0,0",
-  #   "Total (Onroad Vehicles),22521413,23238078,22387092,21823105",
-  #   "Total (All Transportation),22775117,23493340,22644362,22089133",
-  #   "Change from Base Year (%),,3%,-1%,-3%"
-  # )
-  # 
-  # dt <- rbindlist(lapply(data_sample, function(x) data.table(t(strsplit(x, ",")[[1]]))), use.names = TRUE, fill = TRUE)
-  # 
-  # # better names, dropping first row, changing data stored as character to numeric
-  # setnames(dt, unlist(dt[1,]))
-  # dt <- dt[-1]
-  # numeric_columns <- names(dt)[!names(dt) %in% c("Emissions (MT CO2e)", "Change from Base Year (%)")]
-  # dt[, (numeric_columns) := lapply(.SD, function(x) as.numeric(gsub(",", "", x))), .SDcols = numeric_columns]
-  # 
-  # # next time just upload a table
-  
   output$baseline_outputs <- renderDT({
     req(baseline_ghg_forecast())
     dt <- baseline_ghg_forecast()
@@ -3511,54 +3508,90 @@ server <- function(input, output, session) {
   #Processing working ----
 
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
+  
   source("processing_scripts/processing_BikePed.R", local = TRUE) #Qi done
+  source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi done (confirm with Ben)
+  source("processing_scripts/processing_Micro.R", local = TRUE) #Qi done
+  
   source("processing_scripts/processing_OPS.R", local = TRUE)
   source("processing_scripts/processing_MDHD.R", local = TRUE) #Gui done - needs cost
-  source("processing_scripts/processing_Micro.R", local = TRUE) #Qi done
   source("processing_scripts/processing_TransitElec.R", local = TRUE)  #Qi done
-  source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi done (confirm with Ben)
   source("processing_scripts/processing_TDM.R", local = TRUE) #Qi done
   source("processing_scripts/processing_ParkRide.R", local = TRUE) #Qi done
   source("processing_scripts/processing_freight.R", local = T) #Gui done - needs cost
   source("processing_scripts/processing_EVSE.R", local = T) #Gui done - needs cost
   source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Finished
   source("functions/cost_maker.R", local = TRUE)
-  #rvs update from different inputs
-  #key_inputs update
-  key_inputs_listen <- reactive({
-    list(input$state_input,
-         input$base_year,
-         input$horizon_year_1,
-         input$horizon_year_2,
-         input$horizon_year_3,
-         input$transportation_scope,
-         input$scope_emissions,
-         input$scope_fuels,
-         input$vmt_forecast_input,
-         input$vmt_nhs,
-         input$ev_baseline_input,
-         input$grid_emissions_input)
-  })
   
-  observeEvent(key_inputs_listen(),{
+  observeEvent(input$state_input,{
     #browser()
-    print("RUNNING: Update rvs$Baseline key inputs")
-
-    rvs$Baseline <- data.frame(state = input$state_input,
-                               base_year = input$base_year,
-                               horizon_year_1 = input$horizon_year_1,
-                               horizon_year_2 = input$horizon_year_2,
-                               horizon_year_3 = input$horizon_year_3,
-                               trans_system_scope = input$transportation_scope,
-                               include_electricity = input$scope_emissions,
-                               include_upstream_fuels = input$scope_fuels,
-                               # vmt_nhs = input$vmt_nhs,
-                               vmt_forecast = input$vmt_forecast_input,
-                               veh_elec_baseline = input$ev_baseline_input,
-                               elec_grid_emissions_net_zero = input$grid_emissions_input
-                               )
+    req("")
+    temp_sc1 <- data.frame()
+    temp_sc2 <- data.frame()
+    rs <- reactive_scenario()
     
-    updateSelectInput(inputId = "pie_graph_year", label = "", choices = c(input$base_year, input$horizon_year_1, input$horizon_year_2, input$horizon_year_3))
+    if(rs[1,2]){
+    output_bikped() %>% 
+      select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
+      mutate(process = "Bicycle and Pedestrian") %>% rbind(temp_sc1)
+    } 
+    if(rs[2,2]){
+      output_TransitService() %>% 
+        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
+        mutate(process = "Travel Demand Management") %>% rbind(temp_sc1)
+    }
+    if(rs[3,2]){
+      output_micro() %>% 
+        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
+        mutate(process = "Micromobility")
+    }
+    if(rs[4,2]){
+      output_TDM() %>% 
+        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
+        mutate(process = "Travel Demand Management")
+    }
+    if(rs[5,2]){
+      output_pnr() %>% 
+        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
+        mutate(process = "Park and Ride")
+    }
+    if(rs[6,2]){
+      output_transitElec() %>% 
+        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
+        mutate(process = "Transit Electrification")
+    }
+    if(rs[7,2]){
+      output_MDHD() %>% 
+        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
+        mutate(process = "MD/HD Truck Replacement")
+    }
+    if(rs[8,2]){
+      output_EVSE() %>% 
+        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
+        mutate(process = "Electric Vehicle Charging Infrastructure")
+    }
+    if(rs[9,2]){
+      output_freight()
+    }
+    if(rs[10,2]){
+      #Operations
+     # output_OPS() %>% 
+     #   select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
+     #   mutate(process = "Micromobility")
+    }
+    if(rs[11,2]){
+      output_RoadwayExp() %>% 
+        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
+        mutate(process = "Micromobility")
+    }
+    if(rs[12,2]){
+      #CUSTOM PROJECTS
+      #output_micro() %>% 
+      #  select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
+      #  mutate(process = "Micromobility")
+    }
+    
+    
   })
   
   # output$pdf_report <- downloadHandler(
