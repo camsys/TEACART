@@ -112,7 +112,7 @@ CO2e_Category_Averages <- reactive({
   
   mhdv_conventional_impf <- temp_Conventional_MDHD %>% left_join(EmRate_by_Tech()) %>%
     select(emission_rate, year, veh_type, veh_subtype, state_pct_of_category) %>%
-    mutate(CO2e_millions = state_pct_of_category * emission_rate) %>%
+    mutate(CO2e_millions = state_pct_of_category *emission_rate) %>%
     group_by(year) %>%
     summarise(CO2e_millions = sum(CO2e_millions, na.rm = T))
   mhdv_conventional_impf<-mhdv_conventional_impf$CO2e_millions[mhdv_conventional_impf$year == 2021]
@@ -124,7 +124,7 @@ CO2e_Category_Averages <- reactive({
   
   all_cats_temp <- all_cats_temp %>% 
     mutate(base_impf = ifelse(veh_supertype == "Light Duty Vehicles", CO2e_millions/ldv_2022,
-                              CO2e_millions/mhdv_2022)) %>%
+                              CO2e_millions/ldv_gas_impf)) %>%
     mutate(delay_impf = ifelse(veh_supertype == "Light Duty Vehicles", CO2e_millions/ldv_gas_impf,
                                CO2e_millions/mhdv_conventional_impf))
   
@@ -321,7 +321,7 @@ passenger_rail_emissions <- reactive({
         cr_em_electricity*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Commuter Rail"&rvs$Advanced$unit == "energy_source"]=="Electric")+
         hr_em_electricity*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Heavy Rail"&rvs$Advanced$unit == "energy_source"]=="Electric")+
         lr_em_electricity*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Light Rail"&rvs$Advanced$unit == "energy_source"]=="Electric"),
-    ) %>%
+    ) %>% View()
     select(year,MT_CO2e_direct,MT_CO2e_electricity)
 })
 
@@ -428,13 +428,7 @@ public_transit_emissions <- reactive({ #not sure where we need this so I'm leavi
   for(yr in 2020:2050){
     Public_Transit_temp = Public_Transit_data %>%filter(State == state_ch)%>% mutate(year = yr) %>% filter(year == yr)
     Public_Transit = rbind(Public_Transit, Public_Transit_temp)
-  }
-  
-  Public_Transit <- Public_Transit %>%
-    dplyr::rename(
-      cb_revmiles = CB,
-      dr_revmiles = DR,
-      mb_revmiles = MB)
+                           }
   
   
   #NOTE FOR BEN: Issue here where the excel sheet is referencing the on-road vehcile economy for Bus: Diesel instead of COmmuter BUs: Diesel in public transit tab
@@ -471,7 +465,6 @@ public_transit_emissions <- reactive({ #not sure where we need this so I'm leavi
            MT_CO2e_electricity   = MB_Emissions_Electricity+DR_Emissions_Electricity+CB_Emissions_Electricity,
            MT_CO2e_upstream = MB_Emissions_Upstream+DR_Emissions_Upstream+CB_Emissions_Upstream) %>%
     select(year, MT_CO2e_direct, MT_CO2e_electricity, MT_CO2e_upstream )
-  
   return(Public_Transit)
 })
 
@@ -499,29 +492,13 @@ Fuel_Factors_Weighted <- reactive({
   return(Fuel_Factors_Weighted)
   })
 
-construction_and_maintenance <- reactive({
- de <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 6 & rvs$Advanced$unit=="direct_emissions"] %>% as.numeric()
- ue <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 6 & rvs$Advanced$unit=="upstream_emissions"] %>% as.numeric()
- join<-CO2e_Category_Averages() %>% filter(veh_supertype == "Medium/Heavy Duty Vehicles") %>% select(year,base_impf)
- 
- c_m <- data.frame(year = 2021:2050, 
-                   de_c = as.numeric(de), 
-                   ue_c = as.numeric(ue)) %>%
-   left_join(join) %>% 
-   mutate(MT_CO2e_direct = de_c*base_impf,
-          MT_CO2e_upstream = ue_c*base_impf)
-
- })
-#Final Baseline Return 
+#Final Baseline Return # for 
 baseline_ghg_forecast <- reactive({
-  use_e = rvs$Baseline$include_electricity %>% as.numeric()
-  use_up = rvs$Baseline$include_upstream_fuels %>% as.numeric()
-  #Em_OnRoad_Base_up()
-  #public_transit_emissions()
-  #passenger_rail_emissions()
- 
-  temp<- Em_OnRoad_Base_up() %>%
-    filter(year %in% c(rvs$Baseline$base_year, 
+  use_e = rvs$Baseline$include_electricity
+  use_up = rvs$Baseline$include_upstream_fuels
+  
+ temp<- Em_OnRoad_Base_up() %>%
+    filter(year %in% c(2021, 
                        rvs$Baseline$horizon_year_1,
                        rvs$Baseline$horizon_year_2,
                        rvs$Baseline$horizon_year_3)) %>%
@@ -531,7 +508,7 @@ baseline_ghg_forecast <- reactive({
     rbind(
       
       public_transit_emissions()%>%
-        filter(year %in% c(rvs$Baseline$base_year, 
+        filter(year %in% c(2021, 
                            rvs$Baseline$horizon_year_1,
                            rvs$Baseline$horizon_year_2,
                            rvs$Baseline$horizon_year_3)) %>%
@@ -543,7 +520,7 @@ baseline_ghg_forecast <- reactive({
     rbind(
       
       passenger_rail_emissions() %>%
-        filter(year %in% c(rvs$Baseline$base_year, 
+        filter(year %in% c(2021, 
                            rvs$Baseline$horizon_year_1,
                            rvs$Baseline$horizon_year_2,
                            rvs$Baseline$horizon_year_3)) %>%
@@ -555,92 +532,59 @@ baseline_ghg_forecast <- reactive({
     rbind(
       
       freight_rail_emissions()%>%
-        filter(year %in% c(rvs$Baseline$base_year, 
+        filter(year %in% c(2021, 
                            rvs$Baseline$horizon_year_1,
                            rvs$Baseline$horizon_year_2,
                            rvs$Baseline$horizon_year_3)) %>%
         mutate(veh_supertype = "Freight Rail") %>%
         mutate(Emissions = MT_CO2e_direct)%>% 
-        select(veh_supertype,year, Emissions)
-    ) %>% rbind(
-      construction_and_maintenance()%>%
-        filter(year %in% c(rvs$Baseline$base_year, 
-                           rvs$Baseline$horizon_year_1,
-                           rvs$Baseline$horizon_year_2,
-                           rvs$Baseline$horizon_year_3)) %>%
-        mutate(veh_supertype = "Construction and Maintenance") %>%
-        mutate(Emissions = MT_CO2e_direct + use_up*MT_CO2e_upstream) %>% 
         select(veh_supertype,year, Emissions)
     ) %>%
     pivot_wider(names_from= year, values_from = Emissions)
  
  return(temp)
 })
-baseline_ghg_forecast_all_years <- reactive({
-  use_e = rvs$Baseline$include_electricity %>% as.numeric()
-  use_up = rvs$Baseline$include_upstream_fuels %>% as.numeric()
-  #Em_OnRoad_Base_up()
-  #public_transit_emissions()
-  #passenger_rail_emissions()
-  
-  temp<- Em_OnRoad_Base_up() %>%
-    #filter(year %in% c(2021, 
-    #                   rvs$Baseline$horizon_year_1,
-    #                   rvs$Baseline$horizon_year_2,
-    #                   rvs$Baseline$horizon_year_3)) %>%
-    mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% 
-    select(veh_supertype,year, Emissions) %>%
-    
-    rbind(
-      
-      public_transit_emissions()%>%
-        #filter(year %in% c(2021, 
-        #                   rvs$Baseline$horizon_year_1,
-        #                   rvs$Baseline$horizon_year_2,
-        #                   rvs$Baseline$horizon_year_3)) %>%
-        mutate(veh_supertype = "Public Transit") %>%
-        mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% 
-        select(veh_supertype,year, Emissions)
-      
-    ) %>%
-    rbind(
-      
-      passenger_rail_emissions() %>%
-        #filter(year %in% c(2021, 
-        #                   rvs$Baseline$horizon_year_1,
-        #                   rvs$Baseline$horizon_year_2,
-        #                   rvs$Baseline$horizon_year_3)) %>%
-        mutate(veh_supertype = "Passenger Rail") %>%
-        mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity)%>% 
-        select(veh_supertype,year, Emissions)
-      
-    ) %>%
-    rbind(
-      
-      freight_rail_emissions()%>%
-        #filter(year %in% c(2021, 
-        #                   rvs$Baseline$horizon_year_1,
-        #                   rvs$Baseline$horizon_year_2,
-        #                   rvs$Baseline$horizon_year_3)) %>%
-        mutate(veh_supertype = "Freight Rail") %>%
-        mutate(Emissions = MT_CO2e_direct)%>% 
-        select(veh_supertype,year, Emissions)
-    ) %>% rbind(
-      construction_and_maintenance()%>%
-        #filter(year %in% c(2021, 
-        #                   rvs$Baseline$horizon_year_1,
-        #                   rvs$Baseline$horizon_year_2,
-        #                   rvs$Baseline$horizon_year_3)) %>%
-        mutate(veh_supertype = "Construction and Maintenance") %>%
-        mutate(Emissions = MT_CO2e_direct + use_up*MT_CO2e_upstream) %>% 
-        select(veh_supertype,year, Emissions)
-    ) #%>%
-    #pivot_wider(names_from= year, values_from = Emissions)
-  
-  return(temp)
-})
 
-
+line_plot <- function(df_in){
+  df_in <- baseline_ghg_forecast()
+  
+  df_temp <- df_in %>% mutate(year = as.numeric(year))
+  
+  lplot <- plot_ly(df_temp, x = ~year, y = ~Emissions, type = 'scatter', mode = 'lines', 
+                   color = ~(veh_supertype),
+                   linetype = ~(veh_supertype),
+                   name = ~veh_supertype,
+                   hovertemplate = paste0('Year: %{x}<br>', 
+                                          'Emissions (MT CO2e:%{y:.2s} <br>')) %>%
+    layout(xaxis = list(title = 'Year'),
+           yaxis = list(title = "Emisions", separatethousands= TRUE)) %>%
+    config(displayModeBar = FALSE)
+  
+  return(lplot)
+  
+}
+pie_plot <- function(df_in){
+  #df_in <- baseline_ghg_forecast() %>% filter(year == 2021)
+  
+  comm_plot <- df_in %>% plot_ly(source = "sourceName") %>% 
+    add_pie(labels = ~veh_supertype, 
+            values = ~Emissions, 
+            automargin = TRUE, 
+            key = ~veh_supertype, hole = 0.6, sort = TRUE, 
+            direction = "clockwise",
+            hovertemplate = ~paste("%{label} <br>", paste0(round(Emissions, digits = 0)," MT CO2e"), "</br> %{percent} <extra></extra>"), 
+            marker = list(colors = ~veh_supertype, line = list(color = "#595959", width = 1)), 
+            #textfont = list(family = "Arial", size = 10), 
+            textposition = "none") %>%
+    layout(
+      showlegend = TRUE, autosize = T) %>% 
+    config(displaylogo = FALSE, 
+           modeBarButtonsToRemove = c("zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d", "toggleSpikelines", "hoverCompareCartesian", "hoverClosestGeo", "hoverClosest3d", "hoverClosestGeo", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "hoverClosestCartesian")#,
+           # toImageButtonOptions= list(filename = saveName,
+           #                            width = saveWidth,
+           #                            height =  saveHeight)
+    )
+}
 output$baseline_line_graph <- renderPlotly({
   req(baseline_ghg_forecast())
   
