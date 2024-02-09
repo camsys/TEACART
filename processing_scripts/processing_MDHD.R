@@ -23,6 +23,9 @@ mdhd_veh_replacement <- reactive({
     pivot_wider(names_from = unit, values_from = value)
 })
 
+observe({
+  browser()
+})
 # observeEvent(list(EmRate_by_Tech()), { ### uncomment this line and browser and comment below to test!
 output_MDHD <- reactive({
   # browser()

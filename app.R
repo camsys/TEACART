@@ -1334,12 +1334,11 @@ nav_panel(title = "Assumptions",
                   ),
                   
 
-# scenario and strategy summary ui ----------------------------------------
+# scenario summary ui ----------------------------------------
 
                   
-                  nav_panel(title = "Scenario and Strategy Summary",
-                            HTML("<p>This tab reports the scenario- and 
-                                 strategy-level outputs for greenhouse gas 
+                  nav_panel(title = "Scenario Summary",
+                            HTML("<p>This tab reports the scenario-level outputs for greenhouse gas 
                                  emissions (metric tons of carbon dioxide 
                                  equivalent or MT CO2e); vehicle miles traveled 
                                  (VMT); local pollution from oxides of nitrogen 
@@ -1348,11 +1347,7 @@ nav_panel(title = "Assumptions",
                                  <p>
                                  For the Scenario Summary, please select the 
                                  desired indicator to compare upto two 
-                                 different scenarios with the baseline forecast.<br>
-                                 <p>
-                                 For the Strategy Summary, please select the 
-                                 desired scenario and indicator to view the 
-                                 changes at the strategy level."),
+                                 different scenarios with the baseline forecast."),
                             fluidRow(
                               p(""),
                               title = "Select Indicator",
@@ -1372,6 +1367,48 @@ nav_panel(title = "Assumptions",
                               column(6,
                                      plotlyOutput("emission_change_graph", width = "auto", height = "auto"))),
                   ),
+
+
+# strategy summary ui ----------------------------------------
+
+
+nav_panel(title = "Strategy Summary",
+          HTML("<p>This tab reports the strategy-level outputs for greenhouse gas 
+                                 emissions (metric tons of carbon dioxide 
+                                 equivalent or MT CO2e); vehicle miles traveled 
+                                 (VMT); local pollution from oxides of nitrogen 
+                                 (NOx) and fine particulate matter (PM2.5); 
+                                 and daily active trips.<br>
+                                 For the Strategy Summary, please select the 
+                                 desired scenario and indicator to view the 
+                                 changes at the strategy level."),
+          fluidRow(
+            p(""),
+            title = "Select Indicator",
+            selectizeInput(inputId = "strategy_indicator",
+                           label = "Indicator",
+                           selected = 'CO2',
+                           choices = c( 
+                             'MT CO2e' = 'CO2',
+                             'VMT (Mile)' = 'VMT',
+                             'MT NOx' = 'Nox',
+                             'MT PM2.5' = 'PM2.5',
+                             'Daily Active Trips' = 'New Daily Active Trips')
+            ),
+          selectizeInput(inputId = "strategy_scen_select",
+                         label = "Scenario",
+                         selected = 'Scenario 1',
+                         choices = c( 
+                           'Scenario 1' = 'scen_1',
+                           'Scenario 2' = 'scen_2')
+          )),
+          fluidRow(
+            column(6,
+                   DT::DTOutput('strategy_summary_tbl')),
+            column(6,
+                   plotlyOutput("strategy_summary_graph", width = "auto", height = "auto"))),
+),
+
 
 # cost effectiveness ui ---------------------------------------------------
 
@@ -3664,7 +3701,26 @@ server <- function(input, output, session) {
   source("processing_scripts/processing_EVSE.R", local = T) #Gui done - needs cost
   source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Finished
   source("functions/cost_maker.R", local = TRUE)
+  source("processing_scripts/processing_Allassump.R", local = TRUE) #Finished
   
+  #rvs update from different inputs
+  #key_inputs update
+
+    key_inputs_listen <- reactive({
+    list(input$state_input,
+         input$base_year,
+         input$horizon_year_1,
+         input$horizon_year_2,
+         input$horizon_year_3,
+         input$transportation_scope,
+         input$scope_emissions,
+         input$scope_fuels,
+         input$vmt_forecast_input,
+         input$vmt_nhs,
+         input$ev_baseline_input,
+         input$grid_emissions_input)
+  })
+ 
   observeEvent(input$state_input,{
     #browser()
     req("")
