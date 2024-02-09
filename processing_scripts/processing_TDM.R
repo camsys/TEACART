@@ -45,10 +45,10 @@ library(tidyverse)
  output_TDM <- reactive({
   #observeEvent(input$state_input,{
 
-  #browser()
-  # req(rvs)
-  # req(emrate_by_tech_ldv())
-  # req(Fuel_Factors_Weighted())
+  browser()
+  req(rvs)
+  req(emrate_by_tech_ldv())
+  req(Fuel_Factors_Weighted())
   
   emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light Duty Vehicles')
   
@@ -82,31 +82,3 @@ library(tidyverse)
   
   return(tdm_output)
 })
- 
- 
- cost_output_TDM <- reactive({
-   
-   emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light Duty Vehicles')
-  Assumptions_tdm <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 3,]  # table 3 is TDM in Assumptions
-   
-   # get the desired vars
-   co2emrate <- emrate_by_tech_ldv$CO2e_millions[emrate_by_tech_ldv$year== rvs$Baseline$horizon_year_1]
-   emrate_nox <- emrate_by_tech_ldv$base_impf[emrate_by_tech_ldv$year== rvs$Baseline$horizon_year_1]
-   
-   # get values from Fuel_Factors_Weighted()
-   fuel_factorNox <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
-   fuel_factorPMe <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
-   fuel_factorPMtb <- Fuel_Factors_Weighted()$PM25_tires_brakes_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
-   
-   
-   output_TDM_cost <- data.frame(
-     comm_tripreduce = 'commuter trip reduction program',
-     total_change_gGHG = -prod(Assumptions_tdm$value, na.rm = TRUE) * co2emrate * 2,
-     total_change_VMT = -prod(Assumptions_tdm$value, na.rm = TRUE) *2, # why *2 here? ask Ben
-     total_change_gnox = -prod(Assumptions_tdm$value, na.rm = TRUE) *2 * fuel_factorNox * emrate_nox,
-     total_change_gpm25 =  -prod(Assumptions_tdm$value, na.rm = TRUE) *2 * fuel_factorPMe * emrate_nox + -prod(Assumptions_tdm$value, na.rm = TRUE) *2 * fuel_factorPMtb,
-     total_change_newtrips = 0
-   )
-   
-   return(output_TDM_cost)
- })

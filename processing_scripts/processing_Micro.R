@@ -27,7 +27,10 @@
 output_micro <- reactive({
 #  observeEvent(input$state_input,{
   
-
+    req(rvs)
+    req(emrate_by_tech_ldv())
+    req(Fuel_Factors_Weighted())
+    
     emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light Duty Vehicles')
     
     Capital_Project_Inputs_Micro <- rvs$Projects[rvs$Projects$table_no_ui == 8,] %>% #table 8 is micro in Projects
@@ -64,34 +67,4 @@ output_micro <- reactive({
     
     return(micro_output)
   })
-
-
-cost_output_micro <- reactive({
   
-  emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light Duty Vehicles')
-  Assumptions_micro <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 4,]  # table 4 is micro in Assumptions
-  
-  # get the desired vars
-  bike_per_week <- Assumptions_micro$value[Assumptions_micro$unit == 'bike_trips_per_week']
-  avg_triplen <- Assumptions_micro$value[Assumptions_micro$unit == 'avg_trip_miles']
-  priauto_share <- Assumptions_micro$value[Assumptions_micro$unit == 'prior_auto_mode_share']
-  co2emrate <- emrate_by_tech_ldv$CO2e_millions[emrate_by_tech_ldv$year== rvs$Baseline$horizon_year_1]
-  emrate_nox <- emrate_by_tech_ldv$base_impf[emrate_by_tech_ldv$year== rvs$Baseline$horizon_year_1]
-  
-  # get values from Fuel_Factors_Weighted()
-  fuel_factorNox <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
-  fuel_factorPMe <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
-  fuel_factorPMtb <- Fuel_Factors_Weighted()$PM25_tires_brakes_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
-  
-  
-  output_micro_cost <- data.frame(
-    ebike_subsidy = 'e-bike subsidies',
-    total_change_gGHG = bike_per_week * avg_triplen * priauto_share * 52 * -co2emrate,
-    total_change_VMT = bike_per_week * avg_triplen * priauto_share * 52,
-    total_change_gnox = (bike_per_week * avg_triplen * priauto_share * 52) * fuel_factorNox * emrate_nox,
-    total_change_gpm25 = (bike_per_week * avg_triplen * priauto_share * 52) * fuel_factorPMe * emrate_nox + (bike_per_week * avg_triplen * priauto_share * 52) * fuel_factorPMtb,
-    total_change_newtrips = bike_per_week / 7
-  )
-  
-  return(output_micro_cost)
-})
