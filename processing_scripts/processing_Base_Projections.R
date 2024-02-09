@@ -500,6 +500,10 @@ Fuel_Factors_Weighted <- reactive({
   return(Fuel_Factors_Weighted)
   })
 
+Fuel_Factors_by_supertype <- reactive({
+  Fuel_Factors_Weighted() %>% filter(veh_subtype == "All") %>% select(-veh_subtype) %>% convert_to_nested_list()
+})
+
 construction_and_maintenance <- reactive({
  de <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 6 & rvs$Advanced$unit=="direct_emissions"] %>% as.numeric()
  ue <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 6 & rvs$Advanced$unit=="upstream_emissions"] %>% as.numeric()
