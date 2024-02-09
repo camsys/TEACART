@@ -82,11 +82,11 @@ output_transitElec <- reactive({
 #  observeEvent(input$state_input,{
   
     #browser()
-    req(EmRate_by_Tech())
-    req(VMT_Type_Tech_Base())
-    req(rvs)
-    req(CO2e_Category_Averages())
-    req(Fuel_Factors_Weighted())
+    # req(EmRate_by_Tech())
+    # req(VMT_Type_Tech_Base())
+    # req(rvs)
+    # req(CO2e_Category_Averages())
+    # req(Fuel_Factors_Weighted())
     
     # collect need variables
     
@@ -147,13 +147,11 @@ output_transitElec <- reactive({
      
    
     transitelect_output <- Capital_Project_Inputs_transit_elec %>%
-      left_join(Assumptions_transitelect,by = c('area_type','transit_mode')) %>%
+      left_join(select(Assumptions_transitelect,area_type,transit_mode,value),by = c('area_type','transit_mode')) %>%
       rename(avg_pax_mi_per_veh_mi = value) %>% 
-      select(-table_no_ui,-unit,-category, - table, - transit_category) %>%
     left_join(elect_emrate, by = c('year')) %>% # the variable to use: electricity_carbon_content
-      left_join(Assumptions_transitelect2,by = c('fuel_type','transit_mode')) %>%
+      left_join(select(Assumptions_transitelect2,fuel_type,transit_mode,value),by = c('fuel_type','transit_mode')) %>%
       rename(fuel_econ = value) %>% 
-      select(-table_no_ui,-unit,-category, - table, - transit_category) %>%
       # create a merge field
       mutate(merge_col = paste0(transit_mode, ": ",fuel_type)) %>%
       mutate(allyear_emrate = case_when(merge_col == 'Bus: Diesel' ~ 1/fuel_econ * fuelconv_ditoga * fuelfact_disblend*1000 + fuelfact_disCH4 +  fuelfact_disN20,
@@ -162,7 +160,7 @@ output_transitElec <- reactive({
                                         merge_col == 'Demand Response: CNG' ~ 1/fuel_econ *fuelconv_cfCNGtoGas * fuelfact_cng * 1000 + fuelfact_cngCH4 + fuelfact_cngN20),
              onroad_elect_emrate = case_when(merge_col %in% c('Bus: Electric','Demand Response: Electric') ~ 1/fuel_econ *fuelconv_kwHtoga * electricity_carbon_content))%>%
       #mutate(onroad_all_rate = ifelse(!is.na(allyear_emrate), allyear_emrate,onroad_elect_emrate)) %>%
-      left_join(Assumptions_transitelect3, by = c('transit_mode','area_type')) %>%
+      left_join(select(Assumptions_transitelect3,area_type,transit_mode,value), by = c('transit_mode','area_type')) %>%
       rename(avg_vrm = value) %>%
       mutate(affected_VRM = ifelse(fuel_type != 'Electric', replacement_vehicles * avg_vrm,0),
                       ## calculate CO2 change
@@ -185,3 +183,49 @@ output_transitElec <- reactive({
     return(transitelect_output)
     
     })
+
+# observeEvent(input$state_input,{
+#   browser()
+# })
+
+
+cost_output_transitselect<- reactive({
+
+  fuel_factorCNGbus_PM25 <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
+
+  fuel_factorCNGbus_NOX <-Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
+
+  fuel_factordisbus_NOX <-Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
+
+  fuel_factorgas_medduty_NOX <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Medium Duty Trucks'& Fuel_Factors_Weighted()$veh_subtype == 'Gasoline/Diesel']
+
+  fuel_factorgas_medduty_PM25 <-Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Medium Duty Trucks'& Fuel_Factors_Weighted()$veh_subtype == 'Gasoline/Diesel']
+
+  Assumptions_transitservice <- rvs$Assumptions[rvs$Assumptions$transit_category == 'Bus Priority Factors',] %>%
+    filter_all(any_vars(!is.na(.)))
+  
+  transitelect_base <- output_transitElec() %>%
+    filter(year == input$horizon_year_1) %>%
+    filter(!(is.na(fuel_type))) %>%
+    select( -contains("total_"))
+
+  
+  output_transitelect_cost <- transitelect_base %>%
+    mutate(total_change_gGHG = case_when(transit_mode == 'Bus' ~-(avg_vrm * (allyear_emrate-unique(.$onroad_elect_emrate[merge_col == 'Bus: Electric']))),
+                                         transit_mode == 'Demand Response' ~ -(avg_vrm * (allyear_emrate-unique(.$onroad_elect_emrate[merge_col == 'Demand Response: Electric'])))),
+           total_change_VMT = 0,
+           total_change_gnox = case_when(fuel_type == 'Diesel'~ -avg_vrm * fuel_factordisbus_NOX,
+                                         fuel_type == 'CNG' ~ -avg_vrm * fuel_factorCNGbus_NOX,
+                                         fuel_type == 'Gasoline' ~ -avg_vrm * fuel_factorgas_medduty_NOX),
+           total_change_gpm25 = case_when(fuel_type == 'Diesel'~ - avg_vrm * fuel_factordisbus_PM25,
+                                          fuel_type == 'CNG' ~ -avg_vrm * fuel_factorCNGbus_PM25,
+                                          fuel_type == 'Gasoline' ~ -avg_vrm * fuel_factorgas_medduty_PM25),
+           total_change_newtrips = 0) %>% 
+    filter(fuel_type != 'Electric') %>%
+    select_if(~all(!is.na(.))) %>%
+    mutate(table_name = paste0(transit_mode,": ",fuel_type,": ", area_type)) %>%
+    select(contains("total_"),table_name)
+  
+  
+  return(output_transitelect_cost)
+})
