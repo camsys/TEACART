@@ -141,8 +141,8 @@ cost_output_transitselect <- reactive({
            total_change_newtrips = 0) %>% 
     filter(fuel_type != 'Electric') %>%
     select_if(~all(!is.na(.))) %>%
-    mutate(table_name = paste0(transit_mode,": ",fuel_type,": ", area_type)) %>%
-    select(contains("total_"),table_name)
+   # mutate(table_name = paste0(transit_mode,": ",fuel_type,": ", area_type)) %>%
+    select(contains("total_"),transit_mode,fuel_type,area_type)
   
   
   return(output_transitelect_cost)
