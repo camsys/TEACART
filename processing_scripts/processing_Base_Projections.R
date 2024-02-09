@@ -321,7 +321,6 @@ passenger_rail_emissions <- reactive({
         hr_em_electricity*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Heavy Rail"&rvs$Advanced$unit == "energy_source"]=="Electric")+
         lr_em_electricity*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Light Rail"&rvs$Advanced$unit == "energy_source"]=="Electric"),
     ) %>%
-    ) %>%
     select(year,MT_CO2e_direct,MT_CO2e_electricity)
 })
 
@@ -429,13 +428,13 @@ public_transit_emissions <- reactive({ #not sure where we need this so I'm leavi
     Public_Transit_temp = Public_Transit_data %>%filter(State == state_ch)%>% mutate(year = yr) %>% filter(year == yr)
     Public_Transit = rbind(Public_Transit, Public_Transit_temp)
   }
-  }
   
   Public_Transit <- Public_Transit %>%
     dplyr::rename(
       cb_revmiles = CB,
       dr_revmiles = DR,
-      mb_revmiles = MB) 
+      mb_revmiles = MB)
+  
   
   #NOTE FOR BEN: Issue here where the excel sheet is referencing the on-road vehcile economy for Bus: Diesel instead of COmmuter BUs: Diesel in public transit tab
   Public_Transit <- Public_Transit %>%
@@ -499,10 +498,6 @@ Fuel_Factors_Weighted <- reactive({
   return(Fuel_Factors_Weighted)
   })
 
-Fuel_Factors_by_supertype <- reactive({
-  Fuel_Factors_Weighted() %>% filter(veh_subtype == "All") %>% select(-veh_subtype) %>% convert_to_nested_list()
-})
-
 construction_and_maintenance <- reactive({
  de <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 6 & rvs$Advanced$unit=="direct_emissions"] %>% as.numeric()
  ue <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 6 & rvs$Advanced$unit=="upstream_emissions"] %>% as.numeric()
@@ -518,14 +513,6 @@ construction_and_maintenance <- reactive({
  })
 #Final Baseline Return 
 baseline_ghg_forecast <- reactive({
-  use_e = rvs$Baseline$include_electricity %>% as.numeric()
-  use_up = rvs$Baseline$include_upstream_fuels %>% as.numeric()
-  #Em_OnRoad_Base_up()
-  #public_transit_emissions()
-  #passenger_rail_emissions()
- 
-  temp<- Em_OnRoad_Base_up() %>%
-    filter(year %in% c(rvs$Baseline$base_year, 
   use_e = rvs$Baseline$include_electricity %>% as.numeric()
   use_up = rvs$Baseline$include_upstream_fuels %>% as.numeric()
   #Em_OnRoad_Base_up()

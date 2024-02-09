@@ -140,16 +140,18 @@ output_EVSE <- reactive({
     mutate(displaced_conventional_emissions = -VMT_affected * emrate_Conventional / 1000000, 
            added_electricity_emissions = VMT_affected * emrate_Electric / 1000000)
   
+  Fuel_Factors_by_supertype <- Fuel_Factors_Weighted() %>% filter(veh_subtype == "All") %>% select(-veh_subtype) %>% convert_to_nested_list()
+  
   evse_by_year_supertype %>% 
   group_by(year) %>%
   summarize(total_change_direct = sum(displaced_conventional_emissions, na.rm = T),
             total_change_electricity = sum(added_electricity_emissions, na.rm = T),
             truck_vmt_affected = sum(VMT_affected[veh_supertype == "Medium/Heavy Duty Vehicles"], na.rm = T),
             light_vmt_affected = sum(VMT_affected[veh_supertype == "Light Duty Vehicles"], na.rm = T)) %>%
-  mutate(total_change_nox = (Fuel_Factors_by_supertype()[["Light Duty Vehicles"]]$NOx_g_per_veh_mi*light_vmt_affected + 
-                               Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$NOx_g_per_veh_mi * truck_vmt_affected) / 1000000,
-         total_change_pm25 = (Fuel_Factors_by_supertype()[["Light Duty Vehicles"]]$PM25_tires_brakes_per_veh_mi*light_vmt_affected +
-                                Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$PM25_exhaust_per_veh_mi * truck_vmt_affected) / 1000000)
+  mutate(total_change_nox = (Fuel_Factors_by_supertype[["Light Duty Vehicles"]]$NOx_g_per_veh_mi*light_vmt_affected + 
+                               Fuel_Factors_by_supertype[["Medium/Heavy Duty Vehicles"]]$NOx_g_per_veh_mi * truck_vmt_affected) / 1000000,
+         total_change_pm25 = (Fuel_Factors_by_supertype[["Light Duty Vehicles"]]$PM25_tires_brakes_per_veh_mi*light_vmt_affected +
+                                Fuel_Factors_by_supertype[["Medium/Heavy Duty Vehicles"]]$PM25_exhaust_per_veh_mi * truck_vmt_affected) / 1000000)
   })
 
 cost_effectiveness_EVSE <- reactive({
