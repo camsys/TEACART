@@ -480,108 +480,20 @@ output_TransitService <- reactive({
                                      sum(.$add_vrm[.$table %in% c('Transit: Increased Fixed Route Service (VOMS)', 'Transit: Increased Demand Response Service (VOMS)')& .$year == rvs$Baseline$horizon_year_3],na.rm = TRUE) * fuel_factorCNGbus_PM25TB)/1000000 +
                                     sum(.$add_vrm[.$table == 'Public Transportation: Rail (VOMS)' & .$fuel_type == 'Diesel'& .$year == rvs$Baseline$horizon_year_3],na.rm = TRUE) * fuel_factordisloc_PM25/1000000)) %>%
     mutate_if(is.numeric, list(~replace_na(., 0)))
+  # 
+  # #end of transit service strategy calculation
+  
+  # check <- transitservice_output %>% group_by(year) %>%
+  #   summarise(total_change_pm25 = sum(total_change_pm25),
+  #             total_change_VMT = sum(total_change_VMT),
+  #             total_change_MTCO2 = sum(total_change_MTCO2),
+  #             total_newtrips = sum(total_newtrips),
+  #             total_change_mtnox = sum(total_change_mtnox))
+  
   
   return(transitservice_output)
   
 })
    
    
-
-
-cost_output_transitservice <- reactive({
-  
-  emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light Duty Vehicles')
-  co2emrate <- emrate_by_tech_ldv$CO2e_millions[emrate_by_tech_ldv$year== rvs$Baseline$horizon_year_1]
-
-  # get values from Fuel_Factors_Weighted()
-  fuel_factorNox <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
-  fuel_factorPMe <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
-  fuel_factorPMtb <- Fuel_Factors_Weighted()$PM25_tires_brakes_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
-  
-  #fuel_factordisbus_NOX <-Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
-  fuel_factorPMtb <- Fuel_Factors_Weighted()$PM25_tires_brakes_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
-  
-  fuel_factorCNGbus_PM25 <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
-  fuel_factorCNGbus_NOX <-Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
-  fuel_factorCNGbus_PM25TB <- Fuel_Factors_Weighted()$PM25_tires_brakes_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
-  
-  fuel_factordisbus_NOX <-Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
-  fuel_factorgas_medduty_NOX <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Medium Duty Trucks'& Fuel_Factors_Weighted()$veh_subtype == 'Gasoline/Diesel']
-  
-  fuel_factordisbus_PM25 <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
-  fuel_factorgas_medduty_PM25 <-Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Medium Duty Trucks'& Fuel_Factors_Weighted()$veh_subtype == 'Gasoline/Diesel']
-  fuel_factorgas_medduty_PM25TB <-Fuel_Factors_Weighted()$PM25_tires_brakes_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Medium Duty Trucks'& Fuel_Factors_Weighted()$veh_subtype == 'Gasoline/Diesel']
-  
-  fuel_factordisloc_PM25 <-Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Locomotives'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
-  fuel_factordisloc_NOX <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Locomotives'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
-  
-  Assumptions_transitservice <- rvs$Assumptions[rvs$Assumptions$transit_category == 'Bus Priority Factors',] %>%
-    filter_all(any_vars(!is.na(.)))
-  
-  transitservice_base <- output_TransitService() %>%
-    filter(year == input$horizon_year_1) %>%
-    slice(1:(n() - 4)) %>%
-    filter(table != 'Fleet Electrification') %>%
-    select(-'category',-'table_no_ui', -contains("total_"), - 'VOMS', -'unit',-'year',-'merge_col')
-
-  
-   output_transitservice_cost <- transitservice_base %>%
-     mutate(allyear_emrate = ifelse(allyear_emrate != 0, allyear_emrate, onroad_elect_emrate)) %>%
-    mutate(total_change_gGHG = avg_vrm * allyear_emrate + (avg_vrm * pax_mi_fact * mode_fact * -CO2e_millions),
-           total_change_VMT = ifelse(grepl("Rail",transit_mode), - avg_vrm * mode_fact * pax_mi_fact,
-                                     - avg_vrm * mode_fact * pax_mi_fact + avg_vrm),
-           total_change_gnox = case_when(fuel_type == 'CNG' ~ -avg_vrm * mode_fact * pax_mi_fact * 
-                                           fuel_factorNox * base_impf +(avg_vrm * fuel_factorCNGbus_NOX),
-                                         fuel_type == 'Electric' ~ -avg_vrm * mode_fact * pax_mi_fact * fuel_factorNox * base_impf,
-                                         fuel_type == 'Diesel' & transit_mode != 'Commuter Rail' ~ -avg_vrm * mode_fact * pax_mi_fact * 
-                                           fuel_factorNox * base_impf +(avg_vrm * fuel_factordisbus_NOX),
-                                         fuel_type == 'Gasoline' ~ -avg_vrm * mode_fact * pax_mi_fact * 
-                                           fuel_factorNox * base_impf +(avg_vrm * fuel_factorgas_medduty_NOX),
-                                         fuel_type == 'Diesel' & transit_mode == 'Commuter Rail' ~ -avg_vrm * mode_fact * pax_mi_fact * 
-                                           fuel_factorNox * base_impf +(avg_vrm * fuel_factordisloc_NOX)),
-           total_change_gpm25 = case_when(fuel_type == 'CNG' ~ -avg_vrm * mode_fact * 
-                                            pax_mi_fact * fuel_factorPMe * base_impf +(-avg_vrm * mode_fact * pax_mi_fact * fuel_factorPMtb) +
-                                            (avg_vrm * (fuel_factorCNGbus_PM25 + fuel_factorCNGbus_PM25TB)),
-                                          fuel_type == 'Electric'  & table != 'Public Transportation: Rail (VOMS)' ~ -avg_vrm * mode_fact * 
-                                            pax_mi_fact * fuel_factorPMe * base_impf +(-avg_vrm * mode_fact * pax_mi_fact * fuel_factorPMtb) +
-                                            (avg_vrm * fuel_factorCNGbus_PM25TB),
-                                          fuel_type == 'Electric'  & table == 'Public Transportation: Rail (VOMS)' ~ -avg_vrm * mode_fact * 
-                                            pax_mi_fact * fuel_factorPMe * base_impf +(-avg_vrm * mode_fact * pax_mi_fact * fuel_factorPMtb),
-                                          fuel_type == 'Diesel'& table != 'Public Transportation: Rail (VOMS)' ~ -avg_vrm * mode_fact * 
-                                            pax_mi_fact * fuel_factorPMe * base_impf +(-avg_vrm * mode_fact * pax_mi_fact * fuel_factorPMtb) +
-                                            (avg_vrm * (fuel_factorCNGbus_PM25TB + fuel_factordisbus_PM25)),
-                                          fuel_type == 'Diesel' & table == 'Public Transportation: Rail (VOMS)' ~ -avg_vrm * mode_fact * 
-                                            pax_mi_fact * fuel_factorPMe * base_impf +(-avg_vrm * mode_fact * pax_mi_fact * fuel_factorPMtb) +
-                                            (avg_vrm * fuel_factordisloc_PM25),
-                                          fuel_type == 'Gasoline' ~ -avg_vrm * mode_fact * 
-                                            pax_mi_fact * fuel_factorPMe * base_impf +(-avg_vrm * mode_fact * pax_mi_fact * fuel_factorPMtb) +
-                                            (avg_vrm * (fuel_factorgas_medduty_PM25 + fuel_factorgas_medduty_PM25TB))
-                                          ),
-           total_change_newtrips = avg_vrm * pax_mi_fact / trip_len / 365) %>% mutate(table_name = paste0(transit_mode,": ",area_type,": ", fuel_type)) %>%
-     
-     add_row(table = 'Bus Priority',
-             table_name = 'Bus Priority',
-             total_change_gGHG = -prod(Assumptions_transitservice$value, na.rm = TRUE) * unique(.$CO2e_millions) * 
-               unique(.$mode_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus'])*
-               unique(.$pax_mi_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus']),
-             total_change_VMT = -prod(Assumptions_transitservice$value, na.rm = TRUE) *
-               unique(.$mode_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus'])*
-               unique(.$pax_mi_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus']),
-             total_change_gnox = -prod(Assumptions_transitservice$value, na.rm = TRUE) *
-               unique(.$mode_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus'])*
-               unique(.$pax_mi_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus']) * fuel_factorNox * unique(.$base_impf),
-             total_change_gpm25 = -prod(Assumptions_transitservice$value, na.rm = TRUE) *
-               unique(.$mode_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus'])*
-               unique(.$pax_mi_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus']) * fuel_factorPMe * unique(.$base_impf) + 
-               -prod(Assumptions_transitservice$value, na.rm = TRUE) *
-               unique(.$mode_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus'])*
-               unique(.$pax_mi_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus']) * fuel_factorPMtb,
-             total_change_newtrips = prod(Assumptions_transitservice$value, na.rm = TRUE) *
-               unique(.$mode_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus'])*
-               unique(.$pax_mi_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus'])/unique(.$mode_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus'])/
-               unique(.$trip_len [.$area_type  == 'Urban' & .$transit_mode == 'Bus'])/365) %>%
-     select_if(~all(!is.na(.)))
    
-
-  return(output_transitservice_cost)
-})
