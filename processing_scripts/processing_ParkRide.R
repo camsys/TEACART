@@ -43,9 +43,7 @@
 output_pnr <- reactive({
 #observeEvent(input$state_input,{
   
-  req(rvs)
-  req(emrate_by_tech_ldv())
-  req(Fuel_Factors_Weighted())
+
   
   emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light Duty Vehicles')
   
