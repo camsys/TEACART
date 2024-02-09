@@ -84,7 +84,7 @@ mdhd_veh_replacement <- reactive({
     pivot_wider(names_from = unit, values_from = value)
 })
 
-# observeEvent(list(EmRate_by_Tech()), { ### uncomment this line and browser and comment below to test!
+# observeEvent(list(EmRate_by_Tech(), mdhd_veh_replacement(), mdhd_emrates_all()), { ### uncomment this line and browser and comment below to test!
 output_MDHD <- reactive({
   # browser()
   
@@ -95,8 +95,6 @@ output_MDHD <- reactive({
       pivot_wider(names_from = unit, values_from = value) %>%
       get_horizon_years(my_rv = rvs)
     
-  Fuel_Factors_by_supertype <- Fuel_Factors_Weighted() %>% filter(veh_subtype == "All") %>% select(-veh_subtype) %>% convert_to_nested_list()
-  
   output_detailed <-
     capital_inputs_mdhd %>%
     left_join(mdhd_emrates_all(), by = join_by(veh_type, fuel_type, year)) %>%
@@ -116,8 +114,8 @@ output_MDHD <- reactive({
               total_change_direct = sum(MTCO2_change),
               total_change_electricity = sum(added_electricity_emissions),
               total_affected_annual_VRM = sum(affected_annual_VRM)) %>%
-    mutate(total_change_mtnox = total_affected_annual_VRM * Fuel_Factors_by_supertype[["Medium/Heavy Duty Vehicles"]]$NOx_g_per_veh_mi / 1000000,
-           total_change_pm25 = total_affected_annual_VRM * Fuel_Factors_by_supertype[["Medium/Heavy Duty Vehicles"]]$PM25_exhaust_per_veh_mi / 1000000)
+    mutate(total_change_mtnox = total_affected_annual_VRM * Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$NOx_g_per_veh_mi / 1000000,
+           total_change_pm25 = total_affected_annual_VRM * Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$PM25_exhaust_per_veh_mi / 1000000)
     
 })
 

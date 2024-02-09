@@ -495,6 +495,10 @@ Fuel_Factors_Weighted <- reactive({
   return(Fuel_Factors_Weighted)
   })
 
+Fuel_Factors_by_supertype <- reactive({
+  Fuel_Factors_Weighted() %>% filter(veh_subtype == "All") %>% select(-veh_subtype) %>% convert_to_nested_list()
+})
+
 #Final Baseline Return # for 
 baseline_ghg_forecast <- reactive({
   use_e = rvs$Baseline$include_electricity
