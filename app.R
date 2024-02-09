@@ -3481,10 +3481,6 @@ server <- function(input, output, session) {
   
   ## create tables -----------------------------------------------------------
   
-  # note that the tables below are not using the editable table function
-  
- # seth working here - error I'm getting is that it's not finding inputs
-  
   output$bikeped_costs_outputs_tbl <- renderDT({
     print("RENDERING: Cost Output Table BikePed")
     temp <- cost_function(
@@ -3514,66 +3510,82 @@ server <- function(input, output, session) {
     #             formatRound(c(3:7),1)
     
     })
-  observeEvent(input$state_input, {browser()})
-  
+
   output$transit_fixed_costs_outputs_tbl <- renderDT({
-    print("RENDERING: Transit Fixed")
-    req('')
+    print("RENDERING: Transit Fixed Bus")
+ 
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
-      output_table = cost_output_transitservice(),
+      output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
       col_sel = c('area_type','fuel_type','transit_mode'),
       proj_life = 12,
-      var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Urban'& rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
-      var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Rural'&rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+      scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
       style = input$cost_view
     )
 
     datatable(temp)})
   
+ # observeEvent(input$state_input, {browser()})
+  
   output$transit_dr_costs_outputs_tbl <- renderDT({
     req("")
-    print("RENDERING: Transit Fixed")
+    print("RENDERING: Transit Fixed DR")
     temp <- cost_function(
-    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
-    output_table = cost_output_transitservice(),
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==3,],
+    output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Demand Response Service (VOMS)"),
     col_sel = c('area_type','fuel_type','transit_mode'),
     proj_life = 12,
-    var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Urban'& rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
-    var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Rural'&rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+    scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
     style = input$cost_view)
     datatable(temp)})
   
   output$pub_trans_priority_costs_outputs_tbl <- renderDT({   
     temp <- cost_function(
-    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
-    output_table = cost_output_transitservice(),
-    col_sel = c('area_type','fuel_type','transit_mode'),
-    proj_life = 12,
-    var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Urban'& rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
-    var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Rural'&rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==4,],
+    output_table = cost_output_transitservice() %>% filter(table == "Bus Priority"),
+    col_sel = c(),
+    proj_life = 5, 
+    #var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+    #var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
     style = input$cost_view)
     datatable(temp)})
+
+  public_elec_replacement_cost_table <- reactive({
+    scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value")
+    
+    base <- rvs$Costs[rvs$Costs$table_no_ui %in% c(2,3),] %>% # & rvs$Costs$fuel_type != "Electric",]  %>%
+        group_by(area_type, transit_mode,fuel_type, cost_type) %>% 
+        summarise(value = sum(value)) %>% 
+        pivot_wider(names_from = cost_type, values_from = value) %>% left_join(scalar_list) %>%
+        mutate(var = var1*scalar_1 + var2*scalar_1) %>% #create variable cost based on scalars
+        select(-c(var1,var2)) %>%
+        mutate(annual_cost = cap/12 + var)
+    
+    elec <- base %>%ungroup() %>% filter(fuel_type == "Electric") %>% select(-c(fuel_type, cap, var)) %>% rename(elec_cost = annual_cost)
+    
+    fin <- left_join(base, elec) %>% filter(fuel_type != "Electric")%>% mutate(annual_cost = elec_cost - annual_cost) %>%
+      select(area_type, transit_mode, fuel_type, annual_cost)
+    return(fin)
+    })
   
   output$transit_zeb_costs_outputs_tbl <- renderDT({   
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
-      output_table = cost_output_transitservice(),
+      ini_cost_table =  public_elec_replacement_cost_table(), #%>% filter(table %in% c("Transit: Increased Demand Response Service (VOMS)","Transit: Increased Fixed Route Service (VOMS)")),
+      output_table = cost_output_transitselect(),
       col_sel = c('area_type','fuel_type','transit_mode'),
       proj_life = 12,
-      var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Urban'& rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
-      var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Rural'&rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+      #scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')],
       style = input$cost_view)
     datatable(temp)})
   
   output$pub_trans_rail_costs_outputs_tbl <- renderDT({   
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
-      output_table = cost_output_transitservice(),
-      col_sel = c('area_type','fuel_type','transit_mode'),
-      proj_life = 12,
-      var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Urban'& rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
-      var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2&rvs$Assumptions$area_type == 'Rural'&rvs$Assumptions$transit_mode =='Bus'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,],
+      output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Rail (VOMS)"),
+      col_sel = c('fuel_type','transit_mode'),
+      proj_life = 30,
+      #BEN: val 1 is only referencing light rail revenue miles 
+      scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('transit_mode','value')]%>% rename("scalar_1" = "value"),      
       style = input$cost_view)
     datatable(temp)})
   
@@ -3597,27 +3609,61 @@ server <- function(input, output, session) {
   
   output$traffic_ops_costs_outputs_tbl <- renderDT({   
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,],
-      output_table = cost_output_micro(),
-      col_sel = c(),
-      proj_life = 6,
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,]%>% 
+        left_join(data.frame(cap_proj_type = c("New roundabouts","New or retimed signal"),
+                             proj_life = c(30,5))),
+      output_table = output_cost_OPS(),
+      col_sel = c('road_class','area_type','cap_proj_type'),
+      proj_life = NA,#needs to project lifes actually :(
       style = input$cost_view)
     datatable(temp)})
   
-  output$mhdev_costs_outputs_tbl <- renderDT(mhdev_costs_outputs,
-                                             rownames = FALSE)
+  output$mhdev_costs_outputs_tbl <- renderDT({   
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==9,] %>% rename('veh_subtype' = 'fuel_type'),
+      output_table = cost_effectiveness_MDHD(),
+      col_sel = c('veh_type','veh_subtype'),
+      proj_life = 12,
+      style = input$cost_view)
+    datatable(temp)})
   
-  output$pnr_costs_outputs_tbl <- renderDT(pnr_costs_outputs,
-                                           rownames = FALSE)
+  output$pnr_costs_outputs_tbl <- renderDT({   
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==10,],
+      output_table = cost_output_pnr(),
+      col_sel = c(),
+      proj_life = 30,
+      style = input$cost_view)
+    datatable(temp)})
   
-  output$evsi_costs_outputs_tbl <- renderDT(evsi_costs_outputs,
-                                            rownames = FALSE)
+  output$evsi_costs_outputs_tbl <- renderDT({   
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==11,],
+      output_table = output_cost_OPS(),
+      col_sel = c('DCFC_level'), #Change to port detail?
+      proj_life = 10,
+      style = input$cost_view)
+    datatable(temp)})
   
-  output$roadway_expand_costs_outputs_tbl <- renderDT(roadway_expand_costs_outputs,
-                                                      rownames = FALSE)
+  output$roadway_expand_costs_outputs_tbl <- renderDT({   
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==12,],
+      output_table = cost_output_RoadwayExp(),
+      col_sel = c('road_class','area_type'),
+      proj_life = 30,#needs to project lifes actually :(
+      style = input$cost_view)
+    datatable(temp)})
   
-  output$intermodal_costs_outputs_tbl <- renderDT(intermodal_costs_outputs,
-                                                  rownames = FALSE)
+  #Fuel Price Table
+  
+  output$intermodal_costs_outputs_tbl <- renderDT({   
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==14,],
+      output_table = output_cost_OPS(),
+      col_sel = c(),
+      proj_life = 30,
+      style = input$cost_view)
+    datatable(temp)})
   
   
   ## make editable -----------------------------------------------------------

@@ -13,7 +13,7 @@
   # ini_cost_table <- rvs$Costs[rvs$Costs$table_no_ui == tab_no,]
 
 sum_fun <- function(x,meas,val,high,med,low,prefix){
-  
+ #browser()
   me <- x[meas] %>% as.numeric()
   va <- x[val] %>% as.numeric()
   
@@ -39,10 +39,11 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
                           output_table, #this it the processing output
                           col_sel, #these are the columns of the rvs cost table that are necessary to get the individual rows e.g. road_class, area_type, etc
                           proj_life, #not sure if we should be pulling this in through a table in Raw Data?
-                          var1_scalar = NULL, #this is only neccesary for transit table
-                          var2_scalar = NULL,#this is only neccesary for transit table
+                          scalar_list = NULL, #this is only neccesary for transit table
                           style
                           ){
+  
+  #browser()
   #real input
   cols <- c(col_sel, 'cost_type') #add cost type to the columns that will be used for groupin
   
@@ -53,25 +54,46 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
   
   #IF Else is for indicating transit or other tables
   #This function basically calcualtes the cost parameters page by getting the annualized cost with is usually capital cost/project life + variable cost
-  if('var1' %in% unique(ini_cost_table$cost_type)){ 
+  if('annual_cost' %in% names(ini_cost_table)){
     
+    cost_table <- ini_cost_table
     
-    cost_table = ini_cost_table %>% 
-      group_by_at(cols) %>%
-      summarise(value = sum(value)) %>%
-      pivot_wider(names_from = cost_type, values_from = value) %>%
-      mutate(var = var1*var1_scalar + var2*var2_scalar) %>% #create variable cost based on scalars
-      select(-c(var1,var2)) %>%
-      mutate(annual_cost = cap/proj_life + var)
-    
-  } else {
-    
-    cost_table = ini_cost_table %>% 
-      group_by_at(cols) %>%
-      summarise(value = sum(value)) %>%
-      pivot_wider(names_from = cost_type, values_from = value) %>%
-      mutate(annual_cost = cap/proj_life + var)
+    } else if('proj_life' %in% names(ini_cost_table)){
       
+      cols <- c(cols, 'proj_life')
+      
+      cost_table = ini_cost_table %>% 
+        group_by_at(cols) %>%
+        summarise(value = sum(value)) %>%
+        pivot_wider(names_from = cost_type, values_from = value) %>%
+        mutate(annual_cost = cap/proj_life + var) %>%
+        select(-c(proj_life,cap,var))
+      
+    
+  }else if('var1' %in% unique(ini_cost_table$cost_type)){ 
+    
+    cost_table = ini_cost_table %>% 
+      group_by_at(cols) %>%
+      summarise(value = sum(value)) %>%
+      pivot_wider(names_from = cost_type, values_from = value) %>% left_join(scalar_list) %>%
+      mutate(var = var1*scalar_1 + var2*scalar_1) %>% #create variable cost based on scalars
+      select(-c(var1,var2,scalar_1)) %>%
+      mutate(annual_cost = cap/proj_life + var) %>%
+      select(-c(cap,var))
+    
+  } else if('var' %in% unique(ini_cost_table$cost_type)){
+    
+    cost_table = ini_cost_table %>% 
+      group_by_at(cols) %>%
+      summarise(value = sum(value)) %>%
+      pivot_wider(names_from = cost_type, values_from = value) %>%
+      mutate(annual_cost = cap/proj_life + var)
+  } else {
+    cost_table = ini_cost_table %>% 
+      group_by_at(cols) %>%
+      summarise(value = sum(value)) %>%
+      pivot_wider(names_from = cost_type, values_from = value) %>%
+      mutate(annual_cost = cap/proj_life)
   }
   
   #This function is applied to each row to estimate the summary value based on supplied high, medium, low values
@@ -79,12 +101,21 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
 
 
   #This is where the non-summary output comes from
+  if(length(col_sel) == 0){
+    temp_table <- cbind(output_table, cost_table) %>%
+      mutate(gGHG_per_1m = ifelse(total_change_gGHG == 0, NA, -1*total_change_gGHG/annual_cost),
+             VMT_per_1m = ifelse(total_change_VMT  == 0, NA, -1*total_change_VMT/(annual_cost/1000000)),
+             nox_per_1m = ifelse(total_change_gnox  == 0, NA, -1*total_change_gnox/(annual_cost)),
+             pm25_per_1m = ifelse(total_change_gpm25  == 0, NA, -1*total_change_gpm25/(annual_cost)),
+             newtrips_per_1m = ifelse(total_change_newtrips == 0, NA, -1*total_change_newtrips/(annual_cost/1000000)))
+  } else {
   temp_table <- left_join(output_table, cost_table) %>%
     mutate(gGHG_per_1m = ifelse(total_change_gGHG == 0, NA, -1*total_change_gGHG/annual_cost),
            VMT_per_1m = ifelse(total_change_VMT  == 0, NA, -1*total_change_VMT/(annual_cost/1000000)),
            nox_per_1m = ifelse(total_change_gnox  == 0, NA, -1*total_change_gnox/(annual_cost)),
            pm25_per_1m = ifelse(total_change_gpm25  == 0, NA, -1*total_change_gpm25/(annual_cost)),
            newtrips_per_1m = ifelse(total_change_newtrips == 0, NA, -1*total_change_newtrips/(annual_cost/1000000)))
+  }
   
   #This is where the summary function is applied for each different column type
   temp_table$MTGHG_sum <- apply(temp_table, 1, sum_fun,
@@ -133,7 +164,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
                'MTnox_sum',
                'MTpm25_sum',
                'newtrips_sum')) %>%
-      rename(type_name = "cap_proj_type") %>%
+      #rename(type_name = "cap_proj_type") %>%
       rename('Summary MT GHG' = 'MTGHG_sum',
              'Summary VMT' = 'VMT_sum',
              'Summary MT NOx' = 'MTnox_sum',
@@ -150,7 +181,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
              'nox_per_1m',
              'pm25_per_1m',
              'newtrips_per_1m')) %>%
-      rename(type_name = "cap_proj_type") %>%
+      #rename(type_name = "cap_proj_type") %>%
       rename("MT GHG" = 'gGHG_per_1m',
              "VMT" = 'VMT_per_1m',
              "MT NOx" = 'nox_per_1m',

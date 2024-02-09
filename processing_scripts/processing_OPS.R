@@ -229,34 +229,34 @@ output_cost_OPS <- reactive({
     mutate(total_change_VMT = (new_AADT-AADT)*(sample_corridor_length/signals_per_mile)*365,
            CO2e_from_delay = delay_reduction*road_class_delay_emrate*365,
            CO2e_from_vmt = total_change_VMT*light_duty_automobile_emrate,
-           total_change_MTCO2 = CO2e_from_delay+CO2e_from_vmt) %>%
+           total_change_gGHG = CO2e_from_delay+CO2e_from_vmt) %>%
     #BEN: In the excel sheet there is a negative in front of the total_change_VMT? Also why isn't it time 365 when the delay emissions is in the g GHG calc
     #BEN: Why is the pm25 not applying to the ldv impf for both exaust and brake fuel factor in the excel 
-    mutate(total_change_mtnox = -1*total_change_VMT*NOx_LDV*ldv_impf + delay_reduction*road_class_delay_emrate*NOx_CO2_ratio,
-           total_change_pm25 = -1*(total_change_VMT*ldv_impf*PM25_LDV_exhaust+total_change_VMT*PM25_LDV_tirebrakes) + CO2e_from_delay*PM25_CO2_ratio) %>%
+    mutate(total_change_gnox = -1*total_change_VMT*NOx_LDV*ldv_impf + delay_reduction*road_class_delay_emrate*NOx_CO2_ratio,
+           total_change_gpm25 = -1*(total_change_VMT*ldv_impf*PM25_LDV_exhaust+total_change_VMT*PM25_LDV_tirebrakes) + CO2e_from_delay*PM25_CO2_ratio) %>%
     
     mutate(total_daily_active = total_change_VMT/365) %>% 
-    select(year, area_type, road_class, total_change_VMT, total_change_MTCO2,total_change_mtnox,total_change_pm25) %>%
-    mutate(type = "signal")
+    select(year, area_type, road_class, total_change_VMT, total_change_gGHG,total_change_gnox,total_change_gpm25) %>%
+    mutate(cap_proj_type = "New or retimed signal")
   
-  ghg_base <- temp_output_signal$total_change_MTCO2[temp_output_signal$year == rvs$Baseline$horizon_year_1 & temp_output_signal$area_type == "Urban"] %>% as.numeric()
+  ghg_base <- temp_output_signal$total_change_gGHG[temp_output_signal$year == rvs$Baseline$horizon_year_1 & temp_output_signal$area_type == "Urban"] %>% as.numeric()
   vmt_base <- temp_output_signal$total_change_VMT[temp_output_signal$year == rvs$Baseline$horizon_year_1 & temp_output_signal$area_type == "Urban"] %>% as.numeric()
-  nox_base <- temp_output_signal$total_change_mtnox[temp_output_signal$year == rvs$Baseline$horizon_year_1 & temp_output_signal$area_type == "Urban"] %>% as.numeric()
-  pmg25_base <- temp_output_signal$total_change_pm25[temp_output_signal$year == rvs$Baseline$horizon_year_1 & temp_output_signal$area_type == "Urban"] %>% as.numeric()
+  nox_base <- temp_output_signal$total_change_gnox[temp_output_signal$year == rvs$Baseline$horizon_year_1 & temp_output_signal$area_type == "Urban"] %>% as.numeric()
+  pmg25_base <- temp_output_signal$total_change_gpm25[temp_output_signal$year == rvs$Baseline$horizon_year_1 & temp_output_signal$area_type == "Urban"] %>% as.numeric()
   
   #Note for ben this is weird in the excel what's up
   temp_output_roundabout <- temp_output_roundabout %>%
-    mutate(total_change_MTCO2 = AADT*365*roundabout_effect*1000) %>%
-    mutate(total_change_mtnox = total_change_MTCO2*(nox_base/ghg_base),
-           total_change_pm25 =  total_change_MTCO2*(pmg25_base/ghg_base)) %>%
-    mutate(total_change_VMT = total_change_MTCO2*(vmt_base/ghg_base)) %>%
-    select(year, area_type, road_class, total_change_VMT, total_change_MTCO2,total_change_mtnox,total_change_pm25) %>%
-    mutate(type = "roundabout")
+    mutate(total_change_gGHG = AADT*365*roundabout_effect*1000) %>%
+    mutate(total_change_gnox = total_change_gGHG*(nox_base/ghg_base),
+           total_change_gpm25 =  total_change_gGHG*(pmg25_base/ghg_base)) %>%
+    mutate(total_change_VMT = total_change_gGHG*(vmt_base/ghg_base)) %>%
+    select(year, area_type, road_class, total_change_VMT, total_change_gGHG,total_change_gnox,total_change_gpm25) %>%
+    mutate(cap_proj_type = "New roundabouts")
   
   fin_output <- rbind(temp_output_roundabout, temp_output_signal)  %>%
     ungroup() %>%
     group_by(year) %>% 
-    mutate(total_daily_active = -1*total_change_VMT/365)
+    mutate(total_change_newtrips = -1*total_change_VMT/365)
   
   return(fin_output)
 })

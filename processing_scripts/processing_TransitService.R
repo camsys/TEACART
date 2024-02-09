@@ -331,10 +331,13 @@ cost_output_transitservice <- reactive({
                                             pax_mi_fact * fuel_factorPMe * base_impf +(-avg_vrm * mode_fact * pax_mi_fact * fuel_factorPMtb) +
                                             (avg_vrm * (fuel_factorgas_medduty_PM25 + fuel_factorgas_medduty_PM25TB))
                                           ),
-           total_change_newtrips = avg_vrm * pax_mi_fact / trip_len / 365) %>% mutate(table_name = paste0(transit_mode,": ",area_type,": ", fuel_type)) %>%
+           total_change_newtrips = avg_vrm * pax_mi_fact / trip_len / 365) %>% #mutate(table_name = paste0(transit_mode,": ",area_type,": ", fuel_type)) %>%
      
      add_row(table = 'Bus Priority',
-             table_name = 'Bus Priority',
+             #table_name = 'Bus Priority',
+             transit_mode = "Bus",
+             area_type = "All",
+             fuel_type = "All",
              total_change_gGHG = -prod(Assumptions_transitservice$value, na.rm = TRUE) * unique(.$CO2e_millions) * 
                unique(.$mode_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus'])*
                unique(.$pax_mi_fact[.$area_type == 'Urban' & .$transit_mode == 'Bus']),
