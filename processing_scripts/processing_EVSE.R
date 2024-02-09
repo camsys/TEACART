@@ -167,5 +167,10 @@ cost_effectiveness_EVSE <- reactive({
            VMT = 0,
            NOX = MT_per_vehtype*veh_sales_elasticity_wrt_ports*NOx_g_per_veh_mi,
            PM25 = MT_per_vehtype*veh_sales_elasticity_wrt_ports*PM25_exhaust_per_veh_mi,
-           ACTIVE = 0)
+           ACTIVE = 0) %>%
+    rename(total_change_gGHG = GHG,
+           total_change_VMT = VMT,
+           total_change_gnox = NOX,
+           total_change_gpm25 = PM25,
+           total_change_newtrips = ACTIVE)
 })

@@ -43,8 +43,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
                           style
                           ){
   
-  #browser()
-  #real input
+
   cols <- c(col_sel, 'cost_type') #add cost type to the columns that will be used for groupin
   
   if("facility_type" %in% names(output_table)){
@@ -110,6 +109,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
              newtrips_per_1m = ifelse(total_change_newtrips == 0, NA, -1*total_change_newtrips/(annual_cost/1000000)))
   } else {
   temp_table <- left_join(output_table, cost_table) %>%
+    filter(!is.na(annual_cost)) %>%
     mutate(gGHG_per_1m = ifelse(total_change_gGHG == 0, NA, -1*total_change_gGHG/annual_cost),
            VMT_per_1m = ifelse(total_change_VMT  == 0, NA, -1*total_change_VMT/(annual_cost/1000000)),
            nox_per_1m = ifelse(total_change_gnox  == 0, NA, -1*total_change_gnox/(annual_cost)),

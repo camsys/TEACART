@@ -3639,8 +3639,8 @@ server <- function(input, output, session) {
   output$evsi_costs_outputs_tbl <- renderDT({   
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==11,],
-      output_table = output_cost_OPS(),
-      col_sel = c('DCFC_level'), #Change to port detail?
+      output_table = cost_effectiveness_EVSE(),
+      col_sel = c('charge_port_detail'), #Change to port detail?
       proj_life = 10,
       style = input$cost_view)
     datatable(temp)})

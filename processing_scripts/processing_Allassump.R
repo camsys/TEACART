@@ -5,7 +5,7 @@ observe({
 browser()
 
 output_bikped() # ok 
-#output_freight()
+output_freight()
 output_MDHD() #ok
 output_micro() #ok
 output_pnr() #ok
@@ -13,7 +13,7 @@ output_RoadwayExp()  #ok
 output_TDM() #ok
 output_transitElec() #ok
 output_TransitService() #ok
-#output_ops()
+output_ops()
 
 add_columns_if_not_exist <- function(df, column_names) {
   for (col_name in column_names) {

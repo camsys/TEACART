@@ -202,7 +202,7 @@ cost_output_RoadwayExp <- reactive({
            total_change_gpm25 = total_change_VMT*(PM25_LDV_exhaust+PM25_LDV_tirebrakes),
            total_change_newtrips = 0,
            unit = "new_lane") %>%
-    select(year, area_type, road_class, total_change_VMT, total_change_gnox, total_change_gpm25, total_change_newtrips)
+    select(year, area_type, road_class,total_change_gGHG, total_change_VMT, total_change_gnox, total_change_gpm25, total_change_newtrips)
   
   return(temp_output)
 })

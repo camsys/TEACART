@@ -144,5 +144,10 @@ cost_effectiveness_MDHD <- reactive({
            NOX = miles_per_veh_per_year * NOx_g_per_veh_mi,
            PM25 = miles_per_veh_per_year * PM25_exhaust_per_veh_mi,
            ACTIVE = 0) %>%
-    select(veh_type, veh_subtype, GHG, VMT, NOX, PM25, ACTIVE)
+    select(veh_type, veh_subtype, GHG, VMT, NOX, PM25, ACTIVE) %>%
+    rename(total_change_gGHG = GHG,
+           total_change_VMT = VMT,
+           total_change_gnox = NOX,
+           total_change_gpm25 = PM25,
+           total_change_newtrips = ACTIVE)
 })
