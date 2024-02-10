@@ -119,15 +119,17 @@ output_MDHD <- reactive({
   
 })
 
+# observeEvent(output_MDHD(), {
 cost_effectiveness_MDHD <- reactive({
+  # browser()
   emrates_mdhd <-
     mdhd_emrates_all() %>% filter(year == 2025) %>%
-    # group_by(veh_type) %>%
     pivot_wider(names_from = fuel_type, values_from = emission_rate) %>%
     mutate(diff_Gasoline = EV - Gasoline,
            diff_Diesel = EV - Diesel) %>%
     select(veh_type, diff_Gasoline, diff_Diesel) %>%
-    pivot_longer(cols = starts_with("diff_"), names_prefix = "diff_", names_to = "veh_subtype", values_to = "emrate_diff_2025")
+    pivot_longer(cols = starts_with("diff_"), names_prefix = "diff_", names_to = "veh_subtype", values_to = "emrate_diff_2025") %>%
+    drop_na(emrate_diff_2025)
   
   mdhd_fuel_factors <-
     Fuel_Factors_Weighted() %>%
