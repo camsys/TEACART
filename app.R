@@ -1387,17 +1387,17 @@ nav_panel(title = "Strategy Summary",
             title = "Select Indicator",
             selectizeInput(inputId = "strategy_indicator",
                            label = "Indicator",
-                           selected = 'CO2',
+                           selected = NULL,
                            choices = c( 
-                             'MT CO2e' = 'CO2',
-                             'VMT (Mile)' = 'VMT',
-                             'MT NOx' = 'Nox',
-                             'MT PM2.5' = 'PM2.5',
-                             'Daily Active Trips' = 'New Daily Active Trips')
+                             'MT CO2e' = 'total_change_MTCO2',
+                             'VMT (Mile)' = 'total_change_VMT',
+                             'MT NOx' = 'total_change_mtnox',
+                             'MT PM2.5' = 'total_change_pm25',
+                             'Daily Active Trips' = 'total_newtrips')
             ),
           selectizeInput(inputId = "strategy_scen_select",
                          label = "Scenario",
-                         selected = 'Scenario 1',
+                         selected = NULL,
                          choices = c( 
                            'Scenario 1' = 'scen_1',
                            'Scenario 2' = 'scen_2')
@@ -3727,7 +3727,68 @@ server <- function(input, output, session) {
     })
   
   
+  # server Strategy Summary outputs ------------------------------------------------
+  
+observeEvent(c(input$strategy_scen_select,
+               input$strategy_indicator),{
+  req(reactive_scenario())
 
+# browser()
+                 
+if (input$strategy_scen_select == 'scen_1' ){
+  scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
+    rename(scen = Scenario1)
+} else if (input$strategy_scen_select == 'scen_2'){
+  scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
+    rename(scen = Scenario2)
+}
+
+    strategy_temp <- assump_sum() %>% left_join(scen_select,by= 'Assumptions') %>% filter(scen == TRUE) %>%
+      select('year', Assumptions,input$strategy_indicator)
+     
+    total_row <- strategy_temp %>%
+      pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
+      mutate(across(where(is.numeric), ~round(., 1))) %>%
+      summarise(Assumptions = "Total", across(where(is.numeric), sum)) 
+    
+    output$strategy_summary_tbl <- DT::renderDataTable({
+      
+      data_temp <- bind_rows(
+        strategy_temp %>%
+          pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
+          mutate(across(where(is.numeric), ~round(., 1))),
+        total_row
+      ) %>% mutate(across(where(is.numeric), ~ prettyNum(., big.mark = ",")))
+      data_temp %>%
+        DT::datatable(
+          escape = FALSE,
+          rownames = FALSE,
+          options = list(dom = 't', pageLength = 13,
+                         initComplete = JS(
+                           "function(settings, json) {",
+                           "  var table = settings.oInstance.api();",
+                           "  var lastRow = table.rows().count() - 1;",
+                           "  table.rows().every(function(index, element) {",
+                           "    if (index === lastRow) {",
+                           "      $(this.node()).css('font-weight', 'bold');",
+                           "    } else {",
+                           "      $(this.node()).css('font-weight', 'normal');",
+                           "    }",
+                           "  });",
+                           "}")))
+      })
+
+  
+
+    output$strategy_summary_graph <- renderPlotly(
+      plot_ly(strategy_temp, x = ~factor(year), y = ~get(input$strategy_indicator),
+              color = ~Assumptions, type = "bar") %>%
+        layout(xaxis = list(title = "Year"),
+               yaxis = list(title = "Total Change"),
+               barmode = "stack")
+    )
+},ignoreInit = TRUE)
+  
 
   #Processing working ----
 

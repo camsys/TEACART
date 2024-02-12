@@ -101,6 +101,13 @@ output_MDHD <- reactive({
     left_join(mdhd_veh_replacement(), by = join_by(veh_type)) %>% 
     left_join(select(filter(mdhd_emrates_all(), fuel_type == "EV"), -fuel_type),
               by = join_by(veh_type, year), suffix = c("", "_electric"), keep = F) %>%
+    group_by(fuel_type, veh_type) %>%
+    arrange(year) %>%
+    mutate(
+      replacement_vehicles = case_when(
+        year > rvs$Baseline$horizon_year_1 ~ cumsum(replacement_vehicles),
+        TRUE ~ replacement_vehicles)) %>%
+    ungroup() %>%
     mutate(
       affected_annual_VRM = replacement_vehicles * miles_per_veh_per_year,
       MTCO2_change = -affected_annual_VRM * emission_rate / 1000000,
