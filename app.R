@@ -3686,6 +3686,41 @@ server <- function(input, output, session) {
   
   
   # server scenarios outputs ------------------------------------------------
+  observeEvent(input$state_input,{
+    req(reactive_scenario())
+    
+    dt <- baseline_ghg_forecast()
+    ft <- VMT_Forecast()
+    dt_emissions_base <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+      #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+      summarise(across(where(is.numeric),sum))
+    
+    dt_VMT_base <- ft %>% ungroup() %>% filter(year >=2021) %>%
+      filter(year %in% c(rvs$Baseline$base_year,
+                         rvs$Baseline$horizon_year_1,
+                         rvs$Baseline$horizon_year_2,
+                         rvs$Baseline$horizon_year_3)) %>%
+      group_by(year) %>%
+      summarise(total_VMT = sum(state_vmt_AEO,na.rm = T))  %>%
+      pivot_wider(names_from= year, values_from = total_VMT)
+                   
+    scen_select <-   reactive_scenario() 
+    
+    strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = "Assumptions") %>% 
+      select('year', Strategy,)
+    
+    total_row <- strategy_temp %>%
+                     pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
+                     mutate(across(where(is.numeric), ~round(., 1))) %>%
+                     summarise(Strategy = "Total", across(where(is.numeric), sum)) 
+
+                   
+                   
+                   
+
+  })
+  
+  
   
   # read dummy data
   scenario_result <- readxl::read_excel(".\\data\\scenario_simplified.xlsx")
