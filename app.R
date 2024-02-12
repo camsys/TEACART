@@ -3743,13 +3743,13 @@ if (input$strategy_scen_select == 'scen_1' ){
     rename(scen = Scenario2)
 }
 
-    strategy_temp <- assump_sum() %>% left_join(scen_select,by= 'Assumptions') %>% filter(scen == TRUE) %>%
-      select('year', Assumptions,input$strategy_indicator)
+    strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Assumptions')) %>% filter(scen == TRUE) %>%
+      select('year', Strategy,input$strategy_indicator)
      
     total_row <- strategy_temp %>%
       pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
       mutate(across(where(is.numeric), ~round(., 1))) %>%
-      summarise(Assumptions = "Total", across(where(is.numeric), sum)) 
+      summarise(Strategy = "Total", across(where(is.numeric), sum)) 
     
     output$strategy_summary_tbl <- DT::renderDataTable({
       
@@ -3780,13 +3780,13 @@ if (input$strategy_scen_select == 'scen_1' ){
 
   
 
-    output$strategy_summary_graph <- renderPlotly(
+    output$strategy_summary_graph <- renderPlotly({
       plot_ly(strategy_temp, x = ~factor(year), y = ~get(input$strategy_indicator),
-              color = ~Assumptions, type = "bar") %>%
+              color = ~Strategy, type = "bar") %>%
         layout(xaxis = list(title = "Year"),
                yaxis = list(title = "Total Change"),
                barmode = "stack")
-    )
+    })
 },ignoreInit = TRUE)
   
 
