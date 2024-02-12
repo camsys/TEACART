@@ -1,3 +1,9 @@
+# 
+# observe(
+#  { browser()}
+# )
+#assump_sum <- reactive({
+
 add_columns_if_not_exist <- function(df, column_names) {
   for (col_name in column_names) {
     if (!(col_name %in% names(df))) {
@@ -15,6 +21,7 @@ filter_columns <- function(df, selected_columns, strategy_name) {
   
   # Filter the dataframe to include only selected columns
   result_df <- df[, selected_columns, drop = FALSE] %>%
+
     na.omit() %>% mutate(Strategy = strategy_name) %>%
     group_by(year, Strategy) %>%
     summarise(
@@ -29,26 +36,9 @@ filter_columns <- function(df, selected_columns, strategy_name) {
 
 
 
-observe({
-#scenario_sum <- reactive({
-browser()
-
-output_bikped() # ok 
-output_freight()
-output_MDHD() #ok
-output_micro() #ok
-output_pnr() #ok
-output_RoadwayExp()  #ok
-output_TDM() #ok
-output_transitElec() #ok
-output_TransitService() #ok
-output_ops()
-
-output_EVSE()
-output_freight()
-
-
-
+#observe({
+scenario_sum <- reactive({
+#browser()
 
 selected_columns <- c("year", "total_newtrips",'total_change_mtnox','total_change_pm25','total_change_VMT','total_change_MTCO2')
 
@@ -57,13 +47,16 @@ MDHD <- filter_columns(output_MDHD(),selected_columns,"MD/HD Truck Replacement")
 Micro <- filter_columns(output_micro(),selected_columns,"Micromobility")  
 pnr <- filter_columns(output_pnr(),selected_columns,"Park and Ride")  
 RoadwayExp <- filter_columns(output_RoadwayExp(),selected_columns,"Roadway Expansion")  
-TDM <- filter_columns(output_TDM(),selected_columns,"TDM")  
+TDM <- filter_columns(output_TDM(),selected_columns,"Travel Demand Management")  
 transitElec <- filter_columns(output_transitElec(),selected_columns,"Transit Electrification")  
 TransitService <- filter_columns(output_TransitService(),selected_columns,"Transit Service Expansion")  
-EVSE <- filter_columns(output_EVSE(),selected_columns,"EV Charging Infrastructure")
-Freight <-filter_columns(output_freight(),selected_columns,"Intermodal Freight Investment") 
-OPS <-filter_columns(output_OPS(),selected_columns,"Traffic Operations")
-RoadwayExp <- filter_columns(output_RoadwayExp(),selected_columns,"Roadway Expansion")
+OPS <- filter_columns(output_OPS(),selected_columns,"Traffic Operations")  
+EVSE <- filter_columns(output_EVSE(),selected_columns,"Electric Vehicle Charging Infraucture")  
+freight <- filter_columns(output_freight(),selected_columns,"Intermodal Freight Investment")  
+
+all_assump <- rbind(bikeped,MDHD,Micro,pnr,RoadwayExp,TDM,transitElec,TransitService,OPS,EVSE,freight)
+
+return(all_assump)
 })
 
 observe({
