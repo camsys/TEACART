@@ -21,16 +21,15 @@ filter_columns <- function(df, selected_columns, strategy_name) {
   
   # Filter the dataframe to include only selected columns
   result_df <- df[, selected_columns, drop = FALSE] %>%
-
-    na.omit() %>% mutate(Strategy = strategy_name) %>%
+    mutate(Strategy = strategy_name) %>%
     group_by(year, Strategy) %>%
     summarise(
-      total_newtrips = sum(total_newtrips),
-      total_change_mtnox = sum(total_change_mtnox),
-      total_change_pm25 = sum(total_change_pm25),
-      total_change_VMT = sum(total_change_VMT),
-      total_change_MTCO2 = sum(total_change_MTCO2)
-    )
+      total_newtrips = sum(total_newtrips, na.rm = T),
+      total_change_mtnox = sum(total_change_mtnox, na.rm = T),
+      total_change_pm25 = sum(total_change_pm25, na.rm = T),
+      total_change_VMT = sum(total_change_VMT, na.rm = T),
+      total_change_MTCO2 = sum(total_change_MTCO2, na.rm = T)
+    ) %>% na.omit()
 }
 
 
@@ -47,7 +46,7 @@ MDHD <- filter_columns(output_MDHD(),selected_columns,"MD/HD Truck Replacement")
 Micro <- filter_columns(output_micro(),selected_columns,"Micromobility")  
 pnr <- filter_columns(output_pnr(),selected_columns,"Park and Ride")  
 RoadwayExp <- filter_columns(output_RoadwayExp(),selected_columns,"Roadway Expansion")  
-TDM <- filter_columns(output_TDM(),selected_columns,"Travel Demand Management")  
+TDM <- filter_columns(output_TDM(),selected_columns,"Travel Demand Management") 
 transitElec <- filter_columns(output_transitElec(),selected_columns,"Transit Electrification")  
 TransitService <- filter_columns(output_TransitService(),selected_columns,"Transit Service Expansion")  
 OPS <- filter_columns(output_OPS(),selected_columns,"Traffic Operations")  

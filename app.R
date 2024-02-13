@@ -3686,39 +3686,39 @@ server <- function(input, output, session) {
   
   
   # server scenarios outputs ------------------------------------------------
-  observeEvent(input$state_input,{
-    req(reactive_scenario())
-    
-    dt <- baseline_ghg_forecast()
-    ft <- VMT_Forecast()
-    dt_emissions_base <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-      #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
-      summarise(across(where(is.numeric),sum))
-    
-    dt_VMT_base <- ft %>% ungroup() %>% filter(year >=2021) %>%
-      filter(year %in% c(rvs$Baseline$base_year,
-                         rvs$Baseline$horizon_year_1,
-                         rvs$Baseline$horizon_year_2,
-                         rvs$Baseline$horizon_year_3)) %>%
-      group_by(year) %>%
-      summarise(total_VMT = sum(state_vmt_AEO,na.rm = T))  %>%
-      pivot_wider(names_from= year, values_from = total_VMT)
-                   
-    scen_select <-   reactive_scenario() 
-    
-    strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = "Assumptions") %>% 
-      select('year', Strategy,)
-    
-    total_row <- strategy_temp %>%
-                     pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
-                     mutate(across(where(is.numeric), ~round(., 1))) %>%
-                     summarise(Strategy = "Total", across(where(is.numeric), sum)) 
-
-                   
-                   
-                   
-
-  })
+  # observeEvent(input$state_input,{
+  #   req(reactive_scenario())
+  #   
+  #   dt <- baseline_ghg_forecast()
+  #   ft <- VMT_Forecast()
+  #   dt_emissions_base <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+  #     #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+  #     summarise(across(where(is.numeric),sum))
+  #   
+  #   dt_VMT_base <- ft %>% ungroup() %>% filter(year >=2021) %>%
+  #     filter(year %in% c(rvs$Baseline$base_year,
+  #                        rvs$Baseline$horizon_year_1,
+  #                        rvs$Baseline$horizon_year_2,
+  #                        rvs$Baseline$horizon_year_3)) %>%
+  #     group_by(year) %>%
+  #     summarise(total_VMT = sum(state_vmt_AEO,na.rm = T))  %>%
+  #     pivot_wider(names_from= year, values_from = total_VMT)
+  #                  
+  #   scen_select <-   reactive_scenario() 
+  #   
+  #   strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = "Assumptions") %>% 
+  #     select('year', Strategy,)
+  #   
+  #   total_row <- strategy_temp %>%
+  #                    pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
+  #                    mutate(across(where(is.numeric), ~round(., 1))) %>%
+  #                    summarise(Strategy = "Total", across(where(is.numeric), sum)) 
+  # 
+  #                  
+  #                  
+  #                  
+  # 
+  # })
   
   
   
@@ -3764,29 +3764,30 @@ server <- function(input, output, session) {
   
   # server Strategy Summary outputs ------------------------------------------------
   
-observeEvent(c(input$strategy_scen_select,
-               input$strategy_indicator),{
-  req(reactive_scenario())
+# observeEvent(c(input$strategy_scen_select,
+#                input$strategy_indicator),{
+#   req(reactive_scenario())
 
-# browser()
-                 
-if (input$strategy_scen_select == 'scen_1' ){
-  scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
-    rename(scen = Scenario1)
-} else if (input$strategy_scen_select == 'scen_2'){
-  scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
-    rename(scen = Scenario2)
-}
 
-    strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Assumptions')) %>% filter(scen == TRUE) %>%
-      select('year', Strategy,input$strategy_indicator)
-     
-    total_row <- strategy_temp %>%
-      pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
-      mutate(across(where(is.numeric), ~round(., 1))) %>%
-      summarise(Strategy = "Total", across(where(is.numeric), sum)) 
-    
     output$strategy_summary_tbl <- DT::renderDataTable({
+      
+      req(reactive_scenario())
+      
+      if (input$strategy_scen_select == 'scen_1' ){
+        scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
+          rename(scen = Scenario1)
+      } else if (input$strategy_scen_select == 'scen_2'){
+        scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
+          rename(scen = Scenario2)
+      }
+      
+      strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Assumptions')) %>% filter(scen == TRUE) %>%
+        select('year', Strategy,input$strategy_indicator)
+      
+      total_row <- strategy_temp %>%
+        pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
+        mutate(across(where(is.numeric), ~round(., 1))) %>%
+        summarise(Strategy = "Total", across(where(is.numeric), sum)) 
       
       data_temp <- bind_rows(
         strategy_temp %>%
@@ -3816,13 +3817,27 @@ if (input$strategy_scen_select == 'scen_1' ){
   
 
     output$strategy_summary_graph <- renderPlotly({
+      
+      req(reactive_scenario())
+      
+      if (input$strategy_scen_select == 'scen_1' ){
+        scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
+          rename(scen = Scenario1)
+      } else if (input$strategy_scen_select == 'scen_2'){
+        scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
+          rename(scen = Scenario2)
+      }
+      
+      strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Assumptions')) %>% filter(scen == TRUE) %>%
+        select('year', Strategy,input$strategy_indicator)
+      
       plot_ly(strategy_temp, x = ~factor(year), y = ~get(input$strategy_indicator),
               color = ~Strategy, type = "bar") %>%
         layout(xaxis = list(title = "Year"),
                yaxis = list(title = "Total Change"),
                barmode = "stack")
     })
-},ignoreInit = TRUE)
+
   
 
   #Processing working ----

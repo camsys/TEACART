@@ -46,6 +46,9 @@
 #            truck_vmt_affected * fuel_factor_mdhd_weighted["pm25_tiresBrakes"]) / 1000000)
 
 ### REACTIVE -----
+observe(
+  { browser()}
+)
 
 emrate_freight <- reactive({
   EmRate_by_Tech() %>% 
@@ -72,13 +75,23 @@ output_freight <- reactive({
     rvs$Projects %>% 
     filter(category == "Freight Intermodal Facilities") %>% 
     select(year, unit, value) %>%
-    pivot_wider(names_from = unit, values_from = value)
+    pivot_wider(names_from = unit, values_from = value) %>%
+    mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
+                            year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
+                            year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%
+    #group_by() %>%
+    arrange(year) %>%
+    mutate(
+      intermodal_investment = case_when(
+        year > rvs$Baseline$horizon_year_1 ~ cumsum(intermodal_investment),
+        TRUE ~ intermodal_investment)) %>%
+    ungroup() 
   
   ## table to return
   capital_inputs %>% 
-    rowwise() %>%
-    mutate(year = rvs$Baseline[[year]]) %>% ### Pulls horizon years
-    ungroup() %>%
+    #rowwise() %>%
+    #mutate(year = rvs$Baseline[[year]]) %>% ### Pulls horizon years
+    #ungroup() %>%
     left_join(emrate_freight(), by = join_by(year)) %>%
     mutate(truck_vmt_affected = intermodal_investment * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_truck"), value)),
            rail_ton_mi_affected = intermodal_investment * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_rail"), value)),

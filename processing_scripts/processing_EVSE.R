@@ -94,13 +94,16 @@
 #                                 fuel_factor_mdhd_weighted["pm25_exhaust"] * truck_vmt_affected) / 1000000)
 
 ### REACTIVE ----------
+# observe(
+#   { browser()}
+# )
 
 emrate_evse <- reactive({
   bind_rows( ### this runs pretty slow - needs to be rewritten Gui 1/22/24
     EmRate_Electric_MDHD() %>% mutate(veh_supertype = "Medium/Heavy Duty Vehicles") %>% rename(emrate_Electric = emrate_category_avg),
     EmRate_Conventional_LDV() %>% mutate(veh_supertype = "Light Duty Vehicles") %>% rename(emrate_Conventional = emrate_category_avg),
     EmRate_Conventional_MDHD() %>% mutate(veh_supertype = "Medium/Heavy Duty Vehicles") %>% rename(emrate_Conventional = emrate_category_avg),
-    EmRate_Electric_LDV() %>% mutate(veh_supertype = "Light Duty Vehicles") %>% rename(emrate_Electric = emrate_category_avg)
+    EmRate_Electric_LDV() %>% mutate(veh_supertype = "Light Duty Vehicles") %>% rename(emrate_Electric = emrate_category_avg) # Qi: This is different, verify with Gui
   )
 })
 
@@ -122,7 +125,17 @@ output_EVSE <- reactive({
     rvs$Projects %>%
     filter(category == "EV Charging Infrastructure") %>%
     select(year, charge_port_detail, unit, value) %>%
-    pivot_wider(names_from = unit, values_from = value)
+    pivot_wider(names_from = unit, values_from = value) %>%
+    mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
+                            year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
+                            year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%
+    group_by(charge_port_detail) %>%
+    arrange(year) %>%
+    mutate(
+      new_ports = case_when(
+        year > rvs$Baseline$horizon_year_1 ~ cumsum(new_ports),
+        TRUE ~ new_ports)) %>%
+    ungroup() 
   
   CalculatedPorts <- capital_inputs %>% left_join(elasticities_by_port_type(), by = join_by("charge_port_detail")) %>% 
     mutate(calculated_ports = new_ports * veh_sales_elasticity_wrt_ports)
@@ -130,7 +143,8 @@ output_EVSE <- reactive({
   vmt_affected <-
     CalculatedPorts %>% 
     mutate(veh_supertype = if_else(str_detect(charge_port_detail, "General public"), "Light Duty Vehicles", "Medium/Heavy Duty Vehicles")) %>%
-    get_horizon_years(my_rv = rvs) %>% select(year, veh_supertype, calculated_ports) %>%
+    #get_horizon_years(my_rv = rvs) %>%
+    select(year, veh_supertype, calculated_ports) %>%
     left_join(x = Stock_filtered(), y = ., by = join_by(veh_supertype, year), relationship = "one-to-many") %>%
     summarize("VMT_affected" = sum(calculated_ports * MT_per_vehtype), .by = c("veh_supertype", "year"))
   
@@ -146,7 +160,8 @@ output_EVSE <- reactive({
               total_change_electricity = sum(added_electricity_emissions, na.rm = T),
               truck_vmt_affected = sum(VMT_affected[veh_supertype == "Medium/Heavy Duty Vehicles"], na.rm = T),
               light_vmt_affected = sum(VMT_affected[veh_supertype == "Light Duty Vehicles"], na.rm = T)) %>%
-    mutate(total_change_nox = (Fuel_Factors_by_supertype()[["Light Duty Vehicles"]]$NOx_g_per_veh_mi*light_vmt_affected + 
+    mutate(total_change_MTCO2 = total_change_direct + total_change_electricity,
+           total_change_nox = (Fuel_Factors_by_supertype()[["Light Duty Vehicles"]]$NOx_g_per_veh_mi*light_vmt_affected + 
                                  Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$NOx_g_per_veh_mi * truck_vmt_affected) / 1000000,
            total_change_pm25 = (Fuel_Factors_by_supertype()[["Light Duty Vehicles"]]$PM25_tires_brakes_per_veh_mi*light_vmt_affected +
                                   Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$PM25_exhaust_per_veh_mi * truck_vmt_affected) / 1000000)

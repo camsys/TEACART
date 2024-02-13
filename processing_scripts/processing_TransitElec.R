@@ -1,14 +1,11 @@
 
+# observe({
+#   browser()
+# })
 output_transitElec <- reactive({
-#  observeEvent(input$state_input,{
+  #observeEvent(input$state_input,{
   
-    #browser()
-    # req(EmRate_by_Tech())
-    # req(VMT_Type_Tech_Base())
-    # req(rvs)
-    # req(CO2e_Category_Averages())
-    # req(Fuel_Factors_Weighted())
-    
+
     # collect need variables
     
     fuelfact_MHD_NOx <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Medium/Heavy Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']        
