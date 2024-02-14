@@ -1131,7 +1131,7 @@ nav_panel(title = "Assumptions",
                               compare up to two different scenarios.")),
                 fluidRow(
                   p(""),
-                  h3("Scenario Testing"),
+                  h3("Scenario Selections"),
                   p(""),
                   DT::DTOutput("scenario_tbl")
                 )
@@ -3051,10 +3051,26 @@ server <- function(input, output, session) {
   #   }, character(1))
   # )
   dat <- data.frame(
-    Assumptions = c(strategy_names),
+    `grouped_projects` = c(strategy_names),
+    `relation` = c('Projects 1',
+                   'Projects 2, Projects 3, Projects 5, Projects 6',
+                   'Projects 8',
+                   'Projects 7',
+                   'Projects 11',
+                   'Projects 2, Projects 3, Projects 4',
+                   'Projects 10',
+                   'Projects 12',
+                   'Projects 13',
+                   'Projects 9',
+                   'Projects 14',
+                   ''),
     Scenario1 = rep(FALSE, 12),
     Scenario2 = rep(FALSE, 12)
   )
+  
+  colnames(dat)[colnames(dat) == "grouped_projects"] <- "Grouped Projects"
+  colnames(dat)[colnames(dat) == "relation"] <- "Relation to Project Tab"
+  
   
   # names(dat) <- c(
   #   as.character(checkboxInput("col1", label = "Scenario 1")),
@@ -3126,7 +3142,7 @@ server <- function(input, output, session) {
       options = list(
         pageLength =12,
         columnDefs = list(
-          list(className = 'dt-center', targets = c(2, 3)),
+          list(className = 'dt-center', targets = c(3, 4)),
           list(render = JS(
             "function(data, type, row, meta) {",
             "  if (type === 'display') {",
@@ -3134,7 +3150,7 @@ server <- function(input, output, session) {
             "  }",
             "  return data;",
             "}"
-          ), targets = c(2, 3))
+          ), targets = c(3, 4))
         ),
         dom = 'Bfrtip'
       ),
@@ -3145,7 +3161,7 @@ server <- function(input, output, session) {
   # Update the reactive data when boxes are selected
   observeEvent(input$scenario_tbl_cell_clicked, {
     info <- input$scenario_tbl_cell_clicked
-    if (!is.null(info$col) && info$col %in% c(2, 3)) {
+    if (!is.null(info$col) && info$col %in% c(3, 4)) {
       col_name <- colnames(reactive_scenario())[info$col]
       reactive_scenario_updated <- reactive_scenario()
       reactive_scenario_updated[info$row, col_name] <- !reactive_scenario_updated[info$row, col_name]
@@ -3704,6 +3720,7 @@ server <- function(input, output, session) {
   
   
   # server scenarios outputs ------------------------------------------------
+<<<<<<< HEAD
   
   output$emission_change_tbl <- renderDataTable({
     results <- scenario_summary_results()
@@ -3720,6 +3737,41 @@ server <- function(input, output, session) {
                              info = FALSE))
     return(fin_table)
   })
+=======
+  # observeEvent(input$state_input,{
+  #   req(reactive_scenario())
+  #   
+  #   dt <- baseline_ghg_forecast()
+  #   ft <- VMT_Forecast()
+  #   dt_emissions_base <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+  #     #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+  #     summarise(across(where(is.numeric),sum))
+  #   
+  #   dt_VMT_base <- ft %>% ungroup() %>% filter(year >=2021) %>%
+  #     filter(year %in% c(rvs$Baseline$base_year,
+  #                        rvs$Baseline$horizon_year_1,
+  #                        rvs$Baseline$horizon_year_2,
+  #                        rvs$Baseline$horizon_year_3)) %>%
+  #     group_by(year) %>%
+  #     summarise(total_VMT = sum(state_vmt_AEO,na.rm = T))  %>%
+  #     pivot_wider(names_from= year, values_from = total_VMT)
+  #                  
+  #   scen_select <-   reactive_scenario() 
+  #   
+  #   strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = "Assumptions") %>% 
+  #     select('year', Strategy,)
+  #   
+  #   total_row <- strategy_temp %>%
+  #                    pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
+  #                    mutate(across(where(is.numeric), ~round(., 1))) %>%
+  #                    summarise(Strategy = "Total", across(where(is.numeric), sum)) 
+  # 
+  #                  
+  #                  
+  #                  
+  # 
+  # })
+>>>>>>> ef7b63c63668313b4e4bbdc0a75389dc1851354b
   
   output$emission_change_graph <- renderPlotly({
     #browser()
@@ -3790,34 +3842,36 @@ server <- function(input, output, session) {
   
   # server Strategy Summary outputs ------------------------------------------------
   
-observeEvent(c(input$strategy_scen_select,
-               input$strategy_indicator),{
-  req(reactive_scenario())
+# observeEvent(c(input$strategy_scen_select,
+#                input$strategy_indicator),{
+#   req(reactive_scenario())
 
-# browser()
-                 
-if (input$strategy_scen_select == 'scen_1' ){
-  scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
-    rename(scen = Scenario1)
-} else if (input$strategy_scen_select == 'scen_2'){
-  scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
-    rename(scen = Scenario2)
-}
 
-    strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Assumptions')) %>% filter(scen == TRUE) %>%
-      select('year', Strategy,input$strategy_indicator)
-     
-    total_row <- strategy_temp %>%
-      pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
-      mutate(across(where(is.numeric), ~round(., 1))) %>%
-      summarise(Strategy = "Total", across(where(is.numeric), sum)) 
-    
     output$strategy_summary_tbl <- DT::renderDataTable({
+      
+      req(reactive_scenario())
+      
+      if (input$strategy_scen_select == 'scen_1' ){
+        scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
+          rename(scen = Scenario1)
+      } else if (input$strategy_scen_select == 'scen_2'){
+        scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
+          rename(scen = Scenario2)
+      }
+      
+      strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
+        select('year', Strategy,input$strategy_indicator)
+      
+      total_row <- strategy_temp %>%
+        pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
+        mutate(across(where(is.numeric), ~round(., 2))) %>%
+        summarise(Strategy = "Total", across(where(is.numeric), sum)) 
+      
       
       data_temp <- bind_rows(
         strategy_temp %>%
           pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
-          mutate(across(where(is.numeric), ~round(., 1))),
+          mutate(across(where(is.numeric), ~round(., 2))),
         total_row
       ) %>% mutate(across(where(is.numeric), ~ prettyNum(., big.mark = ",")))
       data_temp %>%
@@ -3838,17 +3892,45 @@ if (input$strategy_scen_select == 'scen_1' ){
                            "  });",
                            "}")))
       })
-
+  
   
 
     output$strategy_summary_graph <- renderPlotly({
+      
+      req(reactive_scenario())
+      
+      if (input$strategy_scen_select == 'scen_1' ){
+        scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
+          rename(scen = Scenario1)
+      } else if (input$strategy_scen_select == 'scen_2'){
+        scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
+          rename(scen = Scenario2)
+      }
+      
+      strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
+        select('year', Strategy,input$strategy_indicator) %>%
+        arrange(year, Strategy)
+      
+      # browser()
+      
+      base_values <- strategy_temp %>% 
+        group_by(year, Strategy) %>% 
+        summarise(base_value = min(input$strategy_indicator))
+      
+      constant_base <- min(base_values$base_value)
+      
+      
       plot_ly(strategy_temp, x = ~factor(year), y = ~get(input$strategy_indicator),
-              color = ~Strategy, type = "bar") %>%
-        layout(xaxis = list(title = "Year"),
+              color = ~Strategy, type = "bar", base = base_values$base_value) %>%
+        layout(xaxis = list(title = "Year", categoryorder = "category"),
                yaxis = list(title = "Total Change"),
-               barmode = "stack")
+               barmode = "stack",
+               bargroupgap  = 0 ) %>%
+        add_trace( x = ~as.character(year), y = ~constant_base,
+                  type = "bar", marker = list(color = "rgba(0,0,0,0)"),
+                  showlegend = F)
     })
-},ignoreInit = TRUE)
+
   
 
   #Processing working ----
@@ -4004,7 +4086,6 @@ if (input$strategy_scen_select == 'scen_1' ){
                 ".pdf",
                 sep="")},
     content = function(file) {
-      browser()
       # Render the R Markdown file to PDF
       shiny::withProgress(
         message = paste0("Downloading", input$dataset, " Data"),

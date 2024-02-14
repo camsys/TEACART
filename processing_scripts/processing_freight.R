@@ -46,7 +46,7 @@
 #            truck_vmt_affected * fuel_factor_mdhd_weighted["pm25_tiresBrakes"]) / 1000000)
 
 ### REACTIVE -----
-
+# observe({browser()})
 emrate_freight <- reactive({
   EmRate_by_Tech() %>% 
     filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks"), str_detect(veh_subtype, "ICE")) %>%
@@ -72,13 +72,23 @@ output_freight <- reactive({
     rvs$Projects %>% 
     filter(category == "Freight Intermodal Facilities") %>% 
     select(year, unit, value) %>%
-    pivot_wider(names_from = unit, values_from = value)
+    pivot_wider(names_from = unit, values_from = value) %>%
+    mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
+                            year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
+                            year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%
+    #group_by() %>%
+    arrange(year) %>%
+    mutate(
+      intermodal_investment = case_when(
+        year > rvs$Baseline$horizon_year_1 ~ cumsum(intermodal_investment),
+        TRUE ~ intermodal_investment)) %>%
+    ungroup() 
   
   ## table to return
   capital_inputs %>% 
-    rowwise() %>%
-    mutate(year = rvs$Baseline[[year]]) %>% ### Pulls horizon years
-    ungroup() %>%
+    #rowwise() %>%
+    #mutate(year = rvs$Baseline[[year]]) %>% ### Pulls horizon years
+    #ungroup() %>%
     left_join(emrate_freight(), by = join_by(year)) %>%
     mutate(truck_vmt_affected = intermodal_investment * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_truck"), value)),
            rail_ton_mi_affected = intermodal_investment * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_rail"), value)),
@@ -86,6 +96,7 @@ output_freight <- reactive({
            added_rail_emissions = rail_ton_mi_affected * emissions_avg_rail() / 1000000,
            total_change_MTCO2 = displaced_truck_emissions + added_rail_emissions,
            total_change_direct = total_change_MTCO2,
+           total_change_VMT = truck_vmt_affected,
            total_change_electricity = 0,
            total_change_mtnox = truck_vmt_affected * Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]][["NOx_g_per_veh_mi"]] / 1000000,
            total_change_pm25 = (truck_vmt_affected * Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]][["PM25_exhaust_per_veh_mi"]] +
