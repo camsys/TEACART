@@ -3786,13 +3786,13 @@ server <- function(input, output, session) {
       
       total_row <- strategy_temp %>%
         pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
-        mutate(across(where(is.numeric), ~round(., 1))) %>%
+        mutate(across(where(is.numeric), ~round(., 2))) %>%
         summarise(Strategy = "Total", across(where(is.numeric), sum)) 
       
       data_temp <- bind_rows(
         strategy_temp %>%
           pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
-          mutate(across(where(is.numeric), ~round(., 1))),
+          mutate(across(where(is.numeric), ~round(., 2))),
         total_row
       ) %>% mutate(across(where(is.numeric), ~ prettyNum(., big.mark = ",")))
       data_temp %>%
@@ -3813,7 +3813,7 @@ server <- function(input, output, session) {
                            "  });",
                            "}")))
       })
-
+  
   
 
     output$strategy_summary_graph <- renderPlotly({
@@ -3829,13 +3829,27 @@ server <- function(input, output, session) {
       }
       
       strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Assumptions')) %>% filter(scen == TRUE) %>%
-        select('year', Strategy,input$strategy_indicator)
+        select('year', Strategy,input$strategy_indicator) %>%
+        arrange(year, Strategy)
+      
+      # browser()
+      
+      base_values <- strategy_temp %>% 
+        group_by(year, Strategy) %>% 
+        summarise(base_value = min(input$strategy_indicator))
+      
+      constant_base <- min(base_values$base_value)
+      
       
       plot_ly(strategy_temp, x = ~factor(year), y = ~get(input$strategy_indicator),
-              color = ~Strategy, type = "bar") %>%
-        layout(xaxis = list(title = "Year"),
+              color = ~Strategy, type = "bar", base = base_values$base_value) %>%
+        layout(xaxis = list(title = "Year", categoryorder = "category"),
                yaxis = list(title = "Total Change"),
-               barmode = "stack")
+               barmode = "stack",
+               bargroupgap  = 0 ) %>%
+        add_trace( x = ~as.character(year), y = ~constant_base,
+                  type = "bar", marker = list(color = "rgba(0,0,0,0)"),
+                  showlegend = F)
     })
 
   
@@ -3993,7 +4007,6 @@ server <- function(input, output, session) {
                 ".pdf",
                 sep="")},
     content = function(file) {
-      browser()
       # Render the R Markdown file to PDF
       shiny::withProgress(
         message = paste0("Downloading", input$dataset, " Data"),

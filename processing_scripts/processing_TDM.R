@@ -1,5 +1,5 @@
 
-
+# observe({browser()})
  output_TDM <- reactive({
   #observeEvent(input$state_input,{
 

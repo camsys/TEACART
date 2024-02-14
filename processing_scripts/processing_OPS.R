@@ -1,5 +1,4 @@
 
-
 output_OPS <- reactive({
   
 EmRate_by_Tech <- EmRate_by_Tech() %>%

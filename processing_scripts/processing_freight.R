@@ -46,10 +46,7 @@
 #            truck_vmt_affected * fuel_factor_mdhd_weighted["pm25_tiresBrakes"]) / 1000000)
 
 ### REACTIVE -----
-observe(
-  { browser()}
-)
-
+# observe({browser()})
 emrate_freight <- reactive({
   EmRate_by_Tech() %>% 
     filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks"), str_detect(veh_subtype, "ICE")) %>%
@@ -99,6 +96,7 @@ output_freight <- reactive({
            added_rail_emissions = rail_ton_mi_affected * emissions_avg_rail() / 1000000,
            total_change_MTCO2 = displaced_truck_emissions + added_rail_emissions,
            total_change_direct = total_change_MTCO2,
+           total_change_VMT = truck_vmt_affected,
            total_change_electricity = 0,
            total_change_mtnox = truck_vmt_affected * Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]][["NOx_g_per_veh_mi"]] / 1000000,
            total_change_pm25 = (truck_vmt_affected * Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]][["PM25_exhaust_per_veh_mi"]] +

@@ -121,8 +121,8 @@ output_MDHD <- reactive({
               total_change_direct = sum(MTCO2_change),
               total_change_electricity = sum(added_electricity_emissions),
               total_affected_annual_VRM = sum(affected_annual_VRM)) %>%
-    mutate(total_change_mtnox = total_affected_annual_VRM * Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$NOx_g_per_veh_mi / 1000000,
-           total_change_pm25 = total_affected_annual_VRM * Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$PM25_exhaust_per_veh_mi / 1000000)
+    mutate(total_change_mtnox = -total_affected_annual_VRM * Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$NOx_g_per_veh_mi / 1000000,
+           total_change_pm25 = -total_affected_annual_VRM * Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$PM25_exhaust_per_veh_mi / 1000000)
   
 })
 
