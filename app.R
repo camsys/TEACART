@@ -1131,7 +1131,7 @@ nav_panel(title = "Assumptions",
                               compare up to two different scenarios.")),
                 fluidRow(
                   p(""),
-                  h3("Scenario Testing"),
+                  h3("Scenario Selections"),
                   p(""),
                   DT::DTOutput("scenario_tbl")
                 )
@@ -3033,10 +3033,26 @@ server <- function(input, output, session) {
   #   }, character(1))
   # )
   dat <- data.frame(
-    Assumptions = c(strategy_names),
+    `grouped_projects` = c(strategy_names),
+    `relation` = c('Projects 1',
+                   'Projects 2, Projects 3, Projects 5, Projects 6',
+                   'Projects 8',
+                   'Projects 7',
+                   'Projects 11',
+                   'Projects 2, Projects 3, Projects 4',
+                   'Projects 10',
+                   'Projects 12',
+                   'Projects 13',
+                   'Projects 9',
+                   'Projects 14',
+                   ''),
     Scenario1 = rep(FALSE, 12),
     Scenario2 = rep(FALSE, 12)
   )
+  
+  colnames(dat)[colnames(dat) == "grouped_projects"] <- "Grouped Projects"
+  colnames(dat)[colnames(dat) == "relation"] <- "Relation to Project Tab"
+  
   
   # names(dat) <- c(
   #   as.character(checkboxInput("col1", label = "Scenario 1")),
@@ -3108,7 +3124,7 @@ server <- function(input, output, session) {
       options = list(
         pageLength =12,
         columnDefs = list(
-          list(className = 'dt-center', targets = c(2, 3)),
+          list(className = 'dt-center', targets = c(3, 4)),
           list(render = JS(
             "function(data, type, row, meta) {",
             "  if (type === 'display') {",
@@ -3116,7 +3132,7 @@ server <- function(input, output, session) {
             "  }",
             "  return data;",
             "}"
-          ), targets = c(2, 3))
+          ), targets = c(3, 4))
         ),
         dom = 'Bfrtip'
       ),
@@ -3127,7 +3143,7 @@ server <- function(input, output, session) {
   # Update the reactive data when boxes are selected
   observeEvent(input$scenario_tbl_cell_clicked, {
     info <- input$scenario_tbl_cell_clicked
-    if (!is.null(info$col) && info$col %in% c(2, 3)) {
+    if (!is.null(info$col) && info$col %in% c(3, 4)) {
       col_name <- colnames(reactive_scenario())[info$col]
       reactive_scenario_updated <- reactive_scenario()
       reactive_scenario_updated[info$row, col_name] <- !reactive_scenario_updated[info$row, col_name]
@@ -3781,13 +3797,14 @@ server <- function(input, output, session) {
           rename(scen = Scenario2)
       }
       
-      strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Assumptions')) %>% filter(scen == TRUE) %>%
+      strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
         select('year', Strategy,input$strategy_indicator)
       
       total_row <- strategy_temp %>%
         pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
         mutate(across(where(is.numeric), ~round(., 2))) %>%
         summarise(Strategy = "Total", across(where(is.numeric), sum)) 
+      
       
       data_temp <- bind_rows(
         strategy_temp %>%
@@ -3828,7 +3845,7 @@ server <- function(input, output, session) {
           rename(scen = Scenario2)
       }
       
-      strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Assumptions')) %>% filter(scen == TRUE) %>%
+      strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
         select('year', Strategy,input$strategy_indicator) %>%
         arrange(year, Strategy)
       
