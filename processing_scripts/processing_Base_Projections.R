@@ -787,3 +787,141 @@ EmRate_Electric_MDHD <- reactive({
 
 ## Qi: the electricity_carbon_content value is a little bit off, need to check
 
+# Outputs ---------------------------------------------------------------------
+scenario_summary_results <- reactive({    #req('')
+  #req(reactive_scenario())
+  #browser()
+  base_year <- rvs$Baseline$base_year
+  
+  dt <- baseline_ghg_forecast()
+  ft <- VMT_Forecast()
+  
+  dt_emissions_base <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+    #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+    summarise(across(where(is.numeric),sum)) %>%
+    pivot_longer(cols = everything(), names_to = "year") %>%
+    mutate(Scenario = "Baseline")
+  
+  base_year_1_co2 <- dt_emissions_base$value[dt_emissions_base$year == rvs$Baseline$base_year]
+  base_year_2_co2 <- dt_emissions_base$value[dt_emissions_base$year == rvs$Baseline$horizon_year_1]
+  base_year_3_co2 <- dt_emissions_base$value[dt_emissions_base$year == rvs$Baseline$horizon_year_2]
+  base_year_4_co2 <- dt_emissions_base$value[dt_emissions_base$year == rvs$Baseline$horizon_year_3]
+  
+  dt_VMT_base <- ft %>% ungroup() %>% filter(year >=2021) %>%
+    filter(year %in% c(rvs$Baseline$base_year,
+                       rvs$Baseline$horizon_year_1,
+                       rvs$Baseline$horizon_year_2,
+                       rvs$Baseline$horizon_year_3)) %>%
+    group_by(year) %>%
+    summarise(total_VMT = sum(state_vmt_AEO,na.rm = T))  %>%
+    rename(value = total_VMT) %>% mutate(Scenario = "Baseline") 
+  
+  base_year_1_VMT <- dt_VMT_base$value[dt_VMT_base$year == rvs$Baseline$base_year]
+  base_year_2_VMT <- dt_VMT_base$value[dt_VMT_base$year == rvs$Baseline$horizon_year_1]
+  base_year_3_VMT <- dt_VMT_base$value[dt_VMT_base$year == rvs$Baseline$horizon_year_2]
+  base_year_4_VMT <- dt_VMT_base$value[dt_VMT_base$year == rvs$Baseline$horizon_year_3]
+  
+  scen_select <-   reactive_scenario() 
+  
+  strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = "Assumptions")) %>% 
+    select('year', Strategy,Scenario1, Scenario2, total_newtrips, total_change_mtnox, total_change_pm25, total_change_VMT, total_change_MTCO2)
+  
+  scen_co2 <- strategy_temp %>%
+    group_by(year) %>%
+    summarise(Scenario1 = sum(total_change_MTCO2*Scenario1),
+              Scenario2 = sum(total_change_MTCO2*Scenario2)) %>%
+    pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")
+  
+  scen_VMT <- strategy_temp %>%
+    group_by(year) %>%
+    summarise(Scenario1 = sum(total_change_VMT*Scenario1),
+              Scenario2 = sum(total_change_VMT*Scenario2)) %>%
+    pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")
+  
+  scen_NOX <- strategy_temp %>%
+    group_by(year) %>%
+    summarise(Scenario1 = sum(total_change_mtnox*Scenario1),
+              Scenario2 = sum(total_change_mtnox*Scenario2)) %>%
+    pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")%>% 
+    pivot_wider(names_from= year, values_from = value)  %>%
+    mutate(table_title = "NOx Reduction (MT)")
+  
+  scen_NOX[,as.character(rvs$Baseline$base_year)]<-"-"
+  
+  scen_PM25 <- strategy_temp %>%
+    group_by(year) %>%
+    summarise(Scenario1 = sum(total_change_pm25*Scenario1),
+              Scenario2 = sum(total_change_pm25*Scenario2)) %>%
+    pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")%>% 
+    pivot_wider(names_from= year, values_from = value)  %>%
+    mutate(table_title = "PM2.5 Reduction (MT)")
+  
+  scen_PM25[,as.character(rvs$Baseline$base_year)]<-"-"
+  
+  scen_NewTrips <- strategy_temp %>%
+    group_by(year) %>%
+    summarise(Scenario1 = sum(total_newtrips*Scenario1),
+              Scenario2 = sum(total_newtrips*Scenario2)) %>%
+    pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")%>% 
+    pivot_wider(names_from= year, values_from = value)  %>% 
+    mutate(table_title = "New Daily Active Trips")
+  
+  scen_NewTrips[,as.character(rvs$Baseline$base_year)]<-"-"
+  
+  fin_emissions_table <- rbind(dt_emissions_base,scen_co2) %>%
+    #mutate(value = ifelse(Scenario != "Baseline"&year == rvs$Baseline$base_year, base_year_1_co2,value))
+    pivot_wider(names_from= year, values_from = value) 
+  fin_emissions_table[c(2,3),2] <- base_year_1_co2
+  fin_emissions_table <- fin_emissions_table %>% 
+    mutate(table_title = "Emissions (MT CO2e)")
+  
+  fin_emissions_reduction_table <- scen_co2 %>% mutate(value = ifelse(year == rvs$Baseline$base_year, base_year_1_co2 - value,
+                                                                      ifelse(year == rvs$Baseline$horizon_year_1, base_year_2_co2 - value,
+                                                                             ifelse(year == rvs$Baseline$horizon_year_2, base_year_3_co2 - value,
+                                                                                    ifelse(year == rvs$Baseline$horizon_year_3,base_year_4_co2 - value, "Missing Year")))))%>%
+    pivot_wider(names_from = year) %>% 
+    mutate(table_title = "Emissions Reduction (MT from Baseline)")
+  
+  fin_emissions_reduction_table[,as.character(rvs$Baseline$base_year)]<-"-"
+  
+  
+  fin_emissions_per_change_table <- scen_co2 %>% mutate(value = ifelse(year == rvs$Baseline$base_year, (value-base_year_1_co2)/base_year_1_co2,
+                                                                       ifelse(year == rvs$Baseline$horizon_year_1, (value-base_year_2_co2)/base_year_2_co2,
+                                                                              ifelse(year == rvs$Baseline$horizon_year_2, (value-base_year_3_co2)/base_year_3_co2,
+                                                                                     ifelse(year == rvs$Baseline$horizon_year_3,(value-base_year_4_co2)/base_year_4_co2, "Missing Year"))))) %>%
+    pivot_wider(names_from = year) %>% 
+    mutate(table_title = "Emissions Reduction (% from Baseline)")
+  
+  fin_emissions_per_change_table[,as.character(rvs$Baseline$base_year)]<-"-"
+  
+  
+  fin_vmt_table <- rbind(dt_VMT_base,scen_VMT) %>%
+    #mutate(value = ifelse(Scenario != "Baseline"&year == rvs$Baseline$base_year, base_year_1_co2,value))
+    pivot_wider(names_from= year, values_from = value) 
+  fin_vmt_table[c(2,3),2] <- base_year_1_VMT
+  fin_vmt_table <- fin_vmt_table %>%
+    mutate(table_title = "VMT (millions)")
+  
+  fin_vmt_reduction_table <- scen_VMT %>% mutate(value = ifelse(year == rvs$Baseline$base_year, base_year_1_VMT - value,
+                                                                ifelse(year == rvs$Baseline$horizon_year_1, base_year_2_VMT - value,
+                                                                       ifelse(year == rvs$Baseline$horizon_year_2, base_year_3_VMT - value,
+                                                                              ifelse(year == rvs$Baseline$horizon_year_3,base_year_4_VMT - value, "Missing Year")))))%>% pivot_wider(names_from = year)%>%
+    mutate(table_title = "VMT Reduction (millions from Baseline)")
+  
+  fin_vmt_reduction_table[,as.character(rvs$Baseline$base_year)]<-"-"
+  
+  fin_vmt_per_change_table <- scen_VMT %>% mutate(value = ifelse(year == rvs$Baseline$base_year, (value- base_year_1_VMT)/base_year_1_VMT,
+                                                                 ifelse(year == rvs$Baseline$horizon_year_1, (value- base_year_2_VMT)/base_year_2_VMT,
+                                                                        ifelse(year == rvs$Baseline$horizon_year_2, (value- base_year_3_VMT)/base_year_3_VMT,
+                                                                               ifelse(year == rvs$Baseline$horizon_year_3,(value- base_year_4_VMT)/base_year_4_VMT, "Missing Year"))))) %>% pivot_wider(names_from = year) %>%
+    mutate(table_title = "VMT Reduction (% from")
+  
+  fin_vmt_per_change_table[,as.character(rvs$Baseline$base_year)]<-"-"
+  
+  
+  
+  fin_table <- rbind(fin_emissions_table, fin_emissions_reduction_table, fin_emissions_per_change_table,
+                     fin_vmt_table, fin_vmt_reduction_table, fin_vmt_per_change_table, 
+                     scen_NOX, scen_PM25, scen_NewTrips)
+  return(fin_table)
+  })

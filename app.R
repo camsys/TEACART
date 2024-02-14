@@ -1355,17 +1355,18 @@ nav_panel(title = "Assumptions",
                                              label = "Indicator",
                                              selected = 'em_mt_co2_change',
                                              choices = c( 
-                                               'MT CO2e' = 'CO2',
-                                               'VMT (Mile)' = 'VMT',
-                                               'MT NOx' = 'Nox',
-                                               'MT PM2.5' = 'PM2.5',
+                                               'MT CO2e' = 'Emissions (MT CO2e)',
+                                               'VMT' = 'VMT (millions)',
+                                               'MT NOx' = 'NOx Reduction (MT)',
+                                               'MT PM2.5' = 'PM2.5 Reduction (MT',
                                                'Daily Active Trips' = 'New Daily Active Trips')
                               )),
                             fluidRow(
                               column(6,
-                                     DT::DTOutput('emission_change_tbl')),
-                              column(6,
                                      plotlyOutput("emission_change_graph", width = "auto", height = "auto"))),
+                            fluidRow(
+                              column(12,
+                                     DT::DTOutput('emission_change_tbl'))),
                   ),
 
 
@@ -1919,6 +1920,23 @@ server <- function(input, output, session) {
     
   })
 
+  # output$custom_projs_tbl <- renderDT({
+  #   
+  #   req(rvs$Projects)
+  #   temp_send <- rvs$Projects
+  #   
+  #   render_custom_datatable(
+  #     data_reactive = temp_send,
+  #     table_number = 14,
+  #     non_editable_cols = c(0,1,2),
+  #     page_length = 10,
+  #     comma_rows = 0:4,
+  #     percent_rows = integer(0),
+  #     currency_rows = integer(0),
+  #     decimal_rows = integer(0))
+  #   
+  # })
+  
   # Project Tables: Observe and update edits to projects ------------------------
   # observe edits to the bikeped_projs
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
@@ -3686,40 +3704,48 @@ server <- function(input, output, session) {
   
   
   # server scenarios outputs ------------------------------------------------
-  observeEvent(input$state_input,{
-    req(reactive_scenario())
-    
-    dt <- baseline_ghg_forecast()
-    ft <- VMT_Forecast()
-    dt_emissions_base <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-      #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
-      summarise(across(where(is.numeric),sum))
-    
-    dt_VMT_base <- ft %>% ungroup() %>% filter(year >=2021) %>%
-      filter(year %in% c(rvs$Baseline$base_year,
-                         rvs$Baseline$horizon_year_1,
-                         rvs$Baseline$horizon_year_2,
-                         rvs$Baseline$horizon_year_3)) %>%
-      group_by(year) %>%
-      summarise(total_VMT = sum(state_vmt_AEO,na.rm = T))  %>%
-      pivot_wider(names_from= year, values_from = total_VMT)
-                   
-    scen_select <-   reactive_scenario() 
-    
-    strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = "Assumptions") %>% 
-      select('year', Strategy,)
-    
-    total_row <- strategy_temp %>%
-                     pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
-                     mutate(across(where(is.numeric), ~round(., 1))) %>%
-                     summarise(Strategy = "Total", across(where(is.numeric), sum)) 
-
-                   
-                   
-                   
-
+  
+  output$emission_change_tbl <- renderDataTable({
+    results <- scenario_summary_results()
+    fin_table<-datatable(results,
+              rownames = FALSE,
+              selection = "none",
+              extension = 'RowGroup',
+              
+              options = list(rowGroup = list(dataSrc = c(5)),
+                             columnDefs = list(list(targets = c(5), visible = FALSE)),
+                             page_length = 20,
+                             searching = FALSE,
+                             paging = FALSE,
+                             info = FALSE))
+    return(fin_table)
   })
   
+  output$emission_change_graph <- renderPlotly({
+    #browser()
+    
+    table_filt <- input$scenario_indicator
+    results <- scenario_summary_results() %>%
+      filter(table_title == table_filt) %>%
+      filter(Scenario != "Baseline") %>% 
+      pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
+                            rvs$Baseline$horizon_year_1,
+                            rvs$Baseline$horizon_year_2,
+                            rvs$Baseline$horizon_year_3)), 
+                   names_to = "year", values_to = "value") %>%
+      filter(year != rvs$Baseline$base_year)
+  
+      
+    results %>%
+      plotly::plot_ly(x = ~ year,
+                      y = ~ value,
+                      color = ~Scenario,
+                      type = 'bar') %>%
+      layout(yaxis = list(title = table_filt, separatethousands= TRUE),
+             barmode = "group") %>%
+      config(displayModeBar = FALSE) 
+    
+    })
   
   
   # read dummy data
@@ -3733,19 +3759,19 @@ server <- function(input, output, session) {
       pivot_wider(names_from = scenario,
                   values_from = mt_reduction)
     
-    output$emission_change_graph <- renderPlotly(
-      dat_temp |> 
-        plotly::plot_ly(x = ~year,
-                        y = ~`Scenario 1`,
-                        type = 'bar',
-                        name = 'Scenario 1' ) |> 
-        add_trace(y = ~ `Scenario 2`, name = 'Scenario 2'))
+    # output$emission_change_graph <- renderPlotly(
+    #   dat_temp |> 
+    #     plotly::plot_ly(x = ~year,
+    #                     y = ~`Scenario 1`,
+    #                     type = 'bar',
+    #                     name = 'Scenario 1' ) |> 
+    #     add_trace(y = ~ `Scenario 2`, name = 'Scenario 2'))
     
-    output$emission_change_tbl <- DT::renderDataTable(
-      DT::datatable(dat_temp,
-                    escape = FALSE,
-                    rownames=F,
-                    options = list(dom = 't')))
+    # output$emission_change_tbl <- DT::renderDataTable(
+    #   DT::datatable(dat_temp,
+    #                 escape = FALSE,
+    #                 rownames=F,
+    #                 options = list(dom = 't')))
     
   })
   
