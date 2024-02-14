@@ -823,7 +823,7 @@ scenario_summary_results <- reactive({    #req('')
   
   scen_select <-   reactive_scenario() 
   
-  strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = "Assumptions")) %>% 
+  strategy_temp <- scenario_sum() %>% left_join(scen_select, by = c("Strategy" = "Grouped Projects")) %>% 
     select('year', Strategy,Scenario1, Scenario2, total_newtrips, total_change_mtnox, total_change_pm25, total_change_VMT, total_change_MTCO2)
   
   scen_co2 <- strategy_temp %>%

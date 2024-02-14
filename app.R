@@ -3015,7 +3015,7 @@ server <- function(input, output, session) {
   
   
   
-  # server scenarios inputs -------------------------------------------------
+  # SCENARIOS: inputs -------------------------------------------------
   
   
   strategy_names <- c("Bicycle and Pedestrian",
@@ -3173,7 +3173,7 @@ server <- function(input, output, session) {
   
   shinyjs::enable(selector = ".checkbox")
   
-  # server advanced inputs ---------------------------------------------------------
+  # ADVANCED: inputs ---------------------------------------------------------
   
   advanced_names <- c("ev_forecast_sheet",
                       "vmt_forecast_sheet",
@@ -3186,7 +3186,7 @@ server <- function(input, output, session) {
   read_static_tables(".\\data\\advanced.xlsx", advanced_names)
   
   
-  ## create tables -----------------------------------------------------------
+  ## ADVANCED: create tables -----------------------------------------------------------
 
     output$ev_forecast_sheet_tbl <- renderDT({
     render_custom_datatable(
@@ -3288,7 +3288,7 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
-  ## make editable -----------------------------------------------------------
+  ## ADVANCED: make editable -----------------------------------------------------------
   
   
   #I think these two top events should be removed
@@ -3372,7 +3372,7 @@ server <- function(input, output, session) {
                                                                        tbl_no = 7,
                                                                        col_list = c('veh_type'))
   })
-# observe reset buttons for advanced inputs -------------------------------
+  ## ADVANCED: reset buttons ---------------------------------------------------
 
 
   observeEvent(input$reset_ev_forecast_sheet_tbl, {
@@ -3403,10 +3403,10 @@ server <- function(input, output, session) {
     rvs$Advanced[rvs$Advanced$table_no_ui == 7,] <- initial_advanced[initial_advanced$table_no_ui == 7, ]
   })  
   
-  # server - outputs --------------------------------------------------------
+  # Outputs Tab --------------------------------------------------------
   
   
-  # server baseline outputs -------------------------------------------------
+  # BASELINE GHG FORECAST -------------------------------------------------
   
   output$baseline_outputs <- renderDT({
     req(baseline_ghg_forecast())
@@ -3494,7 +3494,7 @@ server <- function(input, output, session) {
       )
   })
   
-  # server cost effectiveness outputs ----------------------------------------------------
+  # COST Outputs ----------------------------------------------------
   
   costs_outputs_names <- c("bikeped_costs_outputs",
                            "transit_fixed_costs_outputs",
@@ -3513,10 +3513,10 @@ server <- function(input, output, session) {
   
   read_static_tables(".\\data\\costs_outputs.xlsx", costs_outputs_names)
   
-  ## create tables -----------------------------------------------------------
+  ## COST Outputs: create tables -----------------------------------------------------------
   
   output$bikeped_costs_outputs_tbl <- renderDT({
-    print("RENDERING: Cost Output Table BikePed")
+    print("RENDERING: Cost Output Table BikePed Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==1,],
       output_table = cost_output_bikeped(),
@@ -3526,27 +3526,12 @@ server <- function(input, output, session) {
       #val2_scalar = ,
       style = input$cost_view
       )
-    
-    #print(temp)
-    
+
     datatable(temp)
-    
-    # datatable(temp,
-    #           extensions = c('RowGroup','Buttons'),
-    #           options = list(rowGroup = list(columns = c(0)),
-    #                          columnDefs = list(list(visible = FALSE,
-    #                                                 targets = c(0))),
-    #                          autoWidth = TRUE,
-    #                          width = '100%',
-    #                          dom = 'tB',
-    #                          buttons = c('copy', 'csv', 'excel', 'pdf')),
-    #                     rownames = FALSE) |>
-    #             formatRound(c(3:7),1)
-    
     })
 
   output$transit_fixed_costs_outputs_tbl <- renderDT({
-    print("RENDERING: Transit Fixed Bus")
+    print("RENDERING: Transit Fixed Bus Costs Outputs")
  
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
@@ -3559,11 +3544,8 @@ server <- function(input, output, session) {
 
     datatable(temp)})
   
- # observeEvent(input$state_input, {browser()})
-  
   output$transit_dr_costs_outputs_tbl <- renderDT({
-    req("")
-    print("RENDERING: Transit Fixed DR")
+    print("RENDERING: Transit Fixed DR Costs Outputs")
     temp <- cost_function(
     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==3,],
     output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Demand Response Service (VOMS)"),
@@ -3574,6 +3556,7 @@ server <- function(input, output, session) {
     datatable(temp)})
   
   output$pub_trans_priority_costs_outputs_tbl <- renderDT({   
+    print("RENDERING: Transit Priority Costs Outputs")
     temp <- cost_function(
     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==4,],
     output_table = cost_output_transitservice() %>% filter(table == "Bus Priority"),
@@ -3585,6 +3568,7 @@ server <- function(input, output, session) {
     datatable(temp)})
 
   public_elec_replacement_cost_table <- reactive({
+    print("RENDERING: PT Electric Veh Replacment Costs Outputs")
     scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value")
     
     base <- rvs$Costs[rvs$Costs$table_no_ui %in% c(2,3),] %>% # & rvs$Costs$fuel_type != "Electric",]  %>%
@@ -3603,6 +3587,7 @@ server <- function(input, output, session) {
     })
   
   output$transit_zeb_costs_outputs_tbl <- renderDT({   
+    print("RENDERING: Transit Electric Bus Costs Outputs")
     temp <- cost_function(
       ini_cost_table =  public_elec_replacement_cost_table(), #%>% filter(table %in% c("Transit: Increased Demand Response Service (VOMS)","Transit: Increased Fixed Route Service (VOMS)")),
       output_table = cost_output_transitselect(),
@@ -3613,6 +3598,7 @@ server <- function(input, output, session) {
     datatable(temp)})
   
   output$pub_trans_rail_costs_outputs_tbl <- renderDT({   
+    print("RENDERING: Public Transit Rail Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,],
       output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Rail (VOMS)"),
@@ -3624,6 +3610,7 @@ server <- function(input, output, session) {
     datatable(temp)})
   
   output$tdm_costs_outputs_tbl <- renderDT({   
+    print("RENDERING: TDM Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==6,],
       output_table = cost_output_TDM(),
@@ -3633,6 +3620,7 @@ server <- function(input, output, session) {
     datatable(temp)})
   
   output$micro_costs_outputs_tbl <- renderDT({   
+    print("RENDERING: Micro Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==7,],
       output_table = cost_output_micro(),
@@ -3642,6 +3630,7 @@ server <- function(input, output, session) {
     datatable(temp)})
   
   output$traffic_ops_costs_outputs_tbl <- renderDT({   
+    print("RENDERING: OPS Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,]%>% 
         left_join(data.frame(cap_proj_type = c("New roundabouts","New or retimed signal"),
@@ -3653,6 +3642,7 @@ server <- function(input, output, session) {
     datatable(temp)})
   
   output$mhdev_costs_outputs_tbl <- renderDT({   
+    print("RENDERING: MHDEV Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==9,] %>% rename('veh_subtype' = 'fuel_type'),
       output_table = cost_effectiveness_MDHD(),
@@ -3662,6 +3652,7 @@ server <- function(input, output, session) {
     datatable(temp)})
   
   output$pnr_costs_outputs_tbl <- renderDT({   
+    print("RENDERING: PNR Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==10,],
       output_table = cost_output_pnr(),
@@ -3670,7 +3661,8 @@ server <- function(input, output, session) {
       style = input$cost_view)
     datatable(temp)})
   
-  output$evsi_costs_outputs_tbl <- renderDT({   
+  output$evsi_costs_outputs_tbl <- renderDT({  
+    print("RENDERING: EVSI Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==11,],
       output_table = cost_effectiveness_EVSE(),
@@ -3679,7 +3671,8 @@ server <- function(input, output, session) {
       style = input$cost_view)
     datatable(temp)})
   
-  output$roadway_expand_costs_outputs_tbl <- renderDT({   
+  output$roadway_expand_costs_outputs_tbl <- renderDT({  
+    print("RENDERING: Roadway Exp Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==12,],
       output_table = cost_output_RoadwayExp(),
@@ -3690,7 +3683,8 @@ server <- function(input, output, session) {
   
   #Fuel Price Table
   
-  output$intermodal_costs_outputs_tbl <- renderDT({   
+  output$intermodal_costs_outputs_tbl <- renderDT({
+    print("RENDERING: Intermodal Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==14,],
       output_table = output_cost_OPS(),
@@ -3720,7 +3714,6 @@ server <- function(input, output, session) {
   
   
   # server scenarios outputs ------------------------------------------------
-<<<<<<< HEAD
   
   output$emission_change_tbl <- renderDataTable({
     results <- scenario_summary_results()
@@ -3737,7 +3730,7 @@ server <- function(input, output, session) {
                              info = FALSE))
     return(fin_table)
   })
-=======
+
   # observeEvent(input$state_input,{
   #   req(reactive_scenario())
   #   
@@ -3771,7 +3764,7 @@ server <- function(input, output, session) {
   #                  
   # 
   # })
->>>>>>> ef7b63c63668313b4e4bbdc0a75389dc1851354b
+
   
   output$emission_change_graph <- renderPlotly({
     #browser()
@@ -3936,11 +3929,9 @@ server <- function(input, output, session) {
   #Processing working ----
 
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
-  
   source("processing_scripts/processing_BikePed.R", local = TRUE) #Qi done
   source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi done (confirm with Ben)
   source("processing_scripts/processing_Micro.R", local = TRUE) #Qi done
-  
   source("processing_scripts/processing_OPS.R", local = TRUE)
   source("processing_scripts/processing_MDHD.R", local = TRUE) #Gui done - needs cost
   source("processing_scripts/processing_TransitElec.R", local = TRUE)  #Qi done
@@ -3971,77 +3962,6 @@ server <- function(input, output, session) {
          input$grid_emissions_input)
   })
  
-  observeEvent(input$state_input,{
-    #browser()
-    req("")
-    temp_sc1 <- data.frame()
-    temp_sc2 <- data.frame()
-    rs <- reactive_scenario()
-    
-    if(rs[1,2]){
-    output_bikped() %>% 
-      select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
-      mutate(process = "Bicycle and Pedestrian") %>% rbind(temp_sc1)
-    } 
-    if(rs[2,2]){
-      output_TransitService() %>% 
-        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
-        mutate(process = "Travel Demand Management") %>% rbind(temp_sc1)
-    }
-    if(rs[3,2]){
-      output_micro() %>% 
-        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
-        mutate(process = "Micromobility")
-    }
-    if(rs[4,2]){
-      output_TDM() %>% 
-        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
-        mutate(process = "Travel Demand Management")
-    }
-    if(rs[5,2]){
-      output_pnr() %>% 
-        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
-        mutate(process = "Park and Ride")
-    }
-    if(rs[6,2]){
-      output_transitElec() %>% 
-        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
-        mutate(process = "Transit Electrification")
-    }
-    if(rs[7,2]){
-      output_MDHD() %>% 
-        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
-        mutate(process = "MD/HD Truck Replacement")
-    }
-    if(rs[8,2]){
-      output_EVSE() %>% 
-        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
-        mutate(process = "Electric Vehicle Charging Infrastructure")
-    }
-    if(rs[9,2]){
-      output_freight()
-    }
-    if(rs[10,2]){
-      #Operations
-     # output_OPS() %>% 
-     #   select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
-     #   mutate(process = "Micromobility")
-    }
-    if(rs[11,2]){
-      output_RoadwayExp() %>% 
-        select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
-        mutate(process = "Micromobility")
-    }
-    if(rs[12,2]){
-      #CUSTOM PROJECTS
-      #output_micro() %>% 
-      #  select(c('year',"total_change_VMT","total_change_MTCO2","total_newtrips","total_change_mtnox","total_change_pm25")) %>%
-      #  mutate(process = "Micromobility")
-    }
-    
-    
-  })
-  
   # output$pdf_report <- downloadHandler(
   #   filename = function(){
   #     paste("Summary Report",
