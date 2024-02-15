@@ -583,6 +583,28 @@ ui <- function(request) {
         DT::dataTableOutput("expansion_projs_tbl")
       ),
       
+      #Custom Projects
+      
+      fluidRow(
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Projects 15 | Custom Project",
+                   HTML("This category allows users to input custom project inputs. For units uses must input either VMT or MT CO2e.",)
+                   
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_custom_projs_tbl", "Reset Projects 15", class = "btn-custom")
+        ),
+        
+      ),
+      fluidRow(
+        DT::dataTableOutput("custom_projs_tbl")
+      ),
+      
                   ),
 
 
@@ -1363,7 +1385,9 @@ nav_panel(title = "Assumptions",
                               )),
                             fluidRow(
                               column(6,
-                                     plotlyOutput("emission_change_graph", width = "auto", height = "auto"))),
+                                     plotlyOutput("scenario_line_graph", width = "auto", height = "auto")),
+                              column(6, 
+                                     plotlyOutput("scenario_bar_graph", width = "auto", height = "auto"))),
                             fluidRow(
                               column(12,
                                      DT::DTOutput('emission_change_tbl'))),
@@ -1562,6 +1586,10 @@ theme_set(theme_bw(base_size = 16))
 # Start Server Function ---------------------------------------------------
 
 server <- function(input, output, session) {
+  #Test Observe ----------------------------------------------------------------
+  #observeEvent(input$state_input, {browser()})
+  
+  
   #Source Local Scripts --------------------------------------------------------
   source("functions/render_custom_datatable.R", local = T)
   source("functions/reshaping.R", local = T)
@@ -1661,7 +1689,7 @@ server <- function(input, output, session) {
                   rownames = FALSE)
   })
   
-  # server project inputs ------------------------------------------------------
+  # Project table inputs ------------------------------------------------------
   
   projects_names <- c("bikeped_projs",
                       "transit_fixed_projs",
@@ -1920,22 +1948,25 @@ server <- function(input, output, session) {
     
   })
 
-  # output$custom_projs_tbl <- renderDT({
-  #   
-  #   req(rvs$Projects)
-  #   temp_send <- rvs$Projects
-  #   
-  #   render_custom_datatable(
-  #     data_reactive = temp_send,
-  #     table_number = 14,
-  #     non_editable_cols = c(0,1,2),
-  #     page_length = 10,
-  #     comma_rows = 0:4,
-  #     percent_rows = integer(0),
-  #     currency_rows = integer(0),
-  #     decimal_rows = integer(0))
-  #   
-  # })
+  output$custom_projs_tbl <- renderDT({
+    
+    temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 15,] %>%
+      select(custom_project, unit, value) %>%
+      pivot_wider(names_from = unit, values_from = value) %>%
+      select(-custom_project)
+
+    returnDT<-datatable(
+      temp_send,
+      rownames = FALSE,
+      editable = list(target = 'all'),
+      selection = "none",
+      options = list(
+        pageLength = 6,
+        searching = FALSE,
+        paging = FALSE,
+        info = FALSE
+    ))
+  })
   
   # Project Tables: Observe and update edits to projects ------------------------
   # observe edits to the bikeped_projs
@@ -2160,7 +2191,21 @@ server <- function(input, output, session) {
     
   })
 
-  # observe reset buttons on projects ---------------------------------------------------
+  observeEvent(input$custom_projs_tbl_cell_edit, {
+    req('')
+    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- reshaping_projects2(input$expansion_projs_tbl_cell_edit,
+                                                                         rvs$Projects,
+                                                                         tbl_no = 15,
+                                                                         col1 = 'custom_project',
+                                                                         horizon_year_1 = input$horizon_year_1,
+                                                                         horizon_year_2 = input$horizon_year_2,
+                                                                         horizon_year_3 = input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  # Project Tables: Reset buttons on projects ---------------------------------------------------
 
   observeEvent(input$reset_bikeped_projs_tbl, {
     rvs$Projects[rvs$Projects$table_no_ui == 1,] <- initial_projects[initial_projects$table_no_ui == 1, ]
@@ -2217,6 +2262,11 @@ server <- function(input, output, session) {
   observeEvent(input$reset_expansion_projs_tbl, {
     rvs$Projects[rvs$Projects$table_no_ui == 14,] <- initial_projects[initial_projects$table_no_ui == 14, ]
   })  
+  
+  observeEvent(input$reset_custom_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
+  })  
+  
 
   # server assumptions ------------------------------------------------------
   
@@ -2370,7 +2420,7 @@ server <- function(input, output, session) {
                          "evsi_assmps")
   
   
-  #NOTE CAN THIS BE REMOVED?
+  #SETH: NOTE CAN THIS BE REMOVED?
   observeEvent(input$bikeped_assmps_edit, {
     bikeped_assmps <<- editData(bikeped_assmps, input$bikeped_assmps_edit, 'bikeped_assmps_tbl')
   })
@@ -3412,31 +3462,81 @@ server <- function(input, output, session) {
     req(baseline_ghg_forecast())
     dt <- baseline_ghg_forecast()
     
-    dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-      filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
-      summarise(across(where(is.numeric),sum)) %>%
-      mutate(veh_supertype = "Total (Onroad Vehicles)")
+    dt_onroad <- dt %>% ungroup() %>% # select(-veh_supertype) %>% View()
+      filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Vehicles")) %>%
+      summarise(across(where(is.numeric),sum)) 
+
     dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
       #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
       summarise(across(where(is.numeric),sum))
+    
     growth <- dt_all[[1,1]]
-    dt_growth <- dt_all %>% 
+    dt_pers <- dt_all %>% 
       mutate(across(where(is.numeric), ~(.x - growth)/growth, .names = "{.col}")) %>%
       mutate(veh_supertype = "Total (All Transportation)")
+    
     dt_all <- dt_all %>% 
       mutate(veh_supertype = "Total (All Transportation)")
-    dt_fin <- rbind(dt, dt_onroad, dt_all, dt_growth) %>%
-      rename("Emissions" = "veh_supertype")
     
-    DT::datatable(dt_fin,
-                  escape = FALSE,
-                  options = list(pageLength = 10,
-                                 autoWidth = FALSE,
-                                 buttons = c('csv', 'excel')
-                  ),
-                  extensions = 'Buttons',
-                  filter = 'bottom',
-                  rownames = FALSE)
+    dt_fin <- rbind(dt, dt_onroad, dt_all,dt_pers) %>%
+      rename("Emissions" = "veh_supertype")
+    comma_rows = c(0:7)
+    percent_rows = 8
+    currency_rows = NULL
+    decimal_rows= NULL
+    x<-datatable(
+      dt_fin,
+      rownames = FALSE,
+      selection = "none",
+      options = list(
+        pageLength = 10, 
+        columnDefs = list(
+          list(
+            targets = '_all',
+            render = DT::JS(
+              sprintf(
+                "function(data, type, row, meta) {
+                  if (type === 'display') {
+                    var commaRows = [%s];
+                    var percentRows = [%s];
+                    var currencyRows = [%s];
+                    var decimalRows = [%s];
+                
+                    var formatter = null;
+                    if (commaRows.includes(meta.row)) {
+                      formatter = function(d) { return Number(d).toLocaleString('en-US'); };
+                    }
+                    if (percentRows.includes(meta.row)) {
+                      formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
+                    }
+                    if (currencyRows.includes(meta.row)) {
+                      formatter = function(d) { return '$' + Number(d).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+                    }
+                    if (decimalRows.includes(meta.row)) {
+                      formatter = function(d) { return Number(d).toFixed(1); };
+                    }
+                    
+                //console.log('the data: ' + data)
+                //console.log('the type: '+ type)
+                //console.log('the row: ' + row)
+                //console.log('the meta: ' + meta)
+                //console.log('the formatter' + formatter)
+                
+                
+                    return formatter && !isNaN(data) && data !== null && data !== '' ? formatter(data) : data;
+                  }
+                  return data;
+                }",
+                paste(comma_rows, collapse = ", "), 
+                paste(percent_rows, collapse = ", "),
+                paste(currency_rows, collapse = ", "),
+                paste(decimal_rows, collapse = ", ")
+              )
+            )
+          )
+        )
+      ))
+    return(x)
   })
   
   output$baseline_ghg_line <- renderPlotly({
@@ -3457,7 +3557,7 @@ server <- function(input, output, session) {
                 text = c("Base Year","Horizon Year 1","Horizon Year 2", "Horizon Year 3"),
 
                 hovertemplate = paste0('%{text}: %{x}<br>', 
-                                       'Emissions: %{y:.2s} <br>'),
+                                       'Emissions: %{y:.2s} <br> <extra></extra>'),
                 name = "") %>%
       layout(showlegend = FALSE,
              xaxis = list(title = 'Year'),
@@ -3525,9 +3625,21 @@ server <- function(input, output, session) {
       #val1_scalar = ,
       #val2_scalar = ,
       style = input$cost_view
-      )
+      ) %>% 
+      rename(any_of(references_vector))
 
-    datatable(temp)
+    x<-datatable(temp,
+      rownames = FALSE,
+      selection = "none",
+      options = list(
+        pageLength = 50,
+        searching = FALSE,
+        paging = FALSE,
+        info = FALSE)) 
+    if(input$cost_view == "detail"){
+    x <- x %>%
+      DT::formatRound(3:7, digits = 3)}
+    return(x)
     })
 
   output$transit_fixed_costs_outputs_tbl <- renderDT({
@@ -3540,9 +3652,24 @@ server <- function(input, output, session) {
       proj_life = 12,
       scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
       style = input$cost_view
-    )
-
-    datatable(temp)})
+    )%>% rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE))  
+    
+    if(input$cost_view == "detail"){
+      x <- x %>%
+      DT::formatRound(4:8, digits = 3)}
+    
+    return(x)
+      
+      })
   
   output$transit_dr_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed DR Costs Outputs")
@@ -3552,8 +3679,22 @@ server <- function(input, output, session) {
     col_sel = c('area_type','fuel_type','transit_mode'),
     proj_life = 12,
     scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
-    style = input$cost_view)
-    datatable(temp)})
+    style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>% DT::formatRound(4:8, digits = 3)}
+    return(x)
+      
+      })
   
   output$pub_trans_priority_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Transit Priority Costs Outputs")
@@ -3564,8 +3705,21 @@ server <- function(input, output, session) {
     proj_life = 5, 
     #var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
     #var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
-    style = input$cost_view)
-    datatable(temp)})
+    style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>%DT::formatRound(1:5, digits = 3)}
+    return(x)
+    })
 
   public_elec_replacement_cost_table <- reactive({
     print("RENDERING: PT Electric Veh Replacment Costs Outputs")
@@ -3594,8 +3748,21 @@ server <- function(input, output, session) {
       col_sel = c('area_type','fuel_type','transit_mode'),
       proj_life = 12,
       #scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')],
-      style = input$cost_view)
-    datatable(temp)})
+      style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>% DT::formatRound(4:8, digits = 3)}
+    return(x)
+  })
   
   output$pub_trans_rail_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Public Transit Rail Costs Outputs")
@@ -3606,8 +3773,22 @@ server <- function(input, output, session) {
       proj_life = 30,
       #BEN: val 1 is only referencing light rail revenue miles 
       scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('transit_mode','value')]%>% rename("scalar_1" = "value"),      
-      style = input$cost_view)
-    datatable(temp)})
+      style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>% DT::formatRound(3:7, digits = 3)}
+    
+    return(x)
+    })
   
   output$tdm_costs_outputs_tbl <- renderDT({   
     print("RENDERING: TDM Costs Outputs")
@@ -3616,8 +3797,21 @@ server <- function(input, output, session) {
       output_table = cost_output_TDM(),
       col_sel = c(),
       proj_life = 1,
-      style = input$cost_view)
-    datatable(temp)})
+      style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>% DT::formatRound(1:5, digits = 3)}
+    return(x)
+    })
   
   output$micro_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Micro Costs Outputs")
@@ -3626,8 +3820,21 @@ server <- function(input, output, session) {
       output_table = cost_output_micro(),
       col_sel = c(),
       proj_life = 6,
-      style = input$cost_view)
-    datatable(temp)})
+      style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>%DT::formatRound(1:5, digits = 3)}
+    return(x)
+    })
   
   output$traffic_ops_costs_outputs_tbl <- renderDT({   
     print("RENDERING: OPS Costs Outputs")
@@ -3637,9 +3844,22 @@ server <- function(input, output, session) {
                              proj_life = c(30,5))),
       output_table = output_cost_OPS(),
       col_sel = c('road_class','area_type','cap_proj_type'),
-      proj_life = NA,#needs to project lifes actually :(
-      style = input$cost_view)
-    datatable(temp)})
+      proj_life = NA,
+      style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>%DT::formatRound(5:9, digits = 3)}
+    return(x)
+    })
   
   output$mhdev_costs_outputs_tbl <- renderDT({   
     print("RENDERING: MHDEV Costs Outputs")
@@ -3648,8 +3868,21 @@ server <- function(input, output, session) {
       output_table = cost_effectiveness_MDHD(),
       col_sel = c('veh_type','veh_subtype'),
       proj_life = 12,
-      style = input$cost_view)
-    datatable(temp)})
+      style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>% DT::formatRound(3:7, digits = 3)}
+    return(x)
+    })
   
   output$pnr_costs_outputs_tbl <- renderDT({   
     print("RENDERING: PNR Costs Outputs")
@@ -3658,8 +3891,21 @@ server <- function(input, output, session) {
       output_table = cost_output_pnr(),
       col_sel = c(),
       proj_life = 30,
-      style = input$cost_view)
-    datatable(temp)})
+      style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+   x<- datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+   if(input$cost_view == "detail"){
+     x <- x %>% DT::formatRound(1:5, digits = 3)}
+   return(x)
+    })
   
   output$evsi_costs_outputs_tbl <- renderDT({  
     print("RENDERING: EVSI Costs Outputs")
@@ -3668,8 +3914,21 @@ server <- function(input, output, session) {
       output_table = cost_effectiveness_EVSE(),
       col_sel = c('charge_port_detail'), #Change to port detail?
       proj_life = 10,
-      style = input$cost_view)
-    datatable(temp)})
+      style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>%DT::formatRound(2:6, digits = 3)}
+    return(x)
+    })
   
   output$roadway_expand_costs_outputs_tbl <- renderDT({  
     print("RENDERING: Roadway Exp Costs Outputs")
@@ -3678,8 +3937,21 @@ server <- function(input, output, session) {
       output_table = cost_output_RoadwayExp(),
       col_sel = c('road_class','area_type'),
       proj_life = 30,#needs to project lifes actually :(
-      style = input$cost_view)
-    datatable(temp)})
+      style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>% DT::formatRound(3:7, digits = 3)}
+    return(x)
+    })
   
   #Fuel Price Table
   
@@ -3690,12 +3962,26 @@ server <- function(input, output, session) {
       output_table = output_cost_OPS(),
       col_sel = c(),
       proj_life = 30,
-      style = input$cost_view)
-    datatable(temp)})
+      style = input$cost_view)%>% 
+      rename(any_of(references_vector))
+    
+    x<-datatable(temp,
+              rownames = FALSE,
+              selection = "none",
+              options = list(
+                pageLength = 50,
+                searching = FALSE,
+                paging = FALSE,
+                info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>% DT::formatRound(2:6, digits = 3)}
+    return(x)
+    })
   
   
   ## make editable -----------------------------------------------------------
   
+  #Seth Note: Can this be deleted?
   costs_outputs_names <- c("bikeped_costs_outputs",
                            "transit_fixed_costs_outputs",
                            "transit_dr_costs_outputs",
@@ -3717,56 +4003,97 @@ server <- function(input, output, session) {
   
   output$emission_change_tbl <- renderDataTable({
     results <- scenario_summary_results()
+    comma_rows = c(0:4,7:11,14:19)
+    percent_rows = c(5,6,12,13)
+    currency_rows = NULL
+    decimal_rows= NULL
     fin_table<-datatable(results,
               rownames = FALSE,
               selection = "none",
               extension = 'RowGroup',
               
               options = list(rowGroup = list(dataSrc = c(5)),
-                             columnDefs = list(list(targets = c(5), visible = FALSE)),
+                             columnDefs = list(list(targets = c(5), visible = FALSE),
+                                               list(
+                                                 targets = '_all',
+                                                 render = DT::JS(
+                                                   sprintf(
+                                                     "function(data, type, row, meta) {
+                                                     if (type === 'display') {
+                                                     var commaRows = [%s];
+                                                     var percentRows = [%s];
+                                                     var currencyRows = [%s];
+                                                     var decimalRows = [%s];
+                
+                                                     var formatter = null;
+
+                                                     if (commaRows.includes(meta.row)) {
+                                                     formatter = function(d) { return Number(d).toLocaleString('en-US'); };
+                                                     }
+                                                     if (percentRows.includes(meta.row)) {
+                                                     formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
+                                                     }
+                                                     if (currencyRows.includes(meta.row)) {
+                                                     formatter = function(d) { return '$' + Number(d).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+                                                     }
+                                                     if (decimalRows.includes(meta.row)) {
+                                                     formatter = function(d) { return Number(d).toFixed(1); };
+                                                     }
+                    
+                                                     //console.log('the data: ' + data)
+                                                     //console.log('the type: '+ type)
+                                                     //console.log('the row: ' + row)
+                                                     //console.log('the meta: ' + meta)
+                                                     //console.log('the formatter' + formatter)
+                                                     return formatter && !isNaN(data) && data !== null && data !== '' ? formatter(data) : data;
+                                                     }
+                                                     return data;
+                                                     }",
+                                                     paste(comma_rows, collapse = ", "), 
+                                                     paste(percent_rows, collapse = ", "),
+                                                     paste(currency_rows, collapse = ", "),
+                                                     paste(decimal_rows, collapse = ", ")
+                                                     )
+                                                   )
+                                                 )
+                                               ),
                              page_length = 20,
                              searching = FALSE,
                              paging = FALSE,
                              info = FALSE))
+    
     return(fin_table)
   })
 
-  # observeEvent(input$state_input,{
-  #   req(reactive_scenario())
-  #   
-  #   dt <- baseline_ghg_forecast()
-  #   ft <- VMT_Forecast()
-  #   dt_emissions_base <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-  #     #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
-  #     summarise(across(where(is.numeric),sum))
-  #   
-  #   dt_VMT_base <- ft %>% ungroup() %>% filter(year >=2021) %>%
-  #     filter(year %in% c(rvs$Baseline$base_year,
-  #                        rvs$Baseline$horizon_year_1,
-  #                        rvs$Baseline$horizon_year_2,
-  #                        rvs$Baseline$horizon_year_3)) %>%
-  #     group_by(year) %>%
-  #     summarise(total_VMT = sum(state_vmt_AEO,na.rm = T))  %>%
-  #     pivot_wider(names_from= year, values_from = total_VMT)
-  #                  
-  #   scen_select <-   reactive_scenario() 
-  #   
-  #   strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = "Assumptions") %>% 
-  #     select('year', Strategy,)
-  #   
-  #   total_row <- strategy_temp %>%
-  #                    pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
-  #                    mutate(across(where(is.numeric), ~round(., 1))) %>%
-  #                    summarise(Strategy = "Total", across(where(is.numeric), sum)) 
-  # 
-  #                  
-  #                  
-  #                  
-  # 
-  # })
-
+  output$scenario_line_graph <- renderPlotly({
+    #browser()
+    table_filt <- input$scenario_indicator
+    results <- scenario_summary_results() %>%
+      filter(table_title == table_filt) %>%
+      #filter(Scenario != "Baseline") %>% 
+      pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
+                                         rvs$Baseline$horizon_year_1,
+                                         rvs$Baseline$horizon_year_2,
+                                         rvs$Baseline$horizon_year_3)), 
+                   names_to = "year", values_to = "value") %>%
+      filter(year != rvs$Baseline$base_year)
+    
+    
+    lplot<-results %>%
+      plotly::plot_ly(x = ~ year,
+                      y = ~ value,
+                      color = ~Scenario,
+                      type = 'scatter',
+                      mode = 'lines') %>%
+      layout(yaxis = list(title = table_filt, separatethousands= TRUE),
+             barmode = "group") %>%
+      config(displayModeBar = FALSE) 
+    
+    
+    return(lplot)
+  })
   
-  output$emission_change_graph <- renderPlotly({
+  output$scenario_bar_graph <- renderPlotly({
     #browser()
     
     table_filt <- input$scenario_indicator
