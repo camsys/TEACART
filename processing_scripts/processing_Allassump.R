@@ -58,3 +58,140 @@ all_assump <- rbind(bikeped,MDHD,Micro,pnr,RoadwayExp,TDM,transitElec,TransitSer
 return(all_assump)
 })
 
+#########################################################################################################
+all_costs <- reactive({
+ bikeped <- cost_function(
+   ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==1,],
+   output_table = cost_output_bikeped(),
+   col_sel = c('area_type','cap_proj_type'),
+   proj_life = 30,
+   #val1_scalar = ,
+   #val2_scalar = ,
+   style = 'summary'
+ )
+ 
+ transit_fixed <- cost_function(
+   ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
+   output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
+   col_sel = c('area_type','fuel_type','transit_mode'),
+   proj_life = 12,
+   scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
+   style = 'summary'
+ )
+ 
+ transit_dr <- cost_function(
+   ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==3,],
+   output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Demand Response Service (VOMS)"),
+   col_sel = c('area_type','fuel_type','transit_mode'),
+   proj_life = 12,
+   scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
+   style = 'summary'
+   )
+ 
+ pub_trans_bus <- cost_function(
+   ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==4,],
+   output_table = cost_output_transitservice() %>% filter(table == "Bus Priority"),
+   col_sel = c(),
+   proj_life = 5, 
+   style =  'summary'
+   )
+ transit_zeb <- cost_function(
+   ini_cost_table =  public_elec_replacement_cost_table(), #%>% filter(table %in% c("Transit: Increased Demand Response Service (VOMS)","Transit: Increased Fixed Route Service (VOMS)")),
+   output_table = cost_output_transitselect(),
+   col_sel = c('area_type','fuel_type','transit_mode'),
+   proj_life = 12,
+   #scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')],
+   style = 'summary'
+   )
+ 
+   pub_trans_rail <- cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,],
+     output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Rail (VOMS)"),
+     col_sel = c('fuel_type','transit_mode'),
+     proj_life = 30,
+     #BEN: val 1 is only referencing light rail revenue miles 
+     scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('transit_mode','value')]%>% rename("scalar_1" = "value"),      
+     style = 'summary'
+     )
+   
+   tdm <- cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==6,],
+     output_table = cost_output_TDM(),
+     col_sel = c(),
+     proj_life = 1,
+     style = 'summary'
+     )
+   
+   micro <- cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==7,],
+     output_table = cost_output_micro(),
+     col_sel = c(),
+     proj_life = 6,
+     style = 'summary'
+     )
+   
+   traffic_ops <-cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,]%>% 
+       left_join(data.frame(cap_proj_type = c("New roundabouts","New or retimed signal"),
+                            proj_life = c(30,5))),
+     output_table = output_cost_OPS(),
+     col_sel = c('road_class','area_type','cap_proj_type'),
+     proj_life = NA,#needs to project lifes actually :(
+     style = 'summary'
+     )
+   
+   mhdev<-cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==9,] %>% rename('veh_subtype' = 'fuel_type'),
+     output_table = cost_effectiveness_MDHD(),
+     col_sel = c('veh_type','veh_subtype'),
+     proj_life = 12,
+     style = 'summary'
+     )
+   
+   pnr<- cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==10,],
+     output_table = cost_output_pnr(),
+     col_sel = c(),
+     proj_life = 30,
+     style = 'summary'
+     )
+   
+   evsi<-cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==11,],
+     output_table = cost_effectiveness_EVSE(),
+     col_sel = c('charge_port_detail'), #Change to port detail?
+     proj_life = 10,
+     style = 'summary'
+     )
+   roadway<- cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==12,],
+     output_table = cost_output_RoadwayExp(),
+     col_sel = c('road_class','area_type'),
+     proj_life = 30,#needs to project lifes actually :(
+     style = 'summary'
+     )
+   intermodal<- cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==14,],
+     output_table = output_cost_OPS(),
+     col_sel = c(),
+     proj_life = 30,
+     style ='summary')
+   
+   # all_costs <- list(bikeped = bikeped,
+   #                   transit_fixed = transit_fixed)
+   all_costs <- list(bikeped = bikeped,
+                     transit_fixed = transit_fixed,
+                     transit_dr = transit_dr,
+                     pub_trans_bus = pub_trans_bus,
+                     transit_zeb = transit_zeb,
+                     pub_trans_rail=pub_trans_rail,
+                     tdm=tdm,
+                     micro=micro,
+                     traffic_ops=traffic_ops,
+                     mhdev=mhdev,
+                     pnr=pnr,
+                     evsi=evsi,
+                     roadway=roadway,
+                     intermodal=intermodal)
+   return(all_costs)
+       })

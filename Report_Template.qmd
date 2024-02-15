@@ -19,6 +19,9 @@ params:
  vmt_nhs: NULL
  ev: NULL
  grid_em: NULL
+ ghg_data: NULL
+ scen_data: NULL
+ cost_data: NULL
 ---
 
 ## 1.Introduction
@@ -50,6 +53,8 @@ library(ggplot2)
 library(dplyr)
 library(showtext)
 showtext_auto()
+library(scales)
+
 
 # functions: 
 multiplesheets <- function(fname) { 
@@ -69,7 +74,6 @@ pagebreak <- function() {
   }
 }
 
-
 # end of functions
 
 # set up dummy data for now
@@ -82,9 +86,9 @@ path = paste0(getwd(),'/data/costs_outputs.xlsx')
 
 `r pagebreak()`
 
-## 2.Parameters
+## 2.Baseline Inputs
 
-This report is created using the following metrics:
+This report was created using the following metrics:
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
@@ -92,15 +96,30 @@ This report is created using the following metrics:
 #| message: false
 
 
+if(params$fuel_scope == 1){
+  fuel_scope <- "Yes"
+}else{
+    fuel_scope <- "No"
+
+}
+
+if(params$em_scope == 1){
+  em_scope <- "Yes"
+}else{
+    em_scope <- "No"
+
+}
+
 print(tagList(
       cat(
         paste0('State: ',params$state,  "  \n\n  ",
                'Base Year: ', params$bsae_year,  "  \n\n  ",
-               'Horizon Year(s): ',params$horizon_year_1,", ",
-               params$horizon_year_2,", ", params$horizon_year_3, "  \n\n  ",
+               'Horizon Year 1: ',params$horizon_year_1, "  \n\n  ",
+               'Horizon Year 2: ',params$horizon_year_2, "  \n\n  ",
+               'Horizon Year 3: ',params$horizon_year_3, "  \n\n  ",
                'Transportation System Scope: ',params$trans_scope, "  \n\n  ",
-               'Include Electricity: ',params$em_scope, "  \n\n  ",
-               'Include Upstream Fuels: ',params$fuel_scope, "  \n\n  ",
+               'Include Electricity: ',em_scope, "  \n\n  ",
+               'Include Upstream Fuels: ', fuel_scope, "  \n\n  ",
                'VMT Forecast: ',params$vmt,"  \n\n  ",
                'Vehicle Electrification Baseline: ', params$ev, "  \n\n  ",
                'Electricity Grid Emissions Net-Zero Year: ',
@@ -113,7 +132,7 @@ print(tagList(
 
 `r pagebreak()`
 
-## 3.Output & Summary
+## 3.Baseline Output
 
 ### 3.1 Baseline GHG Forecast
 
@@ -129,23 +148,41 @@ path2 <- paste0(getwd(),'/data/dummy_output.xlsx')
 #path2 <- 'C:/Users/qsi/OneDrive - Cambridge Systematics/Desktop/TEA-CART/dummy_output.xlsx'
 
 #dummydata<- multiplesheets(path2)
+ghg_dat <- params$ghg_data
+# ghg_dat[nrow(ghg_dat), "Total (All Transportation)"] <- "Change from Base Year (%)"
 
-GHG_forecast <- readxl::read_excel(path2, sheet = 'GHG Forecast') %>%
-    pivot_longer(cols = !(`Emissions (MT CO2e)`), names_to = c("year"), values_to = 'Emission')
+# str(ghg_dat)
+GHG_forecast <- ghg_dat %>%
+  slice(1:(n() - 1)) %>% # get rid of thte last row 
+    pivot_longer(cols = !(`Emissions`), names_to = c("year"), values_to = 'Emission')
+
+# 
+# GHG_forecast <- readxl::read_excel(path2, sheet = 'GHG Forecast') %>%
+#     pivot_longer(cols = !(`Emissions (MT CO2e)`), names_to = c("year"), values_to = 'Emission')
 
 fig_list <- c("Total (Onroad Vehicles)", "Total (All Transportation)")
 
+
 for ( var in fig_list){
+  
+    if (var == 'Total (Onroad Vehicles)') {
+    title <- "On-Road Transportation Emissions"
+  } else if (var == 'Total (All Transportation)') {
+    title <- "All Transportation Emissions"
+  }
+  
   data_temp <- GHG_forecast %>%
-    filter(`Emissions (MT CO2e)` == var)
+    filter(`Emissions` == var)
   
   print(ggplot(data_temp,
                aes( y = Emission,
                    x = year,
                    group=1))+
     geom_line(color = '#E69F00',size =1) + geom_point(color = '#E69F00',size =3) + 
-      ylab("CO2e Emission Amount") +
-      ggtitle(paste0(var,' CO2e Emission')))
+      ylab("Emissions (MT CO2e) ") +
+      scale_y_continuous(labels = label_comma()) +
+      xlab(NULL) +
+      ggtitle(title))
   
   print(tagList(cat("  \n\n  ")))
       print(tagList(cat("  \\newpage  ")))
@@ -156,7 +193,7 @@ for ( var in fig_list){
 
 `r pagebreak()`
 
-#### 3.1.2 Transportation Emission by Source and Year
+#### 3.1.2 Transportation Emissions by Source and Year
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
@@ -164,17 +201,26 @@ for ( var in fig_list){
 #| message: false
 
 
-source_list <- c(head(unique(GHG_forecast$`Emissions (MT CO2e)`),6))
+source_list <- c(head(unique(GHG_forecast$`Emissions`),6))
 year_list <- c(unique(GHG_forecast$year))
 
+# check <- GHG_forecast %>%
+#     filter(`Emissions` %in% source_list, year == 2021) %>%
+#   mutate(fraction = Emission/sum(.$Emission),
+#            ymax =  cumsum(fraction),
+#            ymin = c(0, head(ymax, n=-1)),
+#            labelPosition = (ymax + ymin)/ 2,
+#            `Emission Source` = paste0(`Emissions` ," (",round(fraction *100,digits = 1), " %",")"))
+# knitr::kable(check, caption = "Example Table", align = "c")
+# print(check)
 for ( var in year_list){
   data_temp <- GHG_forecast %>%
-    filter(`Emissions (MT CO2e)` %in% source_list, year == var) %>%
-    mutate(fraction = Emission/sum(Emission),
+    filter(`Emissions` %in% source_list, year == var) %>%
+    mutate(fraction = Emission/sum(.$Emission),
            ymax =  cumsum(fraction),
            ymin = c(0, head(ymax, n=-1)),
            labelPosition = (ymax + ymin)/ 2,
-           `Emission Source` = paste0(`Emissions (MT CO2e)` ," (",round(fraction *100,digits = 1), " %",")"))
+           `Emission Source` = paste0(`Emissions` ," (",round(fraction *100,digits = 1), " %",")"))
   
   print(ggplot(data_temp,
                aes(ymax=ymax,
@@ -193,7 +239,8 @@ for ( var in year_list){
           coord_polar(theta="y") +
           xlim(c(2, 4))+
           ggtitle(paste0('Transportation Emission: ',var))+
-          theme_void()
+          theme_void() + 
+           theme(legend.text.align = 0)
 
         )
 print(tagList(cat("  \n\n  ")))
@@ -206,7 +253,7 @@ print(tagList(cat("  \n\n  ")))
 
 `r pagebreak()`
 
-### 3.2 Scenario and Strategy Summary
+### 3.2 Scenario Summary
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
@@ -214,29 +261,35 @@ print(tagList(cat("  \n\n  ")))
 #| message: false
 
 # load dummy data
-path3 <- paste0(getwd(),'/data/scenario_simplified.xlsx')
+# path3 <- paste0(getwd(),'/data/scenario_simplified.xlsx')
 #path3 <- 'C:/Users/qsi/OneDrive - Cambridge Systematics/Desktop/TEA-CART/scenario_simplified.xlsx'
 
 #dummydata<- multiplesheets(path2)
 
-scenarioresults <- readxl::read_excel(path3)
+# scenarioresults <- readxl::read_excel(path3)
+scenarioresults <- params$scen_data
 
 indicators <- unique(scenarioresults$indicator)
 
 for (i in indicators){
-  data_temp <- scenarioresults %>%
-    filter(indicator == i, !is.na(mt_reduction))%>%
-    mutate(year = as.character(year))
-  
+data_temp <- scenarioresults %>%
+  filter(indicator == i, !is.na(mt_reduction)) %>%
+  as.data.frame() %>%
+  na.omit() %>%
+  mutate(Year = as.factor(Year))
+
+
   print(ggplot(data_temp,
-               aes(fill = scenario,
+               aes(fill = Scenario,
                    y = mt_reduction,
-                   x = year))+
+                   x = Year))+
     geom_bar(position="dodge", stat="identity")+
        scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) + 
-      ylab("Emission Change Amount") +
-      ggtitle(paste0(i,' Change')) + 
-            theme_classic())
+      ylab(paste0(i," Change")) +
+      ggtitle(paste0("Change in ", i)) + 
+            theme_classic()) +
+          xlab(NULL)
+
   print(tagList(cat("  \n\n  ")))
       print(tagList(cat("  \\newpage  ")))
       print(tagList(cat("  \n\n  ")))
@@ -253,9 +306,11 @@ for (i in indicators){
 #| warning: false
 #| message: false
 
-
+cost_tbl <- params$cost_data
 # not sure why for -loop doesn't work when knit. 
-tab_list <- c('bikeped',"transit_fixed",'transit_dr',"pub_trans_bus","transit_zeb", "pub_trans_rail","tdm","micro","traffic_ops","mhdev", "pnr","evsi","roadway","intermodal")
+tab_list <- c('bikeped',"transit_fixed",'transit_dr',"pub_trans_bus","transit_zeb", "pub_trans_rail","tdm","micro","traffic_ops","mhdev", "pnr","evsi","roadway","intermodal"
+              
+              )
 title_list <- c('Bicycle and Pedestrian',
                 'Transit: Increased Fixed Route Service',
                 'Transit: Increased Demand Response Service',
@@ -263,9 +318,9 @@ title_list <- c('Bicycle and Pedestrian',
                 'Public Transportation: Bus Priority Treatment',
                 'Public Transportation: Rail',
                 'Travel Demand Management',
-                'Micromobility',
-                'Traffic Operations - Intersection',
-                'Medium and Heavy Duty Vehicle Replacement (Electrification)',
+                 'Micromobility',
+                 'Traffic Operations - Intersection',
+                 'Medium and Heavy Duty Vehicle Replacement (Electrification)',
                 'Park and Ride',
                 'EV Charging Infrastructure',
                 'Roadway Expansion',
@@ -274,49 +329,50 @@ title_list <- c('Bicycle and Pedestrian',
 
 num = 1
 for (var in tab_list){
-    df <- readxl::read_excel(path, sheet = var, skip = 1)
+    df <- get(var,cost_tbl)
  print(tagList(
-      cat("###","Assumption: ", title_list[num], "\n\n")))
- if(ncol(df) == 12){
+      cat("###", title_list[num], "\n\n")))
+ if(var == 'bikeped'){
  print(df %>%
-   select(1,8:ncol(.)) %>%
+   #select(1,8:ncol(.)) %>%
   rename_with(~str_remove(.,'Summary.')) %>%
- mutate(across(2:ncol(.),
+ mutate(across(0:ncol(.),
                ~ cell_spec(.,
-                      background = ifelse(.x == 'Low',"#c1d7ae",
-                           ifelse(.x == 'Medium',"#47dc7a",
-                             ifelse(.x == 'High','#62A75F',
-                                ifelse(.x == 'Very High','#58682F',
-                                    ifelse(grepl("Increase",.x),'#F6787F',
-                                           ifelse(grepl("Decrease",.x),'#D6ECA0',
+                      background = ifelse(.x == 'Low',"#FDE72560",
+                           ifelse(.x == 'Medium',"#22A88460",
+                             ifelse(.x == 'High','#2A788E60',
+                                ifelse(.x == 'Very High','#44015460',
+                                    ifelse(grepl("Increase",.x),'#41448760',
+                                           ifelse(grepl("Decrease",.x),'#7AD15160',
                                           "#FFFFFF"))))))))) %>%
     knitr::kable(booktabs = T, escape = F,linesep = "",align = "l", format = 'latex') %>%
-    column_spec(1,width = "3.3cm") %>%
+    column_spec(3:6,width = "1cm") %>%
+   column_spec(2,width = "3cm") %>%
+    column_spec(1,width = "1cm") %>%
+      column_spec(7,width = "3cm") %>%
    kableExtra::kable_styling(full_width = F,
-                             position = "l"))
-cat("\n\n\\pagebreak\n")
-writeLines("")
-
- } else { # the intermodal strategy only has 10 columns
+                             position = "l"))}
+ else{
     print(df %>%
-   select(6:ncol(.)) %>%
+   #select(1,8:ncol(.)) %>%
   rename_with(~str_remove(.,'Summary.')) %>%
- mutate(across(2:ncol(.),
+ mutate(across(0:ncol(.),
                ~ cell_spec(.,
-                      background = ifelse(.x == 'Low',"#c1d7ae",
-                           ifelse(.x == 'Medium',"#47dc7a",
-                             ifelse(.x == 'High','#62A75F',
-                                ifelse(.x == 'Very High','#58682F',
-                                    ifelse(grepl("Increase",.x),'#F6787F',
-                                           ifelse(grepl("Decrease",.x),'#D6ECA0',
+                      background = ifelse(.x == 'Low',"#FDE72560",
+                           ifelse(.x == 'Medium',"#22A88460",
+                             ifelse(.x == 'High','#2A788E60',
+                                ifelse(.x == 'Very High','#44015460',
+                                    ifelse(grepl("Increase",.x),'#41448760',
+                                           ifelse(grepl("Decrease",.x),'#7AD15160',
                                           "#FFFFFF"))))))))) %>%
     knitr::kable(booktabs = T, escape = F,linesep = "",align = "l", format = 'latex') %>%
+    column_spec(0:ncol(df),width = "1.5cm") %>%
    kableExtra::kable_styling(full_width = F,
                              position = "l"))
+ }
 cat("\n\n\\pagebreak\n")
 writeLines("")
 
- }
  num = num +1
 }
 

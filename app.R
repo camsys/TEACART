@@ -13,6 +13,7 @@ library(plotly)
 library(shiny)
 library(shinyjs)
 library(tinytex)
+library(tools)
 
 
 # load source files -------------------------------------------------------
@@ -3428,6 +3429,9 @@ server <- function(input, output, session) {
     dt_fin <- rbind(dt, dt_onroad, dt_all, dt_growth) %>%
       rename("Emissions" = "veh_supertype")
     
+
+    
+    
     DT::datatable(dt_fin,
                   escape = FALSE,
                   options = list(pageLength = 10,
@@ -3529,6 +3533,8 @@ server <- function(input, output, session) {
 
     datatable(temp)
     })
+  
+#  observe({browser()})
 
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
@@ -3714,7 +3720,6 @@ server <- function(input, output, session) {
   
   
   # server scenarios outputs ------------------------------------------------
-  
   output$emission_change_tbl <- renderDataTable({
     results <- scenario_summary_results()
     fin_table<-datatable(results,
@@ -4000,12 +4005,85 @@ server <- function(input, output, session) {
   # )
 
   output$pdf_report <- downloadHandler(
+
     filename = function(){
           paste("Summary Report",
                 Sys.Date(),
                 ".pdf",
                 sep="")},
     content = function(file) {
+      
+      req(baseline_ghg_forecast())
+      
+      dt <- baseline_ghg_forecast()
+      
+      dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+        filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+        summarise(across(where(is.numeric),sum)) %>%
+        mutate(veh_supertype = "Total (Onroad Vehicles)")
+      dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+        #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+        summarise(across(where(is.numeric),sum))
+      growth <- dt_all[[1,1]]
+      dt_growth <- dt_all %>% 
+        mutate(across(where(is.numeric), ~(.x - growth)/growth, .names = "{.col}")) %>%
+        mutate(veh_supertype = "Total (All Transportation)")
+      dt_all <- dt_all %>% 
+        mutate(veh_supertype = "Total (All Transportation)")
+      ghg_data <- rbind(dt, dt_onroad, dt_all, dt_growth) %>%
+        rename("Emissions" = "veh_supertype")
+      
+      #get and modify the scen data: 
+      scen_data <- scenario_summary_results() %>%
+        filter(grepl("Reduction", table_title)|table_title == "New Daily Active Trips") %>%
+        filter(!grepl("%",table_title)) %>%
+        mutate(table_title = case_when(table_title == "Emissions Reduction (MT from Baseline)" ~ 'CO2',
+                                       table_title == "VMT Reduction (millions from Baseline)" ~ 'VMT',
+                                       table_title == "NOx Reduction (MT)" ~ 'NOx',
+                                       table_title == "PM2.5 Reduction (MT)" ~ 'PM2.5',
+                                       table_title == "New Daily Active Trips" ~ 'New Daily Active Trips')) %>%
+        rename(indicator = table_title) %>%
+        pivot_longer(cols = c(`2021`, `2025`, `2030`, `2050`), 
+                     names_to = "Year",
+                     values_to = "mt_reduction") %>%
+        mutate(mt_reduction = ifelse(mt_reduction == "-","0",mt_reduction)) %>%
+        mutate(mt_reduction = as.numeric(mt_reduction)) %>%
+        mutate_if(is.numeric, ~round(., 1))
+      
+      
+      replace_underscores <- function(df) {
+        names(df) <- gsub("_", " ", names(df))
+        return(df)
+      }
+      
+      replace_na_with_string <- function(df) {
+        return(replace(df, is.na(df), "NA"))
+      }
+      
+      remove_year_column <- function(df) {
+        if ("Year" %in% colnames(df) || "year" %in% colnames(df)) {
+          return(df[, !colnames(df) %in% c("Year", "year")])
+        } else {
+          return(df)
+        }
+      }
+      
+      make_column_names_proper <- function(list_of_dfs) {
+        updated_list <- lapply(list_of_dfs, function(df) {
+          colnames(df) <- toTitleCase(colnames(df))
+          return(df)
+        })
+        return(updated_list)
+      }
+      
+      cost_data <- all_costs() %>%
+        lapply(., replace_underscores) %>%
+        lapply(., replace_na_with_string) %>%
+        lapply(., remove_year_column) %>%
+        make_column_names_proper(.)
+        
+      Sys.sleep(1)
+
       # Render the R Markdown file to PDF
       shiny::withProgress(
         message = paste0("Downloading", input$dataset, " Data"),
@@ -4019,6 +4097,9 @@ server <- function(input, output, session) {
           rmarkdown::render(input = paste0(getwd(),"/Report_Template.qmd"),
                             output_file = file,
                             params = list(
+                              ghg_data = ghg_data,
+                              scen_data = scen_data,
+                              cost_data = cost_data,
                               state = input$state_input,
                               bsae_year = input$base_year,
                               horizon_year_1 = input$horizon_year_1,
