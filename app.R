@@ -3479,7 +3479,6 @@ server <- function(input, output, session) {
     dt_all <- dt_all %>% 
       mutate(veh_supertype = "Total (All Transportation)")
     
-<<<<<<< HEAD
     dt_fin <- rbind(dt, dt_onroad, dt_all,dt_pers) %>%
       rename("Emissions" = "veh_supertype")
     comma_rows = c(0:7)
@@ -3552,7 +3551,6 @@ server <- function(input, output, session) {
                   extensions = 'Buttons',
                   filter = 'bottom',
                   rownames = FALSE)
->>>>>>> 46047685d319135f9a47a4d78281acb4ad12b6ae
   })
   
   output$baseline_ghg_line <- renderPlotly({
