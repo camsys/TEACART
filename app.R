@@ -3538,19 +3538,7 @@ server <- function(input, output, session) {
         )
       ))
     return(x)
-=======
 
-    
-    
-    DT::datatable(dt_fin,
-                  escape = FALSE,
-                  options = list(pageLength = 10,
-                                 autoWidth = FALSE,
-                                 buttons = c('csv', 'excel')
-                  ),
-                  extensions = 'Buttons',
-                  filter = 'bottom',
-                  rownames = FALSE)
   })
   
   output$baseline_ghg_line <- renderPlotly({
