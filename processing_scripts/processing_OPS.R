@@ -92,10 +92,8 @@ temp_output_signal <- temp_output_signal %>% mutate(new_AADT = AADT+AADT*corrido
 
 project_signal <- make_project_table_cumulative(rvs$Projects[rvs$Projects$unit == "new_retimed_signal",],
                               table_no = 9, 
-                              cols = c("area_type","road_class"), 
-                              years_list = c(rvs$Baseline$horizon_year_1,
-                                             rvs$Baseline$horizon_year_2,
-                                             rvs$Baseline$horizon_year_3))
+                              cols = c("area_type","road_class")) %>%
+  get_horizon_years(my_rv = rvs)
 
 #project_signal$value <- c(10,20,30,10,20,30)
 
@@ -113,10 +111,8 @@ temp_output_signal <- temp_output_signal %>%
 
 project_roundabout <- make_project_table_cumulative(rvs$Projects[rvs$Projects$unit == "new_roundabouts",],
                                                 table_no = 9, 
-                                                cols = c("area_type","road_class"),  
-                                                years_list = c(rvs$Baseline$horizon_year_1,
-                                                               rvs$Baseline$horizon_year_2,
-                                                               rvs$Baseline$horizon_year_3)) 
+                                                cols = c("area_type","road_class")) %>%
+  get_horizon_years(my_rv = rvs)
 
 #project_roundabout$value <- c(10,20,30,10,20,30)
 

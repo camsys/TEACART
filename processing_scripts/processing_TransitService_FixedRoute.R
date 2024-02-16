@@ -16,24 +16,20 @@ observeEvent(input$state_input, {
 #projects
   project_df_input_FR <- make_project_table_cumulative(rvs$Projects,
                                                     table_no = 2,
-                                                    cols = c('area_type','fuel_type','transit_mode'),
-                                                    years_list = c(rvs$Baseline$horizon_year_1,
-                                                                   rvs$Baseline$horizon_year_2,
-                                                                   rvs$Baseline$horizon_year_3))
+                                                    cols = c('area_type','fuel_type','transit_mode')) %>%
+    get_horizon_years(my_rv = rvs)
   
   project_df_input_DR <- make_project_table_cumulative(rvs$Projects,
                                                           table_no = 3,
-                                                          cols = c('area_type','fuel_type','transit_mode'),
-                                                          years_list = c(rvs$Baseline$horizon_year_1,
-                                                                         rvs$Baseline$horizon_year_2,
-                                                                         rvs$Baseline$horizon_year_3))
+                                                          cols = c('area_type','fuel_type','transit_mode')) %>%
+    get_horizon_years(my_rv = rvs)
+  
   project_df_input_RR <- make_project_table_cumulative(rvs$Projects,
                                                        table_no = 6,
-                                                       cols = c('area_type','fuel_type','transit_mode'),
-                                                       years_list = c(rvs$Baseline$horizon_year_1,
-                                                                      rvs$Baseline$horizon_year_2,
-                                                                      rvs$Baseline$horizon_year_3)) %>%
+                                                       cols = c('area_type','fuel_type','transit_mode')) %>%
+    get_horizon_years(my_rv = rvs) %>%
     mutate(area_type = "All")
+  
   project_df_input <- rbind(project_df_input_FR, project_df_input_DR) %>% rbind(project_df_input_RR)
   
   #Factors

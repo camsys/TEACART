@@ -49,6 +49,18 @@ get_horizon_years <- function(df, my_rv) { ### converts from horizon_year_1 to 2
                              "horizon_year_3" ~ my_rv[["Baseline"]][["horizon_year_3"]]))
 }
 
+get_horizon_years_wide <- function(df, my_rv) { ### converts from horizon_year_1 to 2025 for example. Gui 2/14/24
+  if (!("horizon_year_1" %in% colnames(df))) {stop("horizon_year_1 not a column of this dataframe")}
+  if (!("horizon_year_2" %in% colnames(df))) {stop("horizon_year_2 not a column of this dataframe")}
+  if (!("horizon_year_3" %in% colnames(df))) {stop("horizon_year_3 not a column of this dataframe")}
+  
+  names(df)[names(df) == 'horizon_year_1'] <- my_rv[["Baseline"]][["horizon_year_1"]]
+  names(df)[names(df) == 'horizon_year_2'] <- my_rv[["Baseline"]][["horizon_year_2"]]
+  names(df)[names(df) == 'horizon_year_3'] <- my_rv[["Baseline"]][["horizon_year_3"]]
+  
+  return(df)
+}
+
 convert_to_nested_list <- function(df){ 
   # Create an empty list
   my_list <- list()

@@ -265,6 +265,10 @@ ui <- function(request) {
            project types is that any new bicycle or pedestrian facility would 
            be two-way. (i.e., for one-way facilities, please enter half the 
            total miles for the facility)."),
+           popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   title = "Cumulative View",
+                   DTOutput(outputId = "cumul_bikeped_projs_tbl")
+                   )# removed cursor: pointer;
                                        ),
            id = "acc1",
            open = FALSE
@@ -1726,6 +1730,15 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = integer(0))
     
+  })
+  
+  output$cumul_bikeped_projs_tbl <- renderDT({
+    rvs$Projects %>% 
+      make_project_table_cumulative(table_no = 1, cols = c("area_type", "facility_type", "unit")) %>%
+      get_horizon_years(my_rv = rvs) %>%
+      pivot_wider(names_from = year, values_from = value) %>% 
+      select(-area_type, -facility_type, -unit) %>%
+      datatable(rownames = F, options = list(dom = "t"))
   })
 
   output$transit_fixed_projs_tbl <- renderDT({
