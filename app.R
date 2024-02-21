@@ -3595,11 +3595,13 @@ server <- function(input, output, session) {
   
   output$baseline_outputs <- renderDT({
     req(baseline_ghg_forecast())
+    
     dt <- baseline_ghg_forecast()
     
     dt_onroad <- dt %>% ungroup() %>% # select(-veh_supertype) %>% View()
       filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Vehicles")) %>%
-      summarise(across(where(is.numeric),sum)) 
+      summarise(across(where(is.numeric),sum))  %>%
+      mutate(veh_supertype = "Total (OnRoad)")
 
     dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
       #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
