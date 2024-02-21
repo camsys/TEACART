@@ -661,13 +661,8 @@ output$baseline_line_graph <- renderPlotly({
 
 #VMT Type Tech Base ----
 VMT_Type_Tech_Base <- reactive({ #this is VMT 
-  
-  # VMT_Type_Tech_Base <- reactive({
-  #   Tech_Frac_Vision %>%
-  #     left_join(select(VMT_Forecast(), veh_type, year, state_vmt), by = join_by(veh_type, year)) %>%
-  #     mutate(mmt_by_subtype = state_vmt * aeo_tech_frac) #this has been renamed to mmt_by_subtype
-  # })
-  
+  #browser()
+
   state_ch <- rvs$Baseline$state
   nhs_ch <- rvs$Baseline$trans_system_scope
   #browser()
@@ -675,7 +670,7 @@ VMT_Type_Tech_Base <- reactive({ #this is VMT
   nhs_vals <- filter(NHS_VMT, state == state_ch)
   tech_frac_temp <- Tech_Frac_Vision()
   
-  if(nhs_ch == "Only NHS"){
+  if(nhs_ch == "NHS Only"){
     
     VMT_Type_Tech_Basetemp <- tech_frac_temp %>% 
       left_join(VMT_VehType, by = c('year','veh_type')) %>%
