@@ -45,7 +45,7 @@ bikeped <- filter_columns(output_bikped(),selected_columns,"Bicycle and Pedestri
 MDHD <- filter_columns(output_MDHD(),selected_columns,"MD/HD Truck Replacement")  
 Micro <- filter_columns(output_micro(),selected_columns,"Micromobility")  
 pnr <- filter_columns(output_pnr(),selected_columns,"Park and Ride")  
-RoadwayExp <- filter_columns(output_RoadwayExp(),selected_columns,"Roadway Expansion")  
+RoadwayExp <- filter_columns(output_RoadwayExp(),selected_columns,"Roadway Expansion")  %>% mutate(year = as.numeric(year))
 TDM <- filter_columns(output_TDM(),selected_columns,"Travel Demand Management") 
 transitElec <- filter_columns(output_transitElec(),selected_columns,"Transit Electrification")  
 TransitService <- filter_columns(output_TransitService(),selected_columns,"Transit Service Expansion")  

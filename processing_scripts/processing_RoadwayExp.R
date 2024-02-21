@@ -95,8 +95,11 @@ temp_output <- temp_output %>% left_join(existing_lanes_df) %>%
          minutes_per_mile_new = minutes_per_mile_base - minutes_delay_saved_perVMT,
          new_speed = 1/(minutes_per_mile_new)*60, #in mph
          speed_change = minutes_per_mile_new - minutes_per_mile_base) %>%
-  left_join(project_df_input) %>% 
-  left_join(temp_em_df_sub) %>% 
+  mutate(year = as.character(year)) %>%
+  left_join(project_df_input %>% mutate(year = as.character(year))) %>% 
+  
+  left_join(temp_em_df_sub %>% mutate(year = as.character(year))) %>% 
+
   mutate(total_change_VMT = VMT_elasticity*annual_VMTperLaneMile*value,
          
          VMT_increase = light_duty_automobile_emrate*total_change_VMT/1000000,#I Have a Ben Q about this why is travel speed used? Itseems like a mistake
