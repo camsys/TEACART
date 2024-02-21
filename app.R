@@ -3627,6 +3627,7 @@ server <- function(input, output, session) {
       selection = "none",
       options = list(
         pageLength = 10, 
+        paging = FALSE,
         columnDefs = list(
           list(
             targets = '_all',
@@ -3771,7 +3772,7 @@ server <- function(input, output, session) {
       selection = "none",
       options = list(
         pageLength = 50,
-        searching = FALSE,
+        searching = TRUE,
         paging = FALSE,
         info = FALSE)) 
     if(input$cost_view == "detail"){

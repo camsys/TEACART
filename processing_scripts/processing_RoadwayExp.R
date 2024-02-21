@@ -37,10 +37,7 @@ temp_em_df_sub <- e_emmissions_apportionment() %>% ungroup()
 #user inputs
 project_df_input <- make_project_table_cumulative(rvs$Projects,
                                                   table_no = 14,
-                                                  cols = c('area_type','road_class'),
-                                                  years_list = c(rvs$Baseline$horizon_year_1,
-                                                                 rvs$Baseline$horizon_year_2,
-                                                                 rvs$Baseline$horizon_year_3))
+                                                  cols = c('area_type','road_class'))
 
 #hardcode inputs - I wonder if these should be part of the assumptions? or Capital Inputs?
 car_gallons_hour_delay = 0.4 # this is a hardcoded unmutable (hu) input
