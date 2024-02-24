@@ -3418,16 +3418,74 @@ server <- function(input, output, session) {
  
   output$pass_rail_sheet_tbl <- renderDT({
     
-    render_custom_datatable(
-      data_reactive = rvs$Advanced,
-      table_number = 4,
-      is_year_table = FALSE,
-      non_editable_cols = c(0, 1),  
-      page_length = 10,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+    
+    
+    callback_pass_rail <- JS(
+      "function onUpdate(updatedCell, updatedRow, oldValue){}",
+      "table.MakeCellsEditable({",
+      "  onUpdate: onUpdate,",
+      "  inputCss: 'my-input-class',",
+      "  confirmationButton: {",
+      "    confirmCss: 'my-confirm-class',",
+      "    cancelCss: 'my-cancel-class'",
+      "  },",
+      "  inputTypes: [",
+      "    {",
+      "      column: 2,",
+      "      type: 'list',",
+      "      options: [",
+      "        {value: 'Diesel', display: 'Diesel'},",
+      "        {value: 'Electric',      display: 'Electric'},",
+      "      ]",
+      "    }",
+      "  ]",
+      "});")
+    
+    path <- "C:/Users/gvendemiatti/Documents/TEACART/TEACART/www" # folder containing the files dataTables.cellEdit.js
+    
+    # and dataTables.cellEdit.css
+    dep <- htmltools::htmlDependency(
+      "CellEdit", "1.0.19", path, 
+      script = "dataTables.cellEdit.js", stylesheet = "dataTables.cellEdit.css")
+    
+    dtable <- 
+      rvs$Advanced %>%
+      filter(table_no_ui == 4) %>% 
+      select(mode_service, unit, value) %>% 
+      rename(any_of(references_vector)) %>% 
+      datatable(callback = callback_pass_rail, rownames = F)
+      
+      ### OLD
+      # render_custom_datatable(
+      # data_reactive = rvs$Advanced,
+      # table_number = 4,
+      # is_year_table = FALSE,
+      # non_editable_cols = c(0, 1),
+      # page_length = 10,
+      # comma_rows = integer(0),
+      # percent_rows = integer(0),
+      # currency_rows = integer(0),
+      # decimal_rows = integer(0))
+    
+    ### WORKS WITH A SIMPLE EXAMPLE BELOW
+    # dat_pass_rail <- data.frame(
+    #   Action = c("Keep data", "Keep data", "Keep data"),
+    #   X = c(1, 2, 3),
+    #   Y = c("a", "b", "c")
+    # )
+    # 
+    # ## the datatable
+    # dtable <- datatable(
+    #   dat_pass_rail, callback = callback_pass_rail, rownames = FALSE, 
+    #   options = list(
+    #     columnDefs = list(
+    #       list(targets = "_all", className = "dt-center")
+    #     )
+    #   )
+    # )
+
+    dtable$dependencies <- c(dtable$dependencies, list(dep))
+    return(dtable)
   })
  
   output$freight_rail_sheet_tbl <- renderDT({
