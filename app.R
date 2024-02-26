@@ -3741,7 +3741,9 @@ server <- function(input, output, session) {
       dt_fin,
       rownames = FALSE,
       selection = "none",
+
       options = list(
+
         pageLength = 10, 
         paging = FALSE,
         columnDefs = list(
@@ -3758,7 +3760,7 @@ server <- function(input, output, session) {
                 
                     var formatter = null;
                     if (commaRows.includes(meta.row)) {
-                      formatter = function(d) { return Number(d).toLocaleString('en-US'); };
+                      formatter = function(d) { return Number(d).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
                     }
                     if (percentRows.includes(meta.row)) {
                       formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
@@ -3789,7 +3791,13 @@ server <- function(input, output, session) {
             )
           )
         )
-      ))
+      )) %>%
+       formatStyle(0,
+                  target = "row",
+                  #rows = c(7),
+                  fontWeight = styleRow(c(7,8,9),"bold")
+                  #'font-size' = "11px"
+                  )
     return(x)
 
   })
