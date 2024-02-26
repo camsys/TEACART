@@ -53,6 +53,11 @@ ui <- function(request) {
         preset = "pulse",
         bg = "#fff"
       ), 
+
+# styles ------------------------------------------------------------------
+
+      
+      
       # #a0cf66 is a georgetown color but intense - color below is a milder variation
       tags$head(
         tags$style(HTML("
@@ -62,15 +67,29 @@ ui <- function(request) {
             .btn-custom {
                 background-color: #e3ebd5 !important;;
             } 
+            .well.card-flex {
+            display: flex;
+            flex-direction: row; 
+            }
+            .invisible-well.card-flex {
+            display: flex;
+            flex-direction: row; 
+            }
+             well.invisible-well {
+	          background-color: transparent !important;
+	          border: none !important;
+            box-shadow: none !important;
+             }
+                  .half-card {
+            width: 50%;
+            margin-right: 20px;
+            display: inline-block;
+            }
+            .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
+            .nav.navbar-nav .form-group.shiny-input-container > label {display: inline;}
         ")),
         tags$link(rel = "stylesheet", 
-                  href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"),
-        tags$style(HTML(
-          '
-      .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
-      .nav.navbar-nav .form-group.shiny-input-container > label {display: inline;}
-        '
-        )),
+                  href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
       ),
       title = "TEA-CART",
       sidebar = sidebar(fileInput("user_inputs_upload",
@@ -121,12 +140,13 @@ ui <- function(request) {
       p("© Georgetown Climate Center"),
       ),
 
-# baseline inputs ---------------------------------------------------------
+
 
       
       nav_panel(title = "Inputs",
                 navset_card_pill(
-                  
+
+# baseline inputs ---------------------------------------------------------                  
                   nav_panel(title = "Baseline",
                             fluidRow(HTML("<p>Please enter <b>key inputs</b> below to define the timing and scope of your TEA-CART analysis, including: State, Base Year, Horizon Years, Geographic Scope, and Emissions Scope.<br>
                                           <p>
@@ -135,101 +155,137 @@ ui <- function(request) {
                               DT::dataTableOutput("test_data")
                             ),
                             fluidRow(
-                              column(6,
+                              column(12,
                                      
                                      tabPanel(title = "Key Inputs"),
                                      p("Select the state, years, and scope of baseline GHG forecast."),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("state_input",
+                                                                   'State: ',
+                                                                   selected = "Maryland",
+                                                                   state.name)),
+                                              tags$div(class = "half-card",
+                                                       p("Select the state for which you are conducting analysis."))
+                                     ),
+                                     p(),
+                                     tags$div(class = "well invisible-well",
+                                              numericInput("base_year",
+                                                           HTML(paste('Base Year: ',
+                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The first year of analysis and the reference point for assessing baseline trends.")),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2021,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1),
+                                              p(" "),
+                                              numericInput("horizon_year_1",
+                                                           HTML(paste('Horizon Year 1: ',
+                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The first (future) year for which projects may be entered and the first year for which TEA-CART will generate outputs.")),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2025,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1),
+                                              p(" "),
+                                              numericInput("horizon_year_2",
+                                                           HTML(paste('Horizon Year 2: ',
+                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The second (future) year for which projects may be entered and the second year for which TEA-CART will generate outputs.")),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2030,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1),
+                                              p(""),
+                                              numericInput("horizon_year_3",
+                                                           HTML(paste('Horizon Year 3: ',
+                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The third (future) year for which projects may be entered and the third year for which TEA-CART will generate outputs.")),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2050,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1)),
+                                     p(),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("transportation_scope",
+                                                                   'Transportation System Scope: ',
+                                                                   c("All Roadways","NHS Only"),
+                                                                   "All Roadways")),
+                                              tags$div(class = "half-card",
+                                                       HTML("<p>There are two options:<br>
+                                       All Roadways: Emissions from on-road travel on all state roadways.<br>
+                                       NHS Only: Emissions from on-road travel on National Highway System (NHS) roadways only.<br>
+                                       Note that TEA-CART only includes emissions from on-road travel."))
+                                     ),
+                                     p(),
+                                     tags$div(class = "well invisible-well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("scope_emissions",
+                                                                   "Emissions Scope: Include Electricity",
+                                                                   
+                                                                   choices = c("Yes" = 1, "No" = 0),
+                                                                   selected = "Yes")),
+                                              tags$div(class = "half-card",
+                                                       HTML("<p>The scope of transportation emissions reported. By default, all direct emissions (emissions occurring at the vehicle tailpipe) are reported.<br>
+                                          Select 'Yes' for Include Electricity to report emissions associated with the electricity used to power electric vehicles.")
+                                              )),
+                                     p(),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("scope_fuels",
+                                                                   "Scope Emissions: Include Upstream Fuels",
+                                                                   choices = c("Yes" = 1, "No" = 0),
+                                                                   selected = "No")
+                                              ),
+                                              tags$div(class = "half-card",
+                                                       p("Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG.")
+                                              )
+                                     ),
+                                     p(),
+                                     tags$div(class = "well invisible-well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("vmt_forecast_input",
+                                                                   "VMT Forecast:",
+                                                                   c("Default","Custom"),
+                                                                   "Default")),
+                                              tags$div(class = "half-card",
+                                                       p("The vehicle miles traveled (VMT) forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab.")
+                                              )
+                                     ),
+                                     p(),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("ev_baseline_input",
+                                                                   "Vehicle Electrification Baseline:",
+                                                                   c("AEO Baseline",
+                                                                     "ACC",
+                                                                     "ACC II",
+                                                                     "ACC II + ACT",
+                                                                     "Custom"),
+                                                                   "AEO Baseline")),
+                                              tags$div(class = "half-card",
+                                                       p("The vehicle electrification forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab."))
+                                     ),
+                                     p(),
+                                     tags$div(class = "well invisible-well card-flex",
+                                              tags$div(class = "half-card",
+                                                       numericInput("grid_emissions_input",
+                                                                    "Electricity Grid Emissions Net-Zero Year:",
+                                                                    value = 2025,
+                                                                    min = 2021,
+                                                                    max = 2050,
+                                                                    step = 1)),
+                                              tags$div(class = "half-card",
+                                                       p("The target year for achieving net-zero electricity grid emissions.")
+                                              )
+                                     )
                                      
-                                     selectInput("state_input",
-                                                 HTML(paste('State: ',
-                                                            as.character(tags$i(class = "fa fa-info-circle", title = "The state for which you will be conducting analysis.")),
-                                                            sep = "")
-                                                 ),
-                                                 selected = "Maryland",
-                                                 state.name),
-                                     numericInput("base_year",
-                                                  HTML(paste('Base Year: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The first year of analysis and the reference point for assessing baseline trends.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2021,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(" "),
-                                     numericInput("horizon_year_1",
-                                                  HTML(paste('Horizon Year 1: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The first (future) year for which projects may be entered and the first year for which TEA-CART will generate outputs.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2025,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(" "),
-                                     numericInput("horizon_year_2",
-                                                  HTML(paste('Horizon Year 2: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The second (future) year for which projects may be entered and the second year for which TEA-CART will generate outputs.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2030,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(""),
-                                     numericInput("horizon_year_3",
-                                                  HTML(paste('Horizon Year 3: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The third (future) year for which projects may be entered and the third year for which TEA-CART will generate outputs.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2050,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(""),
-                                     selectInput("transportation_scope",
-                                                 HTML(paste('Transportation System Scope: ',
-                                                            as.character(tags$i(class = "fa fa-info-circle", title = "The scope of your analysis with respect to the roadways. Only emissions from on-road travel are covered by TEA-CART.")),
-                                                            sep = "")
-                                                 ),
-                                                 c("All Roadways","NHS Only"),
-                                                 "All Roadways"),
-                                     p(""),
-                                     selectInput("scope_emissions",
-                                                 "Emissions Scope: Include Electricity",
-                                                 
-                                                 choices = c("Yes" = 1, "No" = 0),
-                                                 selected = "Yes"),
-                                     p(""),
-                                     selectInput("scope_fuels",
-                                                 "Scope Emissions: Include Upstream Fuels",
-                                                 choices = c("Yes" = 1, "No" = 0),
-                                                 selected = "No"),
-                                     bsTooltip("scope_fuels",
-                                               "Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG.",
-                                               "right",
-                                               options = list(container = "body")),
-                                     p(""),
-                                     selectInput("vmt_forecast_input",
-                                                 "VMT Forecast:",
-                                                 c("Default","Custom"),
-                                                 "Default"),
-                                     p(""),
-                                     selectInput("ev_baseline_input",
-                                                 "Vehicle Electrification Baseline:",
-                                                 c("AEO Baseline",
-                                                   "ACC",
-                                                   "ACC II",
-                                                   "ACC II + ACT",
-                                                   "Custom"),
-                                                 "AEO Baseline"),
-                                     p(""),
-                                     numericInput("grid_emissions_input",
-                                                  "Electricity Grid Emissions Net-Zero Year:",
-                                                  value = 2025,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1)
+                                     
                                      
                               )),
                   ),
@@ -256,21 +312,19 @@ ui <- function(request) {
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Projects 1 | Bicycle and
+                                         'Projects 1 | Bicycle and
            Pedestrian Lane Miles of New Infrastructure ',
-           as.character(tags$i(class = "fa fa-info-circle", title = "Hover text")),
-           sep = "")),
            HTML("This category represents implementation of any <b>two-way miles of new 
            bicycle or pedestrian facility.</b> The default assumption for these 
            project types is that any new bicycle or pedestrian facility would 
            be two-way. (i.e., for one-way facilities, please enter half the 
            total miles for the facility)."),
-           popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+           bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                    title = "Cumulative View",
                    placement = "bottom",
                    options = list(container = "body"),
                    DTOutput(outputId = "cumul_bikeped_projs_tbl")
-                   )
+                   ))
                                        ),
            id = "acc1",
            open = FALSE
@@ -297,12 +351,12 @@ ui <- function(request) {
             HTML("This category represents additions of <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
                Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
             ),
-            popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+            bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                     title = "Cumulative View",
                     placement = "bottom",
                     options = list(container = "body"),
                     DTOutput(outputId = "cumul_transit_fixed_projs_tbl")
-            )
+            ))
           ),
           open = FALSE
         ),
@@ -327,12 +381,12 @@ ui <- function(request) {
               Demand response service vehicles include non-fixed route services that are initiated by customers and require advanced scheduling, 
                         such as vehicles provided by public entities, nonprofits, and private providers."
                    ),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_transit_dr_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -355,12 +409,12 @@ ui <- function(request) {
                    "Projects 4 | Fleet Electrification",
                    HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
                         with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_transit_el_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -385,12 +439,12 @@ ui <- function(request) {
                         to the improvement of transit speed and reliability between stops by changing the designation of street space. 
                         Some examples include a bus-only lane, which assigns exclusive street space to buses, and a bus approach lane, 
                         which assigns exclusive street spaces to buses as they approach an intersection."),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_transit_bus_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -412,12 +466,12 @@ ui <- function(request) {
                  accordion_panel(
                    "Projects 6 | Public Transportation: Rail",
                    HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>.",),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_public_rail_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -442,12 +496,12 @@ ui <- function(request) {
                    HTML("This category represents the <b>number of employees covered through the TDM Program Outreach </b>. 
                    TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
                    reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_tdm_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -470,12 +524,12 @@ ui <- function(request) {
                    "Projects 8 | Micromobility",
                    HTML("This category represents the <b>number of e-bikes funded </b> through the implementation of <b> e-bike subsidies </b>. 
                    An e-bike subsidy reimburses part of the cost of an e-bike."),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_micro_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -498,12 +552,12 @@ ui <- function(request) {
                    "Projects 9 | Traffic Operations",
                    HTML("This category represents any <b>improvements made to traffic operations at intersections </b>, 
                    such as new or retimed signals or new roundabouts."),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_traffic_ops_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -526,12 +580,12 @@ ui <- function(request) {
                    "Projects 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
                    HTML("This category represents <b>replacement of any fossil fuel medium or heavy-duty vehicles with electric vehicles</b>, 
                    with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle."),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_mhdev_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -555,12 +609,12 @@ ui <- function(request) {
                    "Projects 11 | Park & Ride Projects",
                    HTML("This category represents any <b>new addition or expansion of Park and Ride spaces</b>. A Park and Ride space 
                    allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_pnr_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -583,12 +637,12 @@ ui <- function(request) {
                    "Projects 12 | EV Charging Infrastructure",
                    HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
                    EV charging ports supply electric power for recharging electric vehicles."),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_evsi_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -610,12 +664,12 @@ ui <- function(request) {
                  accordion_panel(
                    "Projects 13 | Freight Intermodal Facilities",
                    HTML("This category represents any <b>intermodal freight investment</b>, expressed in millions of dollars."),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_freight_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -638,12 +692,12 @@ ui <- function(request) {
                  accordion_panel(
                    "Projects 14 | Roadway Expansion",
                    HTML("This category represents addition of any <b>new lane-miles of roadways.</b>"),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_expansion_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -665,12 +719,12 @@ ui <- function(request) {
                  accordion_panel(
                    "Projects 15 | Custom Project",
                    HTML("This category allows users to input custom project inputs. For units uses must input either VMT or MT CO2e."),
-                   popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
                            DTOutput(outputId = "cumul_custom_projs_tbl")
-                   )
+                   ))
                  ),
                  open = FALSE
                ),
@@ -2058,7 +2112,7 @@ server <- function(input, output, session) {
     
   })
   
-  output$freight_projs_tbl <- renderDT({
+  output$cumul_freight_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 13, my_cols = c("unit"))
   })
   
@@ -3420,16 +3474,74 @@ server <- function(input, output, session) {
  
   output$pass_rail_sheet_tbl <- renderDT({
     
-    render_custom_datatable(
-      data_reactive = rvs$Advanced,
-      table_number = 4,
-      is_year_table = FALSE,
-      non_editable_cols = c(0, 1),  
-      page_length = 10,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+    
+    
+    callback_pass_rail <- JS(
+      "function onUpdate(updatedCell, updatedRow, oldValue){}",
+      "table.MakeCellsEditable({",
+      "  onUpdate: onUpdate,",
+      "  inputCss: 'my-input-class',",
+      "  confirmationButton: {",
+      "    confirmCss: 'my-confirm-class',",
+      "    cancelCss: 'my-cancel-class'",
+      "  },",
+      "  inputTypes: [",
+      "    {",
+      "      column: 2,",
+      "      type: 'list',",
+      "      options: [",
+      "        {value: 'Diesel', display: 'Diesel'},",
+      "        {value: 'Electric',      display: 'Electric'},",
+      "      ]",
+      "    }",
+      "  ]",
+      "});")
+    
+    path <- "C:/Users/gvendemiatti/Documents/TEACART/TEACART/www" # folder containing the files dataTables.cellEdit.js
+    
+    # and dataTables.cellEdit.css
+    dep <- htmltools::htmlDependency(
+      "CellEdit", "1.0.19", path, 
+      script = "dataTables.cellEdit.js", stylesheet = "dataTables.cellEdit.css")
+    
+    dtable <- 
+      rvs$Advanced %>%
+      filter(table_no_ui == 4) %>% 
+      select(mode_service, unit, value) %>% 
+      rename(any_of(references_vector)) %>% 
+      datatable(callback = callback_pass_rail, rownames = F)
+      
+      ### OLD
+      # render_custom_datatable(
+      # data_reactive = rvs$Advanced,
+      # table_number = 4,
+      # is_year_table = FALSE,
+      # non_editable_cols = c(0, 1),
+      # page_length = 10,
+      # comma_rows = integer(0),
+      # percent_rows = integer(0),
+      # currency_rows = integer(0),
+      # decimal_rows = integer(0))
+    
+    ### WORKS WITH A SIMPLE EXAMPLE BELOW
+    # dat_pass_rail <- data.frame(
+    #   Action = c("Keep data", "Keep data", "Keep data"),
+    #   X = c(1, 2, 3),
+    #   Y = c("a", "b", "c")
+    # )
+    # 
+    # ## the datatable
+    # dtable <- datatable(
+    #   dat_pass_rail, callback = callback_pass_rail, rownames = FALSE, 
+    #   options = list(
+    #     columnDefs = list(
+    #       list(targets = "_all", className = "dt-center")
+    #     )
+    #   )
+    # )
+
+    dtable$dependencies <- c(dtable$dependencies, list(dep))
+    return(dtable)
   })
  
   output$freight_rail_sheet_tbl <- renderDT({
