@@ -383,7 +383,7 @@ for (var in tab_list){
    kableExtra::kable_styling(full_width = F,
                              position = "l"))
  }
-cat("\n\n\\vspace{0.5cm}\n\n")
+cat("\n\n\\pagebreak\n")
 writeLines("")
 
  num = num +1

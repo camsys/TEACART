@@ -4542,43 +4542,8 @@ server <- function(input, output, session) {
          input$grid_emissions_input)
   })
  
-  # output$pdf_report <- downloadHandler(
-  #   filename = function(){
-  #     paste("Summary Report",
-  #           Sys.Date(),
-  #           ".pdf",
-  #           sep="")},
-  #   content = function(file){
-  #       #data <- # placeholder now 
-  #       #mutate(center = unlist(center))
-  #       browser()
-  #       output_file <- file.path(getwd(),  glue::glue("{fn}.pdf"))
-  #       unloadNamespace("kableExtra")
-  #       rmarkdown::render(
-  #         input = file.path(getwd(),"Report_Template.qmd"),
-  #         output_file = output_file,
-  #         params = list(
-  #           state <- input$state_input,
-  #           bsae_year <- input$base_year,
-  #           horizon_year_1 <- input$horizon_year_1,
-  #           horizon_year_2<- input$horizon_year_2,
-  #           horizon_year_3 <- input$horizon_year_3,
-  #           trans_scope <- input$transportation_scope,
-  #           em_scope<- input$scope_emissions,
-  #           fuel_scope <-input$scope_fuels,
-  #           vmt <- input$vmt_forecast_input,
-  #           vmt_nhs <- input$vmt_nhs,
-  #           ev<- input$ev_baseline_input,
-  #           grid_em<- input$grid_emissions_input
-  #         )
-  #       )
-  #       file.copy(glue::glue("{fn}.pdf"), file)
-  #       browser()
-  #       
-  #     
-  #   }
-  # )
-
+## download PDF report
+    
   output$pdf_report <- downloadHandler(
 
     filename = function(){
@@ -4618,7 +4583,10 @@ server <- function(input, output, session) {
                                        table_title == "PM2.5 Reduction (MT)" ~ 'PM2.5',
                                        table_title == "New Daily Active Trips" ~ 'New Daily Active Trips')) %>%
         rename(indicator = table_title) %>%
-        pivot_longer(cols = c(`2021`, `2025`, `2030`, `2050`), 
+        pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
+                                           rvs$Baseline$horizon_year_1,
+                                           rvs$Baseline$horizon_year_2,
+                                           rvs$Baseline$horizon_year_3)), 
                      names_to = "Year",
                      values_to = "mt_reduction") %>%
         mutate(mt_reduction = ifelse(mt_reduction == "-","0",mt_reduction)) %>%

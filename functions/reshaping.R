@@ -184,7 +184,7 @@ reshaping_advanced <- function(user_data,
     modified_data[[col_name]] = user_data$value[user_data$col == i-1]
   }
   
-  browser()
+  # browser()
   
   if (tbl_no %in% c(1,2)){
   modified_data <- modified_data[, colSums(!is.na(modified_data)) > 0] %>%
@@ -216,12 +216,12 @@ reshaping_advanced <- function(user_data,
   x_names = c(col_list)
   
   
-  browser()
+  # browser()
   updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']] %>%
     left_join(modified_data, by = setNames(y_names,x_names)) %>% # setNames(y,x) 
     select(-contains("var")) 
   
-  browser()
+  # browser()
   
   return(updated_data)
 }
