@@ -3889,7 +3889,8 @@ server <- function(input, output, session) {
       #val2_scalar = ,
       style = input$cost_view
       ) %>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
 
     x<-datatable(temp,
       rownames = FALSE,
@@ -3901,8 +3902,8 @@ server <- function(input, output, session) {
         info = FALSE)) 
     if(input$cost_view == "detail"){
     x <- x %>%
-      DT::formatRound(3:7, digits = 3)}
-    return(x)
+      DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
     })
   
 #  observe({browser()})
@@ -3917,7 +3918,9 @@ server <- function(input, output, session) {
       proj_life = 12,
       scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
       style = input$cost_view
-    )%>% rename(any_of(references_vector))
+    ) %>% 
+    rename(any_of(references_vector)) %>%
+    mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
     
     x<-datatable(temp,
               rownames = FALSE,
@@ -3930,9 +3933,9 @@ server <- function(input, output, session) {
     
     if(input$cost_view == "detail"){
       x <- x %>%
-      DT::formatRound(4:8, digits = 3)}
+      DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
     
-    return(x)
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
       
       })
   
@@ -3944,8 +3947,9 @@ server <- function(input, output, session) {
     col_sel = c('area_type','fuel_type','transit_mode'),
     proj_life = 12,
     scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
-    style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+    style = input$cost_view) %>% 
+    rename(any_of(references_vector)) %>%
+    mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
     
     x<-datatable(temp,
               rownames = FALSE,
@@ -3956,8 +3960,8 @@ server <- function(input, output, session) {
                 paging = FALSE,
                 info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(4:8, digits = 3)}
-    return(x)
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
       
       })
   
@@ -3970,8 +3974,9 @@ server <- function(input, output, session) {
     proj_life = 5, 
     #var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
     #var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
-    style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+    style = input$cost_view) %>% 
+    rename(any_of(references_vector)) %>%
+    mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
     
     x<-datatable(temp,
               rownames = FALSE,
@@ -3982,8 +3987,8 @@ server <- function(input, output, session) {
                 paging = FALSE,
                 info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>%DT::formatRound(1:5, digits = 3)}
-    return(x)
+      x <- x %>%DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
     })
 
   public_elec_replacement_cost_table <- reactive({
@@ -4014,7 +4019,8 @@ server <- function(input, output, session) {
       proj_life = 12,
       #scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')],
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
     
     x<-datatable(temp,
               rownames = FALSE,
@@ -4025,8 +4031,8 @@ server <- function(input, output, session) {
                 paging = FALSE,
                 info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(4:8, digits = 3)}
-    return(x)
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
   })
   
   output$pub_trans_rail_costs_outputs_tbl <- renderDT({   
@@ -4039,7 +4045,8 @@ server <- function(input, output, session) {
       #BEN: val 1 is only referencing light rail revenue miles 
       scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('transit_mode','value')]%>% rename("scalar_1" = "value"),      
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
     
     x<-datatable(temp,
               rownames = FALSE,
@@ -4050,9 +4057,9 @@ server <- function(input, output, session) {
                 paging = FALSE,
                 info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(3:7, digits = 3)}
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
     
-    return(x)
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
     })
   
   output$tdm_costs_outputs_tbl <- renderDT({   
@@ -4063,19 +4070,22 @@ server <- function(input, output, session) {
       col_sel = c(),
       proj_life = 1,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
     
-    x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+    x <- datatable(temp,
+                   rownames = FALSE,
+                   selection = "none",
+                   options = list(
+                     pageLength = 50,
+                     searching = FALSE,
+                     paging = FALSE,
+                     info = FALSE))
+    
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(1:5, digits = 3)}
-    return(x)
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
     })
   
   output$micro_costs_outputs_tbl <- renderDT({   
@@ -4086,7 +4096,8 @@ server <- function(input, output, session) {
       col_sel = c(),
       proj_life = 6,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
     
     x<-datatable(temp,
               rownames = FALSE,
@@ -4097,8 +4108,8 @@ server <- function(input, output, session) {
                 paging = FALSE,
                 info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>%DT::formatRound(1:5, digits = 3)}
-    return(x)
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
     })
   
   output$traffic_ops_costs_outputs_tbl <- renderDT({   
@@ -4111,8 +4122,10 @@ server <- function(input, output, session) {
       col_sel = c('road_class','area_type','cap_proj_type'),
       proj_life = NA,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
-    
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) %>% # to show NA in table
+      mutate(year = as.character(year)) %>% rename(Year = year)
+      
     x<-datatable(temp,
               rownames = FALSE,
               selection = "none",
@@ -4122,8 +4135,8 @@ server <- function(input, output, session) {
                 paging = FALSE,
                 info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>%DT::formatRound(5:9, digits = 3)}
-    return(x)
+      x <- x %>%DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
     })
   
   output$mhdev_costs_outputs_tbl <- renderDT({   
@@ -4134,7 +4147,8 @@ server <- function(input, output, session) {
       col_sel = c('veh_type','veh_subtype'),
       proj_life = 12,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
     
     x<-datatable(temp,
               rownames = FALSE,
@@ -4145,8 +4159,8 @@ server <- function(input, output, session) {
                 paging = FALSE,
                 info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(3:7, digits = 3)}
-    return(x)
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
     })
   
   output$pnr_costs_outputs_tbl <- renderDT({   
@@ -4157,7 +4171,8 @@ server <- function(input, output, session) {
       col_sel = c(),
       proj_life = 30,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
     
    x<- datatable(temp,
               rownames = FALSE,
@@ -4168,8 +4183,8 @@ server <- function(input, output, session) {
                 paging = FALSE,
                 info = FALSE)) 
    if(input$cost_view == "detail"){
-     x <- x %>% DT::formatRound(1:5, digits = 3)}
-   return(x)
+     x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+   return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
     })
   
   output$evsi_costs_outputs_tbl <- renderDT({  
@@ -4180,7 +4195,8 @@ server <- function(input, output, session) {
       col_sel = c('charge_port_detail'), #Change to port detail?
       proj_life = 10,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
     
     x<-datatable(temp,
               rownames = FALSE,
@@ -4191,8 +4207,8 @@ server <- function(input, output, session) {
                 paging = FALSE,
                 info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>%DT::formatRound(2:6, digits = 3)}
-    return(x)
+      x <- x %>%DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
     })
   
   output$roadway_expand_costs_outputs_tbl <- renderDT({  
@@ -4203,7 +4219,8 @@ server <- function(input, output, session) {
       col_sel = c('road_class','area_type'),
       proj_life = 30,#needs to project lifes actually :(
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) # to show NA in table
     
     x<-datatable(temp,
               rownames = FALSE,
@@ -4214,8 +4231,8 @@ server <- function(input, output, session) {
                 paging = FALSE,
                 info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(3:7, digits = 3)}
-    return(x)
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
     })
   
   #Fuel Price Table
@@ -4228,8 +4245,10 @@ server <- function(input, output, session) {
       col_sel = c(),
       proj_life = 30,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
-    
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "NA", .))) %>% # to show NA in table
+      mutate(year = as.character(year)) %>% rename(Year = year)
+      
     x<-datatable(temp,
               rownames = FALSE,
               selection = "none",
@@ -4239,8 +4258,8 @@ server <- function(input, output, session) {
                 paging = FALSE,
                 info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(2:6, digits = 3)}
-    return(x)
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("NA", "red")))
     })
   
   
