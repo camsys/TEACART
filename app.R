@@ -3478,8 +3478,6 @@ server <- function(input, output, session) {
  
   output$pass_rail_sheet_tbl <- renderDT({
     
-    
-    
     callback_pass_rail <- JS(
       "function onUpdate(updatedCell, updatedRow, oldValue){}",
       "table.MakeCellsEditable({",
@@ -3513,7 +3511,7 @@ server <- function(input, output, session) {
       filter(table_no_ui == 4) %>% 
       select(mode_service, unit, value) %>% 
       rename(any_of(references_vector)) %>% 
-      datatable(callback = callback_pass_rail, rownames = F)
+      datatable(callback = callback_pass_rail, rownames = F, selection = "none", editable = list(target = 'all', disable = list(columns = c(0,1))))
       
       ### OLD
       # render_custom_datatable(
