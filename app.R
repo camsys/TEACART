@@ -65,7 +65,9 @@ ui <- function(request) {
                 background-color: #e3ebd5;
             }
             .btn-custom {
-                background-color: #e3ebd5 !important;;
+                background-color: #e3ebd5 !important;
+                height: 54px;
+                width: 100%;
             } 
             .well.card-flex {
             display: flex;
@@ -134,8 +136,8 @@ ui <- function(request) {
                       types."))),
       h3("Version"),
       p("Based on TEA-CART Excel Model Version 1.8"),
-      p("Shiny App last updated January 15, 2024"),
-      p("draft User Interface (UI) under development by Cambridge Systematics, Inc."),
+      p("Shiny App last updated February 26, 2024"),
+      p("prototype under development by Cambridge Systematics, Inc."),
       p("under contract to Georgetown Climate Center"),
       p("© Georgetown Climate Center"),
       ),
@@ -1303,14 +1305,14 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Custom Forecast: Electric Vehicles (EVs)",
+                             "Advanced 1 | Custom Forecast: Electric Vehicles (EVs)",
                              HTML("This represents the vehicle electrification forecast used for baseline projections. This is represented by the percentage of vehicles that are EVs.")
                            ),
                            open = FALSE
                          ),
                   ),
                   column(2,
-                         actionButton("reset_ev_forecast_sheet_tbl", "Reset Custom Forecast", class = "btn-custom")
+                         actionButton("reset_ev_forecast_sheet_tbl", "Reset Advanced 1", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1323,7 +1325,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Custom Forecast: Vehicle Miles Traveled (VMT)",
+                             "Advanced 2 | Custom Forecast: Vehicle Miles Traveled (VMT)",
                              HTML("This represents the vehicle miles traveled (VMT) forecast used for baseline projections."),
 
                            ),
@@ -1331,7 +1333,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_vmt_forecast_sheet_tbl", "Reset VMT Custom Forecast", class = "btn-custom")
+                         actionButton("reset_vmt_forecast_sheet_tbl", "Reset Advanced 2", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1344,7 +1346,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Onroad Public Transit - Fuel Technology Fraction",
+                             "Advanced 3 | Onroad Public Transit - Fuel Technology Fraction",
                              HTML("This represents the type and fraction of assumed fuel technologies used by on-road public transit."),
 
                            ),
@@ -1352,7 +1354,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_onroad_fuel_tech_frac_sheet_tbl", "Reset Fuel Tech Fraction", class = "btn-custom")
+                         actionButton("reset_onroad_fuel_tech_frac_sheet_tbl", "Reset Advanced 3", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1365,7 +1367,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Passenger Rail",
+                             "Advanced 4 | Passenger Rail",
                              HTML("This represents the type of assumed fuel technologies used by passenger rail systems."),
 
                            ),
@@ -1373,7 +1375,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_pass_rail_sheet_tbl", "Reset Passenger Rail", class = "btn-custom")
+                         actionButton("reset_pass_rail_sheet_tbl", "Reset Advanced 4", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1385,7 +1387,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Freight Rail",
+                             "Advanced 5 | Freight Rail",
                              HTML("This represents the assumed annual growth rate of freight rail and the energy intensity as measured in British thermal units (BTU) per ton-mile."),
 
                            ),
@@ -1393,7 +1395,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_freight_rail_sheet_tbl", "Reset Freight Rail", class = "btn-custom")
+                         actionButton("reset_freight_rail_sheet_tbl", "Reset Advanced 5", class = "btn-custom")
                   ),
 
                 ),
@@ -1407,7 +1409,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Construction and Maintenance",
+                             "Advanced 6 | Construction and Maintenance",
                              HTML("This represents the estimated emissions from construction and maintenance activities."),
 
                            ),
@@ -1415,7 +1417,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_construction_sheet_tbl", "Reset Construction and Maintenance", class = "btn-custom")
+                         actionButton("reset_construction_sheet_tbl", "Reset Advanced 6", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1428,7 +1430,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Fuel Apportionments",
+                             "Advanced 7 | Fuel Apportionments",
                              HTML("This represents the percentage of plug-in hybrid electric vehicle (PHEV) miles driven on electricity."),
 
                            ),
@@ -1436,7 +1438,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_fuel_apportionment_sheet_tbl", "Reset Fuel Apportionments", class = "btn-custom")
+                         actionButton("reset_fuel_apportionment_sheet_tbl", "Reset Advanced 7", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
