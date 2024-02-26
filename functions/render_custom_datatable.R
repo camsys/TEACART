@@ -87,6 +87,7 @@ render_custom_datatable <- function(#input_reactives,
       selection = "none",
       options = list(
         pageLength = page_length,
+        paging = FALSE,
         # scrollX = TRUE,
         # scrollY = TRUE,
         columnDefs = list(

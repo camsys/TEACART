@@ -17,6 +17,7 @@ library(tools)
 
 
 # load source files -------------------------------------------------------
+#SETH NOTE Should this be here?
 all_files <- c(
   list.files("functions", full.names = TRUE)
 #               ,list.files("processing_scripts", full.names = TRUE) # this breaks it at the moment
@@ -53,6 +54,11 @@ ui <- function(request) {
         preset = "pulse",
         bg = "#fff"
       ), 
+
+# styles ------------------------------------------------------------------
+
+      
+      
       # #a0cf66 is a georgetown color but intense - color below is a milder variation
       tags$head(
         tags$style(HTML("
@@ -60,17 +66,33 @@ ui <- function(request) {
                 background-color: #e3ebd5;
             }
             .btn-custom {
-                background-color: #e3ebd5 !important;;
+                background-color: #e3ebd5 !important;
+                height: 54px;
+                width: 100%;
             } 
+            .well.card-flex {
+            display: flex;
+            flex-direction: row; 
+            }
+            .invisible-well.card-flex {
+            display: flex;
+            flex-direction: row; 
+            }
+             well.invisible-well {
+	          background-color: transparent !important;
+	          border: none !important;
+            box-shadow: none !important;
+             }
+                  .half-card {
+            width: 50%;
+            margin-right: 20px;
+            display: inline-block;
+            }
+            .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
+            .nav.navbar-nav .form-group.shiny-input-container > label {display: inline;}
         ")),
         tags$link(rel = "stylesheet", 
-                  href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"),
-        tags$style(HTML(
-          '
-      .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
-      .nav.navbar-nav .form-group.shiny-input-container > label {display: inline;}
-        '
-        )),
+                  href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
       ),
       title = "TEA-CART",
       sidebar = sidebar(fileInput("user_inputs_upload",
@@ -115,18 +137,19 @@ ui <- function(request) {
                       types."))),
       h3("Version"),
       p("Based on TEA-CART Excel Model Version 1.8"),
-      p("Shiny App last updated January 15, 2024"),
-      p("draft User Interface (UI) under development by Cambridge Systematics, Inc."),
+      p("Shiny App last updated February 26, 2024"),
+      p("prototype under development by Cambridge Systematics, Inc."),
       p("under contract to Georgetown Climate Center"),
       p("© Georgetown Climate Center"),
       ),
 
-# baseline inputs ---------------------------------------------------------
+
 
       
       nav_panel(title = "Inputs",
                 navset_card_pill(
-                  
+
+# baseline inputs ---------------------------------------------------------                  
                   nav_panel(title = "Baseline",
                             fluidRow(HTML("<p>Please enter <b>key inputs</b> below to define the timing and scope of your TEA-CART analysis, including: State, Base Year, Horizon Years, Geographic Scope, and Emissions Scope.<br>
                                           <p>
@@ -135,101 +158,137 @@ ui <- function(request) {
                               DT::dataTableOutput("test_data")
                             ),
                             fluidRow(
-                              column(6,
+                              column(12,
                                      
                                      tabPanel(title = "Key Inputs"),
                                      p("Select the state, years, and scope of baseline GHG forecast."),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("state_input",
+                                                                   'State: ',
+                                                                   selected = "Maryland",
+                                                                   state.name)),
+                                              tags$div(class = "half-card",
+                                                       p("Select the state for which you are conducting analysis."))
+                                     ),
+                                     p(),
+                                     tags$div(class = "well invisible-well",
+                                              numericInput("base_year",
+                                                           HTML(paste('Base Year: ',
+                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The first year of analysis and the reference point for assessing baseline trends.")),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2021,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1),
+                                              p(" "),
+                                              numericInput("horizon_year_1",
+                                                           HTML(paste('Horizon Year 1: ',
+                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The first (future) year for which projects may be entered and the first year for which TEA-CART will generate outputs.")),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2025,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1),
+                                              p(" "),
+                                              numericInput("horizon_year_2",
+                                                           HTML(paste('Horizon Year 2: ',
+                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The second (future) year for which projects may be entered and the second year for which TEA-CART will generate outputs.")),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2030,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1),
+                                              p(""),
+                                              numericInput("horizon_year_3",
+                                                           HTML(paste('Horizon Year 3: ',
+                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The third (future) year for which projects may be entered and the third year for which TEA-CART will generate outputs.")),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2050,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1)),
+                                     p(),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("transportation_scope",
+                                                                   'Transportation System Scope: ',
+                                                                   c("All Roadways","NHS Only"),
+                                                                   "All Roadways")),
+                                              tags$div(class = "half-card",
+                                                       HTML("<p>There are two options:<br>
+                                       All Roadways: Emissions from on-road travel on all state roadways.<br>
+                                       NHS Only: Emissions from on-road travel on National Highway System (NHS) roadways only.<br>
+                                       Note that TEA-CART only includes emissions from on-road travel."))
+                                     ),
+                                     p(),
+                                     tags$div(class = "well invisible-well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("scope_emissions",
+                                                                   "Emissions Scope: Include Electricity",
+                                                                   
+                                                                   choices = c("Yes" = 1, "No" = 0),
+                                                                   selected = "Yes")),
+                                              tags$div(class = "half-card",
+                                                       HTML("<p>The scope of transportation emissions reported. By default, all direct emissions (emissions occurring at the vehicle tailpipe) are reported.<br>
+                                          Select 'Yes' for Include Electricity to report emissions associated with the electricity used to power electric vehicles.")
+                                              )),
+                                     p(),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("scope_fuels",
+                                                                   "Scope Emissions: Include Upstream Fuels",
+                                                                   choices = c("Yes" = 1, "No" = 0),
+                                                                   selected = "No")
+                                              ),
+                                              tags$div(class = "half-card",
+                                                       p("Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG.")
+                                              )
+                                     ),
+                                     p(),
+                                     tags$div(class = "well invisible-well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("vmt_forecast_input",
+                                                                   "VMT Forecast:",
+                                                                   c("Default","Custom"),
+                                                                   "Default")),
+                                              tags$div(class = "half-card",
+                                                       p("The vehicle miles traveled (VMT) forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab.")
+                                              )
+                                     ),
+                                     p(),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("ev_baseline_input",
+                                                                   "Vehicle Electrification Baseline:",
+                                                                   c("AEO Baseline",
+                                                                     "ACC",
+                                                                     "ACC II",
+                                                                     "ACC II + ACT",
+                                                                     "Custom"),
+                                                                   "AEO Baseline")),
+                                              tags$div(class = "half-card",
+                                                       p("The vehicle electrification forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab."))
+                                     ),
+                                     p(),
+                                     tags$div(class = "well invisible-well card-flex",
+                                              tags$div(class = "half-card",
+                                                       numericInput("grid_emissions_input",
+                                                                    "Electricity Grid Emissions Net-Zero Year:",
+                                                                    value = 2025,
+                                                                    min = 2021,
+                                                                    max = 2050,
+                                                                    step = 1)),
+                                              tags$div(class = "half-card",
+                                                       p("The target year for achieving net-zero electricity grid emissions.")
+                                              )
+                                     )
                                      
-                                     selectInput("state_input",
-                                                 HTML(paste('State: ',
-                                                            as.character(tags$i(class = "fa fa-info-circle", title = "The state for which you will be conducting analysis.")),
-                                                            sep = "")
-                                                 ),
-                                                 selected = "Maryland",
-                                                 state.name),
-                                     numericInput("base_year",
-                                                  HTML(paste('Base Year: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The first year of analysis and the reference point for assessing baseline trends.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2021,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(" "),
-                                     numericInput("horizon_year_1",
-                                                  HTML(paste('Horizon Year 1: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The first (future) year for which projects may be entered and the first year for which TEA-CART will generate outputs.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2025,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(" "),
-                                     numericInput("horizon_year_2",
-                                                  HTML(paste('Horizon Year 2: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The second (future) year for which projects may be entered and the second year for which TEA-CART will generate outputs.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2030,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(""),
-                                     numericInput("horizon_year_3",
-                                                  HTML(paste('Horizon Year 3: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The third (future) year for which projects may be entered and the third year for which TEA-CART will generate outputs.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2050,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(""),
-                                     selectInput("transportation_scope",
-                                                 HTML(paste('Transportation System Scope: ',
-                                                            as.character(tags$i(class = "fa fa-info-circle", title = "The scope of your analysis with respect to the roadways. Only emissions from on-road travel are covered by TEA-CART.")),
-                                                            sep = "")
-                                                 ),
-                                                 c("All Roadways","NHS Only"),
-                                                 "All Roadways"),
-                                     p(""),
-                                     selectInput("scope_emissions",
-                                                 "Emissions Scope: Include Electricity",
-                                                 
-                                                 choices = c("Yes" = 1, "No" = 0),
-                                                 selected = "Yes"),
-                                     p(""),
-                                     selectInput("scope_fuels",
-                                                 "Scope Emissions: Include Upstream Fuels",
-                                                 choices = c("Yes" = 1, "No" = 0),
-                                                 selected = "No"),
-                                     bsTooltip("scope_fuels",
-                                               "Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG.",
-                                               "right",
-                                               options = list(container = "body")),
-                                     p(""),
-                                     selectInput("vmt_forecast_input",
-                                                 "VMT Forecast:",
-                                                 c("Default","Custom"),
-                                                 "Default"),
-                                     p(""),
-                                     selectInput("ev_baseline_input",
-                                                 "Vehicle Electrification Baseline:",
-                                                 c("AEO Baseline",
-                                                   "ACC",
-                                                   "ACC II",
-                                                   "ACC II + ACT",
-                                                   "Custom"),
-                                                 "AEO Baseline"),
-                                     p(""),
-                                     numericInput("grid_emissions_input",
-                                                  "Electricity Grid Emissions Net-Zero Year:",
-                                                  value = 2025,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1)
+                                     
                                      
                               )),
                   ),
@@ -1247,14 +1306,14 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Custom Forecast: Electric Vehicles (EVs)",
+                             "Advanced 1 | Custom Forecast: Electric Vehicles (EVs)",
                              HTML("This represents the vehicle electrification forecast used for baseline projections. This is represented by the percentage of vehicles that are EVs.")
                            ),
                            open = FALSE
                          ),
                   ),
                   column(2,
-                         actionButton("reset_ev_forecast_sheet_tbl", "Reset Custom Forecast", class = "btn-custom")
+                         actionButton("reset_ev_forecast_sheet_tbl", "Reset Advanced 1", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1267,7 +1326,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Custom Forecast: Vehicle Miles Traveled (VMT)",
+                             "Advanced 2 | Custom Forecast: Vehicle Miles Traveled (VMT)",
                              HTML("This represents the vehicle miles traveled (VMT) forecast used for baseline projections."),
 
                            ),
@@ -1275,7 +1334,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_vmt_forecast_sheet_tbl", "Reset VMT Custom Forecast", class = "btn-custom")
+                         actionButton("reset_vmt_forecast_sheet_tbl", "Reset Advanced 2", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1288,7 +1347,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Onroad Public Transit - Fuel Technology Fraction",
+                             "Advanced 3 | Onroad Public Transit - Fuel Technology Fraction",
                              HTML("This represents the type and fraction of assumed fuel technologies used by on-road public transit."),
 
                            ),
@@ -1296,7 +1355,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_onroad_fuel_tech_frac_sheet_tbl", "Reset Fuel Tech Fraction", class = "btn-custom")
+                         actionButton("reset_onroad_fuel_tech_frac_sheet_tbl", "Reset Advanced 3", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1309,7 +1368,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Passenger Rail",
+                             "Advanced 4 | Passenger Rail",
                              HTML("This represents the type of assumed fuel technologies used by passenger rail systems."),
 
                            ),
@@ -1317,7 +1376,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_pass_rail_sheet_tbl", "Reset Passenger Rail", class = "btn-custom")
+                         actionButton("reset_pass_rail_sheet_tbl", "Reset Advanced 4", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1329,7 +1388,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Freight Rail",
+                             "Advanced 5 | Freight Rail",
                              HTML("This represents the assumed annual growth rate of freight rail and the energy intensity as measured in British thermal units (BTU) per ton-mile."),
 
                            ),
@@ -1337,7 +1396,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_freight_rail_sheet_tbl", "Reset Freight Rail", class = "btn-custom")
+                         actionButton("reset_freight_rail_sheet_tbl", "Reset Advanced 5", class = "btn-custom")
                   ),
 
                 ),
@@ -1351,7 +1410,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Construction and Maintenance",
+                             "Advanced 6 | Construction and Maintenance",
                              HTML("This represents the estimated emissions from construction and maintenance activities."),
 
                            ),
@@ -1359,7 +1418,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_construction_sheet_tbl", "Reset Construction and Maintenance", class = "btn-custom")
+                         actionButton("reset_construction_sheet_tbl", "Reset Advanced 6", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1372,7 +1431,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Fuel Apportionments",
+                             "Advanced 7 | Fuel Apportionments",
                              HTML("This represents the percentage of plug-in hybrid electric vehicle (PHEV) miles driven on electricity."),
 
                            ),
@@ -1380,7 +1439,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_fuel_apportionment_sheet_tbl", "Reset Fuel Apportionments", class = "btn-custom")
+                         actionButton("reset_fuel_apportionment_sheet_tbl", "Reset Advanced 7", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -3323,6 +3382,7 @@ server <- function(input, output, session) {
       escape = FALSE,
       #editable = list(target = c(2,3)),
       options = list(
+        paging = FALSE,
         pageLength =12,
         columnDefs = list(
           list(className = 'dt-center', targets = c(3, 4)),
@@ -4383,14 +4443,15 @@ server <- function(input, output, session) {
 
 
     output$strategy_summary_tbl <- DT::renderDataTable({
-      
-      req(reactive_scenario())
+
+      scen_filter <- reactive_scenario()
+      req( scenario_sum())
       
       if (input$strategy_scen_select == 'scen_1' ){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
+        scen_select <-   scen_filter %>% select(-'Scenario2') %>%
           rename(scen = Scenario1)
       } else if (input$strategy_scen_select == 'scen_2'){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
+        scen_select <-   scen_filter %>% select(-'Scenario1') %>% 
           rename(scen = Scenario2)
       }
       
@@ -4432,13 +4493,13 @@ server <- function(input, output, session) {
 
     output$strategy_summary_graph <- renderPlotly({
       
-      req(reactive_scenario())
-      
+      scen_filter <-  reactive_scenario()
+      req( scenario_sum())
       if (input$strategy_scen_select == 'scen_1' ){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
+        scen_select <-   scen_filter %>% select(-'Scenario2') %>%
           rename(scen = Scenario1)
       } else if (input$strategy_scen_select == 'scen_2'){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
+        scen_select <-   scen_filter %>% select(-'Scenario1') %>% 
           rename(scen = Scenario2)
       }
       
@@ -4504,43 +4565,8 @@ server <- function(input, output, session) {
          input$grid_emissions_input)
   })
  
-  # output$pdf_report <- downloadHandler(
-  #   filename = function(){
-  #     paste("Summary Report",
-  #           Sys.Date(),
-  #           ".pdf",
-  #           sep="")},
-  #   content = function(file){
-  #       #data <- # placeholder now 
-  #       #mutate(center = unlist(center))
-  #       browser()
-  #       output_file <- file.path(getwd(),  glue::glue("{fn}.pdf"))
-  #       unloadNamespace("kableExtra")
-  #       rmarkdown::render(
-  #         input = file.path(getwd(),"Report_Template.qmd"),
-  #         output_file = output_file,
-  #         params = list(
-  #           state <- input$state_input,
-  #           bsae_year <- input$base_year,
-  #           horizon_year_1 <- input$horizon_year_1,
-  #           horizon_year_2<- input$horizon_year_2,
-  #           horizon_year_3 <- input$horizon_year_3,
-  #           trans_scope <- input$transportation_scope,
-  #           em_scope<- input$scope_emissions,
-  #           fuel_scope <-input$scope_fuels,
-  #           vmt <- input$vmt_forecast_input,
-  #           vmt_nhs <- input$vmt_nhs,
-  #           ev<- input$ev_baseline_input,
-  #           grid_em<- input$grid_emissions_input
-  #         )
-  #       )
-  #       file.copy(glue::glue("{fn}.pdf"), file)
-  #       browser()
-  #       
-  #     
-  #   }
-  # )
-
+## download PDF report
+    
   output$pdf_report <- downloadHandler(
 
     filename = function(){
@@ -4580,7 +4606,10 @@ server <- function(input, output, session) {
                                        table_title == "PM2.5 Reduction (MT)" ~ 'PM2.5',
                                        table_title == "New Daily Active Trips" ~ 'New Daily Active Trips')) %>%
         rename(indicator = table_title) %>%
-        pivot_longer(cols = c(`2021`, `2025`, `2030`, `2050`), 
+        pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
+                                           rvs$Baseline$horizon_year_1,
+                                           rvs$Baseline$horizon_year_2,
+                                           rvs$Baseline$horizon_year_3)), 
                      names_to = "Year",
                      values_to = "mt_reduction") %>%
         mutate(mt_reduction = ifelse(mt_reduction == "-","0",mt_reduction)) %>%

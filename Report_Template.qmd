@@ -2,9 +2,11 @@
 title: "Transportation Evaluation and Carbon Reduction Report"
 date: "Date Report Created: `r Sys.Date()`"
 format: pdf
+output: pdf_document
 pdf-engine: xelatex
 mainfont: "Arial"
 fontsize: 11pt
+classoption: openany
 editor: visual
 params:
  state: NULL
@@ -144,7 +146,7 @@ print(tagList(
 #| message: false
 #| 
 # load dummy data
-path2 <- paste0(getwd(),'/data/dummy_output.xlsx')
+# path2 <- paste0(getwd(),'/data/dummy_output.xlsx')
 #path2 <- 'C:/Users/qsi/OneDrive - Cambridge Systematics/Desktop/TEA-CART/dummy_output.xlsx'
 
 #dummydata<- multiplesheets(path2)
@@ -174,15 +176,23 @@ for ( var in fig_list){
   data_temp <- GHG_forecast %>%
     filter(`Emissions` == var)
   
-  print(ggplot(data_temp,
-               aes( y = Emission,
-                   x = year,
-                   group=1))+
-    geom_line(color = '#E69F00',size =1) + geom_point(color = '#E69F00',size =3) + 
-      ylab("Emissions (MT CO2e) ") +
-      scale_y_continuous(labels = label_comma()) +
-      xlab(NULL) +
-      ggtitle(title))
+  ghg_fore <- ggplot(data_temp,
+               aes(y = Emission, x = year, group = 1)) +
+    geom_line(color = '#E69F00', size = 1) + 
+    geom_point(color = '#E69F00', size = 3) + 
+    ylab("Emissions (MT CO2e) ") +
+    scale_y_continuous(labels = label_comma()) +
+    xlab(NULL) +
+    ggtitle(title)
+
+  print(ghg_fore + theme(
+    axis.title.x = element_text(size = 11),
+    axis.title.y = element_text(size = 11),
+    axis.text.x = element_text(size = 11),
+    axis.text.y = element_text(size = 11),
+    plot.title = element_text(size = 12)
+  ))
+    
   
   print(tagList(cat("  \n\n  ")))
       print(tagList(cat("  \\newpage  ")))
@@ -222,27 +232,24 @@ for ( var in year_list){
            labelPosition = (ymax + ymin)/ 2,
            `Emission Source` = paste0(`Emissions` ," (",round(fraction *100,digits = 1), " %",")"))
   
-  print(ggplot(data_temp,
-               aes(ymax=ymax,
-                   ymin=ymin,
-                   xmax=4,
-                   xmin=3,
-                   fill= `Emission Source`))+
-          geom_rect() + 
-          scale_fill_brewer(palette = 'RdYlBu') +
-          # geom_text( x=3.5,
-          #             aes(y=labelPosition,
-          #                 label=label),
-          #             size=5,
-          #             check_overlap = TRUE,
-          #             )+
-          coord_polar(theta="y") +
-          xlim(c(2, 4))+
-          ggtitle(paste0('Transportation Emission: ',var))+
-          theme_void() + 
-           theme(legend.text.align = 0)
-
-        )
+print(ggplot(data_temp,
+             aes(ymax = ymax,
+                 ymin = ymin,
+                 xmax = 4,
+                 xmin = 3,
+                 fill = `Emission Source`)) +
+  geom_rect() +
+  scale_fill_brewer(palette = 'RdYlBu') +
+  coord_polar(theta = "y") +
+  xlim(c(2, 4)) +
+  ggtitle(paste0('Transportation Emission: ', var)) +
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 12),
+    legend.text.align = 0
+  )
+)
+    
 print(tagList(cat("  \n\n  ")))
       print(tagList(cat("  \\newpage  ")))
       print(tagList(cat("  \n\n  ")))
@@ -251,7 +258,6 @@ print(tagList(cat("  \n\n  ")))
 
 ```
 
-`r pagebreak()`
 
 ### 3.2 Scenario Summary
 
@@ -279,7 +285,7 @@ data_temp <- scenarioresults %>%
   mutate(Year = as.factor(Year))
 
 
-  print(ggplot(data_temp,
+  scen <- ggplot(data_temp,
                aes(fill = Scenario,
                    y = mt_reduction,
                    x = Year))+
@@ -287,17 +293,24 @@ data_temp <- scenarioresults %>%
        scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) + 
       ylab(paste0(i," Change")) +
       ggtitle(paste0("Change in ", i)) + 
-            theme_classic()) +
+            theme_classic() +
           xlab(NULL)
+  
+   print(scen + theme(
+    axis.title.x = element_text(size = 11),
+    axis.title.y = element_text(size = 11),
+    axis.text.x = element_text(size = 11),
+    axis.text.y = element_text(size = 11),
+    plot.title = element_text(size = 12)
+  ))
 
-  print(tagList(cat("  \n\n  ")))
-      print(tagList(cat("  \\newpage  ")))
-      print(tagList(cat("  \n\n  ")))
+  # print(tagList(cat("  \n\n  ")))
+  #     print(tagList(cat("  \\newpage  ")))
+  #     print(tagList(cat("  \n\n  ")))
+
 }
 
 ```
-
-`r pagebreak()`
 
 ### 3.3 Cost Effectiveness
 
@@ -338,15 +351,15 @@ for (var in tab_list){
   rename_with(~str_remove(.,'Summary.')) %>%
  mutate(across(0:ncol(.),
                ~ cell_spec(.,
-                      background = ifelse(.x == 'Low',"#FDE72560",
-                           ifelse(.x == 'Medium',"#22A88460",
-                             ifelse(.x == 'High','#2A788E60',
-                                ifelse(.x == 'Very High','#44015460',
-                                    ifelse(grepl("Increase",.x),'#41448760',
-                                           ifelse(grepl("Decrease",.x),'#7AD15160',
+                      background = ifelse(.x == 'Low',"#FDE72550",
+                           ifelse(.x == 'Medium',"#22A88450",
+                             ifelse(.x == 'High','#2A788E50',
+                                ifelse(.x == 'Very High','#44015450',
+                                    ifelse(grepl("Increase",.x),'#41448750',
+                                           ifelse(grepl("Decrease",.x),'#7AD15150',
                                           "#FFFFFF"))))))))) %>%
     knitr::kable(booktabs = T, escape = F,linesep = "",align = "l", format = 'latex') %>%
-    column_spec(3:6,width = "1cm") %>%
+    column_spec(3:6,width = "1cm",bold = FALSE) %>%
    column_spec(2,width = "3cm") %>%
     column_spec(1,width = "1cm") %>%
       column_spec(7,width = "3cm") %>%
@@ -358,12 +371,12 @@ for (var in tab_list){
   rename_with(~str_remove(.,'Summary.')) %>%
  mutate(across(0:ncol(.),
                ~ cell_spec(.,
-                      background = ifelse(.x == 'Low',"#FDE72560",
-                           ifelse(.x == 'Medium',"#22A88460",
-                             ifelse(.x == 'High','#2A788E60',
-                                ifelse(.x == 'Very High','#44015460',
-                                    ifelse(grepl("Increase",.x),'#41448760',
-                                           ifelse(grepl("Decrease",.x),'#7AD15160',
+                      background = ifelse(.x == 'Low',"#FDE72550",
+                           ifelse(.x == 'Medium',"#22A88450",
+                             ifelse(.x == 'High','#2A788E50',
+                                ifelse(.x == 'Very High','#44015450',
+                                    ifelse(grepl("Increase",.x),'#41448750',
+                                           ifelse(grepl("Decrease",.x),'#7AD15150',
                                           "#FFFFFF"))))))))) %>%
     knitr::kable(booktabs = T, escape = F,linesep = "",align = "l", format = 'latex') %>%
     column_spec(0:ncol(df),width = "1.5cm") %>%
