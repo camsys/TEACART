@@ -17,6 +17,7 @@ library(tools)
 
 
 # load source files -------------------------------------------------------
+#SETH NOTE Should this be here?
 all_files <- c(
   list.files("functions", full.names = TRUE)
 #               ,list.files("processing_scripts", full.names = TRUE) # this breaks it at the moment
@@ -3381,6 +3382,7 @@ server <- function(input, output, session) {
       escape = FALSE,
       #editable = list(target = c(2,3)),
       options = list(
+        paging = FALSE,
         pageLength =12,
         columnDefs = list(
           list(className = 'dt-center', targets = c(3, 4)),
