@@ -4420,14 +4420,15 @@ server <- function(input, output, session) {
 
 
     output$strategy_summary_tbl <- DT::renderDataTable({
-      
-      req(reactive_scenario())
+
+      scen_filter <- reactive_scenario()
+      req( scenario_sum())
       
       if (input$strategy_scen_select == 'scen_1' ){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
+        scen_select <-   scen_filter %>% select(-'Scenario2') %>%
           rename(scen = Scenario1)
       } else if (input$strategy_scen_select == 'scen_2'){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
+        scen_select <-   scen_filter %>% select(-'Scenario1') %>% 
           rename(scen = Scenario2)
       }
       
@@ -4469,13 +4470,13 @@ server <- function(input, output, session) {
 
     output$strategy_summary_graph <- renderPlotly({
       
-      req(reactive_scenario())
-      
+      scen_filter <-  reactive_scenario()
+      req( scenario_sum())
       if (input$strategy_scen_select == 'scen_1' ){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
+        scen_select <-   scen_filter %>% select(-'Scenario2') %>%
           rename(scen = Scenario1)
       } else if (input$strategy_scen_select == 'scen_2'){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
+        scen_select <-   scen_filter %>% select(-'Scenario1') %>% 
           rename(scen = Scenario2)
       }
       

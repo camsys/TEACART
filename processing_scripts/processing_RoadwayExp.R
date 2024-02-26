@@ -37,7 +37,10 @@ temp_em_df_sub <- e_emmissions_apportionment() %>% ungroup()
 #user inputs
 project_df_input <- make_project_table_cumulative(rvs$Projects,
                                                   table_no = 14,
-                                                  cols = c('area_type','road_class'))
+                                                  cols = c('area_type','road_class')) %>%
+  mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
+                          year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
+                          year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) 
 
 #hardcode inputs - I wonder if these should be part of the assumptions? or Capital Inputs?
 car_gallons_hour_delay = 0.4 # this is a hardcoded unmutable (hu) input
@@ -114,14 +117,14 @@ temp_output <- temp_output %>% left_join(existing_lanes_df) %>%
 temp_output_fin<-temp_output%>%
   group_by(year) %>% 
   summarise(
-    total_change_MTCO2 = sum(total_change_MTCO2),
-    total_change_VMT = sum(total_change_VMT),
+    total_change_MTCO2 = sum(total_change_MTCO2,na.rm = TRUE),
+    total_change_VMT = sum(total_change_VMT,na.rm = TRUE),
     total_chage_newtrips =0,
-    total_change_electricity = sum(total_change_electricity),
-    total_change_direct = sum(total_change_direct),
+    total_change_electricity = sum(total_change_electricity,na.rm = TRUE),
+    total_change_direct = sum(total_change_direct,na.rm = TRUE),
     total_change_upstream = 0,
-    total_change_mtnox = sum(total_change_mtnox),
-    total_change_pm25 = sum(total_change_pm25)
+    total_change_mtnox = sum(total_change_mtnox,na.rm = TRUE),
+    total_change_pm25 = sum(total_change_pm25,na.rm = TRUE)
     ) 
 
 return(temp_output_fin)
