@@ -4359,16 +4359,21 @@ server <- function(input, output, session) {
                                          rvs$Baseline$horizon_year_2,
                                          rvs$Baseline$horizon_year_3)), 
                    names_to = "year", values_to = "value") %>%
-      filter(year != rvs$Baseline$base_year)
-    
+      filter(year != rvs$Baseline$base_year)  %>%
+      mutate(value = as.numeric(value)) %>%
+      mutate(visible = ifelse(Scenario == "Baseline","legendonly","visible"))
+    #max <- max(results$value)
+    #min <- min(results$value)
     
     lplot<-results %>%
       plotly::plot_ly(x = ~ year,
                       y = ~ value,
                       color = ~Scenario,
                       type = 'scatter',
-                      mode = 'lines') %>%
+                      mode = 'lines',
+                      visible = ~visible) %>%
       layout(yaxis = list(title = table_filt, separatethousands= TRUE),
+             xaxis = list(title = "Year"),
              barmode = "group") %>%
       config(displayModeBar = FALSE) 
     
@@ -4388,7 +4393,8 @@ server <- function(input, output, session) {
                             rvs$Baseline$horizon_year_2,
                             rvs$Baseline$horizon_year_3)), 
                    names_to = "year", values_to = "value") %>%
-      filter(year != rvs$Baseline$base_year)
+      filter(year != rvs$Baseline$base_year) %>%
+      mutate(value = as.numeric(value))
   
       
     results %>%
@@ -4397,6 +4403,7 @@ server <- function(input, output, session) {
                       color = ~Scenario,
                       type = 'bar') %>%
       layout(yaxis = list(title = table_filt, separatethousands= TRUE),
+             xaxis = list(title = "Year"),
              barmode = "group") %>%
       config(displayModeBar = FALSE) 
     
