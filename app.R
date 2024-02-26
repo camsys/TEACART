@@ -3512,7 +3512,6 @@ server <- function(input, output, session) {
       select(mode_service, unit, value) %>% 
       rename(any_of(references_vector)) %>% 
       datatable(callback = callback_pass_rail, rownames = F, selection = "none", editable = list(target = 'all', disable = list(columns = c(0,1))))
-      
       ### OLD
       # render_custom_datatable(
       # data_reactive = rvs$Advanced,
@@ -3557,7 +3556,8 @@ server <- function(input, output, session) {
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = integer(0),
-      decimal_rows = integer(0))
+      decimal_rows = integer(0)) %>%
+    DT::formatRound("Value", digits = 3)
   })
 
   output$construction_sheet_tbl <- renderDT({
