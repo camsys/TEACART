@@ -1365,12 +1365,31 @@ nav_panel(title = "Assumptions",
                   DT::dataTableOutput("onroad_fuel_tech_frac_sheet_tbl")
                 ),
                 
-                # passenger rail
+                # passenger rail - Average Trip Length
                 fluidRow(
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Advanced 4 | Passenger Rail",
+                             "Advanced 4 | Passenger Rail (Average Trip Length)",
+                             HTML("This reprents the average trip length in miles of intercity passenger rail in the study area."),
+                           ),
+                           open = FALSE
+                         ),
+                  ),
+                  column(2,
+                         actionButton("reset_pass_rail_trip_len_sheet_tbl", "Reset Advanced 4", class = "btn-custom")
+                  ),
+                ),
+                fluidRow(
+                  DT::dataTableOutput("pass_rail_trip_len_sheet_tbl")
+                ),
+                
+                # passenger rail - energy Source
+                fluidRow(
+                  column(10,
+                         accordion(
+                           accordion_panel(
+                             "Advanced 5 | Passenger Rail (Energy Source)",
                              HTML("This represents the type of assumed fuel technologies used by passenger rail systems."),
 
                            ),
@@ -1378,7 +1397,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_pass_rail_sheet_tbl", "Reset Advanced 4", class = "btn-custom")
+                         actionButton("reset_pass_rail_sheet_tbl", "Reset Advanced 5", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1390,7 +1409,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Advanced 5 | Freight Rail",
+                             "Advanced 6 | Freight Rail",
                              HTML("This represents the assumed annual growth rate of freight rail and the energy intensity as measured in British thermal units (BTU) per ton-mile."),
 
                            ),
@@ -1398,7 +1417,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_freight_rail_sheet_tbl", "Reset Advanced 5", class = "btn-custom")
+                         actionButton("reset_freight_rail_sheet_tbl", "Reset Advanced 6", class = "btn-custom")
                   ),
 
                 ),
@@ -1412,7 +1431,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Advanced 6 | Construction and Maintenance",
+                             "Advanced 7 | Construction and Maintenance",
                              HTML("This represents the estimated emissions from construction and maintenance activities."),
 
                            ),
@@ -1420,7 +1439,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_construction_sheet_tbl", "Reset Advanced 6", class = "btn-custom")
+                         actionButton("reset_construction_sheet_tbl", "Reset Advanced 7", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1433,7 +1452,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Advanced 7 | Fuel Apportionments",
+                             "Advanced 8 | Fuel Apportionments",
                              HTML("This represents the percentage of plug-in hybrid electric vehicle (PHEV) miles driven on electricity."),
 
                            ),
@@ -1441,7 +1460,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_fuel_apportionment_sheet_tbl", "Reset Advanced 7", class = "btn-custom")
+                         actionButton("reset_fuel_apportionment_sheet_tbl", "Reset Advanced 8", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -3567,13 +3586,36 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
+  
+  output$pass_rail_trip_len_sheet_tbl <- renderDT({
+    
+    render_custom_datatable(
+      data_reactive = rvs$Advanced,
+      table_number = 8,
+      is_year_table = FALSE,
+      is_advanced_table = TRUE,
+      non_editable_cols = c(0,1),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0)) %>%
+      DT::formatRound("Value", digits = 3)
+  })
  
   output$pass_rail_sheet_tbl <- renderDT({
     
-    
-    
     callback_pass_rail <- JS(
-      "function onUpdate(updatedCell, updatedRow, oldValue){}",
+      "var tbl = $(table.table().node());",
+      "var id = tbl.closest('.datatables').attr('id');",
+      "function onUpdate(oldValue) {",
+      "  var cellinfo = [{",
+      # "    row: updatedCell.index().row + 1,", # had to delete, not sure what it does
+      # "    col: updatedCell.index().column + 1,", # had to delete, not sure what it does
+      "    value: updatedCell.data()",
+      "  }];",
+      "  Shiny.setInputValue(id + '_cell_edit:DT.cellInfo', cellinfo);",
+      "}",
       "table.MakeCellsEditable({",
       "  onUpdate: onUpdate,",
       "  inputCss: 'my-input-class',",
@@ -3581,6 +3623,7 @@ server <- function(input, output, session) {
       "    confirmCss: 'my-confirm-class',",
       "    cancelCss: 'my-cancel-class'",
       "  },",
+      "  columns: [2],",
       "  inputTypes: [",
       "    {",
       "      column: 2,",
@@ -3593,20 +3636,23 @@ server <- function(input, output, session) {
       "  ]",
       "});")
     
-    path <- "C:/Users/gvendemiatti/Documents/TEACART/TEACART/www" # folder containing the files dataTables.cellEdit.js
+    path <- path.expand("www")
     
     # and dataTables.cellEdit.css
     dep <- htmltools::htmlDependency(
       "CellEdit", "1.0.19", path, 
-      script = "dataTables.cellEdit.js", stylesheet = "dataTables.cellEdit.css")
+      script = "dataTables.cellEdit.js", stylesheet = "dataTables.cellEdit.css", all_files = F)
     
-    dtable <- 
+    dtable <-
       rvs$Advanced %>%
       filter(table_no_ui == 4) %>% 
-      select(mode_service, unit, value) %>% 
-      rename(any_of(references_vector)) %>% 
-      datatable(callback = callback_pass_rail, rownames = F)
-      
+      select(mode_service, unit, value) %>%
+      left_join(references, by = c("unit" = "field")) %>%
+      mutate(unit = description) %>%
+      select(-description) %>%
+      rename(any_of(references_vector)) %>%
+      datatable(callback = callback_pass_rail, rownames = F, selection = "none")
+    
       ### OLD
       # render_custom_datatable(
       # data_reactive = rvs$Advanced,
@@ -3619,26 +3665,9 @@ server <- function(input, output, session) {
       # currency_rows = integer(0),
       # decimal_rows = integer(0))
     
-    ### WORKS WITH A SIMPLE EXAMPLE BELOW
-    # dat_pass_rail <- data.frame(
-    #   Action = c("Keep data", "Keep data", "Keep data"),
-    #   X = c(1, 2, 3),
-    #   Y = c("a", "b", "c")
-    # )
-    # 
-    # ## the datatable
-    # dtable <- datatable(
-    #   dat_pass_rail, callback = callback_pass_rail, rownames = FALSE, 
-    #   options = list(
-    #     columnDefs = list(
-    #       list(targets = "_all", className = "dt-center")
-    #     )
-    #   )
-    # )
-
     dtable$dependencies <- c(dtable$dependencies, list(dep))
     return(dtable)
-  })
+  }, server = F)
  
   output$freight_rail_sheet_tbl <- renderDT({
   
@@ -3651,7 +3680,8 @@ server <- function(input, output, session) {
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = integer(0),
-      decimal_rows = integer(0))
+      decimal_rows = integer(0)) %>%
+    DT::formatRound("Value", digits = 3)
   })
 
   output$construction_sheet_tbl <- renderDT({
@@ -3726,6 +3756,16 @@ server <- function(input, output, session) {
                                                                        col_list = c('transit_mode','fuel_type'))
   })
   
+  #reshaping pass_rail_trip_len_sheet_tbl
+  observeEvent(input$pass_rail_trip_len_sheet_tbl_cell_edit, {
+    req(rvs$Advanced)
+    
+    rvs$Advanced[rvs$Advanced$table_no_ui == 8,] <- reshaping_advanced(input$pass_rail_trip_len_sheet_tbl_cell_edit,
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 8,
+                                                                       col_list = c('mode_service','unit'))
+  })
+  
   #reshaping pass_rail_sheet_tbl
   observeEvent(input$pass_rail_sheet_tbl_cell_edit, {
     req(rvs$Advanced)
@@ -3756,7 +3796,7 @@ server <- function(input, output, session) {
                                                                        col_list = c('unit'))
   })
 
-  #reshaping pass_rail_sheet_tbl
+  #reshaping fuel_apportionment_sheet_tbl
   observeEvent(input$fuel_apportionment_sheet_tbl_cell_edit, {
     req(rvs$Advanced)
     
@@ -3776,7 +3816,7 @@ server <- function(input, output, session) {
     rvs$Advanced[rvs$Advanced$table_no_ui == 2,] <- initial_advanced[initial_advanced$table_no_ui == 2, ]
   })  
   
-  observeEvent(input$onroad_fuel_tech_frac_sheet, {
+  observeEvent(input$reset_onroad_fuel_tech_frac_sheet_tbl, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 3,] <- initial_advanced[initial_advanced$table_no_ui == 3, ]
   })  
   
@@ -3794,7 +3834,11 @@ server <- function(input, output, session) {
   
   observeEvent(input$reset_fuel_apportionment_sheet_tbl, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 7,] <- initial_advanced[initial_advanced$table_no_ui == 7, ]
-  })  
+  })
+  
+  observeEvent(input$reset_pass_rail_trip_len_sheet_tbl, {
+    rvs$Advanced[rvs$Advanced$table_no_ui == 8,] <- initial_advanced[initial_advanced$table_no_ui == 8, ]
+  })
   
   # Outputs Tab --------------------------------------------------------
   
