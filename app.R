@@ -95,6 +95,7 @@ ui <- function(request) {
                   href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
       ),
       title = "TEA-CART",
+      id = "APP_PAGE",
       sidebar = sidebar(fileInput("user_inputs_upload",
                                   "Upload User Inputs",
                                   accept = c(".xlsx")),
@@ -148,6 +149,7 @@ ui <- function(request) {
       
       nav_panel(title = "Inputs",
                 navset_card_pill(
+                  id = "INPUTS_TABS",
 
 # baseline inputs ---------------------------------------------------------                  
                   nav_panel(title = "Baseline",
@@ -1753,6 +1755,96 @@ server <- function(input, output, session) {
          input$grid_emissions_input)
   })
   
+  #page error checker ----------------------------------------------------------
+  
+  #these define which tab/page the users was on
+  which_input_tab <- reactiveValues(curr_input_tab = "",
+                                    prev_input_tab = "")
+  
+  observeEvent(input$INPUTS_TABS, {
+    req(input$INPUTS_TABS)
+
+    which_input_tab$prev_input_tab <- which_input_tab$curr_input_tab
+    which_input_tab$curr_input_tab <- input$INPUTS_TABS
+    
+  })
+
+  which_page <- reactiveValues(curr_page = "",
+                               prev_page = "")
+  
+  observeEvent(input$APP_PAGE, {
+    req(input$APP_PAGE)
+    
+    which_page$prev_page <- which_page$curr_page
+    which_page$curr_page <- input$APP_PAGE
+    
+  })
+  
+  #here's where the notification is sent to the user
+  observeEvent(input$INPUTS_TABS,{
+
+    req(input$horizon_year_1)
+    
+    if(which_input_tab$prev_input_tab == "Baseline"){
+      warning = c()
+      
+      if(input$base_year >= input$horizon_year_1){
+        warning = c(warning, "Base Year is higher than Horizon Year 1")
+        }
+      
+      if(input$base_year >= input$horizon_year_2){
+        warning = c(warning,"Base Year is higher than Horizon Year 2")
+        }
+      
+      if(input$base_year >= input$horizon_year_3){
+        warning = c(warning,"Base Year is higher than Horizon Year 3")
+        }
+      if(input$horizon_year_1 >= input$horizon_year_2){
+        warning = c(warning,"Horizon Year 1 is higher than Horizon Year 2")
+        }
+      
+      if(input$horizon_year_1 >= input$horizon_year_3){
+        warning = c(warning,"Horizon Year 1 is higher than Horizon Year 3")
+        }
+      
+      if(input$horizon_year_2 >= input$horizon_year_3){
+        warning = c(warning,"Horizon Year 2 is higher than Horizon Year 3")
+        }
+      
+      if(length(warning) != 0){
+        showNotification(HTML(paste0(warning, sep = '<br/>')), type = "warning")
+      }
+      
+    }
+    
+  })
+  
+  observeEvent(input$APP_PAGE, {
+    #browser()
+    
+    if(which_page$curr_page == "Outputs"){
+      if(is.null(rvs$Scenarios)){
+        
+        warning = HTML("You have not selected any Scenarios. <br/> 
+                    Output tabs will show no results without a scenario <br/>
+                    selection. Navigate to Inputs > Scenarios to make your selection")
+        
+        showNotification(HTML(warning, type = "error"))
+        
+      } else if(sum(rvs$Scenarios$Scenario1)+sum(rvs$Scenarios$Scenario2) == 0){
+        
+        warning = HTML("You have not selected any Scenarios. <br/> 
+                    Output tabs will show no results without a scenario <br/>
+                    selection. Navigate to Inputs > Scenarios to make your selection")
+        
+        showNotification(HTML(warning, type = "error"))
+      }
+    }
+  
+    
+    })
+
+  
   observeEvent(key_inputs_listen(),{
     print("RUNNING: Update rvs$Baseline key inputs")
     
@@ -1769,7 +1861,7 @@ server <- function(input, output, session) {
                                veh_elec_baseline = input$ev_baseline_input,
                                elec_grid_emissions_net_zero = input$grid_emissions_input
     )
-    
+    #rvs$Advanced$table_no == 5 <- growth rate 
     updateSelectInput(inputId = "pie_graph_year", label = "", choices = c(input$base_year, input$horizon_year_1, input$horizon_year_2, input$horizon_year_3))
   })
   
@@ -3549,7 +3641,7 @@ server <- function(input, output, session) {
   })
  
   output$freight_rail_sheet_tbl <- renderDT({
-    
+  
     render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 5,
