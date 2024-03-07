@@ -328,6 +328,7 @@ ui <- function(request) {
                    title = "Cumulative View",
                    placement = "bottom",
                    options = list(container = "body"),
+                   h6(em("Use the 2025 field to match records to this table.")),
                    DTOutput(outputId = "cumul_bikeped_projs_tbl")
                    ))
                                        ),
@@ -360,6 +361,7 @@ ui <- function(request) {
                     title = "Cumulative View",
                     placement = "bottom",
                     options = list(container = "body"),
+                    h6(em("Use the 2025 field to match records to this table.")),
                     DTOutput(outputId = "cumul_transit_fixed_projs_tbl")
             ))
           ),
@@ -390,6 +392,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_transit_dr_projs_tbl")
                    ))
                  ),
@@ -418,6 +421,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_transit_el_projs_tbl")
                    ))
                  ),
@@ -448,6 +452,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_transit_bus_projs_tbl")
                    ))
                  ),
@@ -475,6 +480,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_public_rail_projs_tbl")
                    ))
                  ),
@@ -505,6 +511,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_tdm_projs_tbl")
                    ))
                  ),
@@ -533,6 +540,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_micro_projs_tbl")
                    ))
                  ),
@@ -561,6 +569,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_traffic_ops_projs_tbl")
                    ))
                  ),
@@ -589,6 +598,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_mhdev_projs_tbl")
                    ))
                  ),
@@ -618,6 +628,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_pnr_projs_tbl")
                    ))
                  ),
@@ -646,6 +657,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_evsi_projs_tbl")
                    ))
                  ),
@@ -673,6 +685,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_freight_projs_tbl")
                    ))
                  ),
@@ -701,6 +714,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_expansion_projs_tbl")
                    ))
                  ),
@@ -728,6 +742,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_custom_projs_tbl")
                    ))
                  ),
