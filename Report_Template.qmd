@@ -1,6 +1,6 @@
 ---
-title: "Transportation Evaluation and Carbon Reduction Report"
-date: "Date Report Created: `r Sys.Date()`"
+title: 'Transportation Evaluation and Carbon Reduction Report'
+date: "Report Created: `r Sys.Date()`"
 format: pdf
 output: pdf_document
 pdf-engine: xelatex
@@ -24,19 +24,9 @@ params:
  ghg_data: NULL
  scen_data: NULL
  cost_data: NULL
+document:
+  top-margin: "0.5in"
 ---
-
-## 1.Introduction
-
-The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a comprehensive and dynamic tool aimed at assisting states with selecting and prioritizing transportation capital program investments to effectively support greenhouse gas (GHG) reduction. The tool is designed to accept inputs typically available during the programming process. It provides key outputs including:
-
--A baseline inventory and forecast of GHG emissions.
-
--GHG impacts of a capital program or a hypothetical set of capital projects.
-
--Information on cost-effectiveness of various project types.
-
-TEA-CART is a planning-level tool. It is designed to accept relatively simple inputs, typically available at the long-range planning or programming stage, characterizing the number, size, context, and type of transportation projects that could reduce GHG emissions. As such, TEA-CART relies on data that is typical for projects of a given type. In practice, individual projects may results in a wide range of GHG effects. For more detailed, project-specific evaluation, users may want to refer to project-specific tools such as the Federal Highway Administration Congestion Mitigation and Air Quality Program (CMAQ) Emissions Calculator Toolkit.
 
 ```{r,fig.showtext=TRUE}
 #| echo: false
@@ -74,23 +64,24 @@ pagebreak <- function() {
   else {
         return('<div style="page-break-before: always;" />')
   }
-}
-
-# end of functions
-
-# set up dummy data for now
-path = paste0(getwd(),'/data/costs_outputs.xlsx')
-#path = 'C:/Users/qsi/OneDrive - Cambridge Systematics/Desktop/TEA-CART/costs_outputs.xlsx'
-
- #dummydata<- multiplesheets(path)
-
+} # end of functions
 ```
 
-`r pagebreak()`
+This report was automatically generated using the TEA-CART tool.
 
-## 2.Baseline Inputs
+## 1.Introduction
 
-This report was created using the following metrics:
+The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a comprehensive and dynamic tool aimed at assisting states with selecting and prioritizing transportation capital program investments to effectively support greenhouse gas (GHG) reduction. The tool is designed to accept inputs typically available during the programming process. It provides key outputs including:
+
+-   A baseline inventory and forecast of GHG emissions.
+
+-   GHG impacts of a capital program or a hypothetical set of capital projects.
+
+-   Information on cost-effectiveness of various project types.
+
+TEA-CART is a planning-level tool. It is designed to accept relatively simple inputs, typically available at the long-range planning or programming stage, characterizing the number, size, context, and type of transportation projects that could reduce GHG emissions. As such, TEA-CART relies on data that is typical for projects of a given type. In practice, individual projects may results in a wide range of GHG effects. For more detailed, project-specific evaluation, users may want to refer to project-specific tools such as the Federal Highway Administration Congestion Mitigation and Air Quality Program (CMAQ) Emissions Calculator Toolkit.
+
+This report was generated using the following baseline inputs:\
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
@@ -134,11 +125,11 @@ print(tagList(
 
 `r pagebreak()`
 
-## 3.Baseline Output
+## 2.Baseline Output
 
-### 3.1 Baseline GHG Forecast
+### 2.1 Baseline GHG Forecast
 
-#### 3.1.1 Transportation GHG Forecast
+#### 2.1.1 Transportation GHG Forecast
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
@@ -203,7 +194,7 @@ for ( var in fig_list){
 
 `r pagebreak()`
 
-#### 3.1.2 Transportation Emissions by Source and Year
+#### 2.1.2 Transportation Emissions by Source and Year
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
@@ -258,8 +249,7 @@ print(tagList(cat("  \n\n  ")))
 
 ```
 
-
-### 3.2 Scenario Summary
+### 2.2 Scenario Summary
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
@@ -275,15 +265,19 @@ print(tagList(cat("  \n\n  ")))
 # scenarioresults <- readxl::read_excel(path3)
 scenarioresults <- params$scen_data
 
+scenarioresults$indicator = gsub("CO2", "CO₂",scenarioresults$indicator )
+
 indicators <- unique(scenarioresults$indicator)
+  
+  
 
 for (i in indicators){
 data_temp <- scenarioresults %>%
   filter(indicator == i, !is.na(mt_reduction)) %>%
   as.data.frame() %>%
   na.omit() %>%
-  mutate(Year = as.factor(Year))
-
+  mutate(Year = as.factor(Year)) %>%
+  mutate(Scenario = ifelse(Scenario == 'Scenario1', 'Scenario 1', 'Scenario 2'))
 
   scen <- ggplot(data_temp,
                aes(fill = Scenario,
@@ -312,14 +306,16 @@ data_temp <- scenarioresults %>%
 
 ```
 
-### 3.3 Cost Effectiveness
+### 2.3 Cost Effectiveness
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
 #| warning: false
 #| message: false
 
-cost_tbl <- params$cost_data
+
+cost_tbl <- params$cost_data 
+
 # not sure why for -loop doesn't work when knit. 
 tab_list <- c('bikeped',"transit_fixed",'transit_dr',"pub_trans_bus","transit_zeb", "pub_trans_rail","tdm","micro","traffic_ops","mhdev", "pnr","evsi","roadway","intermodal"
               
@@ -340,9 +336,23 @@ title_list <- c('Bicycle and Pedestrian',
                 'Freight - Intermodal Investment'
                 )
 
+string_to_remove <- c('CO2','Daily Trips','NOx','PM25','VMT' )
+
 num = 1
 for (var in tab_list){
-    df <- get(var,cost_tbl)
+    df <- get(var,cost_tbl) %>% 
+        mutate_all(~ str_replace_all(., paste(string_to_remove, collapse = "|"), ""))
+ 
+if (ncol(df) == 5){
+    width <- "2.8cm"}
+    else if (ncol(df) == 7) {
+    width <- "2cm"
+} else if (ncol(df) == 8){
+    width <- "1.75cm"
+} else if (ncol(df) == 6){
+    width <- "2.33333cm"
+} 
+
  print(tagList(
       cat("###", title_list[num], "\n\n")))
  if(var == 'bikeped'){
@@ -359,10 +369,9 @@ for (var in tab_list){
                                            ifelse(grepl("Decrease",.x),'#7AD15150',
                                           "#FFFFFF"))))))))) %>%
     knitr::kable(booktabs = T, escape = F,linesep = "",align = "l", format = 'latex') %>%
-    column_spec(3:6,width = "1cm",bold = FALSE) %>%
-   column_spec(2,width = "3cm") %>%
+   column_spec(0:ncol(df),width = width) %>%
     column_spec(1,width = "1cm") %>%
-      column_spec(7,width = "3cm") %>%
+      column_spec(2,width = "3cm") %>%
    kableExtra::kable_styling(full_width = F,
                              position = "l"))}
  else{
@@ -379,10 +388,10 @@ for (var in tab_list){
                                            ifelse(grepl("Decrease",.x),'#7AD15150',
                                           "#FFFFFF"))))))))) %>%
     knitr::kable(booktabs = T, escape = F,linesep = "",align = "l", format = 'latex') %>%
-    column_spec(0:ncol(df),width = "1.5cm") %>%
+   column_spec(0:ncol(df),width = width) %>%
    kableExtra::kable_styling(full_width = F,
                              position = "l"))
- }
+  }
 cat("\n\n\\pagebreak\n")
 writeLines("")
 

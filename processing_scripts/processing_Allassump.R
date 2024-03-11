@@ -68,7 +68,7 @@ all_costs <- reactive({
    #val1_scalar = ,
    #val2_scalar = ,
    style = 'summary'
- )
+ ) 
  
  transit_fixed <- cost_function(
    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
