@@ -328,6 +328,7 @@ ui <- function(request) {
                    title = "Cumulative View",
                    placement = "bottom",
                    options = list(container = "body"),
+                   h6(em("Use the 2025 field to match records to this table.")),
                    DTOutput(outputId = "cumul_bikeped_projs_tbl")
                    ))
                                        ),
@@ -360,6 +361,7 @@ ui <- function(request) {
                     title = "Cumulative View",
                     placement = "bottom",
                     options = list(container = "body"),
+                    h6(em("Use the 2025 field to match records to this table.")),
                     DTOutput(outputId = "cumul_transit_fixed_projs_tbl")
             ))
           ),
@@ -390,6 +392,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_transit_dr_projs_tbl")
                    ))
                  ),
@@ -418,6 +421,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_transit_el_projs_tbl")
                    ))
                  ),
@@ -448,6 +452,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_transit_bus_projs_tbl")
                    ))
                  ),
@@ -475,6 +480,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_public_rail_projs_tbl")
                    ))
                  ),
@@ -505,6 +511,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_tdm_projs_tbl")
                    ))
                  ),
@@ -533,6 +540,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_micro_projs_tbl")
                    ))
                  ),
@@ -561,6 +569,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_traffic_ops_projs_tbl")
                    ))
                  ),
@@ -589,6 +598,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_mhdev_projs_tbl")
                    ))
                  ),
@@ -618,6 +628,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_pnr_projs_tbl")
                    ))
                  ),
@@ -646,6 +657,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_evsi_projs_tbl")
                    ))
                  ),
@@ -673,6 +685,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_freight_projs_tbl")
                    ))
                  ),
@@ -701,6 +714,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_expansion_projs_tbl")
                    ))
                  ),
@@ -728,6 +742,7 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
+                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_custom_projs_tbl")
                    ))
                  ),
@@ -3437,59 +3452,13 @@ server <- function(input, output, session) {
   
   selected_scenario <- reactiveValues(rows = NULL)
   
-  # output$scenario_tbl <- renderDT({
-  #   browser()
-  #   datatable(
-  #     dat,
-  #     escape = FALSE,
-  #     select = "none",
-  #     options = list(
-  #       columnDefs = list(list(targets = c(1, 2),
-  #                              orderable = FALSE,
-  #                              className = "dt-center")
-  #       ),
-  #       pageLength = 12,
-  #       initComplete = JS(
-  #         "function() {",
-  #         "  $('#col1').on('click', function(){",
-  #         "    var cboxes = $('[id^=col1-]');",
-  #         "    var checked = $('#col1').is(':checked');",
-  #         "    cboxes.each(function(i, cbox) {",
-  #         "      $(cbox).prop('checked', checked);",
-  #         "    });",
-  #         "  });",
-  #         "  $('#col2').on('click', function(){",
-  #         "    var cboxes = $('[id^=col2-]');",
-  #         "    var checked = $('#col2').is(':checked');",
-  #         "    cboxes.each(function(i, cbox) {",
-  #         "      $(cbox).prop('checked', checked);",
-  #         "    });",
-  #         "  });",
-  #         paste(
-  #           sapply(strategy_names, function(scenario) {
-  #             scenarioId <- gsub(" ", "", scenario)
-  #             sprintf(
-  #               "  $('#row%s').on('click', function(){\n    var cboxes = $('[id$=\\'-%s\\']');\n    var checked = $('#row%s').is(':checked');\n    cboxes.each(function(i, cbox) {\n      $(cbox).prop('checked', checked);\n    });\n  });",
-  #               scenarioId, scenarioId, scenarioId
-  #             )
-  #           }),
-  #           collapse = "\n"
-  #         ),
-  #         "}"
-  #       ),
-  #       preDrawCallback =
-  #         JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
-  #       drawCallback =
-  #         JS('function() { Shiny.bindAll(this.api().table().node()); } ')
-  #     )
-  #   )
-  # })
-  # 
   
   # Render the checkbox table
   output$scenario_tbl <- renderDT({
     datatable(
-      reactive_scenario(),
+      reactive_scenario() %>%
+        rename( `Scenario 1` = Scenario1,
+                `Scenario 2` = Scenario2),
       escape = FALSE,
       #editable = list(target = c(2,3)),
       options = list(
@@ -4746,8 +4715,8 @@ server <- function(input, output, session) {
         mutate(veh_supertype = "Total (All Transportation)")
       ghg_data <- rbind(dt, dt_onroad, dt_all, dt_growth) %>%
         rename("Emissions" = "veh_supertype")
-      
-      #get and modify the scen data: 
+
+            #get and modify the scen data: 
       scen_data <- scenario_summary_results() %>%
         filter(grepl("Reduction", table_title)|table_title == "New Daily Active Trips") %>%
         filter(!grepl("%",table_title)) %>%
@@ -4765,8 +4734,9 @@ server <- function(input, output, session) {
                      values_to = "mt_reduction") %>%
         mutate(mt_reduction = ifelse(mt_reduction == "-","0",mt_reduction)) %>%
         mutate(mt_reduction = as.numeric(mt_reduction)) %>%
-        mutate_if(is.numeric, ~round(., 1))
-      
+        mutate_if(is.numeric, ~round(., 1)) %>%
+        filter(Year != rvs$Baseline$base_year)
+
       
       replace_underscores <- function(df) {
         names(df) <- gsub("_", " ", names(df))
@@ -4792,14 +4762,19 @@ server <- function(input, output, session) {
         })
         return(updated_list)
       }
+      browser()
       
-      cost_data <- all_costs() %>%
-        lapply(., replace_underscores) %>%
-        lapply(., replace_na_with_string) %>%
-        lapply(., remove_year_column) %>%
-        make_column_names_proper(.)
-        
-      Sys.sleep(1)
+       cost_data <- all_costs() %>%
+         lapply(., replace_underscores) %>%
+         lapply(., replace_na_with_string) %>%
+         lapply(., remove_year_column) %>%
+         make_column_names_proper(.)
+       
+       browser()
+       colnames(cost_data$bikeped)[colnames(cost_data$bikeped) == "Cap Proj Type"] <- "Capital Project Type"
+       colnames(cost_data$traffic_ops)[colnames(cost_data$traffic_ops) == "Cap Proj Type"] <- "Capital Project Type"
+       
+       Sys.sleep(1)
 
       # Render the R Markdown file to PDF
       shiny::withProgress(
