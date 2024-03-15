@@ -223,9 +223,10 @@ Warming_Potential <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Warming_Pot
 
 Transit_Costs <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Transit_Costs")
 Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
-  expand(Transit_Costs, state_code, transit_mode) %>%
-  left_join(Transit_Costs, by = join_by(state_code, transit_mode)) %>%
-  replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0))
+  expand(Transit_Costs, state, transit_mode) %>% 
+  left_join(Transit_Costs %>% select(-state_code), by = c("state", "transit_mode")) %>% 
+  replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0)) %>% 
+  left_join(Transit_Costs %>% select(state, state_code) %>% filter(!duplicated(state)), by = c("state")) 
 
 # used to rename headers and units during table rendering
 references <- read_excel(".\\data\\2.User_Inputs.xlsx",

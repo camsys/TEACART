@@ -1855,8 +1855,8 @@ server <- function(input, output, session) {
         warning = HTML("You have not selected any Scenarios. <br/> 
                     Output tabs will show no results without a scenario <br/>
                     selection. Navigate to Inputs > Scenarios to make your selection")
-        
-        showNotification(HTML(warning, type = "error"))
+
+        showNotification(HTML(warning), type = "error")
       }
     }
   
