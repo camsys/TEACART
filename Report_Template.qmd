@@ -286,7 +286,7 @@ data_temp <- scenarioresults %>%
     geom_bar(position="dodge", stat="identity")+
        scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) + 
       ylab(paste0(i," Change")) +
-      ggtitle(paste0("Change in ", i)) + 
+      ggtitle(paste0("Reduction in ", i, " (From Baseline)")) + 
             theme_classic() +
           xlab(NULL)
   
