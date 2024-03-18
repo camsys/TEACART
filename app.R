@@ -14,6 +14,7 @@ library(shiny)
 library(shinyjs)
 library(tinytex)
 library(tools)
+library(shinyalert)
 
 
 # load source files -------------------------------------------------------
