@@ -159,23 +159,23 @@ output_EVSE <- reactive({
               light_vmt_affected = sum(unique(VMT_affected[veh_supertype == "Light Duty Vehicles"]), na.rm = T)) %>%
     mutate(total_change_MTCO2 = total_change_direct + total_change_electricity,
            total_change_mtnox = -(Fuel_Factors_by_supertype()[["Light Duty Vehicles"]]$NOx_g_per_veh_mi*light_vmt_affected + 
-                                 Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$NOx_g_per_veh_mi * truck_vmt_affected) / 1000000,
+                                    Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$NOx_g_per_veh_mi * truck_vmt_affected) / 1000000,
            total_change_pm25 = -(Fuel_Factors_by_supertype()[["Light Duty Vehicles"]]$PM25_tires_brakes_per_veh_mi*light_vmt_affected +
-                                  Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$PM25_exhaust_per_veh_mi * truck_vmt_affected) / 1000000)
+                                   Fuel_Factors_by_supertype()[["Medium/Heavy Duty Vehicles"]]$PM25_exhaust_per_veh_mi * truck_vmt_affected) / 1000000)
 })
 
 cost_effectiveness_EVSE <- reactive({
   emrate_diff <-
-    emrate_evse() %>% filter(year == 2025) %>% 
+    emrate_evse() %>% filter(year == input$horizon_year_1) %>% 
     group_by(veh_supertype) %>% 
-    summarize(emrate_diff_2025 = sum(emrate_Electric, na.rm = T) - sum(emrate_Conventional, na.rm = T))
+    summarize(emrate_diff = sum(emrate_Electric, na.rm = T) - sum(emrate_Conventional, na.rm = T))
   
   elasticities_by_port_type() %>%
     mutate(veh_supertype = if_else(str_detect(charge_port_detail, "General public"), "Light Duty Vehicles", "Medium/Heavy Duty Vehicles")) %>%
-    left_join(select(filter(Stock_filtered(), year == 2025), veh_supertype, MT_per_vehtype), by = join_by(veh_supertype)) %>%
+    left_join(select(filter(Stock_filtered(), year == input$horizon_year_1), veh_supertype, MT_per_vehtype), by = join_by(veh_supertype)) %>%
     left_join(emrate_diff, by = join_by(veh_supertype)) %>%
     left_join(Fuel_Factors_Weighted() %>% filter(veh_subtype == "All") %>% select(-veh_subtype) %>% rename(veh_supertype = veh_type)) %>%
-    mutate(GHG = MT_per_vehtype*veh_sales_elasticity_wrt_ports*emrate_diff_2025,
+    mutate(GHG = MT_per_vehtype*veh_sales_elasticity_wrt_ports*emrate_diff,
            VMT = 0,
            NOX = MT_per_vehtype*veh_sales_elasticity_wrt_ports*NOx_g_per_veh_mi,
            PM25 = MT_per_vehtype*veh_sales_elasticity_wrt_ports*PM25_exhaust_per_veh_mi,
