@@ -128,15 +128,14 @@ output_MDHD <- reactive({
 
 # observeEvent(output_MDHD(), {
 cost_effectiveness_MDHD <- reactive({
-  # browser()
   emrates_mdhd <-
-    mdhd_emrates_all() %>% filter(year == 2025) %>%
+    mdhd_emrates_all() %>% filter(year == input$horizon_year_1) %>%  #input$horizon_year_1
     pivot_wider(names_from = fuel_type, values_from = emission_rate) %>%
     mutate(diff_Gasoline = EV - Gasoline,
            diff_Diesel = EV - Diesel) %>%
     select(veh_type, diff_Gasoline, diff_Diesel) %>%
-    pivot_longer(cols = starts_with("diff_"), names_prefix = "diff_", names_to = "veh_subtype", values_to = "emrate_diff_2025") %>%
-    drop_na(emrate_diff_2025)
+    pivot_longer(cols = starts_with("diff_"), names_prefix = "diff_", names_to = "veh_subtype", values_to = "emrate_diff") %>%
+    drop_na(emrate_diff)
   
   mdhd_fuel_factors <-
     Fuel_Factors_Weighted() %>%
@@ -148,7 +147,7 @@ cost_effectiveness_MDHD <- reactive({
   emrates_mdhd %>%
     left_join(mdhd_veh_replacement(), by = join_by(veh_type)) %>%
     left_join(mdhd_fuel_factors, by = join_by(veh_type)) %>%
-    mutate(GHG = emrate_diff_2025 * miles_per_veh_per_year,
+    mutate(GHG = emrate_diff * miles_per_veh_per_year,
            VMT = 0,
            NOX = miles_per_veh_per_year * NOx_g_per_veh_mi,
            PM25 = miles_per_veh_per_year * PM25_exhaust_per_veh_mi,

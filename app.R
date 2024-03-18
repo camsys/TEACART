@@ -1854,8 +1854,7 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$APP_PAGE, {
-    #browser()
-    
+
     if(which_page$curr_page == "Outputs"){
       if(is.null(rvs$Scenarios)){
         
@@ -3936,8 +3935,8 @@ server <- function(input, output, session) {
   })
   
   output$baseline_ghg_pie <- renderPlotly({
-    #browser()
-    yr <- input$pie_graph_year
+
+        yr <- input$pie_graph_year
     df_in <- baseline_ghg_forecast() 
     df_in <- df_in %>% ungroup() %>% select(veh_supertype, yr) %>%
       rename("Emissions" = yr)
@@ -4011,8 +4010,6 @@ server <- function(input, output, session) {
     return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
     })
   
-#  observe({browser()})
-
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
  
@@ -4487,8 +4484,7 @@ server <- function(input, output, session) {
   })
   
   output$scenario_bar_graph <- renderPlotly({
-    #browser()
-    
+
     table_filt <- input$scenario_indicator
     results <- scenario_summary_results() %>%
       filter(table_title == table_filt) %>%
@@ -4627,8 +4623,7 @@ server <- function(input, output, session) {
         select('year', Strategy,input$strategy_indicator) %>%
         arrange(year, Strategy)
       
-      # browser()
-      
+
       base_values <- strategy_temp %>% 
         group_by(year, Strategy) %>% 
         summarise(base_value = min(input$strategy_indicator))
@@ -4696,12 +4691,20 @@ server <- function(input, output, session) {
                 sep="")},
     content = function(file) {
       
+      if(all(!reactive_scenario()$Scenario1) && all(!reactive_scenario()$Scenario2)) {
+        # Show warning message
+        shinyalert("No scenario has been selected.Please select scenario from the 'Inputs' - 'Scenarios' tab", 
+                   type = "warning",
+                   title = "Error")
+        return(NULL) 
+      }
+      
       req(baseline_ghg_forecast())
       
       dt <- baseline_ghg_forecast()
       
       dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-        filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+        filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Vehicles")) %>%
         summarise(across(where(is.numeric),sum)) %>%
         mutate(veh_supertype = "Total (Onroad Vehicles)")
       dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
@@ -4762,15 +4765,13 @@ server <- function(input, output, session) {
         })
         return(updated_list)
       }
-      browser()
-      
+
        cost_data <- all_costs() %>%
          lapply(., replace_underscores) %>%
          lapply(., replace_na_with_string) %>%
          lapply(., remove_year_column) %>%
          make_column_names_proper(.)
        
-       browser()
        colnames(cost_data$bikeped)[colnames(cost_data$bikeped) == "Cap Proj Type"] <- "Capital Project Type"
        colnames(cost_data$traffic_ops)[colnames(cost_data$traffic_ops) == "Cap Proj Type"] <- "Capital Project Type"
        
