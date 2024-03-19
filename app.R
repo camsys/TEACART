@@ -4719,7 +4719,7 @@ server <- function(input, output, session) {
       ghg_data <- rbind(dt, dt_onroad, dt_all, dt_growth) %>%
         rename("Emissions" = "veh_supertype")
 
-            #get and modify the scen data: 
+                  #get and modify the scen data: 
       scen_data <- scenario_summary_results() %>%
         filter(grepl("Reduction", table_title)|table_title == "New Daily Active Trips") %>%
         filter(!grepl("%",table_title)) %>%
