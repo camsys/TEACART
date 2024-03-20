@@ -4012,7 +4012,7 @@ server <- function(input, output, session) {
   
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
- 
+
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
       output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
@@ -4365,28 +4365,9 @@ server <- function(input, output, session) {
     })
   
   
-  ## make editable -----------------------------------------------------------
-  
-  #Seth Note: Can this be deleted?
-  costs_outputs_names <- c("bikeped_costs_outputs",
-                           "transit_fixed_costs_outputs",
-                           "transit_dr_costs_outputs",
-                           "pub_trans_priority_costs_outputs",
-                           "transit_zeb_costs_outputs",
-                           "pub_trans_rail_costs_outputs",
-                           "tdm_costs_outputs",
-                           "micro_costs_outputs",
-                           "traffic_ops_costs_outputs",
-                           "mhdev_costs_outputs",
-                           "pnr_costs_outputs",
-                           "evsi_costs_outputs",
-                           "roadway_expand_costs_outputs",
-                           "intermodal_costs_outputs")
-  
-  
-  
   # server scenarios outputs ------------------------------------------------
   output$emission_change_tbl <- renderDataTable({
+    #browser()
     results <- scenario_summary_results()
     comma_rows = c(0:4,7:11,14:19)
     percent_rows = c(5,6,12,13)
@@ -4413,7 +4394,7 @@ server <- function(input, output, session) {
                                                      var formatter = null;
 
                                                      if (commaRows.includes(meta.row)) {
-                                                     formatter = function(d) { return Number(d).toLocaleString('en-US'); };
+                                                     formatter = function(d) { return Number(d).toLocaleString('en-US', {maximumFractionDigits: 2}); };
                                                      }
                                                      if (percentRows.includes(meta.row)) {
                                                      formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
@@ -4456,10 +4437,10 @@ server <- function(input, output, session) {
     results <- scenario_summary_results() %>%
       filter(table_title == table_filt) %>%
       #filter(Scenario != "Baseline") %>% 
-      pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
-                                         rvs$Baseline$horizon_year_1,
-                                         rvs$Baseline$horizon_year_2,
-                                         rvs$Baseline$horizon_year_3)), 
+      pivot_longer(cols = c(rvs$Baseline$base_year,
+                            rvs$Baseline$horizon_year_1,
+                            rvs$Baseline$horizon_year_2,
+                            rvs$Baseline$horizon_year_3) %>% as.character(), 
                    names_to = "year", values_to = "value") %>%
       filter(year != rvs$Baseline$base_year)  %>%
       mutate(value = as.numeric(value)) %>%
