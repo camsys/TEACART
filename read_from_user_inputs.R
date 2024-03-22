@@ -17,12 +17,15 @@ read_user_inputs_excel <- function(filename){
   Assumptions <- read_excel(path = filename, sheet = "Assumptions")
   Advanced <- read_excel(path = filename, sheet = "Advanced")
   Projects <- read_excel(path = filename, sheet = "Projects")
+  Scenarios <- read_excel(path = filename, sheet = "Scenarios")
+  
   
   return(list("Baseline" = Baseline,
               "Costs" = Costs,
               "Assumptions" = Assumptions, 
               "Advanced" = Advanced,
-              "Projects" = Projects))
+              "Projects" = Projects,
+              "Scenarios" = Scenarios))
 }
 
 # used to read in reactive values (rvs)
@@ -33,13 +36,15 @@ read_user_inputs_version2 <- function(filename){
   Assumptions <- read_excel(path = filename, sheet = "Assumptions")
   Advanced <- read_excel(path = filename, sheet = "Advanced")
   Projects <- read_excel(path = filename, sheet = "Projects")
+  Scenarios <- read_excel(path = filename, sheet = "Scenarios")
   
   reactive_data <- reactiveValues(
     "Baseline" = Baseline,
     "Costs" = Costs,
     "Assumptions" = Assumptions, 
     "Advanced" = Advanced,
-    "Projects" = Projects
+    "Projects" = Projects,
+    "Scenarios" = Scenarios
     )
   
   return(reactive_data)

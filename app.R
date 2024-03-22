@@ -15,8 +15,18 @@ library(shinyjs)
 library(tinytex)
 library(tools)
 library(shinyalert)
-
-
+library(knitr)
+library(ggplot2)
+if (!require(kableExtra)) {
+  install.packages("kableExtra")
+  library(kableExtra)
+}
+if (!require(tinytex)) {
+  install_tinytex()
+}
+library(showtext)
+showtext_auto()
+library(scales)
 # load source files -------------------------------------------------------
 #SETH NOTE Should this be here?
 all_files <- c(
@@ -1973,7 +1983,7 @@ server <- function(input, output, session) {
   # Project Tables: Render ------------------------------------------------------
   
   output$bikeped_projs_tbl <- renderDT({
-    #req(rvs$Projects)
+    req(rvs$Projects)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
 
     render_custom_datatable(
@@ -3384,7 +3394,7 @@ server <- function(input, output, session) {
   
   # SCENARIOS: inputs -------------------------------------------------
   
-  
+
   strategy_names <- c("Bicycle and Pedestrian",
                       "Transit Service Expansion",
                       "Micromobility",
@@ -3405,18 +3415,6 @@ server <- function(input, output, session) {
   }
   rowNames <- vapply(strategy_names, rowName, character(1))
   
-  # dat <- data.frame(
-  #   vapply(strategy_names, function(scenario){
-  #     as.character(
-  #       checkboxInput(paste0("col1-", gsub(" ", "", scenario)), label = NULL)
-  #     )
-  #   }, character(1)),
-  #   vapply(strategy_names, function(scenario){
-  #     as.character(
-  #       checkboxInput(paste0("col2-", gsub(" ", "", scenario)), label = NULL)
-  #     )
-  #   }, character(1))
-  # )
   dat <- data.frame(
     `grouped_projects` = c(strategy_names),
     `relation` = c('Projects 1',
@@ -3424,7 +3422,7 @@ server <- function(input, output, session) {
                    'Projects 8',
                    'Projects 7',
                    'Projects 11',
-                   'Projects 2, Projects 3, Projects 4',
+                   'Projects 4',
                    'Projects 10',
                    'Projects 12',
                    'Projects 13',
@@ -3436,21 +3434,12 @@ server <- function(input, output, session) {
   )
   
   colnames(dat)[colnames(dat) == "grouped_projects"] <- "Grouped Projects"
-  colnames(dat)[colnames(dat) == "relation"] <- "Relation to Project Tab"
-  
-  
-  # names(dat) <- c(
-  #   as.character(checkboxInput("col1", label = "Scenario 1")),
-  #   as.character(checkboxInput("col2", label = "Scenario 2"))
-  # )
-  
-  # rownames(dat) <- rowNames
+  colnames(dat)[colnames(dat) == "relation"] <- "Relation to Projects Tab"
   
   # Create a reactive data frame
   reactive_scenario <- reactiveVal(dat)
   
   selected_scenario <- reactiveValues(rows = NULL)
-  
   
   # Render the checkbox table
   output$scenario_tbl <- renderDT({
@@ -4592,6 +4581,7 @@ server <- function(input, output, session) {
       
       scen_filter <-  reactive_scenario()
       req( scenario_sum())
+      #browser()
       if (input$strategy_scen_select == 'scen_1' ){
         scen_select <-   scen_filter %>% select(-'Scenario2') %>%
           rename(scen = Scenario1)

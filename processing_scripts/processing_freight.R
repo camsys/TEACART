@@ -46,7 +46,6 @@
 #            truck_vmt_affected * fuel_factor_mdhd_weighted["pm25_tiresBrakes"]) / 1000000)
 
 ### REACTIVE -----
-# observe({browser()})
 emrate_freight <- reactive({
   EmRate_by_Tech() %>% 
     filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks"), str_detect(veh_subtype, "ICE")) %>%
