@@ -1932,10 +1932,9 @@ server <- function(input, output, session) {
     content = function(file) {
       
       references <- read_xlsx(".\\data\\2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
-      
             return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Assumptions" = rvs$Assumptions,
-                                           "Baseline" = rvs$Baseline,
+                                           "Baseline" = as.data.frame(rvs$Baseline),
                                            "Projects" = rvs$Projects,
                                            "Advanced" = rvs$Advanced,
                                            "References" = references,
