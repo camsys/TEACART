@@ -228,7 +228,7 @@ print(ggplot(data_temp,
                  xmax = 4,
                  xmin = 3,
                  fill = `Emission Source`)) +
-  geom_rect() +
+  geom_rect(color = NA) +
   scale_fill_brewer(palette = 'RdYlBu') +
   coord_polar(theta = "y") +
   xlim(c(2, 4)) +
