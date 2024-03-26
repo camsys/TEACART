@@ -3440,6 +3440,23 @@ server <- function(input, output, session) {
   
   selected_scenario <- reactiveValues(rows = NULL)
   
+  observeEvent(input$user_inputs_upload, {
+
+    # Read the uploaded CSV file
+    uploaded_data <- rvs$Scenarios
+
+    # Check boxes based on values in the uploaded CSV
+    if ("Scenario1" %in% colnames(uploaded_data)) {
+      reactive_scenario_updated <- reactive_scenario()
+      reactive_scenario_updated$Scenario1 <- uploaded_data$Scenario1
+      reactive_scenario(reactive_scenario_updated)
+    }
+    if ("Scenario2" %in% colnames(uploaded_data)) {
+      reactive_scenario_updated <- reactive_scenario()
+      reactive_scenario_updated$Scenario2 <- uploaded_data$Scenario2
+      reactive_scenario(reactive_scenario_updated)
+    }
+  })
   # Render the checkbox table
   output$scenario_tbl <- renderDT({
     datatable(
@@ -3468,6 +3485,8 @@ server <- function(input, output, session) {
     )
   })
   
+
+
   # Update the reactive data when boxes are selected
   observeEvent(input$scenario_tbl_cell_clicked, {
     info <- input$scenario_tbl_cell_clicked
