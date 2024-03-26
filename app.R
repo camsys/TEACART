@@ -1320,6 +1320,12 @@ nav_panel(title = "Assumptions",
                   h3("Scenario Selections"),
                   p(""),
                   DT::DTOutput("scenario_tbl")
+                  # for select all boxes. 
+                 
+                ),
+                fluidRow(
+                  column(8, offset = 2, align = "right", actionButton("select_all_scenario1", "Select All Projects for Scenario 1")),
+                  column(2, align = "right", actionButton("select_all_scenario2", "Select All Projects for Scenario 2"))
                 )
       ),
 
@@ -3440,6 +3446,21 @@ server <- function(input, output, session) {
   
   selected_scenario <- reactiveValues(rows = NULL)
   
+  observeEvent(input$select_all_scenario1, {
+    reactive_scenario_updated <- reactive_scenario()
+    reactive_scenario_updated$Scenario1 <- TRUE
+    reactive_scenario(reactive_scenario_updated)
+    rvs$Scenarios <- reactive_scenario()
+  })
+  
+  # Observer to select all checkboxes under Scenario 2
+  observeEvent(input$select_all_scenario2, {
+    reactive_scenario_updated <- reactive_scenario()
+    reactive_scenario_updated$Scenario2 <- TRUE
+    reactive_scenario(reactive_scenario_updated)
+    rvs$Scenarios <- reactive_scenario()
+  })
+  
   observeEvent(input$user_inputs_upload, {
 
     # Read the uploaded CSV file
@@ -3450,13 +3471,16 @@ server <- function(input, output, session) {
       reactive_scenario_updated <- reactive_scenario()
       reactive_scenario_updated$Scenario1 <- uploaded_data$Scenario1
       reactive_scenario(reactive_scenario_updated)
+      
     }
     if ("Scenario2" %in% colnames(uploaded_data)) {
       reactive_scenario_updated <- reactive_scenario()
       reactive_scenario_updated$Scenario2 <- uploaded_data$Scenario2
       reactive_scenario(reactive_scenario_updated)
+
     }
   })
+  
   # Render the checkbox table
   output$scenario_tbl <- renderDT({
     datatable(
@@ -3495,10 +3519,12 @@ server <- function(input, output, session) {
       reactive_scenario_updated <- reactive_scenario()
       reactive_scenario_updated[info$row, col_name] <- !reactive_scenario_updated[info$row, col_name]
       reactive_scenario(reactive_scenario_updated)
+      rvs$Scenarios <- reactive_scenario()
     }
-    rvs$Scenarios <- reactive_scenario()
+  })
+  
 
-  }) 
+
   
   shinyjs::enable(selector = ".checkbox")
   
