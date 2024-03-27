@@ -107,6 +107,10 @@ ui <- function(request) {
       ),
       title = "TEA-CART",
       id = "APP_PAGE",
+
+# sidebar -----------------------------------------------------------------
+
+
       sidebar = sidebar(fileInput("user_inputs_upload",
                                   "Upload User Inputs",
                                   accept = c(".xlsx")),
@@ -118,9 +122,14 @@ ui <- function(request) {
                         HTML("<p>
                              A few reminders:
                              <ul>
-                            <li>Download data regularly while entering data - if you need to leave the app before finishing, reupload it to resume editing.</li>
-                            <li>Pressing CTRL + ENTER finishes entering 
-                            data for one table.</li>
+                            <li><b>Download data regularly</b> while entering data.</li>
+                            <li>The application will disconnect from the server after 
+                            long periods of inactivity.</li>
+                            <li>Upload your file if you have 
+                            left the application and are ready to resume editing.</li>
+                            <li>Double-click a table to enter data.</li>
+                            <li>Press CTRL + ENTER to finish entering 
+                            data.</li>
                             <li>Enter data for one table at 
                             a time.</li></ul>"),
                         nav_spacer(),
@@ -140,19 +149,33 @@ ui <- function(request) {
       comprehensive and dynamic tool aimed at assisting states with selecting
       and prioritizing transportation capital program investments to effectively
       support greenhouse gas (GHG) reduction. The tool is designed to accept
-      inputs typically available during the programming process. It provides
-      key outputs including:"),
+      inputs typically available during the capital programming process. It provides
+      key outputs, including:"),
       tags$ul(tags$li(p("A baseline inventory and forecast of GHG emissions.")),
               tags$li(p("GHG impacts of a capital program or a hypothetical set
                       of capital projects.")),
               tags$li(p("Information on cost-effectiveness of various project
                       types."))),
+      h3("Guidance on using the tool"),
+      p("As you enter data, please keep the following in mind:"),
+      tags$ul(tags$li(p("This application does not require a login and is free to use.")),
+              tags$li(p("In the left side panel, there is a button to Download 
+                        User Inputs. It is essential that you download data 
+                        regularly while entering data. The application will disconnect from
+                        the server after long periods of inactivity. If you need to leave the 
+                        application before completing the analysis, you can upload the 
+                        saved file to continue your work.")),
+              tags$li(p("Data are entered in tables. To begin entering (or editing) data, 
+                        double click anywhere in the table using your mouse. When you are done 
+                        entering data, press CTRL + ENTER on your keyboard (this 
+                        initiates the calculation). Data can only be entered for 
+                        one table at a time."))),
       h3("Version"),
-      p("Based on TEA-CART Excel Model Version 1.8"),
-      p("Shiny App last updated February 26, 2024"),
-      p("prototype under development by Cambridge Systematics, Inc."),
-      p("under contract to Georgetown Climate Center"),
-      p("© Georgetown Climate Center"),
+      HTML("<p>Adapted from TEA-CART Excel Model Version 1.8</p>
+           <p>Shiny App last updated March 27, 2024</p>
+           <p>Prototype under development by Cambridge Systematics, Inc.<br>
+           under contract to Georgetown Climate Center</p>
+           <p>© Georgetown Climate Center")
       ),
 
 
@@ -248,7 +271,7 @@ ui <- function(request) {
                                                                    selected = "Yes")),
                                               tags$div(class = "half-card",
                                                        HTML("<p>The scope of transportation emissions reported. By default, all direct emissions (emissions occurring at the vehicle tailpipe) are reported.<br>
-                                          Select 'Yes' for Include Electricity to report emissions associated with the electricity used to power electric vehicles.")
+                                          Select 'Yes' to report emissions associated with the electricity used to power electric vehicles.")
                                               )),
                                      p(),
                                      tags$div(class = "well card-flex",
@@ -259,7 +282,7 @@ ui <- function(request) {
                                                                    selected = "No")
                                               ),
                                               tags$div(class = "half-card",
-                                                       p("Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG.")
+                                                       p("Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel, and CPG.")
                                               )
                                      ),
                                      p(),
@@ -1633,85 +1656,85 @@ nav_panel(title = "Strategy Summary",
                                            "Level of detail:",
                                            c("Detail results" = "detail", "Summary results" = "summary")),
                               p("All results are reported in terms of annual change per $M investment."),
-                              h3("Bicycle & Pedestrian"),
+                              h3("Cost Effectiveness 1 | Bicycle & Pedestrian"),
                               p(""),
                               DT::dataTableOutput("bikeped_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Transit: Increased Fixed Route Service"),
+                              h3("Cost Effectiveness 2 | Transit: Increased Fixed Route Service"),
                               p(""),
                               DT::dataTableOutput("transit_fixed_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Transit: Increased Demand Response Service"),
+                              h3("Cost Effectiveness 3 | Transit: Increased Demand Response Service"),
                               p(""),
                               DT::dataTableOutput("transit_dr_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Public Transportation: Bus Priority Treatment"),
+                              h3("Cost Effectiveness 4 | Public Transportation: Bus Priority Treatment"),
                               p(""),
                               DT::dataTableOutput("pub_trans_priority_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Transit: Fleet Electrification"),
+                              h3("Cost Effectiveness 5 | Transit: Fleet Electrification"),
                               p(""),
                               DT::dataTableOutput("transit_zeb_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Public Transportation: Rail"),
+                              h3("Cost Effectiveness 6 | Public Transportation: Rail"),
                               p(""),
                               DT::dataTableOutput("pub_trans_rail_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Travel Demand Management"),
+                              h3("Cost Effectiveness 7 | Travel Demand Management"),
                               p(""),
                               DT::dataTableOutput("tdm_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Micromobility"),
+                              h3("Cost Effectiveness 8 | Micromobility"),
                               p(""),
                               DT::dataTableOutput("micro_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Traffic Operations: Intersections"),
+                              h3("Cost Effectiveness 9 | Traffic Operations: Intersections"),
                               p(""),
                               DT::dataTableOutput("traffic_ops_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Medium and Heavy Duty Vehicle Replacement (Electrification)"),
+                              h3("Cost Effectiveness 10 | Medium and Heavy Duty Vehicle Replacement (Electrification)"),
                               p(""),
                               DT::dataTableOutput("mhdev_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Park & Ride"),
+                              h3("Cost Effectiveness 11 | Park & Ride"),
                               p(""),
                               DT::dataTableOutput("pnr_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("EV Charging Infrastructure"),
+                              h3("Cost Effectiveness 12 | EV Charging Infrastructure"),
                               p(""),
                               DT::dataTableOutput("evsi_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Roadway Expansion"),
+                              h3("Cost Effectiveness 13 | Roadway Expansion"),
                               p(""),
                               DT::dataTableOutput("roadway_expand_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Intermodal Freight Investment"),
+                              h3("Cost Effectiveness 14 | Intermodal Freight Investment"),
                               p(""),
                               DT::dataTableOutput("intermodal_costs_outputs_tbl")
                             )
