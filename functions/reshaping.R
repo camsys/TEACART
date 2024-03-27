@@ -31,8 +31,8 @@ reshaping_projects2 <- function(user_data,
 
   if(length(unique(user_data$col)) == 4){ # when there is only one str field
     y_names = c('year')
-    x_names = c('year')}
-  else if (length(unique(user_data$col)) == 5) { # specifically for tbl9, unit is needed for join. 
+    x_names = c('year')
+  }else if (length(unique(user_data$col)) == 5) { # specifically for tbl9, unit is needed for join. 
     y_names = c('var1','year')
     x_names = c(col1,'year')
   }else if(!is.na(col3)){ # when three columns are needed for joining
