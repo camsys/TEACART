@@ -113,7 +113,7 @@ render_custom_datatable <- function(#input_reactives,
                       formatter = function(d) { return '$' + Number(d).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
                     }
                     if (decimalRows.includes(meta.row)) {
-                      formatter = function(d) { return Number(d).toFixed(1); };
+                      formatter = function(d) { return Number(d).toLocaleString('en-US', {maximumFractionDigits: 2}); };
                     }
                     
                 //console.log('the data: ' + data)
