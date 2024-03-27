@@ -1956,7 +1956,7 @@ server <- function(input, output, session) {
 
   output$user_inputs_download <- downloadHandler(
     filename = function() {
-      paste0(".\\data\\2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
+      paste0("TEACART_Inputs_for_", format(Sys.Date(), "%Y-%m-%d"),"_at_",format(Sys.time(), "%H%M"), ".xlsx")
     },
     content = function(file) {
       
