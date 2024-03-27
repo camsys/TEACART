@@ -163,7 +163,7 @@ ui <- function(request) {
                         User Inputs. It is essential that you download data 
                         regularly while entering data. The application will disconnect from
                         the server after long periods of inactivity. If you need to leave the 
-                        application before completing the analysis, you can upload the 
+                        application before completing the analysis, you can later upload the 
                         saved file to continue your work.")),
               tags$li(p("Data are entered in tables. To begin entering (or editing) data, 
                         double click anywhere in the table using your mouse. When you are done 
@@ -2122,7 +2122,7 @@ server <- function(input, output, session) {
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 6,
-      non_editable_cols = c(0,1,2),
+      non_editable_cols = c(0:3),
       page_length = 8,
       comma_rows = 0:3,
       percent_rows = integer(0),
@@ -2665,7 +2665,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Assumptions,
       table_number = 2,
       is_year_table = FALSE,
-      non_editable_cols = c(0, 1),
+      non_editable_cols = c(0, 1,2,3,4),
       page_length = 50,
       comma_rows = c(18, 47),
       percent_rows = integer(0),
@@ -2710,7 +2710,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Assumptions,
       table_number = 5,
       is_year_table = FALSE,
-      non_editable_cols = c(0, 1),
+      non_editable_cols = c(0, 1,2),
       page_length = 16,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -3130,7 +3130,7 @@ server <- function(input, output, session) {
       table_number = 13,
       is_year_table = FALSE,
       is_cost_table = TRUE,
-      non_editable_cols = c(0:0),
+      non_editable_cols = c(0:1),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),

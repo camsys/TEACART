@@ -82,7 +82,7 @@ render_custom_datatable <- function(#input_reactives,
 
     returnDT<-datatable(
       reshaped_table,
-      rownames = FALSE,
+      rownames = FALSE, # looks like a big edit to change this - will need to tweak the reshaping function and set units for the first column
       editable = list(target = 'all', disable = list(columns = non_editable_cols)),
       selection = "none",
       options = list(
