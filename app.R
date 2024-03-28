@@ -161,7 +161,6 @@ ui <- function(request) {
       tags$ul(tags$li(p("This application does not require a login and is free to use.")),
               tags$li(p("In the left side panel, there is a button to Download 
                         User Inputs. It is essential that you download data 
-                        regularly while entering data. The application will disconnect from
                         the server after long periods of inactivity. If you need to leave the 
                         application before completing the analysis, you can later upload the 
                         saved file to continue your work.")),
@@ -169,7 +168,11 @@ ui <- function(request) {
                         double click anywhere in the table using your mouse. When you are done 
                         entering data, press CTRL + ENTER on your keyboard (this 
                         initiates the calculation). Data can only be entered for 
-                        one table at a time."))),
+                        one table at a time.")),
+              tags$li(p("When you are ready to see the results of your analysis, proceed to 
+                        the Scenarios tab and select scenarios for analysis. Either choose 
+                        groups of projects (to support a comparison) or click the button 
+                        to select all projects for each scenario."))),
       h3("Version"),
       HTML("<p>Adapted from TEA-CART Excel Model Version 1.8</p>
            <p>Shiny App last updated March 27, 2024</p>
@@ -1580,8 +1583,8 @@ nav_panel(title = "Assumptions",
                                  and daily active trips.<br>
                                  <p>
                                  For the Scenario Summary, please select the 
-                                 desired indicator to compare upto two 
-                                 different scenarios with the baseline forecast."),
+                                 an indicator from the dropdown below to compare your selected scenarios 
+                                 with the baseline GHG forecast."),
                             fluidRow(
                               p(""),
                               title = "Select Indicator",
@@ -1650,7 +1653,10 @@ nav_panel(title = "Strategy Summary",
 # cost effectiveness ui ---------------------------------------------------
 
                   nav_panel(title = "Cost effectiveness",
-                            HTML("This tab allows users to review the cost-effectiveness of each strategy, as measured by the change in annual output of the indicator (e.g. MT CO2e) per $1 million of investment. All cost-effectiveness information is dependent on information entered in the Inputs tab."),
+                            HTML("This tab allows users to review the cost effectiveness of each strategy as 
+                                 measured by the change in annual output of the indicator (e.g. MT CO2e) per 
+                                 $1 million of investment. All cost effectiveness outputs are calculated based  
+                                 on values entered in the Inputs tab."),
                             fluidRow(
                               radioButtons(inputId = "cost_view",
                                            "Level of detail:",
