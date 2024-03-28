@@ -2403,8 +2403,9 @@ server <- function(input, output, session) {
     rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping_projects2(input$public_rail_projs_tbl_cell_edit,
                                                               rvs$Projects,
                                                               tbl_no = 6,
-                                                              col1 = 'fuel_type',
-                                                              col2 = 'transit_mode',
+                                                              col1 = 'area_type',
+                                                              col2 = 'fuel_type',
+                                                              col3 = 'transit_mode',
                                                               horizon_year_1 = input$horizon_year_1,
                                                               horizon_year_2 = input$horizon_year_2,
                                                               horizon_year_3 = input$horizon_year_3)
