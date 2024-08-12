@@ -105,6 +105,7 @@ reshaping_cost <- function(user_data,
                    unit3 = NA,
                    unit4 = NA,
                    col_list = c()){
+  
   # reshape the data
   no_row =  nrow(user_data)/length(unique(user_data$col))
   modified_data <- data.frame(matrix(nrow = no_row))

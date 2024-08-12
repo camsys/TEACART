@@ -135,7 +135,7 @@ ui <- function(request) {
                         nav_spacer(),
                         nav_spacer(),
                         nav_spacer(),
-                        downloadButton("pdf_report","Download Summary Report")),
+                        downloadButton("pdf_report","Download Summary Report"), open = FALSE, id = "dwn_sidebar"),
       
 
 # welcome page ------------------------------------------------------------
@@ -877,7 +877,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 5 | Public Transportation: Bus Priority Treatment Costs",
+                             "Costs 4 | Public Transportation: Bus Priority Treatment Costs",
                              HTML("This category represents the <b>cost per mile of red paint</b> for addition of miles of new bus priority treatment."),
 
                            ),
@@ -898,7 +898,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 6 | Public Transportation: Rail Costs",
+                             "Costs 5 | Public Transportation: Rail Costs",
                              HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new rail vehicles operating in annual maximum service (VOMS)."),
 
                            ),
@@ -920,7 +920,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 7 | Travel Demand Management (TDM) Costs",
+                             "Costs 6 | Travel Demand Management (TDM) Costs",
                              HTML("This category represents the <b>cost per employee</b> of the TDM Program Outreach."),
 
                            ),
@@ -941,7 +941,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 8 | Micromobility Costs",
+                             "Costs 7 | Micromobility Costs",
                              HTML("This category represents the <b>subsidy provided per e-bike.</b>"),
                            ),
                            open = FALSE
@@ -962,7 +962,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 9 | Traffic Operations - Intersection Improvement Costs",
+                             "Costs 8 | Traffic Operations - Intersection Improvement Costs",
                              HTML("This category represents the <b>cost per improvement</b> for any improvements made to traffic operations at intersections."),
                              
                            ),
@@ -984,7 +984,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 10 | Medium and Heavy Duty Vehicle Replacement Costs",
+                             "Costs 9 | Medium and Heavy Duty Vehicle Replacement Costs",
                              HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium and heavy-duty vehicles replaced with new electric vehicles."),
 
                            ),
@@ -1006,7 +1006,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 11 | Park & Ride Costs",
+                             "Costs 10 | Park & Ride Costs",
                              HTML("This category represents the <b>cost per space</b> for any new addition or expansion of Park and Ride spaces."),
 
                            ),
@@ -1028,7 +1028,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 12 | EV Charging Infrastructure Costs",
+                             "Costs 11 | EV Charging Infrastructure Costs",
                              HTML("This category represents the <b>hardware cost per port</b> and <b>installation cost per port</b> for any new addition or expansion of EV charging ports."),
                            ),
                            open = FALSE
@@ -1048,7 +1048,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 13 | Intermodal Freight Investment Costs",
+                             "Costs 12 | Intermodal Freight Investment Costs",
                              HTML("This category represents the <b>cost of any intermodal investment.</b>"),
                            ),
                            open = FALSE
@@ -1069,7 +1069,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 14 | Roadway Expansion Costs",
+                             "Costs 13 | Roadway Expansion Costs",
                              HTML("This category represents the <b>capital cost per lane-mile</b> and <b>annual maintenance cost per lane-mile</b> for addition of any new lane-miles of roadways."),
                            ),
                            open = FALSE
@@ -1090,7 +1090,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 15 | Fuel Price",
+                             "Costs 14 | Fuel Price",
                              HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."),
                            ),
                            open = FALSE
@@ -1849,12 +1849,12 @@ server <- function(input, output, session) {
     
   })
 
-  which_page <- reactiveValues(curr_page = "",
+  which_page <- reactiveValues(curr_page = "ini",
                                prev_page = "")
   
   observeEvent(input$APP_PAGE, {
     req(input$APP_PAGE)
-    
+    if(which_page$prev_page == "ini"){toggle_sidebar(id = "dwn_sidebar")}
     which_page$prev_page <- which_page$curr_page
     which_page$curr_page <- input$APP_PAGE
     
@@ -1950,11 +1950,24 @@ server <- function(input, output, session) {
     } else{
       user_inputs <- read_user_inputs_excel(".\\data\\2.User_Inputs.xlsx")
     }
+    #browser()
     
     # Assign each table in user_inputs to rv
     for(name in names(user_inputs)) {
       rvs[[name]] <- user_inputs[[name]]
     }
+    
+    updateSelectInput(inputId = "state_input", selected = rvs$Baseline$state)
+    updateNumericInput(inputId = "base_year", value = rvs$Baseline$base_year)
+    updateNumericInput(inputId = "horizon_year_1", value = rvs$Baseline$horizon_year_1)
+    updateNumericInput(inputId = "horizon_year_2", value = rvs$Baseline$horizon_year_2)
+    updateNumericInput(inputId = "horizon_year_3", value = rvs$Baseline$horizon_year_3)
+    updateSelectInput(inputId = "transportation_score", selected = rvs$Baseline$trans_system_scope)
+    updateSelectInput(inputId = "scope_emissions", selected = rvs$Baseline$include_electricity)
+    updateSelectInput(inputId = "scope_fuels", selected = rvs$Baseline$include_upstream_fuels)
+    updateSelectInput(inputId = "vmt_forecast_input", selected = rvs$Baseline$vmt_forecast)
+    updateSelectInput(inputId = "ev_baseline_input", selected = rvs$Baseline$veh_elec_baseline)
+    updateNumericInput(inputId = "grid_emissions_input", value = rvs$Baseline$elec_grid_emissions_net_zero)
     
   }, ignoreNULL = F, ignoreInit = F)
 
@@ -3164,7 +3177,6 @@ server <- function(input, output, session) {
   
   ## COST: make editable -----------------------------------------------------------
 
-  
   #reshaping
   #observe change to bikeped_costs_tbl
   observeEvent(input$bikeped_costs_tbl_cell_edit, {
@@ -3180,8 +3192,6 @@ server <- function(input, output, session) {
                                                                           'cap_proj_type',
                                                                           'unit'))
   })
-  
-
   
   ## observe change to transit_fixed_costs
   observeEvent(input$transit_fixed_costs_tbl_cell_edit, {
@@ -3228,7 +3238,6 @@ server <- function(input, output, session) {
                                                              )
   })
   
-  
   ## observe change to pub_trans_rail_costs
   observeEvent(input$pub_trans_rail_costs_tbl_cell_edit, {
     req(rvs$Costs)
@@ -3246,7 +3255,6 @@ server <- function(input, output, session) {
                                                               )
   })
   
-
   ## observe change to pub_trans_rail_costs
   observeEvent(input$tdm_costs_tbl_cell_edit, {
     req(rvs$Costs)
@@ -3285,7 +3293,6 @@ server <- function(input, output, session) {
                                                                            'unit'))
   })
   
-  
   ## observe change to mhdev_costs
   observeEvent(input$mhdev_costs_tbl_cell_edit, {
     req(rvs$Costs)
@@ -3301,7 +3308,6 @@ server <- function(input, output, session) {
                                                                            'veh_type',
                                                                            'unit'))
   })
-  
   
   ## observe change to pnr_costs
   observeEvent(input$pnr_costs_tbl_cell_edit, {
@@ -3324,7 +3330,7 @@ server <- function(input, output, session) {
                                                               num_col = 2, # how many numeric columns,
                                                               unit1 = 'per_unit_hardware_cost',
                                                               unit2 = 'per_unit_installation_cost',
-                                                              col_list = c('DCFC_level',
+                                                              col_list = c('charge_port_detail',
                                                                            'unit'))
   })
   
@@ -3353,7 +3359,6 @@ server <- function(input, output, session) {
                                                               num_col = 1, # how many numeric columns,
                                                               col_list = c('fuel_type'))
   })
- 
   
   ## observe change to intermodal_costs
   observeEvent(input$intermodal_costs_tbl_cell_edit, {
@@ -3367,7 +3372,6 @@ server <- function(input, output, session) {
   }) # end of reshaping
 
   ## COST: observe reset buttons for costs -----------------------------------------
-
 
   observeEvent(input$reset_bikeped_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 1,] <- initial_costs[initial_costs$table_no_ui == 1, ]
@@ -3424,8 +3428,6 @@ server <- function(input, output, session) {
   observeEvent(input$reset_intermodal_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 14,] <- initial_costs[initial_costs$table_no_ui == 14, ]
   })  
-  
-  
   
   # SCENARIOS: inputs -------------------------------------------------
   
@@ -3573,7 +3575,7 @@ server <- function(input, output, session) {
   
   ## ADVANCED: create tables -----------------------------------------------------------
 
-    output$ev_forecast_sheet_tbl <- renderDT({
+  output$ev_forecast_sheet_tbl <- renderDT({
     render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 1,
@@ -4706,24 +4708,7 @@ server <- function(input, output, session) {
   source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Finished
   source("functions/cost_maker.R", local = TRUE)
   source("processing_scripts/processing_Allassump.R", local = TRUE) #Finished
-  
-  #rvs update from different inputs
-  #key_inputs update
 
-    key_inputs_listen <- reactive({
-    list(input$state_input,
-         input$base_year,
-         input$horizon_year_1,
-         input$horizon_year_2,
-         input$horizon_year_3,
-         input$transportation_scope,
-         input$scope_emissions,
-         input$scope_fuels,
-         input$vmt_forecast_input,
-         input$vmt_nhs,
-         input$ev_baseline_input,
-         input$grid_emissions_input)
-  })
  
 ## download PDF report
     
