@@ -121,7 +121,7 @@ get_num_primary_keys <- function(df){
 
 #State Population ----
 #State Population for years 2020, 2030, 2050 - need to project inbetween years
-State_Populations <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "State_Populations")
+State_Populations <- read_excel("./data/1.Raw_Data.xlsx", sheet = "State_Populations")
 
 #have to add the 2050 year somehow for approx to work
 for (var in unique(State_Populations$state)){
@@ -149,11 +149,11 @@ State_Populations <-
 #Processing VMT Info----
 
 ##This is the percentage of LDV VMT and Heavy Duty Vehicles that occur on the NHS for each state: 2021-2050
-NHS_VMT <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NHS_VMT", range = "A4:R57") %>%
+NHS_VMT <- read_excel("./data/1.Raw_Data.xlsx", sheet = "NHS_VMT", range = "A4:R57") %>%
     select(state, LDV_pct_on_NHS, TRK_pct_on_NHS)
 
 ##This is the VMT for each state from 2021-2050 - raw number not percentage
-VMT_State_Allocation_raw <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "VMT_State_Allocation")
+VMT_State_Allocation_raw <- read_excel("./data/1.Raw_Data.xlsx", sheet = "VMT_State_Allocation")
 
 VMT_State_Allocation <- right_join(State_Populations,VMT_State_Allocation_raw, by = c('year','state')) %>%
   group_by(year) %>% 
@@ -162,12 +162,12 @@ VMT_State_Allocation <- right_join(State_Populations,VMT_State_Allocation_raw, b
   ungroup()
   
 ##this has millions of vehicles for the whole US by year for veh/vehsubtype 
-Stock_Type_Tech_BASE <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Stock_Type_Tech_BASE") %>%
+Stock_Type_Tech_BASE <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Stock_Type_Tech_BASE") %>%
   pivot_longer(cols = !c(veh_type, veh_subtype), names_to = "year", values_to = "stock_millions") %>%
   mutate(year = as.integer(year))
 
 ##This has VMT by veh_type (Assuming all subtypes combined) for 2021 - 2050 with 2020 added as zeros
-AEO_VMT_Base <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "AEO_VMT_Base") #Original Tool Does not include 2020 Numbers - coded as zero
+AEO_VMT_Base <- read_excel("./data/1.Raw_Data.xlsx", sheet = "AEO_VMT_Base") #Original Tool Does not include 2020 Numbers - coded as zero
 ###this adds VMT per million vehicles aka miles traveled by each veh_type each year 2021-2050 I'M Chaging the Name here!!!
 AEO_VMT <- AEO_VMT_Base %>% 
   left_join(
@@ -185,22 +185,22 @@ Stock_Type <- AEO_VMT %>%
   arrange(desc(veh_supertype))
 
 #Other Data Sources
-HPMS <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "HPMS")
+HPMS <- read_excel("./data/1.Raw_Data.xlsx", sheet = "HPMS")
 
-Fuel_Econs <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Econs")
+Fuel_Econs <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Fuel_Econs")
 
-State_Prices <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "State_Prices")
+State_Prices <- read_excel("./data/1.Raw_Data.xlsx", sheet = "State_Prices")
 
-Electricity_EmRate <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Electricity_EmRate")
+Electricity_EmRate <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Electricity_EmRate")
 
-Bike_Ped <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Bike_Ped")
+Bike_Ped <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Bike_Ped")
 
-NTD_Service <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "NTD_Service")
+NTD_Service <- read_excel("./data/1.Raw_Data.xlsx", sheet = "NTD_Service")
 
-Fuel_Factors <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors")
-Fuel_Factors_Baselines <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Baselines")
-Fuel_Factors_Revision <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Revision") # SL ADDED NEED TO WORK TO COMBINE THESE TWO
-Fuel_Factors_Weighted_raw <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fuel_Factors_Weighted")
+Fuel_Factors <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Fuel_Factors")
+Fuel_Factors_Baselines <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Fuel_Factors_Baselines")
+Fuel_Factors_Revision <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Fuel_Factors_Revision") # SL ADDED NEED TO WORK TO COMBINE THESE TWO
+Fuel_Factors_Weighted_raw <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Fuel_Factors_Weighted")
 
 #I realized this was misatributing the weighting to heavy duty trucks instead of medium duty see the excel tool
 # Fuel_Factors_Weighted_raw <-
@@ -210,25 +210,25 @@ Fuel_Factors_Weighted_raw <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Fue
   #           PM25_exhaust_avg = sum(hd_weight * PM25_exhaust, na.rm = T),
   #           PM25_tires_brakes_avg = sum(hd_weight * PM25_tires_brakes, na.rm = T))
 
-EV_Forecast <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "EV_Forecast")
+EV_Forecast <- read_excel("./data/1.Raw_Data.xlsx", sheet = "EV_Forecast")
 
-Passenger_Rail_State_Mileage <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Passenger_Rail_State_Mileage")
-Passenger_Rail_FuelFactors <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Passenger_Rail_FuelFactors")
+Passenger_Rail_State_Mileage <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Passenger_Rail_State_Mileage")
+Passenger_Rail_FuelFactors <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Passenger_Rail_FuelFactors")
 
-Public_Transit_data <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Public_Transit_Mileage")
+Public_Transit_data <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Public_Transit_Mileage")
 
-Freight_Rail_Data <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Freight_Rail_Data")
+Freight_Rail_Data <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Freight_Rail_Data")
 
-Warming_Potential <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Warming_Potential")
+Warming_Potential <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Warming_Potential")
 
-Transit_Costs <- read_excel(".\\data\\1.Raw_Data.xlsx", sheet = "Transit_Costs")
+Transit_Costs <- read_excel("./data/1.Raw_Data.xlsx", sheet = "Transit_Costs")
 Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
   expand(Transit_Costs, state_code, transit_mode) %>%
   left_join(Transit_Costs, by = join_by(state_code, transit_mode)) %>%
   replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0))
 
 # used to rename headers and units during table rendering
-references <- read_excel(".\\data\\2.User_Inputs.xlsx",
+references <- read_excel("./data/2.User_Inputs.xlsx",
                          sheet ="References",
                          col_names = TRUE)
 
@@ -237,19 +237,19 @@ rev_references_vector <- setNames(references$description, references$field)
 
 
 # these are used to reset tables in the UI
-initial_projects <- read_excel(".\\data\\2.User_Inputs.xlsx",
+initial_projects <- read_excel("./data/2.User_Inputs.xlsx",
                                sheet ="Projects",
                                col_names = TRUE)
 
-initial_assumptions <- read_excel(".\\data\\2.User_Inputs.xlsx",
+initial_assumptions <- read_excel("./data/2.User_Inputs.xlsx",
                                   sheet ="Assumptions",
                                   col_names = TRUE)
 
-initial_costs <- read_excel(".\\data\\2.User_Inputs.xlsx",
+initial_costs <- read_excel("./data/2.User_Inputs.xlsx",
                             sheet ="Costs",
                             col_names = TRUE)
 
-initial_advanced <- read_excel(".\\data\\2.User_Inputs.xlsx",
+initial_advanced <- read_excel("./data/2.User_Inputs.xlsx",
                                sheet ="Advanced",
                                col_names = TRUE)
 

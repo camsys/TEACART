@@ -103,9 +103,31 @@ jQuery.fn.dataTable.Api.register('MakeCellsEditable()', function (settings) {
         $(table.body()).on('click', 'td', function () {
 
             var currentColumnIndex = table.cell(this).index().column;
+            var currentRowIndex = table.cell(this).parent().index();
+
 
             // DETERMINE WHAT COLUMNS CAN BE EDITED
             if ((settings.columns && settings.columns.indexOf(currentColumnIndex) > -1) || (!settings.columns)) {
+                var row = table.row($(this).parents('tr'));
+                editableCellsRow = row;
+
+                var cell = table.cell(this).node();
+                var oldValue = table.cell(this).data();
+                // Sanitize value
+                oldValue = sanitizeCellValue(oldValue);
+
+                // Show input
+                if (!$(cell).find('input').length && !$(cell).find('select').length && !$(cell).find('textarea').length) {
+                    // Input CSS
+                    var input = getInputHtml(currentColumnIndex, settings, oldValue);
+                    $(cell).html(input.html);
+                    if (input.focus) {
+                        $('#ejbeatycelledit').focus();
+                    }
+                }
+            }
+            // DETERMINE WHAT ROWS CAN BE EDITED
+            if ((settings.rows && settings.rows.indexOf(currentRowIndex) > -1) || (!settings.rows)) {
                 var row = table.row($(this).parents('tr'));
                 editableCellsRow = row;
 

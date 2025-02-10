@@ -1,0 +1,53 @@
+h2 {
+  font-weight: bold;
+}
+
+.navbar {
+  padding: 0;
+}
+.navbar .navbar-brand {
+  font-size: 1.5rem;
+}
+.navbar .nav {
+  gap: 0;
+}
+.navbar .nav .nav-item {
+  margin: 0;
+  background: none;
+}
+.navbar .nav .nav-item:first-child {
+  margin: 0;
+  display: none;
+}
+.navbar .nav .nav-item:first-child .nav-link {
+  padding: none !important;
+  background: none;
+}
+.navbar .nav .nav-item .nav-link {
+  font-size: 1.4rem;
+  padding: 1rem 3rem !important;
+  background: none;
+  -webkit-transition: background 0.5s ease-in-out;
+  transition: background 0.5s ease-in-out;
+}
+.navbar .nav .nav-item .nav-link.active {
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(rgba(255, 255, 255, 0.15)));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.15) 100%);
+  border: none;
+  font-weight: normal;
+}
+.navbar .nav .nav-item:hover .nav-link {
+  border: none;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(rgba(255, 255, 255, 0.15)));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.15) 100%);
+}
+.navbar .nav .nav-item.dropdown {
+  background: none;
+}
+
+@media screen and (max-width: 1200px) {
+  .navbar .nav .nav-item .nav-link {
+    padding: 1rem 2rem !important;
+    font-size: 1.4rem;
+  }
+}

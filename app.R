@@ -90,9 +90,17 @@ ui <- function(request) {
             }
             .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
             .nav.navbar-nav .form-group.shiny-input-container > label {display: inline;}
+            
         ")),
         tags$link(rel = "stylesheet", 
-                  href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
+                  href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"),
+        tags$link(rel = "stylesheet", 
+                  href = "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"),
+        tags$link(rel = "stylesheet", 
+                  href = "TEACART.css"),
+        tags$script(src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"),
+        tags$script(src = "TEACART.js")
+        
       ),
       title = "TEA-CART",
       sidebar = sidebar(fileInput("user_inputs_upload",
@@ -122,7 +130,7 @@ ui <- function(request) {
       nav_panel(title = "Welcome",
                 p(),
                 #    h2("Transportation Evaluation and Carbon Reduction Tool (TEA-CART)"),
-                h3("About"),
+                h2("About"),
                 p(),
                 p("The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a
       comprehensive and dynamic tool aimed at assisting states with selecting
@@ -1467,7 +1475,6 @@ nav_panel(title = "Assumptions",
                   placement = "above",
                   nav_panel(title = "Baseline GHG Forecast",
                             
-                            h2("Baseline GHG Forecast"),
                             HTML("This tab provides a projection 
                                  of baseline emissions for the time 
                                  horizons selected in the Baseline 
@@ -1733,8 +1740,8 @@ server <- function(input, output, session) {
   
   #set reactiveValues ----------------------------------------------------------
   rv <- reactiveValues()
-  rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
-  rvs_out <- read_output_tables(".\\data\\3.Model_Outputs.xlsx")
+  rvs <- read_user_inputs_version2("./data/2.User_Inputs.xlsx")
+  rvs_out <- read_output_tables("./data/3.Model_Outputs.xlsx")
   
   #update and record 
   #key_inputs updater ----------------------------------------------------------
@@ -1778,7 +1785,7 @@ server <- function(input, output, session) {
     if(isTruthy(input$user_inputs_upload)){
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
     } else{
-      user_inputs <- read_user_inputs_excel(".\\data\\2.User_Inputs.xlsx")
+      user_inputs <- read_user_inputs_excel("./data/2.User_Inputs.xlsx")
     }
     
     # Assign each table in user_inputs to rv
@@ -1792,11 +1799,11 @@ server <- function(input, output, session) {
 
   output$user_inputs_download <- downloadHandler(
     filename = function() {
-      paste0(".\\data\\2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
+      paste0("./data/2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
     },
     content = function(file) {
       
-      references <- read_xlsx(".\\data\\2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
+      references <- read_xlsx("./data/2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
       
             return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Assumptions" = rvs$Assumptions,
@@ -1811,7 +1818,7 @@ server <- function(input, output, session) {
   
   # server sources ---------------------------------------------------
   
-  sources_data <- read_xlsx(".\\data\\sources.xlsx", sheet = 1, col_names = TRUE)
+  sources_data <- read_xlsx("./data/sources.xlsx", sheet = 1, col_names = TRUE)
   
   output$source_table <- renderDT({
     DT::datatable(sources_data,
@@ -1842,7 +1849,7 @@ server <- function(input, output, session) {
                       "freight_projs",
                       "expansion_projs")
   
-  read_static_tables(".\\data\\projects.xlsx", projects_names)
+  read_static_tables("./data/projects.xlsx", projects_names)
   
   
   # Project Tables: Render ------------------------------------------------------
@@ -2472,7 +2479,7 @@ server <- function(input, output, session) {
                          "evsi_assmps")
   
   
-  read_static_tables(".\\data\\assumptions.xlsx", assumptions_names)
+  read_static_tables("./data/assumptions.xlsx", assumptions_names)
   
   
   ## create assumption tables -----------------------------------------------------------
@@ -3426,7 +3433,7 @@ server <- function(input, output, session) {
                       "construction_sheet",
                       "fuel_apportionment_sheet")
   
-  read_static_tables(".\\data\\advanced.xlsx", advanced_names)
+  read_static_tables("./data/advanced.xlsx", advanced_names)
   
   
   ## ADVANCED: create tables -----------------------------------------------------------
@@ -3481,10 +3488,19 @@ server <- function(input, output, session) {
     
     
     callback_pass_rail <- JS(
-      "function onUpdate(updatedCell, updatedRow, oldValue){}",
+      "var tbl = $(table.table().node());",
+      "var id = tbl.closest('.datatables').attr('id');",
+      "function onUpdate() {",
+      "  var cellinfo = [{",
+      "    value: updatedCell.data()",
+      "  }];",
+      "  Shiny.setInputValue(id + '_cell_edit:DT.cellInfo', cellinfo);",
+      "}",
       "table.MakeCellsEditable({",
       "  onUpdate: onUpdate,",
       "  inputCss: 'my-input-class',",
+      "  columns: [2], ",
+      "  rows: [1], ",
       "  confirmationButton: {",
       "    confirmCss: 'my-confirm-class',",
       "    cancelCss: 'my-cancel-class'",
@@ -3501,7 +3517,7 @@ server <- function(input, output, session) {
       "  ]",
       "});")
     
-    path <- "C:/Users/gvendemiatti/Documents/TEACART/TEACART/www" # folder containing the files dataTables.cellEdit.js
+    path <- "./www" # folder containing the files dataTables.cellEdit.js
     
     # and dataTables.cellEdit.css
     dep <- htmltools::htmlDependency(
@@ -3546,7 +3562,8 @@ server <- function(input, output, session) {
 
     dtable$dependencies <- c(dtable$dependencies, list(dep))
     return(dtable)
-  })
+    
+  },server = FALSE)
  
   output$freight_rail_sheet_tbl <- renderDT({
     
@@ -3874,7 +3891,7 @@ server <- function(input, output, session) {
                            "roadway_expand_costs_outputs",
                            "intermodal_costs_outputs")
   
-  read_static_tables(".\\data\\costs_outputs.xlsx", costs_outputs_names)
+  read_static_tables("./data/costs_outputs.xlsx", costs_outputs_names)
   
   ## COST Outputs: create tables -----------------------------------------------------------
   
@@ -4411,7 +4428,7 @@ server <- function(input, output, session) {
   
   
   # read dummy data
-  scenario_result <- readxl::read_excel(".\\data\\scenario_simplified.xlsx")
+  scenario_result <- readxl::read_excel("./data/scenario_simplified.xlsx")
   
   observeEvent(input$scenario_indicator,{
     dat_temp <- scenario_result |> 
