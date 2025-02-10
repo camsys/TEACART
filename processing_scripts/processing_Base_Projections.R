@@ -1,4 +1,359 @@
 
+#intermediate values ----------------------------------------------------------
+observeEvent(input$state_input, {
+  #browser()
+  req(input$state_input)
+  print("UPDATING: Intermediate Values")
+  #Fuel Costs
+  print("fuel costs start")
+  rvs$Costs$value[rvs$Costs$table_no_ui==13 &
+                    rvs$Costs$fuel_type == "Gasoline" &
+                    rvs$Costs$unit == "dollars_per_gallon"] <- State_Prices$gas_regular[State_Prices$state == input$state_input]
+  rvs$Costs$value[rvs$Costs$table_no_ui==13 &
+                    rvs$Costs$fuel_type == "Diesel" &
+                    rvs$Costs$unit == "dollars_per_gallon"] <- State_Prices$gas_diesel[State_Prices$state == input$state_input]
+  rvs$Costs$value[rvs$Costs$table_no_ui==13 &
+                    rvs$Costs$fuel_type == "Electricity" &
+                    rvs$Costs$unit == "dollars_per_kwh"] <- State_Prices$electricity_retail_avg[State_Prices$state == input$state_input]/100
+  #Assumptions
+  print("average aadt start")
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Urban" &
+                          rvs$Assumptions$road_class == "Principal Arterial" &
+                          rvs$Assumptions$unit == "avg_AADT"] <-
+    HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"]
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Rural" &
+                          rvs$Assumptions$road_class == "Principal Arterial" &
+                          rvs$Assumptions$unit == "avg_AADT"] <-
+    HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"]
+  print("vmt per lane mile")
+  
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Rural" &
+                          rvs$Assumptions$road_class == "Principal Arterial" &
+                          rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
+    HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"]
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Rural" &
+                          rvs$Assumptions$road_class == "Freeway" &
+                          rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
+    HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Interstate" & HPMS$area_type == "Rural"]
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Urban" &
+                          rvs$Assumptions$road_class == "Principal Arterial" &
+                          rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
+    HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"]
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Urban" &
+                          rvs$Assumptions$road_class == "Freeway" &
+                          rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
+    HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Interstate" & HPMS$area_type == "Urban"]
+
+  print("pax miles start")
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Urban" &
+                          rvs$Assumptions$transit_mode == "Bus" &
+                          rvs$Assumptions$unit == "avg_pax_mi_per_veh_mi"] <-
+    ifelse(!isTruthy(NTD_Service$load_factor[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"]),8.832902605,NTD_Service$load_factor[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"])
+  print(1)
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Rural" &
+                          rvs$Assumptions$transit_mode == "Bus" &
+                          rvs$Assumptions$unit == "avg_pax_mi_per_veh_mi"] <-
+    ifelse(!isTruthy(NTD_Service$load_factor[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Bus"]),2.681294433,NTD_Service$load_factor[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"])
+  print(2)
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Urban" &
+                          rvs$Assumptions$transit_mode == "Demand Response" &
+                          rvs$Assumptions$unit == "avg_pax_mi_per_veh_mi"] <-
+    ifelse(!isTruthy(NTD_Service$load_factor[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Demand Response"]),1.19140060,NTD_Service$load_factor[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Demand Response"])
+  print(3)
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Rural" &
+                          rvs$Assumptions$transit_mode == "Demand Response" &
+                          rvs$Assumptions$unit == "avg_pax_mi_per_veh_mi"] <-
+    ifelse(!isTruthy(NTD_Service$load_factor[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Demand Response"]),1.3537470831,NTD_Service$load_factor[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Demand Response"])
+  print(4)
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Commuter Bus" &
+                          rvs$Assumptions$unit == "avg_pax_mi_per_veh_mi"] <-
+    ifelse(!isTruthy(NTD_Service$load_factor[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Bus"]),16.724508513,NTD_Service$load_factor[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Bus"])
+  print(5)
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Light Rail / Streetcar" &
+                          rvs$Assumptions$unit == "avg_pax_mi_per_veh_mi"] <-
+    ifelse(!isTruthy(NTD_Service$load_factor[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Light Rail"]),20.5324251325,NTD_Service$load_factor[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Light Rail"])
+  print(6)
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Heavy Rail" &
+                          rvs$Assumptions$unit == "avg_pax_mi_per_veh_mi"] <-
+    ifelse(!isTruthy(NTD_Service$load_factor[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Heavy Rail"]),24.868570029,NTD_Service$load_factor[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Heavy Rail"])
+  print(7)
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Commuter Rail" &
+                          rvs$Assumptions$unit == "avg_pax_mi_per_veh_mi"] <-
+    ifelse(!isTruthy(NTD_Service$load_factor[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"]),36.0177163994,NTD_Service$load_factor[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"])
+
+  print("average trip length start")
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Urban" &
+                          rvs$Assumptions$transit_mode == "Bus" &
+                          rvs$Assumptions$unit == "avg_trip_miles"] <-
+    ifelse(!isTruthy(NTD_Service$avg_trip_length[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"]),3.72580827705,NTD_Service$avg_trip_length[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Rural" &
+                          rvs$Assumptions$transit_mode == "Bus" &
+                          rvs$Assumptions$unit == "avg_trip_miles"] <-
+    ifelse(!isTruthy(NTD_Service$avg_trip_length[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Bus"]),4.13285533163,NTD_Service$avg_trip_length[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Urban" &
+                          rvs$Assumptions$transit_mode == "Demand Response" &
+                          rvs$Assumptions$unit == "avg_trip_miles"] <-
+    ifelse(!isTruthy(NTD_Service$avg_trip_length[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Demand Response"]),9.400361747,NTD_Service$avg_trip_length[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Demand Response"])
+  
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Rural" &
+                          rvs$Assumptions$transit_mode == "Demand Response" &
+                          rvs$Assumptions$unit == "avg_trip_miles"] <-
+    ifelse(!isTruthy(NTD_Service$avg_trip_length[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Demand Response"]),9.9379721535,NTD_Service$avg_trip_length[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Demand Response"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Commuter Bus" &
+                          rvs$Assumptions$unit == "avg_trip_miles"] <-
+    ifelse(!isTruthy(NTD_Service$avg_trip_length[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Bus"]),23.740474176,NTD_Service$avg_trip_length[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Bus"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Light Rail / Streetcar" &
+                          rvs$Assumptions$unit == "avg_trip_miles"] <-
+    ifelse(!isTruthy(NTD_Service$avg_trip_length[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Light Rail"]),5.204678814,NTD_Service$avg_trip_length[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Light Rail"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Heavy Rail" &
+                          rvs$Assumptions$unit == "avg_trip_miles"] <-
+    ifelse(!isTruthy(NTD_Service$avg_trip_length[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Heavy Rail"]),4.5815735449,NTD_Service$avg_trip_length[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Heavy Rail"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Commuter Rail" &
+                          rvs$Assumptions$unit == "avg_trip_miles"] <-
+    ifelse(!isTruthy(NTD_Service$avg_trip_length[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"]),25.11314112,NTD_Service$avg_trip_length[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"])
+  print("average revenue miles start")
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Urban" &
+                          rvs$Assumptions$transit_mode == "Bus" &
+                          rvs$Assumptions$unit == "rev_mi_per_veh"] <-
+    ifelse(!isTruthy(NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"]),38795.548667892,NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Rural" &
+                          rvs$Assumptions$transit_mode == "Bus" &
+                          rvs$Assumptions$unit == "rev_mi_per_veh"] <-
+    ifelse(!isTruthy(NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Bus"]),31564.6099444,NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Urban" &
+                          rvs$Assumptions$transit_mode == "Demand Response" &
+                          rvs$Assumptions$unit == "rev_mi_per_veh"] <-
+    ifelse(!isTruthy(NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Demand Response"]), 29116.13353742,NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Demand Response"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Rural" &
+                          rvs$Assumptions$transit_mode == "Demand Response" &
+                          rvs$Assumptions$unit == "rev_mi_per_veh"] <-
+    ifelse(!isTruthy(NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Demand Response"]),22923.1692092372,NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Demand Response"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Commuter Bus" &
+                          rvs$Assumptions$unit == "rev_mi_per_veh"] <-
+    ifelse(!isTruthy(NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Bus"]),32326.085745494,NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Bus"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Light Rail / Streetcar" &
+                          rvs$Assumptions$unit == "rev_mi_per_veh"] <-
+    ifelse(!isTruthy(NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Light Rail"]),71254.781103286,NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Light Rail"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Heavy Rail" &
+                          rvs$Assumptions$unit == "rev_mi_per_veh"] <-
+    ifelse(!isTruthy(NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Heavy Rail"]),72732.45318196,NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Heavy Rail"])
+
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "All" &
+                          rvs$Assumptions$transit_mode == "Commuter Rail" &
+                          rvs$Assumptions$unit == "rev_mi_per_veh"] <-
+    ifelse(!isTruthy(NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"]),58315.22793388,NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"])
+
+
+  #Costs
+  print("per VRM fuel costs start")
+  rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == "Diesel" &
+                    rvs$Costs$transit_mode == "Bus" &
+                    rvs$Costs$unit == "per_VRM_fuel_cost"] <-
+    (1/rvs$Assumptions$value[rvs$Assumptions$unit == "veh_fuel_economy" &
+                               rvs$Assumptions$fuel_type == "Diesel" &
+                               rvs$Assumptions$transit_mode == "Bus" &
+                               rvs$Assumptions$table_no_ui == 2]) *
+    (Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" & Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"])*
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Diesel" & rvs$Costs$unit == "dollars_per_gallon"])
+print("VRM 1")
+  rvs$Costs$value[rvs$Costs$table_no_ui == 0 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == "Diesel" &
+                    rvs$Costs$transit_mode == "Commuter Bus" &
+                    rvs$Costs$unit == "per_VRM_fuel_cost"] <-
+    (1/rvs$Assumptions$value[rvs$Assumptions$unit == "veh_fuel_economy" &
+                               rvs$Assumptions$fuel_type == "Diesel" &
+                               rvs$Assumptions$transit_mode == "Bus" &
+                               rvs$Assumptions$table_no_ui == 2]) *
+    (Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" & Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"])*
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Diesel" & rvs$Costs$unit == "dollars_per_gallon"])
+  print("VRM 2")
+  rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == "CNG" &
+                    rvs$Costs$transit_mode == "Bus" &
+                    rvs$Costs$unit == "per_VRM_fuel_cost"] <-
+    (1/rvs$Assumptions$value[rvs$Assumptions$unit == "veh_fuel_economy" &
+                               rvs$Assumptions$fuel_type == "CNG" &
+                               rvs$Assumptions$transit_mode == "Bus" &
+                               rvs$Assumptions$table_no_ui == 2]) *
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "CNG" & rvs$Costs$unit == "dollars_per_gge"])
+  print("VRM 3")
+  rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == "Electric" &
+                    rvs$Costs$transit_mode == "Bus" &
+                    rvs$Costs$unit == "per_VRM_fuel_cost"] <-
+    (1/rvs$Assumptions$value[rvs$Assumptions$unit == "veh_fuel_economy" &
+                               rvs$Assumptions$fuel_type == "Electric" &
+                               rvs$Assumptions$transit_mode == "Bus" &
+                               rvs$Assumptions$table_no_ui == 2]) *
+    (Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "electricity" & Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"])*
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Electricity" & rvs$Costs$unit == "dollars_per_kwh"])
+  print("VRM 4")
+  rvs$Costs$value[rvs$Costs$table_no_ui == 3 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == "Gasoline" &
+                    rvs$Costs$transit_mode == "Demand Response" &
+                    rvs$Costs$unit == "per_VRM_fuel_cost"] <-
+    (1/rvs$Assumptions$value[rvs$Assumptions$unit == "veh_fuel_economy" &
+                               rvs$Assumptions$fuel_type == "Gasoline" &
+                               rvs$Assumptions$transit_mode == "Demand Response" &
+                               rvs$Assumptions$table_no_ui == 2]) *
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Gasoline" & rvs$Costs$unit == "dollars_per_gallon"])
+  print("VRM 5")
+  rvs$Costs$value[rvs$Costs$table_no_ui == 3 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == "CNG" &
+                    rvs$Costs$transit_mode == "Demand Response" &
+                    rvs$Costs$unit == "per_VRM_fuel_cost"] <-
+    (1/rvs$Assumptions$value[rvs$Assumptions$unit == "veh_fuel_economy" &
+                               rvs$Assumptions$fuel_type == "CNG" &
+                               rvs$Assumptions$transit_mode == "Demand Response" &
+                               rvs$Assumptions$table_no_ui == 2]) *
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "CNG" & rvs$Costs$unit == "dollars_per_gge"])
+  print("VRM 6")
+  rvs$Costs$value[rvs$Costs$table_no_ui == 3 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == "Electric" &
+                    rvs$Costs$transit_mode == "Demand Response" &
+                    rvs$Costs$unit == "per_VRM_fuel_cost"] <-
+    (1/rvs$Assumptions$value[rvs$Assumptions$unit == "veh_fuel_economy" &
+                               rvs$Assumptions$fuel_type == "Electric" &
+                               rvs$Assumptions$transit_mode == "Demand Response" &
+                               rvs$Assumptions$table_no_ui == 2]) *
+    (Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "electricity" & Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"])*
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Electricity" & rvs$Costs$unit == "dollars_per_kwh"])
+  print("VRM 7")
+  per_VRM_fuel_cost_electric_lr <- Transit_Costs$total_cost_fuel_lube[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Light Rail"]/
+    NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Light Rail"]
+  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == "Electric" &
+                    rvs$Costs$transit_mode == "Light Rail / Streetcar" &
+                    rvs$Costs$unit == "per_VRM_fuel_cost"] <-
+    ifelse(!isTruthy(per_VRM_fuel_cost_electric_lr),0.030362,per_VRM_fuel_cost_electric_lr)
+  print("VRM 8")
+  per_VRM_fuel_cost_electric_hr <- Transit_Costs$total_cost_fuel_lube[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Heavy Rail"]/
+    NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Heavy Rail"]
+  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == "Electric" &
+                    rvs$Costs$transit_mode == "Heavy Rail" &
+                    rvs$Costs$unit == "per_VRM_fuel_cost"] <-
+    ifelse(!isTruthy(per_VRM_fuel_cost_electric_hr),0.02043808029,per_VRM_fuel_cost_electric_hr)
+  print("VRM 9")
+  per_VRM_fuel_cost_electric_cr <- Transit_Costs$total_cost_fuel_lube[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Commuter Rail"]/
+    NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"]
+  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type %in% c("Electric","Diesel") &
+                    rvs$Costs$transit_mode == "Commuter Rail" &
+                    rvs$Costs$unit == "per_VRM_fuel_cost"] <-
+    ifelse(!isTruthy(per_VRM_fuel_cost_electric_cr),0.5519780,per_VRM_fuel_cost_electric_cr)
+
+  #ONM Costs
+  print("average onm start")
+  #browser()
+  per_VRM_onm_cost_bus_Diesel <- Transit_Costs$total_cost_om[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Bus"]/Transit_Costs$veh_rev_miles[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Bus"]
+  rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type %in% c("Diesel","CNG") &
+                    rvs$Costs$transit_mode == "Bus" &
+                    rvs$Costs$unit == "per_VRM_onm_cost"] <-
+      ifelse(!isTruthy(per_VRM_onm_cost_bus_Diesel),7.6801949,per_VRM_onm_cost_bus_Diesel)
+
+
+  rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type %in% c("Electric") &
+                    rvs$Costs$transit_mode == "Bus" &
+                    rvs$Costs$unit == "per_VRM_onm_cost"] <-
+    ifelse(!isTruthy(per_VRM_onm_cost_bus_Diesel),7.6801949*.76,per_VRM_onm_cost_bus_Diesel*.76)
+
+  rvs$Costs$value[rvs$Costs$table_no_ui == 0 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type %in% c("Diesel") &
+                    rvs$Costs$transit_mode == "Commuter Bus" &
+                    rvs$Costs$unit == "per_VRM_onm_cost"] <-
+    ifelse(!isTruthy(per_VRM_onm_cost_bus_Diesel),7.6801949,per_VRM_onm_cost_bus_Diesel)
+
+  per_VRM_onm_cost_dr <- Transit_Costs$total_cost_om[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Demand Response"]/Transit_Costs$veh_rev_miles[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Demand Response"]
+  rvs$Costs$value[rvs$Costs$table_no_ui == 3 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type %in% c("Gasoline","CNG") &
+                    rvs$Costs$transit_mode == "Demand Response" &
+                    rvs$Costs$unit == "per_VRM_onm_cost"] <-
+    ifelse(!isTruthy(per_VRM_onm_cost_dr),2.3827171,per_VRM_onm_cost_dr)
+
+
+  rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type %in% c("Electric") &
+                    rvs$Costs$transit_mode == "Bus" &
+                    rvs$Costs$unit == "per_VRM_onm_cost"] <-
+    ifelse(!isTruthy(per_VRM_onm_cost_dr),2.3827171*.76,per_VRM_onm_cost_dr*.76)
+
+  per_VRM_onm_cost_electric_lr <- Transit_Costs$total_cost_om[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Light Rail"]/
+    NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Light Rail"]
+  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == "Electric" &
+                    rvs$Costs$transit_mode == "Light Rail / Streetcar" &
+                    rvs$Costs$unit == "per_VRM_onm_cost"] <-
+    ifelse(!isTruthy(per_VRM_onm_cost_electric_lr),12.458012648,per_VRM_onm_cost_electric_lr)
+
+  per_VRM_onm_cost_electric_hr <- Transit_Costs$total_cost_om[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Heavy Rail"]/
+    NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Heavy Rail"]
+  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == "Electric" &
+                    rvs$Costs$transit_mode == "Heavy Rail" &
+                    rvs$Costs$unit == "per_VRM_onm_cost"] <-
+    ifelse(!isTruthy(per_VRM_onm_cost_electric_hr), 6.720342417,per_VRM_onm_cost_electric_hr)
+
+  per_VRM_onm_cost_electric_cr <- Transit_Costs$total_cost_om[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Commuter Rail"]/
+    NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"]
+  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type %in% c("Electric","Diesel") &
+                    rvs$Costs$transit_mode == "Commuter Rail" &
+                    rvs$Costs$unit == "per_VRM_onm_cost"] <-
+    ifelse(!isTruthy(per_VRM_onm_cost_electric_cr),11.008286292,per_VRM_onm_cost_electric_cr)
+  #='Strategy Parameters'!G80*'Strategy Parameters'!G81
+  rvs$Costs$value[rvs$Costs$table_no_ui == 7 & rvs$Costs$unit == "e_bike_subsidies"] <-
+    rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 4 & rvs$Assumptions$element == "E-bike subsidies" & rvs$Assumptions$unit == "e_bike_cost"]/rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 4 & rvs$Assumptions$element == "E-bike subsidies" & rvs$Assumptions$unit == "subsidy_coverage_pct"]
+})
+
 #EmRate_By_Tech ---------------------------------------------------------------
 
 #This function calcualte the emrate for electricity based on a linear interpolation
@@ -821,16 +1176,19 @@ scenario_summary_results <- reactive({    #req('')
   strategy_temp <- scenario_sum() %>% left_join(scen_select, by = c("Strategy" = "Grouped Projects")) %>% 
     select('year', Strategy,Scenario1, Scenario2, total_newtrips, total_change_mtnox, total_change_pm25, total_change_VMT, total_change_MTCO2)
   
-  scen_co2 <- strategy_temp %>%
+  scen_co2 <- strategy_temp %>% mutate(year = as.character(year)) %>% 
     group_by(year) %>%
     summarise(Scenario1 = sum(total_change_MTCO2*Scenario1),
               Scenario2 = sum(total_change_MTCO2*Scenario2)) %>%
-    pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")
+    pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario") #%>%
+    #left_join(dt_emissions_base %>% rename(add = value) %>% select(-Scenario), by = "year") %>%
+    #mutate(value = value + add) %>% 
+    #select(-add)
   
   scen_VMT <- strategy_temp %>%
     group_by(year) %>%
-    summarise(Scenario1 = sum(total_change_VMT*Scenario1),
-              Scenario2 = sum(total_change_VMT*Scenario2)) %>%
+    summarise(Scenario1 = sum(total_change_VMT*Scenario1)/1000000,
+              Scenario2 = sum(total_change_VMT*Scenario2)/1000000) %>%
     pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")
   
   scen_NOX <- strategy_temp %>%
@@ -841,7 +1199,7 @@ scenario_summary_results <- reactive({    #req('')
     pivot_wider(names_from= year, values_from = value)  %>%
     mutate(table_title = "NOx Reduction (MT)")
   
-  scen_NOX[,as.character(rvs$Baseline$base_year)]<-"-"
+  scen_NOX[,as.character(rvs$Baseline$base_year)]<-0
   
   scen_PM25 <- strategy_temp %>%
     group_by(year) %>%
@@ -851,7 +1209,7 @@ scenario_summary_results <- reactive({    #req('')
     pivot_wider(names_from= year, values_from = value)  %>%
     mutate(table_title = "PM2.5 Reduction (MT)")
   
-  scen_PM25[,as.character(rvs$Baseline$base_year)]<-"-"
+  scen_PM25[,as.character(rvs$Baseline$base_year)]<-0
   
   scen_NewTrips <- strategy_temp %>%
     group_by(year) %>%
@@ -861,57 +1219,55 @@ scenario_summary_results <- reactive({    #req('')
     pivot_wider(names_from= year, values_from = value)  %>% 
     mutate(table_title = "New Daily Active Trips")
   
-  scen_NewTrips[,as.character(rvs$Baseline$base_year)]<-"-"
+  scen_NewTrips[,as.character(rvs$Baseline$base_year)]<-0
   
-  fin_emissions_table <- rbind(dt_emissions_base,scen_co2) %>%
+  fin_emissions_table <- rbind(dt_emissions_base,scen_co2 %>% mutate(value = ifelse(year == rvs$Baseline$horizon_year_1, base_year_2_co2 + value,
+                                                                                           ifelse(year == rvs$Baseline$horizon_year_2, base_year_3_co2 + value,
+                                                                                                  ifelse(year == rvs$Baseline$horizon_year_3,base_year_4_co2 + value, NA))))) %>%
     #mutate(value = ifelse(Scenario != "Baseline"&year == rvs$Baseline$base_year, base_year_1_co2,value))
-    pivot_wider(names_from= year, values_from = value) 
-  fin_emissions_table[c(2,3),2] <- base_year_1_co2
+    pivot_wider(names_from= year, values_from = value, values_fill = base_year_1_co2)
   fin_emissions_table <- fin_emissions_table %>% 
     mutate(table_title = "Emissions (MT CO2e)")
   
-  fin_emissions_reduction_table <- scen_co2 %>% mutate(value = ifelse(year == rvs$Baseline$base_year, base_year_1_co2 - value,
-                                                                      ifelse(year == rvs$Baseline$horizon_year_1, base_year_2_co2 - value,
-                                                                             ifelse(year == rvs$Baseline$horizon_year_2, base_year_3_co2 - value,
-                                                                                    ifelse(year == rvs$Baseline$horizon_year_3,base_year_4_co2 - value, "Missing Year")))))%>%
+  fin_emissions_reduction_table <- scen_co2 %>%
     pivot_wider(names_from = year) %>% 
     mutate(table_title = "Emissions Reduction (MT from Baseline)")
   
-  fin_emissions_reduction_table[,as.character(rvs$Baseline$base_year)]<-"-"
+  fin_emissions_reduction_table[,as.character(rvs$Baseline$base_year)]<-0
   
   
-  fin_emissions_per_change_table <- scen_co2 %>% mutate(value = ifelse(year == rvs$Baseline$base_year, (value-base_year_1_co2)/base_year_1_co2,
-                                                                       ifelse(year == rvs$Baseline$horizon_year_1, (value-base_year_2_co2)/base_year_2_co2,
-                                                                              ifelse(year == rvs$Baseline$horizon_year_2, (value-base_year_3_co2)/base_year_3_co2,
-                                                                                     ifelse(year == rvs$Baseline$horizon_year_3,(value-base_year_4_co2)/base_year_4_co2, "Missing Year"))))) %>%
+  fin_emissions_per_change_table <- scen_co2 %>% mutate(value = ifelse(year == rvs$Baseline$horizon_year_1, (value)/base_year_2_co2,
+                                                                              ifelse(year == rvs$Baseline$horizon_year_2, (value)/base_year_3_co2,
+                                                                                     ifelse(year == rvs$Baseline$horizon_year_3,(value)/base_year_4_co2, NA)))) %>%
     pivot_wider(names_from = year) %>% 
     mutate(table_title = "Emissions Reduction (% from Baseline)")
   
-  fin_emissions_per_change_table[,as.character(rvs$Baseline$base_year)]<-"-"
+  fin_emissions_per_change_table[,as.character(rvs$Baseline$base_year)]<-0
   
   
-  fin_vmt_table <- rbind(dt_VMT_base,scen_VMT) %>%
+  fin_vmt_table <- rbind(dt_VMT_base,scen_VMT%>% mutate(value = ifelse(year == rvs$Baseline$horizon_year_1, base_year_2_VMT + value,
+                                                                       ifelse(year == rvs$Baseline$horizon_year_2, base_year_3_VMT + value,
+                                                                              ifelse(year == rvs$Baseline$horizon_year_3,base_year_4_VMT + value, NA))))) %>%
     #mutate(value = ifelse(Scenario != "Baseline"&year == rvs$Baseline$base_year, base_year_1_co2,value))
-    pivot_wider(names_from= year, values_from = value) 
-  fin_vmt_table[c(2,3),2] <- base_year_1_VMT
+    pivot_wider(names_from= year, values_from = value, values_fill = base_year_1_VMT) 
+  
   fin_vmt_table <- fin_vmt_table %>%
     mutate(table_title = "VMT (millions)")
   
-  fin_vmt_reduction_table <- scen_VMT %>% mutate(value = ifelse(year == rvs$Baseline$base_year, base_year_1_VMT - value,
-                                                                ifelse(year == rvs$Baseline$horizon_year_1, base_year_2_VMT - value,
-                                                                       ifelse(year == rvs$Baseline$horizon_year_2, base_year_3_VMT - value,
-                                                                              ifelse(year == rvs$Baseline$horizon_year_3,base_year_4_VMT - value, "Missing Year")))))%>% pivot_wider(names_from = year)%>%
+  fin_vmt_reduction_table <- scen_VMT  %>%
+    pivot_wider(names_from = year)%>%
     mutate(table_title = "VMT Reduction (millions from Baseline)")
   
-  fin_vmt_reduction_table[,as.character(rvs$Baseline$base_year)]<-"-"
-  
-  fin_vmt_per_change_table <- scen_VMT %>% mutate(value = ifelse(year == rvs$Baseline$base_year, (value- base_year_1_VMT)/base_year_1_VMT,
-                                                                 ifelse(year == rvs$Baseline$horizon_year_1, (value- base_year_2_VMT)/base_year_2_VMT,
-                                                                        ifelse(year == rvs$Baseline$horizon_year_2, (value- base_year_3_VMT)/base_year_3_VMT,
-                                                                               ifelse(year == rvs$Baseline$horizon_year_3,(value- base_year_4_VMT)/base_year_4_VMT, "Missing Year"))))) %>% pivot_wider(names_from = year) %>%
-    mutate(table_title = "VMT Reduction (% from")
-  
-  fin_vmt_per_change_table[,as.character(rvs$Baseline$base_year)]<-"-"
+  fin_vmt_reduction_table[,as.character(rvs$Baseline$base_year)]<-0
+  #browser()
+  fin_vmt_per_change_table <- scen_VMT %>% mutate(value = ifelse(year == rvs$Baseline$base_year, (value)/base_year_1_VMT,
+                                                                 ifelse(year == rvs$Baseline$horizon_year_1, (value)/base_year_2_VMT,
+                                                                        ifelse(year == rvs$Baseline$horizon_year_2, (value)/base_year_3_VMT,
+                                                                               ifelse(year == rvs$Baseline$horizon_year_3,(value)/base_year_4_VMT, NA))))) %>% 
+    pivot_wider(names_from = year) %>%
+    mutate(table_title = "VMT Reduction (% from Baseline)")
+ #browser()
+  fin_vmt_per_change_table[,as.character(rvs$Baseline$base_year)]<-0
   
   
   

@@ -27,22 +27,22 @@ output_bikped <- reactive({
                                             Assumptions_bikdped$value[Assumptions_bikdped$element == 'Core ( greater than 10,000 ppsm)']*
                                             Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
                                             daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
-                                            Assumptions_bikdped$value[Assumptions_bikdped$element == 'Core ( greater than 10,000 ppsm)'])*Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor'],
+                                            Assumptions_bikdped$value[Assumptions_bikdped$element == 'Core ( greater than 10,000 ppsm)'])*Assumptions_bikdped$value[Assumptions_bikdped$unit == 'annualization_factor'],
                                                   area_type == 'Urban' ~  -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Urban (4,000 - 10,000 ppsm)']*
                                                                               Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
                                                                               daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
                                                                               Assumptions_bikdped$value[Assumptions_bikdped$element == 'Urban (4,000 - 10,000 ppsm)'])*
-                                                    Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor'],
+                                                    Assumptions_bikdped$value[Assumptions_bikdped$unit == 'annualization_factor'],
                                                   area_type == 'Suburban' ~  -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Suburban (500 - 4,000 ppsm)']*
                                                                                  Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
                                                                                  daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
                                                                                  Assumptions_bikdped$value[Assumptions_bikdped$element == 'Suburban (500 - 4,000 ppsm)'])*
-                                                    Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor'],
+                                                    Assumptions_bikdped$value[Assumptions_bikdped$unit == 'annualization_factor'],
                                                   area_type == 'Rural' ~  -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Rural ( less than 500 ppsm)']*
                                                                               Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
                                                                               daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
                                                                               Assumptions_bikdped$value[Assumptions_bikdped$element == 'Rural ( less than 500 ppsm)'])*
-                                                    Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor']
+                                                    Assumptions_bikdped$value[Assumptions_bikdped$unit == 'annualization_factor']
     )) 
   
   captial_project_input_bkped <- rvs$Projects[rvs$Projects$table_no_ui == 1,] %>%
@@ -89,22 +89,22 @@ cost_output_bikeped <- reactive({
                                                                              Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
                                                                              daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
                                                                              Assumptions_bikdped$value[Assumptions_bikdped$element == 'Core ( greater than 10,000 ppsm)'])*
-                                                     Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor'],
+                                                     Assumptions_bikdped$value[Assumptions_bikdped$unit == 'annualization_factor'],
                                                    area_type == 'Urban' ~  -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Urban (4,000 - 10,000 ppsm)']*
                                                                                Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
                                                                                daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
                                                                                Assumptions_bikdped$value[Assumptions_bikdped$element == 'Urban (4,000 - 10,000 ppsm)'])*
-                                                     Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor'],
+                                                     Assumptions_bikdped$value[Assumptions_bikdped$unit == 'annualization_factor'],
                                                    area_type == 'Suburban' ~  -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Suburban (500 - 4,000 ppsm)']*
                                                                                   Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
                                                                                   daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
                                                                                   Assumptions_bikdped$value[Assumptions_bikdped$element == 'Suburban (500 - 4,000 ppsm)'])*
-                                                     Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor'],
+                                                     Assumptions_bikdped$value[Assumptions_bikdped$unit == 'annualization_factor'],
                                                    area_type == 'Rural' ~  -(daily_new_bicyclists*Assumptions_bikdped$value[Assumptions_bikdped$element == 'Rural ( less than 500 ppsm)']*
                                                                                Assumptions_bikdped$value[Assumptions_bikdped$element == 'Bike'] +
                                                                                daily_new_walkers * Assumptions_bikdped$value[Assumptions_bikdped$element == 'Walk']*
                                                                                Assumptions_bikdped$value[Assumptions_bikdped$element == 'Rural ( less than 500 ppsm)'])*
-                                                     Assumptions_bikdped$value[Assumptions_bikdped$element == 'annualization_factor']
+                                                     Assumptions_bikdped$value[Assumptions_bikdped$unit == 'annualization_factor']
     )) 
   
   output_bikeped_cost <- Bicycle_and_Pedestrian_base %>%

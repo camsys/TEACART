@@ -1,12 +1,11 @@
 ---
-title: "Transportation Evaluation and Carbon Reduction Report"
-date: "Date Report Created: `r Sys.Date()`"
+title: 'Transportation Evaluation and Carbon Reduction Report'
+date: "Report Created: `r Sys.Date()`"
 format: pdf
 output: pdf_document
 pdf-engine: xelatex
 mainfont: "Arial"
 fontsize: 11pt
-classoption: openany
 editor: visual
 params:
  state: NULL
@@ -24,19 +23,9 @@ params:
  ghg_data: NULL
  scen_data: NULL
  cost_data: NULL
+document:
+  top-margin: "0.5in"
 ---
-
-## 1.Introduction
-
-The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a comprehensive and dynamic tool aimed at assisting states with selecting and prioritizing transportation capital program investments to effectively support greenhouse gas (GHG) reduction. The tool is designed to accept inputs typically available during the programming process. It provides key outputs including:
-
--A baseline inventory and forecast of GHG emissions.
-
--GHG impacts of a capital program or a hypothetical set of capital projects.
-
--Information on cost-effectiveness of various project types.
-
-TEA-CART is a planning-level tool. It is designed to accept relatively simple inputs, typically available at the long-range planning or programming stage, characterizing the number, size, context, and type of transportation projects that could reduce GHG emissions. As such, TEA-CART relies on data that is typical for projects of a given type. In practice, individual projects may results in a wide range of GHG effects. For more detailed, project-specific evaluation, users may want to refer to project-specific tools such as the Federal Highway Administration Congestion Mitigation and Air Quality Program (CMAQ) Emissions Calculator Toolkit.
 
 ```{r,fig.showtext=TRUE}
 #| echo: false
@@ -45,7 +34,6 @@ TEA-CART is a planning-level tool. It is designed to accept relatively simple in
 
 
 # intall packages
-library(shiny)
 library(readxl) 
 library(DT)
 library(knitr)
@@ -74,23 +62,24 @@ pagebreak <- function() {
   else {
         return('<div style="page-break-before: always;" />')
   }
-}
-
-# end of functions
-
-# set up dummy data for now
-path = paste0(getwd(),'/data/costs_outputs.xlsx')
-#path = 'C:/Users/qsi/OneDrive - Cambridge Systematics/Desktop/TEA-CART/costs_outputs.xlsx'
-
- #dummydata<- multiplesheets(path)
-
+} # end of functions
 ```
 
-`r pagebreak()`
+This report was automatically generated using the TEA-CART tool.
 
-## 2.Baseline Inputs
+## 1.Introduction
 
-This report was created using the following metrics:
+The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a comprehensive and dynamic tool aimed at assisting states with selecting and prioritizing transportation capital program investments to effectively support greenhouse gas (GHG) reduction. The tool is designed to accept inputs typically available during the programming process. It provides key outputs including:
+
+-   A baseline inventory and forecast of GHG emissions.
+
+-   GHG impacts of a capital program or a hypothetical set of capital projects.
+
+-   Information on cost-effectiveness of various project types.
+
+TEA-CART is a planning-level tool. It is designed to accept relatively simple inputs, typically available at the long-range planning or programming stage, characterizing the number, size, context, and type of transportation projects that could reduce GHG emissions. As such, TEA-CART relies on data that is typical for projects of a given type. In practice, individual projects may results in a wide range of GHG effects. For more detailed, project-specific evaluation, users may want to refer to project-specific tools such as the Federal Highway Administration Congestion Mitigation and Air Quality Program (CMAQ) Emissions Calculator Toolkit.
+
+This report was generated using the following baseline inputs:\
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
@@ -129,16 +118,18 @@ print(tagList(
 
       ))))
 
+
+
 # add section for all edited parameter
 ```
 
 `r pagebreak()`
 
-## 3.Baseline Output
+## 2.Output
 
-### 3.1 Baseline GHG Forecast
+### 2.1 Baseline GHG Forecast
 
-#### 3.1.1 Transportation GHG Forecast
+#### 2.1.1 Transportation GHG Forecast
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
@@ -157,13 +148,11 @@ ghg_dat <- params$ghg_data
 GHG_forecast <- ghg_dat %>%
   slice(1:(n() - 1)) %>% # get rid of thte last row 
     pivot_longer(cols = !(`Emissions`), names_to = c("year"), values_to = 'Emission')
-
 # 
 # GHG_forecast <- readxl::read_excel(path2, sheet = 'GHG Forecast') %>%
 #     pivot_longer(cols = !(`Emissions (MT CO2e)`), names_to = c("year"), values_to = 'Emission')
 
 fig_list <- c("Total (Onroad Vehicles)", "Total (All Transportation)")
-
 
 for ( var in fig_list){
   
@@ -181,10 +170,11 @@ for ( var in fig_list){
     geom_line(color = '#E69F00', size = 1) + 
     geom_point(color = '#E69F00', size = 3) + 
     ylab("Emissions (MT CO2e) ") +
-    scale_y_continuous(labels = label_comma()) +
+    scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) + 
     xlab(NULL) +
-    ggtitle(title)
-
+    ggtitle(title) +
+        theme_classic() 
+# print(ghg_fore +  theme_classic())
   print(ghg_fore + theme(
     axis.title.x = element_text(size = 11),
     axis.title.y = element_text(size = 11),
@@ -192,7 +182,7 @@ for ( var in fig_list){
     axis.text.y = element_text(size = 11),
     plot.title = element_text(size = 12)
   ))
-    
+
   
   print(tagList(cat("  \n\n  ")))
       print(tagList(cat("  \\newpage  ")))
@@ -203,7 +193,7 @@ for ( var in fig_list){
 
 `r pagebreak()`
 
-#### 3.1.2 Transportation Emissions by Source and Year
+#### 2.1.2 Transportation Emissions by Source and Year
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
@@ -238,17 +228,18 @@ print(ggplot(data_temp,
                  xmax = 4,
                  xmin = 3,
                  fill = `Emission Source`)) +
-  geom_rect() +
+  geom_rect(color = NA) +
   scale_fill_brewer(palette = 'RdYlBu') +
   coord_polar(theta = "y") +
   xlim(c(2, 4)) +
-  ggtitle(paste0('Transportation Emission: ', var)) +
-  theme_void() +
-  theme(
-    plot.title = element_text(size = 12),
-    legend.text.align = 0
-  )
-)
+  ggtitle(paste0('Transportation Emission: ', var))+
+   ggplot2::theme_void() +
+   ggplot2::theme(
+     plot.background = element_rect(fill = "white"),
+     plot.title = element_text(size = 12),
+     legend.text.align = 0
+   )
+) + theme_classic() 
     
 print(tagList(cat("  \n\n  ")))
       print(tagList(cat("  \\newpage  ")))
@@ -258,8 +249,7 @@ print(tagList(cat("  \n\n  ")))
 
 ```
 
-
-### 3.2 Scenario Summary
+### 2.2 Scenario Summary
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
@@ -275,51 +265,55 @@ print(tagList(cat("  \n\n  ")))
 # scenarioresults <- readxl::read_excel(path3)
 scenarioresults <- params$scen_data
 
+scenarioresults$indicator = gsub("CO2", "CO₂",scenarioresults$indicator )
+
 indicators <- unique(scenarioresults$indicator)
 
-for (i in indicators){
+  for (i in indicators){
 data_temp <- scenarioresults %>%
   filter(indicator == i, !is.na(mt_reduction)) %>%
   as.data.frame() %>%
   na.omit() %>%
-  mutate(Year = as.factor(Year))
-
+  mutate(Year = as.factor(Year)) %>%
+  mutate(Scenario = ifelse(Scenario == 'Scenario1', 'Scenario 1', 'Scenario 2'))
 
   scen <- ggplot(data_temp,
                aes(fill = Scenario,
                    y = mt_reduction,
                    x = Year))+
     geom_bar(position="dodge", stat="identity")+
-       scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) + 
+       scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) +
       ylab(paste0(i," Change")) +
-      ggtitle(paste0("Change in ", i)) + 
+      ggtitle(paste0("Reduction in ", i, " (From Baseline)")) +
             theme_classic() +
           xlab(NULL)
-  
-   print(scen + theme(
-    axis.title.x = element_text(size = 11),
-    axis.title.y = element_text(size = 11),
-    axis.text.x = element_text(size = 11),
-    axis.text.y = element_text(size = 11),
-    plot.title = element_text(size = 12)
-  ))
 
-  # print(tagList(cat("  \n\n  ")))
-  #     print(tagList(cat("  \\newpage  ")))
-  #     print(tagList(cat("  \n\n  ")))
+print(scen + theme(
+  axis.title.x = element_text(size = 11),
+  axis.title.y = element_text(size = 11),
+  axis.text.x = element_text(size = 11),
+  axis.text.y = element_text(size = 11),
+  plot.title = element_text(size = 12)
+))
 
-}
+  print(tagList(cat("  \n\n  ")))
+      print(tagList(cat("  \\newpage  ")))
+      print(tagList(cat("  \n\n  ")))
+
+ }
 
 ```
 
-### 3.3 Cost Effectiveness
+### 2.3 Cost Effectiveness
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
 #| warning: false
 #| message: false
 
-cost_tbl <- params$cost_data
+
+cost_tbl <- params$cost_data 
+
 # not sure why for -loop doesn't work when knit. 
 tab_list <- c('bikeped',"transit_fixed",'transit_dr',"pub_trans_bus","transit_zeb", "pub_trans_rail","tdm","micro","traffic_ops","mhdev", "pnr","evsi","roadway","intermodal"
               
@@ -340,9 +334,23 @@ title_list <- c('Bicycle and Pedestrian',
                 'Freight - Intermodal Investment'
                 )
 
+string_to_remove <- c('CO2','Daily Trips','NOx','PM25','VMT' )
+
 num = 1
 for (var in tab_list){
-    df <- get(var,cost_tbl)
+    df <- get(var,cost_tbl) %>% 
+        mutate_all(~ str_replace_all(., paste(string_to_remove, collapse = "|"), ""))
+ 
+if (ncol(df) == 5){
+    width <- "2.8cm"}
+    else if (ncol(df) == 7) {
+    width <- "2cm"
+} else if (ncol(df) == 8){
+    width <- "1.75cm"
+} else if (ncol(df) == 6){
+    width <- "2.33333cm"
+} 
+
  print(tagList(
       cat("###", title_list[num], "\n\n")))
  if(var == 'bikeped'){
@@ -351,18 +359,17 @@ for (var in tab_list){
   rename_with(~str_remove(.,'Summary.')) %>%
  mutate(across(0:ncol(.),
                ~ cell_spec(.,
-                      background = ifelse(.x == 'Low',"#FDE72550",
-                           ifelse(.x == 'Medium',"#22A88450",
-                             ifelse(.x == 'High','#2A788E50',
-                                ifelse(.x == 'Very High','#44015450',
-                                    ifelse(grepl("Increase",.x),'#41448750',
-                                           ifelse(grepl("Decrease",.x),'#7AD15150',
+                      background = ifelse(.x == 'Low',"#FDE725",
+                           ifelse(.x == 'Medium',"#22A884",
+                             ifelse(.x == 'High','#2A788E',
+                                ifelse(.x == 'Very High','#9020ab',
+                                    ifelse(grepl("Increase",.x),'#7a7dc2',
+                                           ifelse(grepl("Decrease",.x),'#7AD151',
                                           "#FFFFFF"))))))))) %>%
     knitr::kable(booktabs = T, escape = F,linesep = "",align = "l", format = 'latex') %>%
-    column_spec(3:6,width = "1cm",bold = FALSE) %>%
-   column_spec(2,width = "3cm") %>%
+   column_spec(0:ncol(df),width = width) %>%
     column_spec(1,width = "1cm") %>%
-      column_spec(7,width = "3cm") %>%
+      column_spec(2,width = "3cm") %>%
    kableExtra::kable_styling(full_width = F,
                              position = "l"))}
  else{
@@ -371,18 +378,18 @@ for (var in tab_list){
   rename_with(~str_remove(.,'Summary.')) %>%
  mutate(across(0:ncol(.),
                ~ cell_spec(.,
-                      background = ifelse(.x == 'Low',"#FDE72550",
-                           ifelse(.x == 'Medium',"#22A88450",
-                             ifelse(.x == 'High','#2A788E50',
-                                ifelse(.x == 'Very High','#44015450',
-                                    ifelse(grepl("Increase",.x),'#41448750',
-                                           ifelse(grepl("Decrease",.x),'#7AD15150',
+                      background = ifelse(.x == 'Low',"#FDE725",
+                           ifelse(.x == 'Medium',"#22A884",
+                             ifelse(.x == 'High','#2A788E',
+                                ifelse(.x == 'Very High','#9020ab',
+                                    ifelse(grepl("Increase",.x),'#7a7dc2',
+                                           ifelse(grepl("Decrease",.x),'#7AD151',
                                           "#FFFFFF"))))))))) %>%
     knitr::kable(booktabs = T, escape = F,linesep = "",align = "l", format = 'latex') %>%
-    column_spec(0:ncol(df),width = "1.5cm") %>%
+   column_spec(0:ncol(df),width = width) %>%
    kableExtra::kable_styling(full_width = F,
                              position = "l"))
- }
+  }
 cat("\n\n\\pagebreak\n")
 writeLines("")
 

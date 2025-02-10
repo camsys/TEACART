@@ -37,7 +37,6 @@ filter_columns <- function(df, selected_columns, strategy_name) {
 
 #observe({
 scenario_sum <- reactive({
-#browser()
 
 selected_columns <- c("year", "total_newtrips",'total_change_mtnox','total_change_pm25','total_change_VMT','total_change_MTCO2')
 
@@ -68,7 +67,7 @@ all_costs <- reactive({
    #val1_scalar = ,
    #val2_scalar = ,
    style = 'summary'
- )
+ ) 
  
  transit_fixed <- cost_function(
    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
