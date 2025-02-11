@@ -14,19 +14,8 @@ library(shiny)
 library(shinyjs)
 library(tinytex)
 library(tools)
-library(shinyalert)
-library(knitr)
-library(ggplot2)
-if (!require(kableExtra)) {
-  install.packages("kableExtra")
-  library(kableExtra)
-}
-if (!require(tinytex)) {
-  install_tinytex()
-}
-library(showtext)
-showtext_auto()
-library(scales)
+
+
 # load source files -------------------------------------------------------
 #SETH NOTE Should this be here?
 all_files <- c(
@@ -101,6 +90,7 @@ ui <- function(request) {
             }
             .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
             .nav.navbar-nav .form-group.shiny-input-container > label {display: inline;}
+            
         ")),
         tags$link(rel = "stylesheet", 
                   href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"),
@@ -110,13 +100,9 @@ ui <- function(request) {
                   href = "TEACART.css"),
         tags$script(src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"),
         tags$script(src = "TEACART.js")
+        
       ),
       title = "TEA-CART",
-      id = "APP_PAGE",
-
-# sidebar -----------------------------------------------------------------
-
-
       sidebar = sidebar(fileInput("user_inputs_upload",
                                   "Upload User Inputs",
                                   accept = c(".xlsx")),
@@ -128,20 +114,15 @@ ui <- function(request) {
                         HTML("<p>
                              A few reminders:
                              <ul>
-                            <li><b>Download data regularly</b> while entering data.</li>
-                            <li>The application will disconnect from the server after 
-                            long periods of inactivity.</li>
-                            <li>Upload your file if you have 
-                            left the application and are ready to resume editing.</li>
-                            <li>Double-click a table to enter data.</li>
-                            <li>Press CTRL + ENTER to finish entering 
-                            data.</li>
+                            <li>Download data regularly while entering data - if you need to leave the app before finishing, reupload it to resume editing.</li>
+                            <li>Pressing CTRL + ENTER finishes entering 
+                            data for one table.</li>
                             <li>Enter data for one table at 
                             a time.</li></ul>"),
                         nav_spacer(),
                         nav_spacer(),
                         nav_spacer(),
-                        downloadButton("pdf_report","Download Summary Report"), open = FALSE, id = "dwn_sidebar"),
+                        downloadButton("pdf_report","Download Summary Report")),
       
 
 # welcome page ------------------------------------------------------------
@@ -149,42 +130,25 @@ ui <- function(request) {
       nav_panel(title = "Welcome",
                 p(),
                 #    h2("Transportation Evaluation and Carbon Reduction Tool (TEA-CART)"),
-                h3("About"),
+                h2("About"),
                 p(),
                 p("The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a
       comprehensive and dynamic tool aimed at assisting states with selecting
       and prioritizing transportation capital program investments to effectively
       support greenhouse gas (GHG) reduction. The tool is designed to accept
-      inputs typically available during the capital programming process. It provides
-      key outputs, including:"),
+      inputs typically available during the programming process. It provides
+      key outputs including:"),
       tags$ul(tags$li(p("A baseline inventory and forecast of GHG emissions.")),
               tags$li(p("GHG impacts of a capital program or a hypothetical set
                       of capital projects.")),
               tags$li(p("Information on cost-effectiveness of various project
                       types."))),
-      h3("Guidance on using the tool"),
-      p("As you enter data, please keep the following in mind:"),
-      tags$ul(tags$li(p("This application does not require a login and is free to use.")),
-              tags$li(p("In the left side panel, there is a button to Download 
-                        User Inputs. It is essential that you download data 
-                        the server after long periods of inactivity. If you need to leave the 
-                        application before completing the analysis, you can later upload the 
-                        saved file to continue your work.")),
-              tags$li(p("Data are entered in tables. To begin entering (or editing) data, 
-                        double click anywhere in the table using your mouse. When you are done 
-                        entering data, press CTRL + ENTER on your keyboard (this 
-                        initiates the calculation). Data can only be entered for 
-                        one table at a time.")),
-              tags$li(p("When you are ready to see the results of your analysis, proceed to 
-                        the Scenarios tab and select scenarios for analysis. Either choose 
-                        groups of projects (to support a comparison) or click the button 
-                        to select all projects for each scenario."))),
       h3("Version"),
-      HTML("<p>Adapted from TEA-CART Excel Model Version 1.8</p>
-           <p>Shiny App last updated March 27, 2024</p>
-           <p>Prototype under development by Cambridge Systematics, Inc.<br>
-           under contract to Georgetown Climate Center</p>
-           <p>© Georgetown Climate Center")
+      p("Based on TEA-CART Excel Model Version 1.8"),
+      p("Shiny App last updated February 26, 2024"),
+      p("prototype under development by Cambridge Systematics, Inc."),
+      p("under contract to Georgetown Climate Center"),
+      p("© Georgetown Climate Center"),
       ),
 
 
@@ -192,7 +156,6 @@ ui <- function(request) {
       
       nav_panel(title = "Inputs",
                 navset_card_pill(
-                  id = "INPUTS_TABS",
 
 # baseline inputs ---------------------------------------------------------                  
                   nav_panel(title = "Baseline",
@@ -202,140 +165,106 @@ ui <- function(request) {
                             fluidRow(
                               DT::dataTableOutput("test_data")
                             ),
-                            fluidRow(
-                              column(12,
-                                     
-                                     tabPanel(title = "Key Inputs"),
-                                     p("Select the state, years, and scope of baseline GHG forecast."),
-                                     tags$div(class = "well card-flex",
-                                              tags$div(class = "half-card",
-                                                       selectInput("state_input",
-                                                                   'State: ',
-                                                                   selected = "Maryland",
-                                                                   state.name)),
-                                              tags$div(class = "half-card",
-                                                       p("Select the state for which you are conducting analysis."))
-                                     ),
-                                     p(),
-                                     tags$div(class = "well invisible-well",
-                                              numericInput("base_year",
-                                                           HTML(paste('Base Year: ',
-                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The first year of analysis and the reference point for assessing baseline trends.")),
-                                                                      sep = "")
-                                                           ),
-                                                           value = 2021,
-                                                           min = 2021,
-                                                           max = 2050,
-                                                           step = 1),
-                                              p(" "),
-                                              numericInput("horizon_year_1",
-                                                           HTML(paste('Horizon Year 1: ',
-                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The first (future) year for which projects may be entered and the first year for which TEA-CART will generate outputs.")),
-                                                                      sep = "")
-                                                           ),
-                                                           value = 2025,
-                                                           min = 2021,
-                                                           max = 2050,
-                                                           step = 1),
-                                              p(" "),
-                                              numericInput("horizon_year_2",
-                                                           HTML(paste('Horizon Year 2: ',
-                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The second (future) year for which projects may be entered and the second year for which TEA-CART will generate outputs.")),
-                                                                      sep = "")
-                                                           ),
-                                                           value = 2030,
-                                                           min = 2021,
-                                                           max = 2050,
-                                                           step = 1),
-                                              p(""),
-                                              numericInput("horizon_year_3",
-                                                           HTML(paste('Horizon Year 3: ',
-                                                                      as.character(tags$i(class = "fa fa-info-circle", title = "The third (future) year for which projects may be entered and the third year for which TEA-CART will generate outputs.")),
-                                                                      sep = "")
-                                                           ),
-                                                           value = 2050,
-                                                           min = 2021,
-                                                           max = 2050,
-                                                           step = 1)),
-                                     p(),
-                                     tags$div(class = "well card-flex",
-                                              tags$div(class = "half-card",
-                                                       selectInput("transportation_scope",
-                                                                   'Transportation System Scope: ',
-                                                                   c("All Roadways","NHS Only"),
-                                                                   "All Roadways")),
-                                              tags$div(class = "half-card",
-                                                       HTML("<p>There are two options:<br>
-                                       All Roadways: Emissions from on-road travel on all state roadways.<br>
-                                       NHS Only: Emissions from on-road travel on National Highway System (NHS) roadways only.<br>
-                                       Note that TEA-CART only includes emissions from on-road travel."))
-                                     ),
-                                     p(),
-                                     tags$div(class = "well invisible-well card-flex",
-                                              tags$div(class = "half-card",
-                                                       selectInput("scope_emissions",
-                                                                   "Emissions Scope: Include Electricity",
-                                                                   
-                                                                   choices = c("Yes" = 1, "No" = 0),
-                                                                   selected = "Yes")),
-                                              tags$div(class = "half-card",
-                                                       HTML("<p>The scope of transportation emissions reported. By default, all direct emissions (emissions occurring at the vehicle tailpipe) are reported.<br>
-                                          Select 'Yes' to report emissions associated with the electricity used to power electric vehicles.")
-                                              )),
-                                     p(),
-                                     tags$div(class = "well card-flex",
-                                              tags$div(class = "half-card",
-                                                       selectInput("scope_fuels",
-                                                                   "Scope Emissions: Include Upstream Fuels",
-                                                                   choices = c("Yes" = 1, "No" = 0),
-                                                                   selected = "No")
-                                              ),
-                                              tags$div(class = "half-card",
-                                                       p("Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel, and CPG.")
-                                              )
-                                     ),
-                                     p(),
-                                     tags$div(class = "well invisible-well card-flex",
-                                              tags$div(class = "half-card",
-                                                       selectInput("vmt_forecast_input",
-                                                                   "VMT Forecast:",
-                                                                   c("Default","Custom"),
-                                                                   "Default")),
-                                              tags$div(class = "half-card",
-                                                       p("The vehicle miles traveled (VMT) forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab.")
-                                              )
-                                     ),
-                                     p(),
-                                     tags$div(class = "well card-flex",
-                                              tags$div(class = "half-card",
-                                                       selectInput("ev_baseline_input",
-                                                                   "Vehicle Electrification Baseline:",
-                                                                   c("AEO Baseline",
-                                                                     "ACC",
-                                                                     "ACC II",
-                                                                     "ACC II + ACT",
-                                                                     "Custom"),
-                                                                   "AEO Baseline")),
-                                              tags$div(class = "half-card",
-                                                       p("The vehicle electrification forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab."))
-                                     ),
-                                     p(),
-                                     tags$div(class = "well invisible-well card-flex",
-                                              tags$div(class = "half-card",
-                                                       numericInput("grid_emissions_input",
-                                                                    "Electricity Grid Emissions Net-Zero Year:",
-                                                                    value = 2025,
-                                                                    min = 2021,
-                                                                    max = 2050,
-                                                                    step = 1)),
-                                              tags$div(class = "half-card",
-                                                       p("The target year for achieving net-zero electricity grid emissions.")
-                                              )
-                                     )
-                                     
-                                     
-                                     
-                              )),
+                            p("Select the state, years, and scope of baseline GHG forecast."),
+                              fluidRow(
+                                class = "baseline-content",
+                                column(12,
+                                      
+                                      tabPanel(title = "Key Inputs"),
+                                      tags$div(class = "well invisible-well",
+                                                selectInput("state_input",
+                                                                    HTML("<span>State:</span><br><p>Select the state for which you are conducting analysis.</p>"),
+                                                                    selected = "Maryland",
+                                                                    state.name),
+                                                numericInput("base_year",
+                                                            HTML(paste('<span>Base Year:</span> ',
+                                                                        p("The first year of analysis and the reference point for assessing baseline trends."),
+                                                                        sep = "")
+                                                            ),
+                                                            value = 2021,
+                                                            min = 2021,
+                                                            max = 2050,
+                                                            step = 1),
+                                                p(" "),
+                                                numericInput("horizon_year_1",
+                                                            HTML(paste('<span>Horizon Year 1:</span> ',
+                                                                        p("The first (future) year for which projects may be entered and the first year for which TEA-CART will generate outputs."),
+                                                                        sep = "")
+                                                            ),
+                                                            value = 2025,
+                                                            min = 2021,
+                                                            max = 2050,
+                                                            step = 1),
+                                                p(" "),
+                                                numericInput("horizon_year_2",
+                                                            HTML(paste('<span>Horizon Year 2:</span> ',
+                                                                        p("The second (future) year for which projects may be entered and the second year for which TEA-CART will generate outputs."),
+                                                                        sep = "")
+                                                            ),
+                                                            value = 2030,
+                                                            min = 2021,
+                                                            max = 2050,
+                                                            step = 1),
+                                                p(""),
+                                                numericInput("horizon_year_3",
+                                                            HTML(paste('<span>Horizon Year 3:</span> ',
+                                                                        p("The third (future) year for which projects may be entered and the third year for which TEA-CART will generate outputs."),
+                                                                        sep = "")
+                                                            ),
+                                                            value = 2050,
+                                                            min = 2021,
+                                                            max = 2050,
+                                                            step = 1)),
+                                      br(),
+                                      tags$div(class = "well card-flex",
+                                                tags$div(class = "half-card",
+                                                        selectInput("transportation_scope",
+                                        HTML("<span>Transportation System Scope:</span> <br> <p>There are two options:<br>
+                                        All Roadways: Emissions from on-road travel on all state roadways.<br>
+                                        NHS Only: Emissions from on-road travel on National Highway System (NHS) roadways only.<br>
+                                        Note that TEA-CART only includes emissions from on-road travel."),
+                                                                    c("All Roadways","NHS Only"),
+                                                                    "All Roadways")
+                                                ),
+                                                tags$div(class = "half-card",
+                                                        selectInput("vmt_forecast_input",
+                                        HTML("<span>VMT Forecast:</span> <br> <p>The vehicle miles traveled (VMT) forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab."),
+                                                                    c("Default","Custom"),
+                                                                    "Default")),           
+                                      ),
+                                      tags$div(class = "well invisible-well card-flex",
+                                                tags$div(class = "half-card",
+                                                        selectInput("scope_emissions",
+                                                                    HTML("<span>Emissions Scope: Include Electricity:</span> <br> <p>The scope of transportation emissions reported. By default, all direct emissions (emissions occurring at the vehicle tailpipe) are reported.<br>
+                                                                        Select 'Yes' for Include Electricity to report emissions associated with the electricity used to power electric vehicles."),
+                                                                    choices = c("Yes" = 1, "No" = 0),
+                                                                    selected = "Yes")),
+                                                 tags$div(class = "half-card",
+                                                        selectInput("ev_baseline_input",
+                                                                    HTML("<span>Vehicle Electrification Baseline:</span> <br> <p>The vehicle electrification forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab."),
+                                                                    c("AEO Baseline",
+                                                                      "ACC",
+                                                                      "ACC II",
+                                                                      "ACC II + ACT",
+                                                                      "Custom"),
+                                                                    "AEO Baseline")),                                 
+                                      ),
+                                      tags$div(class = "well card-flex",
+                                                tags$div(class = "half-card",
+                                                        selectInput("scope_fuels",
+                                                                    HTML("<span>Scope Emissions: Include Upstream Fuels:</span> <br> <p>Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG"),
+                                                                    choices = c("Yes" = 1, "No" = 0),
+                                                                    selected = "No")
+                                                ),
+                                                tags$div(class = "half-card",
+                                                        numericInput("grid_emissions_input",
+                                                                      HTML("<span>Electricity Grid Emissions Net-Zero Year:</span> <br> <p>The target year for achieving net-zero electricity grid emissions.<br>"),
+                                                                      value = 2025,
+                                                                      min = 2021,
+                                                                      max = 2050,
+                                                                      step = 1)),
+                                      )                                                      
+                                )),
                   ),
                   
 
@@ -371,7 +300,6 @@ ui <- function(request) {
                    title = "Cumulative View",
                    placement = "bottom",
                    options = list(container = "body"),
-                   h6(em("Use the 2025 field to match records to this table.")),
                    DTOutput(outputId = "cumul_bikeped_projs_tbl")
                    ))
                                        ),
@@ -404,7 +332,6 @@ ui <- function(request) {
                     title = "Cumulative View",
                     placement = "bottom",
                     options = list(container = "body"),
-                    h6(em("Use the 2025 field to match records to this table.")),
                     DTOutput(outputId = "cumul_transit_fixed_projs_tbl")
             ))
           ),
@@ -435,7 +362,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_transit_dr_projs_tbl")
                    ))
                  ),
@@ -464,7 +390,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_transit_el_projs_tbl")
                    ))
                  ),
@@ -495,7 +420,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_transit_bus_projs_tbl")
                    ))
                  ),
@@ -523,7 +447,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_public_rail_projs_tbl")
                    ))
                  ),
@@ -554,7 +477,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_tdm_projs_tbl")
                    ))
                  ),
@@ -583,7 +505,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_micro_projs_tbl")
                    ))
                  ),
@@ -612,7 +533,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_traffic_ops_projs_tbl")
                    ))
                  ),
@@ -641,7 +561,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_mhdev_projs_tbl")
                    ))
                  ),
@@ -671,7 +590,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_pnr_projs_tbl")
                    ))
                  ),
@@ -700,7 +618,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_evsi_projs_tbl")
                    ))
                  ),
@@ -728,7 +645,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_freight_projs_tbl")
                    ))
                  ),
@@ -757,7 +673,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_expansion_projs_tbl")
                    ))
                  ),
@@ -785,7 +700,6 @@ ui <- function(request) {
                            title = "Cumulative View",
                            placement = "bottom",
                            options = list(container = "body"),
-                           h6(em("Use the 2025 field to match records to this table.")),
                            DTOutput(outputId = "cumul_custom_projs_tbl")
                    ))
                  ),
@@ -883,7 +797,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 4 | Public Transportation: Bus Priority Treatment Costs",
+                             "Costs 5 | Public Transportation: Bus Priority Treatment Costs",
                              HTML("This category represents the <b>cost per mile of red paint</b> for addition of miles of new bus priority treatment."),
 
                            ),
@@ -904,7 +818,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 5 | Public Transportation: Rail Costs",
+                             "Costs 6 | Public Transportation: Rail Costs",
                              HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new rail vehicles operating in annual maximum service (VOMS)."),
 
                            ),
@@ -926,7 +840,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 6 | Travel Demand Management (TDM) Costs",
+                             "Costs 7 | Travel Demand Management (TDM) Costs",
                              HTML("This category represents the <b>cost per employee</b> of the TDM Program Outreach."),
 
                            ),
@@ -947,7 +861,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 7 | Micromobility Costs",
+                             "Costs 8 | Micromobility Costs",
                              HTML("This category represents the <b>subsidy provided per e-bike.</b>"),
                            ),
                            open = FALSE
@@ -968,7 +882,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 8 | Traffic Operations - Intersection Improvement Costs",
+                             "Costs 9 | Traffic Operations - Intersection Improvement Costs",
                              HTML("This category represents the <b>cost per improvement</b> for any improvements made to traffic operations at intersections."),
                              
                            ),
@@ -990,7 +904,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 9 | Medium and Heavy Duty Vehicle Replacement Costs",
+                             "Costs 10 | Medium and Heavy Duty Vehicle Replacement Costs",
                              HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium and heavy-duty vehicles replaced with new electric vehicles."),
 
                            ),
@@ -1012,7 +926,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 10 | Park & Ride Costs",
+                             "Costs 11 | Park & Ride Costs",
                              HTML("This category represents the <b>cost per space</b> for any new addition or expansion of Park and Ride spaces."),
 
                            ),
@@ -1034,7 +948,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 11 | EV Charging Infrastructure Costs",
+                             "Costs 12 | EV Charging Infrastructure Costs",
                              HTML("This category represents the <b>hardware cost per port</b> and <b>installation cost per port</b> for any new addition or expansion of EV charging ports."),
                            ),
                            open = FALSE
@@ -1054,7 +968,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 12 | Intermodal Freight Investment Costs",
+                             "Costs 13 | Intermodal Freight Investment Costs",
                              HTML("This category represents the <b>cost of any intermodal investment.</b>"),
                            ),
                            open = FALSE
@@ -1075,7 +989,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 13 | Roadway Expansion Costs",
+                             "Costs 14 | Roadway Expansion Costs",
                              HTML("This category represents the <b>capital cost per lane-mile</b> and <b>annual maintenance cost per lane-mile</b> for addition of any new lane-miles of roadways."),
                            ),
                            open = FALSE
@@ -1096,7 +1010,7 @@ ui <- function(request) {
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Costs 14 | Fuel Price",
+                             "Costs 15 | Fuel Price",
                              HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."),
                            ),
                            open = FALSE
@@ -1352,12 +1266,6 @@ nav_panel(title = "Assumptions",
                   h3("Scenario Selections"),
                   p(""),
                   DT::DTOutput("scenario_tbl")
-                  # for select all boxes. 
-                 
-                ),
-                fluidRow(
-                  column(8, offset = 2, align = "right", actionButton("select_all_scenario1", "Select All Projects for Scenario 1")),
-                  column(2, align = "right", actionButton("select_all_scenario2", "Select All Projects for Scenario 2"))
                 )
       ),
 
@@ -1429,31 +1337,12 @@ nav_panel(title = "Assumptions",
                   DT::dataTableOutput("onroad_fuel_tech_frac_sheet_tbl")
                 ),
                 
-                # passenger rail - Average Trip Length
+                # passenger rail
                 fluidRow(
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Advanced 4 | Passenger Rail (Average Trip Length)",
-                             HTML("This reprents the average trip length in miles of intercity passenger rail in the study area."),
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_pass_rail_trip_len_sheet_tbl", "Reset Advanced 4", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("pass_rail_trip_len_sheet_tbl")
-                ),
-                
-                # passenger rail - energy Source
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Advanced 5 | Passenger Rail (Energy Source)",
+                             "Advanced 4 | Passenger Rail",
                              HTML("This represents the type of assumed fuel technologies used by passenger rail systems."),
 
                            ),
@@ -1461,7 +1350,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_pass_rail_sheet_tbl", "Reset Advanced 5", class = "btn-custom")
+                         actionButton("reset_pass_rail_sheet_tbl", "Reset Advanced 4", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1473,7 +1362,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Advanced 6 | Freight Rail",
+                             "Advanced 5 | Freight Rail",
                              HTML("This represents the assumed annual growth rate of freight rail and the energy intensity as measured in British thermal units (BTU) per ton-mile."),
 
                            ),
@@ -1481,7 +1370,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_freight_rail_sheet_tbl", "Reset Advanced 6", class = "btn-custom")
+                         actionButton("reset_freight_rail_sheet_tbl", "Reset Advanced 5", class = "btn-custom")
                   ),
 
                 ),
@@ -1495,7 +1384,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Advanced 7 | Construction and Maintenance",
+                             "Advanced 6 | Construction and Maintenance",
                              HTML("This represents the estimated emissions from construction and maintenance activities."),
 
                            ),
@@ -1503,7 +1392,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_construction_sheet_tbl", "Reset Advanced 7", class = "btn-custom")
+                         actionButton("reset_construction_sheet_tbl", "Reset Advanced 6", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1516,7 +1405,7 @@ nav_panel(title = "Assumptions",
                   column(10,
                          accordion(
                            accordion_panel(
-                             "Advanced 8 | Fuel Apportionments",
+                             "Advanced 7 | Fuel Apportionments",
                              HTML("This represents the percentage of plug-in hybrid electric vehicle (PHEV) miles driven on electricity."),
 
                            ),
@@ -1524,7 +1413,7 @@ nav_panel(title = "Assumptions",
                          ),
                   ),
                   column(2,
-                         actionButton("reset_fuel_apportionment_sheet_tbl", "Reset Advanced 8", class = "btn-custom")
+                         actionButton("reset_fuel_apportionment_sheet_tbl", "Reset Advanced 7", class = "btn-custom")
                   ),
                 ),
                 fluidRow(
@@ -1552,7 +1441,6 @@ nav_panel(title = "Assumptions",
                   placement = "above",
                   nav_panel(title = "Baseline GHG Forecast",
                             
-                            h2("Baseline GHG Forecast"),
                             HTML("This tab provides a projection 
                                  of baseline emissions for the time 
                                  horizons selected in the Baseline 
@@ -1589,8 +1477,8 @@ nav_panel(title = "Assumptions",
                                  and daily active trips.<br>
                                  <p>
                                  For the Scenario Summary, please select the 
-                                 an indicator from the dropdown below to compare your selected scenarios 
-                                 with the baseline GHG forecast."),
+                                 desired indicator to compare upto two 
+                                 different scenarios with the baseline forecast."),
                             fluidRow(
                               p(""),
                               title = "Select Indicator",
@@ -1659,94 +1547,91 @@ nav_panel(title = "Strategy Summary",
 # cost effectiveness ui ---------------------------------------------------
 
                   nav_panel(title = "Cost effectiveness",
-                            HTML("This tab allows users to review the cost effectiveness of each strategy as 
-                                 measured by the change in annual output of the indicator (e.g. MT CO2e) per 
-                                 $1 million of investment. All cost effectiveness outputs are calculated based  
-                                 on values entered in the Inputs tab."),
+                            HTML("This tab allows users to review the cost-effectiveness of each strategy, as measured by the change in annual output of the indicator (e.g. MT CO2e) per $1 million of investment. All cost-effectiveness information is dependent on information entered in the Inputs tab."),
                             fluidRow(
                               radioButtons(inputId = "cost_view",
                                            "Level of detail:",
                                            c("Detail results" = "detail", "Summary results" = "summary")),
                               p("All results are reported in terms of annual change per $M investment."),
-                              h3("Cost Effectiveness 1 | Bicycle & Pedestrian"),
+                              h3("Bicycle & Pedestrian"),
                               p(""),
                               DT::dataTableOutput("bikeped_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 2 | Transit: Increased Fixed Route Service"),
+                              h3("Transit: Increased Fixed Route Service"),
                               p(""),
                               DT::dataTableOutput("transit_fixed_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 3 | Transit: Increased Demand Response Service"),
+                              h3("Transit: Increased Demand Response Service"),
                               p(""),
                               DT::dataTableOutput("transit_dr_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 4 | Public Transportation: Bus Priority Treatment"),
+                              h3("Public Transportation: Bus Priority Treatment"),
                               p(""),
                               DT::dataTableOutput("pub_trans_priority_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 5 | Transit: Fleet Electrification"),
+                              h3("Transit: Fleet Electrification"),
                               p(""),
                               DT::dataTableOutput("transit_zeb_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 6 | Public Transportation: Rail"),
+                              h3("Public Transportation: Rail"),
                               p(""),
                               DT::dataTableOutput("pub_trans_rail_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 7 | Travel Demand Management"),
+                              h3("Travel Demand Management"),
                               p(""),
                               DT::dataTableOutput("tdm_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 8 | Micromobility"),
+                              h3("Micromobility"),
                               p(""),
                               DT::dataTableOutput("micro_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 9 | Traffic Operations: Intersections"),
+                              h3("Traffic Operations: Intersections"),
                               p(""),
                               DT::dataTableOutput("traffic_ops_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 10 | Medium and Heavy Duty Vehicle Replacement (Electrification)"),
+                              h3("Medium and Heavy Duty Vehicle Replacement (Electrification)"),
                               p(""),
                               DT::dataTableOutput("mhdev_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 11 | Park & Ride"),
+                              h3("Park & Ride"),
                               p(""),
                               DT::dataTableOutput("pnr_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 12 | EV Charging Infrastructure"),
+                              h3("EV Charging Infrastructure"),
                               p(""),
                               DT::dataTableOutput("evsi_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 13 | Roadway Expansion"),
+                              h3("Roadway Expansion"),
                               p(""),
                               DT::dataTableOutput("roadway_expand_costs_outputs_tbl")
                             ),
                             fluidRow(
                               p(""),
-                              h3("Cost Effectiveness 14 | Intermodal Freight Investment"),
+                              h3("Intermodal Freight Investment"),
                               p(""),
                               DT::dataTableOutput("intermodal_costs_outputs_tbl")
                             )
@@ -1790,7 +1675,7 @@ nav_panel(title = "Strategy Summary",
       ),
       nav_spacer(),
       nav_menu(
-        title = tags$img(src = "GCC_Logo_Transparent_Stacked.png", height = "30px"),
+        title = tags$img(src = "GCC_Logo_Contrast.svg", height = "30px"),
         nav_item(tags$a("Visit", href = "https://www.georgetownclimate.org/", target = "_blank")))
       
       
@@ -1821,8 +1706,8 @@ server <- function(input, output, session) {
   
   #set reactiveValues ----------------------------------------------------------
   rv <- reactiveValues()
-  rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
-  rvs_out <- read_output_tables(".\\data\\3.Model_Outputs.xlsx")
+  rvs <- read_user_inputs_version2("./data/2.User_Inputs.xlsx")
+  rvs_out <- read_output_tables("./data/3.Model_Outputs.xlsx")
   
   #update and record 
   #key_inputs updater ----------------------------------------------------------
@@ -1841,97 +1726,9 @@ server <- function(input, output, session) {
          input$grid_emissions_input)
   })
   
-  #page error checker ----------------------------------------------------------
-  
-  #these define which tab/page the users was on
-  which_input_tab <- reactiveValues(curr_input_tab = "",
-                                    prev_input_tab = "")
-  
-  observeEvent(input$INPUTS_TABS, {
-    req(input$INPUTS_TABS)
-
-    which_input_tab$prev_input_tab <- which_input_tab$curr_input_tab
-    which_input_tab$curr_input_tab <- input$INPUTS_TABS
-    
-  })
-
-  which_page <- reactiveValues(curr_page = "ini",
-                               prev_page = "")
-  
-  observeEvent(input$APP_PAGE, {
-    req(input$APP_PAGE)
-    if(which_page$prev_page == "ini"){toggle_sidebar(id = "dwn_sidebar")}
-    which_page$prev_page <- which_page$curr_page
-    which_page$curr_page <- input$APP_PAGE
-    
-  })
-  
-  #here's where the notification is sent to the user
-  observeEvent(input$INPUTS_TABS,{
-
-    req(input$horizon_year_1)
-    
-    if(which_input_tab$prev_input_tab == "Baseline"){
-      warning = c()
-      
-      if(input$base_year >= input$horizon_year_1){
-        warning = c(warning, "Base Year is higher than Horizon Year 1")
-        }
-      
-      if(input$base_year >= input$horizon_year_2){
-        warning = c(warning,"Base Year is higher than Horizon Year 2")
-        }
-      
-      if(input$base_year >= input$horizon_year_3){
-        warning = c(warning,"Base Year is higher than Horizon Year 3")
-        }
-      if(input$horizon_year_1 >= input$horizon_year_2){
-        warning = c(warning,"Horizon Year 1 is higher than Horizon Year 2")
-        }
-      
-      if(input$horizon_year_1 >= input$horizon_year_3){
-        warning = c(warning,"Horizon Year 1 is higher than Horizon Year 3")
-        }
-      
-      if(input$horizon_year_2 >= input$horizon_year_3){
-        warning = c(warning,"Horizon Year 2 is higher than Horizon Year 3")
-        }
-      
-      if(length(warning) != 0){
-        showNotification(HTML(paste0(warning, sep = '<br/>')), type = "warning")
-      }
-      
-    }
-    
-  })
-  
-  observeEvent(input$APP_PAGE, {
-
-    if(which_page$curr_page == "Outputs"){
-      if(is.null(rvs$Scenarios)){
-        
-        warning = HTML("You have not selected any Scenarios. <br/> 
-                    Output tabs will show no results without a scenario <br/>
-                    selection. Navigate to Inputs > Scenarios to make your selection")
-        
-        showNotification(HTML(warning, type = "error"))
-        
-      } else if(sum(rvs$Scenarios$Scenario1)+sum(rvs$Scenarios$Scenario2) == 0){
-        
-        warning = HTML("You have not selected any Scenarios. <br/> 
-                    Output tabs will show no results without a scenario <br/>
-                    selection. Navigate to Inputs > Scenarios to make your selection")
-
-        showNotification(HTML(warning), type = "error")
-      }
-    }
-  
-    
-    })
-
-  
   observeEvent(key_inputs_listen(),{
     print("RUNNING: Update rvs$Baseline key inputs")
+    
     rvs$Baseline <- data.frame(state = input$state_input,
                                base_year = input$base_year,
                                horizon_year_1 = input$horizon_year_1,
@@ -1945,7 +1742,7 @@ server <- function(input, output, session) {
                                veh_elec_baseline = input$ev_baseline_input,
                                elec_grid_emissions_net_zero = input$grid_emissions_input
     )
-    #rvs$Advanced$table_no == 5 <- growth rate 
+    
     updateSelectInput(inputId = "pie_graph_year", label = "", choices = c(input$base_year, input$horizon_year_1, input$horizon_year_2, input$horizon_year_3))
   })
   
@@ -1954,26 +1751,13 @@ server <- function(input, output, session) {
     if(isTruthy(input$user_inputs_upload)){
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
     } else{
-      user_inputs <- read_user_inputs_excel(".\\data\\2.User_Inputs.xlsx")
+      user_inputs <- read_user_inputs_excel("./data/2.User_Inputs.xlsx")
     }
-    #browser()
     
     # Assign each table in user_inputs to rv
     for(name in names(user_inputs)) {
       rvs[[name]] <- user_inputs[[name]]
     }
-    
-    updateSelectInput(inputId = "state_input", selected = rvs$Baseline$state)
-    updateNumericInput(inputId = "base_year", value = rvs$Baseline$base_year)
-    updateNumericInput(inputId = "horizon_year_1", value = rvs$Baseline$horizon_year_1)
-    updateNumericInput(inputId = "horizon_year_2", value = rvs$Baseline$horizon_year_2)
-    updateNumericInput(inputId = "horizon_year_3", value = rvs$Baseline$horizon_year_3)
-    updateSelectInput(inputId = "transportation_score", selected = rvs$Baseline$trans_system_scope)
-    updateSelectInput(inputId = "scope_emissions", selected = rvs$Baseline$include_electricity)
-    updateSelectInput(inputId = "scope_fuels", selected = rvs$Baseline$include_upstream_fuels)
-    updateSelectInput(inputId = "vmt_forecast_input", selected = rvs$Baseline$vmt_forecast)
-    updateSelectInput(inputId = "ev_baseline_input", selected = rvs$Baseline$veh_elec_baseline)
-    updateNumericInput(inputId = "grid_emissions_input", value = rvs$Baseline$elec_grid_emissions_net_zero)
     
   }, ignoreNULL = F, ignoreInit = F)
 
@@ -1981,14 +1765,15 @@ server <- function(input, output, session) {
 
   output$user_inputs_download <- downloadHandler(
     filename = function() {
-      paste0("TEACART_Inputs_for_", format(Sys.Date(), "%Y-%m-%d"),"_at_",format(Sys.time(), "%H%M"), ".xlsx")
+      paste0("./data/2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
     },
     content = function(file) {
       
-      references <- read_xlsx(".\\data\\2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
+      references <- read_xlsx("./data/2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
+      
             return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Assumptions" = rvs$Assumptions,
-                                           "Baseline" = as.data.frame(rvs$Baseline),
+                                           "Baseline" = rvs$Baseline,
                                            "Projects" = rvs$Projects,
                                            "Advanced" = rvs$Advanced,
                                            "References" = references,
@@ -1999,7 +1784,7 @@ server <- function(input, output, session) {
   
   # server sources ---------------------------------------------------
   
-  sources_data <- read_xlsx(".\\data\\sources.xlsx", sheet = 1, col_names = TRUE)
+  sources_data <- read_xlsx("./data/sources.xlsx", sheet = 1, col_names = TRUE)
   
   output$source_table <- renderDT({
     DT::datatable(sources_data,
@@ -2030,13 +1815,13 @@ server <- function(input, output, session) {
                       "freight_projs",
                       "expansion_projs")
   
-  read_static_tables(".\\data\\projects.xlsx", projects_names)
+  read_static_tables("./data/projects.xlsx", projects_names)
   
   
   # Project Tables: Render ------------------------------------------------------
   
   output$bikeped_projs_tbl <- renderDT({
-    req(rvs$Projects)
+    #req(rvs$Projects)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
 
     render_custom_datatable(
@@ -2147,7 +1932,7 @@ server <- function(input, output, session) {
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 6,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0,1,2),
       page_length = 8,
       comma_rows = 0:3,
       percent_rows = integer(0),
@@ -2428,9 +2213,8 @@ server <- function(input, output, session) {
     rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping_projects2(input$public_rail_projs_tbl_cell_edit,
                                                               rvs$Projects,
                                                               tbl_no = 6,
-                                                              col1 = 'area_type',
-                                                              col2 = 'fuel_type',
-                                                              col3 = 'transit_mode',
+                                                              col1 = 'fuel_type',
+                                                              col2 = 'transit_mode',
                                                               horizon_year_1 = input$horizon_year_1,
                                                               horizon_year_2 = input$horizon_year_2,
                                                               horizon_year_3 = input$horizon_year_3)
@@ -2661,7 +2445,7 @@ server <- function(input, output, session) {
                          "evsi_assmps")
   
   
-  read_static_tables(".\\data\\assumptions.xlsx", assumptions_names)
+  read_static_tables("./data/assumptions.xlsx", assumptions_names)
   
   
   ## create assumption tables -----------------------------------------------------------
@@ -2691,7 +2475,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Assumptions,
       table_number = 2,
       is_year_table = FALSE,
-      non_editable_cols = c(0, 1,2,3,4),
+      non_editable_cols = c(0, 1),
       page_length = 50,
       comma_rows = c(18, 47),
       percent_rows = integer(0),
@@ -2736,7 +2520,7 @@ server <- function(input, output, session) {
       data_reactive = rvs$Assumptions,
       table_number = 5,
       is_year_table = FALSE,
-      non_editable_cols = c(0, 1,2),
+      non_editable_cols = c(0, 1),
       page_length = 16,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -3156,7 +2940,7 @@ server <- function(input, output, session) {
       table_number = 13,
       is_year_table = FALSE,
       is_cost_table = TRUE,
-      non_editable_cols = c(0:1),
+      non_editable_cols = c(0:0),
       page_length = 10,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -3183,6 +2967,7 @@ server <- function(input, output, session) {
   
   ## COST: make editable -----------------------------------------------------------
 
+  
   #reshaping
   #observe change to bikeped_costs_tbl
   observeEvent(input$bikeped_costs_tbl_cell_edit, {
@@ -3198,6 +2983,8 @@ server <- function(input, output, session) {
                                                                           'cap_proj_type',
                                                                           'unit'))
   })
+  
+
   
   ## observe change to transit_fixed_costs
   observeEvent(input$transit_fixed_costs_tbl_cell_edit, {
@@ -3244,6 +3031,7 @@ server <- function(input, output, session) {
                                                              )
   })
   
+  
   ## observe change to pub_trans_rail_costs
   observeEvent(input$pub_trans_rail_costs_tbl_cell_edit, {
     req(rvs$Costs)
@@ -3261,6 +3049,7 @@ server <- function(input, output, session) {
                                                               )
   })
   
+
   ## observe change to pub_trans_rail_costs
   observeEvent(input$tdm_costs_tbl_cell_edit, {
     req(rvs$Costs)
@@ -3299,6 +3088,7 @@ server <- function(input, output, session) {
                                                                            'unit'))
   })
   
+  
   ## observe change to mhdev_costs
   observeEvent(input$mhdev_costs_tbl_cell_edit, {
     req(rvs$Costs)
@@ -3314,6 +3104,7 @@ server <- function(input, output, session) {
                                                                            'veh_type',
                                                                            'unit'))
   })
+  
   
   ## observe change to pnr_costs
   observeEvent(input$pnr_costs_tbl_cell_edit, {
@@ -3336,7 +3127,7 @@ server <- function(input, output, session) {
                                                               num_col = 2, # how many numeric columns,
                                                               unit1 = 'per_unit_hardware_cost',
                                                               unit2 = 'per_unit_installation_cost',
-                                                              col_list = c('charge_port_detail',
+                                                              col_list = c('DCFC_level',
                                                                            'unit'))
   })
   
@@ -3365,6 +3156,7 @@ server <- function(input, output, session) {
                                                               num_col = 1, # how many numeric columns,
                                                               col_list = c('fuel_type'))
   })
+ 
   
   ## observe change to intermodal_costs
   observeEvent(input$intermodal_costs_tbl_cell_edit, {
@@ -3378,6 +3170,7 @@ server <- function(input, output, session) {
   }) # end of reshaping
 
   ## COST: observe reset buttons for costs -----------------------------------------
+
 
   observeEvent(input$reset_bikeped_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 1,] <- initial_costs[initial_costs$table_no_ui == 1, ]
@@ -3435,9 +3228,11 @@ server <- function(input, output, session) {
     rvs$Costs[rvs$Costs$table_no_ui == 14,] <- initial_costs[initial_costs$table_no_ui == 14, ]
   })  
   
+  
+  
   # SCENARIOS: inputs -------------------------------------------------
   
-
+  
   strategy_names <- c("Bicycle and Pedestrian",
                       "Transit Service Expansion",
                       "Micromobility",
@@ -3458,6 +3253,18 @@ server <- function(input, output, session) {
   }
   rowNames <- vapply(strategy_names, rowName, character(1))
   
+  # dat <- data.frame(
+  #   vapply(strategy_names, function(scenario){
+  #     as.character(
+  #       checkboxInput(paste0("col1-", gsub(" ", "", scenario)), label = NULL)
+  #     )
+  #   }, character(1)),
+  #   vapply(strategy_names, function(scenario){
+  #     as.character(
+  #       checkboxInput(paste0("col2-", gsub(" ", "", scenario)), label = NULL)
+  #     )
+  #   }, character(1))
+  # )
   dat <- data.frame(
     `grouped_projects` = c(strategy_names),
     `relation` = c('Projects 1',
@@ -3465,7 +3272,7 @@ server <- function(input, output, session) {
                    'Projects 8',
                    'Projects 7',
                    'Projects 11',
-                   'Projects 4',
+                   'Projects 2, Projects 3, Projects 4',
                    'Projects 10',
                    'Projects 12',
                    'Projects 13',
@@ -3477,54 +3284,74 @@ server <- function(input, output, session) {
   )
   
   colnames(dat)[colnames(dat) == "grouped_projects"] <- "Grouped Projects"
-  colnames(dat)[colnames(dat) == "relation"] <- "Relation to Projects Tab"
+  colnames(dat)[colnames(dat) == "relation"] <- "Relation to Project Tab"
+  
+  
+  # names(dat) <- c(
+  #   as.character(checkboxInput("col1", label = "Scenario 1")),
+  #   as.character(checkboxInput("col2", label = "Scenario 2"))
+  # )
+  
+  # rownames(dat) <- rowNames
   
   # Create a reactive data frame
   reactive_scenario <- reactiveVal(dat)
   
   selected_scenario <- reactiveValues(rows = NULL)
   
-  observeEvent(input$select_all_scenario1, {
-    reactive_scenario_updated <- reactive_scenario()
-    reactive_scenario_updated$Scenario1 <- TRUE
-    reactive_scenario(reactive_scenario_updated)
-    rvs$Scenarios <- reactive_scenario()
-  })
-  
-  # Observer to select all checkboxes under Scenario 2
-  observeEvent(input$select_all_scenario2, {
-    reactive_scenario_updated <- reactive_scenario()
-    reactive_scenario_updated$Scenario2 <- TRUE
-    reactive_scenario(reactive_scenario_updated)
-    rvs$Scenarios <- reactive_scenario()
-  })
-  
-  observeEvent(input$user_inputs_upload, {
-
-    # Read the uploaded CSV file
-    uploaded_data <- rvs$Scenarios
-
-    # Check boxes based on values in the uploaded CSV
-    if ("Scenario1" %in% colnames(uploaded_data)) {
-      reactive_scenario_updated <- reactive_scenario()
-      reactive_scenario_updated$Scenario1 <- uploaded_data$Scenario1
-      reactive_scenario(reactive_scenario_updated)
-      
-    }
-    if ("Scenario2" %in% colnames(uploaded_data)) {
-      reactive_scenario_updated <- reactive_scenario()
-      reactive_scenario_updated$Scenario2 <- uploaded_data$Scenario2
-      reactive_scenario(reactive_scenario_updated)
-
-    }
-  })
+  # output$scenario_tbl <- renderDT({
+  #   browser()
+  #   datatable(
+  #     dat,
+  #     escape = FALSE,
+  #     select = "none",
+  #     options = list(
+  #       columnDefs = list(list(targets = c(1, 2),
+  #                              orderable = FALSE,
+  #                              className = "dt-center")
+  #       ),
+  #       pageLength = 12,
+  #       initComplete = JS(
+  #         "function() {",
+  #         "  $('#col1').on('click', function(){",
+  #         "    var cboxes = $('[id^=col1-]');",
+  #         "    var checked = $('#col1').is(':checked');",
+  #         "    cboxes.each(function(i, cbox) {",
+  #         "      $(cbox).prop('checked', checked);",
+  #         "    });",
+  #         "  });",
+  #         "  $('#col2').on('click', function(){",
+  #         "    var cboxes = $('[id^=col2-]');",
+  #         "    var checked = $('#col2').is(':checked');",
+  #         "    cboxes.each(function(i, cbox) {",
+  #         "      $(cbox).prop('checked', checked);",
+  #         "    });",
+  #         "  });",
+  #         paste(
+  #           sapply(strategy_names, function(scenario) {
+  #             scenarioId <- gsub(" ", "", scenario)
+  #             sprintf(
+  #               "  $('#row%s').on('click', function(){\n    var cboxes = $('[id$=\\'-%s\\']');\n    var checked = $('#row%s').is(':checked');\n    cboxes.each(function(i, cbox) {\n      $(cbox).prop('checked', checked);\n    });\n  });",
+  #               scenarioId, scenarioId, scenarioId
+  #             )
+  #           }),
+  #           collapse = "\n"
+  #         ),
+  #         "}"
+  #       ),
+  #       preDrawCallback =
+  #         JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
+  #       drawCallback =
+  #         JS('function() { Shiny.bindAll(this.api().table().node()); } ')
+  #     )
+  #   )
+  # })
+  # 
   
   # Render the checkbox table
   output$scenario_tbl <- renderDT({
     datatable(
-      reactive_scenario() %>%
-        rename( `Scenario 1` = Scenario1,
-                `Scenario 2` = Scenario2),
+      reactive_scenario(),
       escape = FALSE,
       #editable = list(target = c(2,3)),
       options = list(
@@ -3547,8 +3374,6 @@ server <- function(input, output, session) {
     )
   })
   
-
-
   # Update the reactive data when boxes are selected
   observeEvent(input$scenario_tbl_cell_clicked, {
     info <- input$scenario_tbl_cell_clicked
@@ -3557,12 +3382,10 @@ server <- function(input, output, session) {
       reactive_scenario_updated <- reactive_scenario()
       reactive_scenario_updated[info$row, col_name] <- !reactive_scenario_updated[info$row, col_name]
       reactive_scenario(reactive_scenario_updated)
-      rvs$Scenarios <- reactive_scenario()
     }
-  })
-  
+    rvs$Scenarios <- reactive_scenario()
 
-
+  }) 
   
   shinyjs::enable(selector = ".checkbox")
   
@@ -3576,12 +3399,12 @@ server <- function(input, output, session) {
                       "construction_sheet",
                       "fuel_apportionment_sheet")
   
-  read_static_tables(".\\data\\advanced.xlsx", advanced_names)
+  read_static_tables("./data/advanced.xlsx", advanced_names)
   
   
   ## ADVANCED: create tables -----------------------------------------------------------
 
-  output$ev_forecast_sheet_tbl <- renderDT({
+    output$ev_forecast_sheet_tbl <- renderDT({
     render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 1,
@@ -3625,32 +3448,16 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
-  
-  output$pass_rail_trip_len_sheet_tbl <- renderDT({
-    
-    render_custom_datatable(
-      data_reactive = rvs$Advanced,
-      table_number = 8,
-      is_year_table = FALSE,
-      is_advanced_table = TRUE,
-      non_editable_cols = c(0,1),
-      page_length = 10,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0)) %>%
-      DT::formatRound("Value", digits = 3)
-  })
  
   output$pass_rail_sheet_tbl <- renderDT({
+    
+    
     
     callback_pass_rail <- JS(
       "var tbl = $(table.table().node());",
       "var id = tbl.closest('.datatables').attr('id');",
-      "function onUpdate(oldValue) {",
+      "function onUpdate() {",
       "  var cellinfo = [{",
-      # "    row: updatedCell.index().row + 1,", # had to delete, not sure what it does
-      # "    col: updatedCell.index().column + 1,", # had to delete, not sure what it does
       "    value: updatedCell.data()",
       "  }];",
       "  Shiny.setInputValue(id + '_cell_edit:DT.cellInfo', cellinfo);",
@@ -3658,11 +3465,12 @@ server <- function(input, output, session) {
       "table.MakeCellsEditable({",
       "  onUpdate: onUpdate,",
       "  inputCss: 'my-input-class',",
+      "  columns: [2], ",
+      "  rows: [1], ",
       "  confirmationButton: {",
       "    confirmCss: 'my-confirm-class',",
       "    cancelCss: 'my-cancel-class'",
       "  },",
-      "  columns: [2],",
       "  inputTypes: [",
       "    {",
       "      column: 2,",
@@ -3675,23 +3483,20 @@ server <- function(input, output, session) {
       "  ]",
       "});")
     
-    path <- path.expand("www")
+    path <- "./www" # folder containing the files dataTables.cellEdit.js
     
     # and dataTables.cellEdit.css
     dep <- htmltools::htmlDependency(
       "CellEdit", "1.0.19", path, 
-      script = "dataTables.cellEdit.js", stylesheet = "dataTables.cellEdit.css", all_files = F)
+      script = "dataTables.cellEdit.js", stylesheet = "dataTables.cellEdit.css")
     
-    dtable <-
+    dtable <- 
       rvs$Advanced %>%
       filter(table_no_ui == 4) %>% 
-      select(mode_service, unit, value) %>%
-      left_join(references, by = c("unit" = "field")) %>%
-      mutate(unit = description) %>%
-      select(-description) %>%
-      rename(any_of(references_vector)) %>%
-      datatable(callback = callback_pass_rail, rownames = F, selection = "none")
-    
+      select(mode_service, unit, value) %>% 
+      rename(any_of(references_vector)) %>% 
+      datatable(callback = callback_pass_rail, rownames = F)
+      
       ### OLD
       # render_custom_datatable(
       # data_reactive = rvs$Advanced,
@@ -3704,12 +3509,30 @@ server <- function(input, output, session) {
       # currency_rows = integer(0),
       # decimal_rows = integer(0))
     
+    ### WORKS WITH A SIMPLE EXAMPLE BELOW
+    # dat_pass_rail <- data.frame(
+    #   Action = c("Keep data", "Keep data", "Keep data"),
+    #   X = c(1, 2, 3),
+    #   Y = c("a", "b", "c")
+    # )
+    # 
+    # ## the datatable
+    # dtable <- datatable(
+    #   dat_pass_rail, callback = callback_pass_rail, rownames = FALSE, 
+    #   options = list(
+    #     columnDefs = list(
+    #       list(targets = "_all", className = "dt-center")
+    #     )
+    #   )
+    # )
+
     dtable$dependencies <- c(dtable$dependencies, list(dep))
     return(dtable)
-  }, server = F)
+    
+  },server = FALSE)
  
   output$freight_rail_sheet_tbl <- renderDT({
-  
+    
     render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 5,
@@ -3719,8 +3542,7 @@ server <- function(input, output, session) {
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = integer(0),
-      decimal_rows = integer(0)) %>%
-    DT::formatRound("Value", digits = 3)
+      decimal_rows = integer(0))
   })
 
   output$construction_sheet_tbl <- renderDT({
@@ -3795,16 +3617,6 @@ server <- function(input, output, session) {
                                                                        col_list = c('transit_mode','fuel_type'))
   })
   
-  #reshaping pass_rail_trip_len_sheet_tbl
-  observeEvent(input$pass_rail_trip_len_sheet_tbl_cell_edit, {
-    req(rvs$Advanced)
-    
-    rvs$Advanced[rvs$Advanced$table_no_ui == 8,] <- reshaping_advanced(input$pass_rail_trip_len_sheet_tbl_cell_edit,
-                                                                       rvs$Advanced,
-                                                                       tbl_no = 8,
-                                                                       col_list = c('mode_service','unit'))
-  })
-  
   #reshaping pass_rail_sheet_tbl
   observeEvent(input$pass_rail_sheet_tbl_cell_edit, {
     req(rvs$Advanced)
@@ -3835,7 +3647,7 @@ server <- function(input, output, session) {
                                                                        col_list = c('unit'))
   })
 
-  #reshaping fuel_apportionment_sheet_tbl
+  #reshaping pass_rail_sheet_tbl
   observeEvent(input$fuel_apportionment_sheet_tbl_cell_edit, {
     req(rvs$Advanced)
     
@@ -3855,7 +3667,7 @@ server <- function(input, output, session) {
     rvs$Advanced[rvs$Advanced$table_no_ui == 2,] <- initial_advanced[initial_advanced$table_no_ui == 2, ]
   })  
   
-  observeEvent(input$reset_onroad_fuel_tech_frac_sheet_tbl, {
+  observeEvent(input$onroad_fuel_tech_frac_sheet, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 3,] <- initial_advanced[initial_advanced$table_no_ui == 3, ]
   })  
   
@@ -3873,11 +3685,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$reset_fuel_apportionment_sheet_tbl, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 7,] <- initial_advanced[initial_advanced$table_no_ui == 7, ]
-  })
-  
-  observeEvent(input$reset_pass_rail_trip_len_sheet_tbl, {
-    rvs$Advanced[rvs$Advanced$table_no_ui == 8,] <- initial_advanced[initial_advanced$table_no_ui == 8, ]
-  })
+  })  
   
   # Outputs Tab --------------------------------------------------------
   
@@ -4006,8 +3814,8 @@ server <- function(input, output, session) {
   })
   
   output$baseline_ghg_pie <- renderPlotly({
-
-        yr <- input$pie_graph_year
+    #browser()
+    yr <- input$pie_graph_year
     df_in <- baseline_ghg_forecast() 
     df_in <- df_in %>% ungroup() %>% select(veh_supertype, yr) %>%
       rename("Emissions" = yr)
@@ -4049,7 +3857,7 @@ server <- function(input, output, session) {
                            "roadway_expand_costs_outputs",
                            "intermodal_costs_outputs")
   
-  read_static_tables(".\\data\\costs_outputs.xlsx", costs_outputs_names)
+  read_static_tables("./data/costs_outputs.xlsx", costs_outputs_names)
   
   ## COST Outputs: create tables -----------------------------------------------------------
   
@@ -4081,9 +3889,11 @@ server <- function(input, output, session) {
     return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
     })
   
+#  observe({browser()})
+
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
-
+ 
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
       output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
@@ -4436,9 +4246,28 @@ server <- function(input, output, session) {
     })
   
   
+  ## make editable -----------------------------------------------------------
+  
+  #Seth Note: Can this be deleted?
+  costs_outputs_names <- c("bikeped_costs_outputs",
+                           "transit_fixed_costs_outputs",
+                           "transit_dr_costs_outputs",
+                           "pub_trans_priority_costs_outputs",
+                           "transit_zeb_costs_outputs",
+                           "pub_trans_rail_costs_outputs",
+                           "tdm_costs_outputs",
+                           "micro_costs_outputs",
+                           "traffic_ops_costs_outputs",
+                           "mhdev_costs_outputs",
+                           "pnr_costs_outputs",
+                           "evsi_costs_outputs",
+                           "roadway_expand_costs_outputs",
+                           "intermodal_costs_outputs")
+  
+  
+  
   # server scenarios outputs ------------------------------------------------
   output$emission_change_tbl <- renderDataTable({
-    #browser()
     results <- scenario_summary_results()
     comma_rows = c(0:4,7:11,14:19)
     percent_rows = c(5,6,12,13)
@@ -4465,7 +4294,7 @@ server <- function(input, output, session) {
                                                      var formatter = null;
 
                                                      if (commaRows.includes(meta.row)) {
-                                                     formatter = function(d) { return Number(d).toLocaleString('en-US', {maximumFractionDigits: 2}); };
+                                                     formatter = function(d) { return Number(d).toLocaleString('en-US'); };
                                                      }
                                                      if (percentRows.includes(meta.row)) {
                                                      formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
@@ -4508,10 +4337,10 @@ server <- function(input, output, session) {
     results <- scenario_summary_results() %>%
       filter(table_title == table_filt) %>%
       #filter(Scenario != "Baseline") %>% 
-      pivot_longer(cols = c(rvs$Baseline$base_year,
-                            rvs$Baseline$horizon_year_1,
-                            rvs$Baseline$horizon_year_2,
-                            rvs$Baseline$horizon_year_3) %>% as.character(), 
+      pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
+                                         rvs$Baseline$horizon_year_1,
+                                         rvs$Baseline$horizon_year_2,
+                                         rvs$Baseline$horizon_year_3)), 
                    names_to = "year", values_to = "value") %>%
       filter(year != rvs$Baseline$base_year)  %>%
       mutate(value = as.numeric(value)) %>%
@@ -4536,7 +4365,8 @@ server <- function(input, output, session) {
   })
   
   output$scenario_bar_graph <- renderPlotly({
-
+    #browser()
+    
     table_filt <- input$scenario_indicator
     results <- scenario_summary_results() %>%
       filter(table_title == table_filt) %>%
@@ -4564,7 +4394,7 @@ server <- function(input, output, session) {
   
   
   # read dummy data
-  scenario_result <- readxl::read_excel(".\\data\\scenario_simplified.xlsx")
+  scenario_result <- readxl::read_excel("./data/scenario_simplified.xlsx")
   
   observeEvent(input$scenario_indicator,{
     dat_temp <- scenario_result |> 
@@ -4663,7 +4493,6 @@ server <- function(input, output, session) {
       
       scen_filter <-  reactive_scenario()
       req( scenario_sum())
-      #browser()
       if (input$strategy_scen_select == 'scen_1' ){
         scen_select <-   scen_filter %>% select(-'Scenario2') %>%
           rename(scen = Scenario1)
@@ -4676,7 +4505,8 @@ server <- function(input, output, session) {
         select('year', Strategy,input$strategy_indicator) %>%
         arrange(year, Strategy)
       
-
+      # browser()
+      
       base_values <- strategy_temp %>% 
         group_by(year, Strategy) %>% 
         summarise(base_value = min(input$strategy_indicator))
@@ -4714,7 +4544,24 @@ server <- function(input, output, session) {
   source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Finished
   source("functions/cost_maker.R", local = TRUE)
   source("processing_scripts/processing_Allassump.R", local = TRUE) #Finished
+  
+  #rvs update from different inputs
+  #key_inputs update
 
+    key_inputs_listen <- reactive({
+    list(input$state_input,
+         input$base_year,
+         input$horizon_year_1,
+         input$horizon_year_2,
+         input$horizon_year_3,
+         input$transportation_scope,
+         input$scope_emissions,
+         input$scope_fuels,
+         input$vmt_forecast_input,
+         input$vmt_nhs,
+         input$ev_baseline_input,
+         input$grid_emissions_input)
+  })
  
 ## download PDF report
     
@@ -4727,20 +4574,12 @@ server <- function(input, output, session) {
                 sep="")},
     content = function(file) {
       
-      if(all(!reactive_scenario()$Scenario1) && all(!reactive_scenario()$Scenario2)) {
-        # Show warning message
-        shinyalert("No scenario has been selected.Please select scenario from the 'Inputs' - 'Scenarios' tab", 
-                   type = "warning",
-                   title = "Error")
-        return(NULL) 
-      }
-      
       req(baseline_ghg_forecast())
       
       dt <- baseline_ghg_forecast()
       
       dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-        filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Vehicles")) %>%
+        filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
         summarise(across(where(is.numeric),sum)) %>%
         mutate(veh_supertype = "Total (Onroad Vehicles)")
       dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
@@ -4754,8 +4593,8 @@ server <- function(input, output, session) {
         mutate(veh_supertype = "Total (All Transportation)")
       ghg_data <- rbind(dt, dt_onroad, dt_all, dt_growth) %>%
         rename("Emissions" = "veh_supertype")
-
-                  #get and modify the scen data: 
+      
+      #get and modify the scen data: 
       scen_data <- scenario_summary_results() %>%
         filter(grepl("Reduction", table_title)|table_title == "New Daily Active Trips") %>%
         filter(!grepl("%",table_title)) %>%
@@ -4773,9 +4612,8 @@ server <- function(input, output, session) {
                      values_to = "mt_reduction") %>%
         mutate(mt_reduction = ifelse(mt_reduction == "-","0",mt_reduction)) %>%
         mutate(mt_reduction = as.numeric(mt_reduction)) %>%
-        mutate_if(is.numeric, ~round(., 1)) %>%
-        filter(Year != rvs$Baseline$base_year)
-
+        mutate_if(is.numeric, ~round(., 1))
+      
       
       replace_underscores <- function(df) {
         names(df) <- gsub("_", " ", names(df))
@@ -4801,17 +4639,14 @@ server <- function(input, output, session) {
         })
         return(updated_list)
       }
-
-       cost_data <- all_costs() %>%
-         lapply(., replace_underscores) %>%
-         lapply(., replace_na_with_string) %>%
-         lapply(., remove_year_column) %>%
-         make_column_names_proper(.)
-       
-       colnames(cost_data$bikeped)[colnames(cost_data$bikeped) == "Cap Proj Type"] <- "Capital Project Type"
-       colnames(cost_data$traffic_ops)[colnames(cost_data$traffic_ops) == "Cap Proj Type"] <- "Capital Project Type"
-       
-       Sys.sleep(1)
+      
+      cost_data <- all_costs() %>%
+        lapply(., replace_underscores) %>%
+        lapply(., replace_na_with_string) %>%
+        lapply(., remove_year_column) %>%
+        make_column_names_proper(.)
+        
+      Sys.sleep(1)
 
       # Render the R Markdown file to PDF
       shiny::withProgress(

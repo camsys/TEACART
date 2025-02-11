@@ -1,8 +1,14 @@
+// variable
+
+$grey: RGBA(var(--bs-emphasis-color-rgb, 0, 0, 0), 0.03)
+$dark-blue: RGB(var(--bs-emphasis-color-rgb, 0, 0, 0))
+
 // global
 
 h2
   font-weight: bold
-
+b
+  color: $dark-blue
 // navbar
 .navbar
   padding: 0
@@ -33,10 +39,82 @@ h2
           border: none
           background: linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, rgba(255, 255, 255, 0.15) 100%)
       &.dropdown
-        background: none
+        .nav-link
+          background: none
+          padding: 1rem 0!important
+        &:hover .nav-link
+          background: none
 
 @media screen and (max-width: 1200px)
   .navbar .nav .nav-item
     .nav-link
       padding: 1rem 2rem!important
       font-size: 1.4rem
+
+// sidebar
+@media screen and (min-width: 575.98px)
+  .bslib-sidebar-layout
+    >.collapse-toggle
+      margin-top: 25px
+      transition: background-color .25s ease-in-out
+      &[aria-expanded="true"]
+        background-color: #DCDEE6
+        &:hover
+          background-color: #C3C7D7
+      &[aria-expanded="false"]
+        background-color: #25365F
+        &:hover
+          background-color: #566382
+        svg
+          fill: white!important
+    >.sidebar>.sidebar-content 
+      padding-top: 2.5rem
+
+// inputs
+
+.tab-pane[data-value="Inputs"] 
+  .card-header
+    padding: 0
+    .nav-item
+      padding: .5rem
+      &:first-child
+        margin-left: .5rem
+      &:not(:nth-child(6)) // grey bg on inputs nav
+        background: #E9E9E9
+      &:nth-child(5)
+        position: relative
+        margin-right: 36px
+        &:after // add arrow after scenario tab
+          content: ""
+          display: block
+          width: 0px
+          height: 0px
+          border-style: solid
+          border-width: 28px 0 28px 35px
+          border-color: transparent transparent transparent #E9E9E9
+          transform: rotate(0deg)
+          position: absolute
+          right: -35px
+          bottom: 0
+  .baseline-content
+    background-color: $grey
+    padding: 1rem 0
+    border: none
+    .shiny-input-container
+      margin-bottom: 1rem
+      .control-label
+        span
+          font-weight: bold
+          color: $dark-blue
+        p, .option
+          font-weight: normal
+    .well
+      background: none!important
+      border: none
+      padding: 0
+    
+    .shiny-input-select, .shiny-input-select *, .shiny-input-number, .shiny-input-number *
+      max-width: 400px
+  .tab-pane[data-value="Projects"] // projects tab
+    input[type="search"]
+      min-width: 354px
