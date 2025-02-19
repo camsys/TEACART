@@ -1,7 +1,8 @@
 // variable
 
 $grey: RGBA(var(--bs-emphasis-color-rgb, 0, 0, 0), 0.03)
-$dark-blue: RGB(var(--bs-emphasis-color-rgb, 0, 0, 0))
+$dark-blue: var(--bs-dark) // #173A89
+$light-blue: var(--bs-primary-bg-subtle)  // #d1d8e7
 
 // global
 
@@ -9,6 +10,9 @@ h2
   font-weight: bold
 b
   color: $dark-blue
+p
+  max-width: 1440px!important
+
 // navbar
 .navbar
   padding: 0
@@ -71,6 +75,10 @@ b
       padding-top: 2.5rem
 
 // inputs
+table
+  tr:hover td
+    background-color: mix(#d1d8e7, white, 90%)
+
 
 .tab-pane[data-value="Inputs"] 
   .card-header
@@ -79,9 +87,9 @@ b
       padding: .5rem
       &:first-child
         margin-left: .5rem
-      &:not(:nth-child(6)) // grey bg on inputs nav
+      &:nth-child(-n+4) // grey bg on inputs nav
         background: #E9E9E9
-      &:nth-child(5)
+      &:nth-child(4)
         position: relative
         margin-right: 36px
         &:after // add arrow after scenario tab
@@ -96,6 +104,10 @@ b
           position: absolute
           right: -35px
           bottom: 0
+      &:last-child
+        margin-right: 0
+        a:not(.active)
+          color: mix(grey, white, 50%)
   .baseline-content
     background-color: $grey
     padding: 1rem 0
@@ -115,6 +127,67 @@ b
     
     .shiny-input-select, .shiny-input-select *, .shiny-input-number, .shiny-input-number *
       max-width: 400px
-  .tab-pane[data-value="Projects"] // projects tab
-    input[type="search"]
-      min-width: 354px
+.tab-pane[data-value="Inputs"] // Inputs tab
+  input[type="search"]
+    min-width: 225px
+  .table
+    td.dt-right
+      border: 1px solid lightgrey
+      width: 15%
+      &:hover
+        cursor: pointer
+        background-color: #E9E9E9
+  .tab-pane[data-value="Advanced"] // Inputs tab
+    .row
+      overflow-y: scroll
+
+.tab-pane[data-value="Outputs"] // Outputs tab
+  .tab-pane[data-value="Baseline GHG Forecast"], .tab-pane[data-value="Scenario Summary"] // Outputs tab
+  .hoverlayer
+    path
+      stroke-width: 5px
+      fill: white!important
+    text
+      font-weight: bold
+      fill: black!important
+  table.dataTable
+    tr.dtrg-level-0
+      color: $dark-blue
+      th
+        background-color: $light-blue
+        font-weight: normal
+  .tab-pane[data-value="Baseline GHG Forecast"]
+    .datatables
+        tr:nth-last-child(-n+3)
+          td
+            background-color: $dark-blue
+            box-shadow: none
+            color: white
+  .tab-pane[data-value="Cost effectiveness"] // Outputs tab
+    .cost-table
+      position: relative
+      h3
+        color: $dark-blue
+        font-weight: 400
+        font-size: 1rem
+        background-color: $light-blue
+        margin: 0 .5rem
+        padding: .75rem
+        text-align: center
+        font-size: 1rem
+      @media screen and (min-width: 767px)
+        h3
+          text-align: left
+          width: calc(100% - 1.25rem)
+        &.search
+          h3
+            position: absolute
+            text-align: left
+            margin: 0
+            left: 1.25rem
+            top: 0
+            background-color: $light-blue
+            width: calc(100% - 305px)
+          div.dataTables_wrapper div.dataTables_filter label
+            width: 250px
+            transform: translateY(-10px)

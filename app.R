@@ -1512,10 +1512,10 @@ nav_panel(title = "Strategy Summary",
                                  equivalent or MT CO2e); vehicle miles traveled 
                                  (VMT); local pollution from oxides of nitrogen 
                                  (NOx) and fine particulate matter (PM2.5); 
-                                 and daily active trips.<br>
-                                 For the Strategy Summary, please select the 
+                                 and daily active trips.</p>
+                                 <p>For the Strategy Summary, please select the 
                                  desired scenario and indicator to view the 
-                                 changes at the strategy level."),
+                                 changes at the strategy level.</p>"),
           fluidRow(
             p(""),
             title = "Select Indicator",
@@ -1553,83 +1553,85 @@ nav_panel(title = "Strategy Summary",
                                            "Level of detail:",
                                            c("Detail results" = "detail", "Summary results" = "summary")),
                               p("All results are reported in terms of annual change per $M investment."),
-                              h3("Bicycle & Pedestrian"),
-                              p(""),
-                              DT::dataTableOutput("bikeped_costs_outputs_tbl")
+                              fluidRow( class = 'cost-table search',
+                                h3("Bicycle & Pedestrian"),
+                                p(""),
+                                DT::dataTableOutput("bikeped_costs_outputs_tbl")
+                              )
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Transit: Increased Fixed Route Service"),
                               p(""),
                               DT::dataTableOutput("transit_fixed_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Transit: Increased Demand Response Service"),
                               p(""),
                               DT::dataTableOutput("transit_dr_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Public Transportation: Bus Priority Treatment"),
                               p(""),
                               DT::dataTableOutput("pub_trans_priority_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Transit: Fleet Electrification"),
                               p(""),
                               DT::dataTableOutput("transit_zeb_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Public Transportation: Rail"),
                               p(""),
                               DT::dataTableOutput("pub_trans_rail_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Travel Demand Management"),
                               p(""),
                               DT::dataTableOutput("tdm_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Micromobility"),
                               p(""),
                               DT::dataTableOutput("micro_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Traffic Operations: Intersections"),
                               p(""),
                               DT::dataTableOutput("traffic_ops_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Medium and Heavy Duty Vehicle Replacement (Electrification)"),
                               p(""),
                               DT::dataTableOutput("mhdev_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Park & Ride"),
                               p(""),
                               DT::dataTableOutput("pnr_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("EV Charging Infrastructure"),
                               p(""),
                               DT::dataTableOutput("evsi_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Roadway Expansion"),
                               p(""),
                               DT::dataTableOutput("roadway_expand_costs_outputs_tbl")
                             ),
-                            fluidRow(
+                            fluidRow( class = 'cost-table',
                               p(""),
                               h3("Intermodal Freight Investment"),
                               p(""),
@@ -3819,6 +3821,9 @@ server <- function(input, output, session) {
     df_in <- baseline_ghg_forecast() 
     df_in <- df_in %>% ungroup() %>% select(veh_supertype, yr) %>%
       rename("Emissions" = yr)
+
+    # Define colors for the pie slices
+    colors <- c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf")
     
     comm_plot <- df_in %>% plot_ly(source = "sourceName") %>% 
       add_pie(labels = ~veh_supertype, 
@@ -3828,8 +3833,10 @@ server <- function(input, output, session) {
               direction = "clockwise",
               hovertemplate = ~paste("%{label} <br>", paste0(round(Emissions, digits = 0)," CO2e"), "</br> %{percent} <extra></extra>"), 
               marker = list(colors = ~veh_supertype, line = list(color = "#595959", width = 1)), 
-              #textfont = list(family = "Arial", size = 10), 
-              textposition = "none") %>%
+              #textfont = list(family = "Arial", size = 10),
+              textposition = "none",
+              hoverlabel = list(bgcolor = "white", font = list(color = "black", weight = "bold"), bordercolor = colors, borderwidth = 3)) %>% # Change hover tooltip color and add border
+
       layout(
         showlegend = TRUE, autosize = T) %>% 
       config(displaylogo = FALSE, 
@@ -4388,7 +4395,8 @@ server <- function(input, output, session) {
       layout(yaxis = list(title = table_filt, separatethousands= TRUE),
              xaxis = list(title = "Year"),
              barmode = "group") %>%
-      config(displayModeBar = FALSE) 
+      config(displayModeBar = FALSE) %>%
+      layout(hoverlabel = list(bgcolor = "white", font = list(color = "black")))
     
     })
   

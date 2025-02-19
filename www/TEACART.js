@@ -1,3 +1,4 @@
 $(document).ready(function(){
-  $('.popover').draggable();
+  $('.popover').draggable(); // Make popover draggable
+
 });

@@ -3,7 +3,11 @@ h2 {
 }
 
 b {
-  color: RGB(var(--bs-emphasis-color-rgb, 0, 0, 0));
+  color: var(--bs-dark);
+}
+
+p {
+  max-width: 1440px !important;
 }
 
 .navbar {
@@ -84,6 +88,10 @@ b {
     padding-top: 2.5rem;
   }
 }
+table tr:hover td {
+  background-color: #d6dce9;
+}
+
 .tab-pane[data-value=Inputs] .card-header {
   padding: 0;
 }
@@ -93,14 +101,14 @@ b {
 .tab-pane[data-value=Inputs] .card-header .nav-item:first-child {
   margin-left: 0.5rem;
 }
-.tab-pane[data-value=Inputs] .card-header .nav-item:not(:nth-child(6)) {
+.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(-n+4) {
   background: #E9E9E9;
 }
-.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(5) {
+.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(4) {
   position: relative;
   margin-right: 36px;
 }
-.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(5):after {
+.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(4):after {
   content: "";
   display: block;
   width: 0px;
@@ -114,6 +122,12 @@ b {
   right: -35px;
   bottom: 0;
 }
+.tab-pane[data-value=Inputs] .card-header .nav-item:last-child {
+  margin-right: 0;
+}
+.tab-pane[data-value=Inputs] .card-header .nav-item:last-child a:not(.active) {
+  color: silver;
+}
 .tab-pane[data-value=Inputs] .baseline-content {
   background-color: RGBA(var(--bs-emphasis-color-rgb, 0, 0, 0), 0.03);
   padding: 1rem 0;
@@ -124,7 +138,7 @@ b {
 }
 .tab-pane[data-value=Inputs] .baseline-content .shiny-input-container .control-label span {
   font-weight: bold;
-  color: RGB(var(--bs-emphasis-color-rgb, 0, 0, 0));
+  color: var(--bs-dark);
 }
 .tab-pane[data-value=Inputs] .baseline-content .shiny-input-container .control-label p, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-container .control-label .option {
   font-weight: normal;
@@ -137,6 +151,73 @@ b {
 .tab-pane[data-value=Inputs] .baseline-content .shiny-input-select, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-select *, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-number, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-number * {
   max-width: 400px;
 }
-.tab-pane[data-value=Inputs] .tab-pane[data-value=Projects] input[type=search] {
-  min-width: 354px;
+
+.tab-pane[data-value=Inputs] input[type=search] {
+  min-width: 225px;
+}
+.tab-pane[data-value=Inputs] .table td.dt-right {
+  border: 1px solid lightgrey;
+  width: 15%;
+}
+.tab-pane[data-value=Inputs] .table td.dt-right:hover {
+  cursor: pointer;
+  background-color: #E9E9E9;
+}
+.tab-pane[data-value=Inputs] .tab-pane[data-value=Advanced] .row {
+  overflow-y: scroll;
+}
+
+.tab-pane[data-value=Outputs] .hoverlayer path {
+  stroke-width: 5px;
+  fill: white !important;
+}
+.tab-pane[data-value=Outputs] .hoverlayer text {
+  font-weight: bold;
+  fill: black !important;
+}
+.tab-pane[data-value=Outputs] table.dataTable tr.dtrg-level-0 {
+  color: var(--bs-dark);
+}
+.tab-pane[data-value=Outputs] table.dataTable tr.dtrg-level-0 th {
+  background-color: var(--bs-primary-bg-subtle);
+  font-weight: normal;
+}
+.tab-pane[data-value=Outputs] .tab-pane[data-value="Baseline GHG Forecast"] .datatables tr:nth-last-child(-n+3) td {
+  background-color: var(--bs-dark);
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  color: white;
+}
+.tab-pane[data-value=Outputs] .tab-pane[data-value="Cost effectiveness"] .cost-table {
+  position: relative;
+}
+.tab-pane[data-value=Outputs] .tab-pane[data-value="Cost effectiveness"] .cost-table h3 {
+  color: var(--bs-dark);
+  font-weight: 400;
+  font-size: 1rem;
+  background-color: var(--bs-primary-bg-subtle);
+  margin: 0 0.5rem;
+  padding: 0.75rem;
+  text-align: center;
+  font-size: 1rem;
+}
+@media screen and (min-width: 767px) {
+  .tab-pane[data-value=Outputs] .tab-pane[data-value="Cost effectiveness"] .cost-table h3 {
+    text-align: left;
+    width: calc(100% - 1.25rem);
+  }
+  .tab-pane[data-value=Outputs] .tab-pane[data-value="Cost effectiveness"] .cost-table.search h3 {
+    position: absolute;
+    text-align: left;
+    margin: 0;
+    left: 1.25rem;
+    top: 0;
+    background-color: var(--bs-primary-bg-subtle);
+    width: calc(100% - 305px);
+  }
+  .tab-pane[data-value=Outputs] .tab-pane[data-value="Cost effectiveness"] .cost-table.search div.dataTables_wrapper div.dataTables_filter label {
+    width: 250px;
+    -webkit-transform: translateY(-10px);
+            transform: translateY(-10px);
+  }
 }
