@@ -9,7 +9,7 @@ library(tidyverse)
 #Bus Priority = BP
 #Rail = RR
 observeEvent(input$state_input, {
-  browser()
+  #browser()
 
 
 # INPUTS ------------------------------------------------------------------

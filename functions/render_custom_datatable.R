@@ -12,13 +12,18 @@ render_custom_datatable <- function(#input_reactives,
                                     currency_rows,
                                     decimal_rows,
                                     pivot_col = c()) {
-  
+  req(input$base_year)
+  req(input$horizon_year_1)
+  req(input$horizon_year_2)
+  req(input$horizon_year_3)
   print(paste0('RUNNING: Render custom datatable for table: ', table_number))
-  
+
   select_fun <- function(x) !all(is.na(x)|x == '')
   
   
     conditionally_transform <- function(df) {
+      #browser()
+
     if (is_year_table == TRUE & is_advanced_table == FALSE) {
       df %>%
         pivot_wider(names_from = year, values_from = value) %>%
@@ -46,7 +51,6 @@ render_custom_datatable <- function(#input_reactives,
     #lapply(input_reactives, req)
     req(data_reactive)
     
-    
     if(is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table_number,]) != 1 & table_number != 13){ 
   #  for Costs tab, no need to join the references
     reshaped_table <- data_reactive  %>%
@@ -63,7 +67,7 @@ render_custom_datatable <- function(#input_reactives,
         ungroup() %>%
         #select(where(select_fun)) %>% #NOTE: This will delete columns with NAs so if you send it empty data watch out
         rename(any_of(references_vector))
-    }else {
+    } else {
       reshaped_table <- data_reactive  %>%
         filter(table_no_ui == table_number) %>% 
         conditionally_transform() %>% 

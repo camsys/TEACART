@@ -8,7 +8,7 @@ reshaping_projects_2_years <- function(user_data,
   
   print(paste0("RUNNING: revised reshaping function for table: ", tbl_no))
 
-browser()
+#browser()
   
   # Determine the number of columns to pivot (excluding the first column)
   num_cols_to_pivot <- ncol(user_data) - 1

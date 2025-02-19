@@ -103,7 +103,7 @@ print(tagList(
 #| warning: false
 
 # load dummy data
-path2 <- 'C:/Users/qsi/Desktop/TEA-CART/dummy_output.xlsx'
+path2 <- 'data/dummy_output.xlsx'
 #dummydata<- multiplesheets(path2)
 
 GHG_forecast <- readxl::read_excel(path2, sheet = 'GHG Forecast') %>%

@@ -27,15 +27,12 @@ if (!require(tinytex)) {
 library(showtext)
 showtext_auto()
 library(scales)
+
 # load source files -------------------------------------------------------
-#SETH NOTE Should this be here?
-all_files <- c(
-  list.files("functions", full.names = TRUE)
-#               ,list.files("processing_scripts", full.names = TRUE) # this breaks it at the moment
-               )
+
+all_files <- c(list.files("functions", full.names = TRUE))
 
 data_list <- list()
-
 
 # reading in xlsx and R files only - note
 for (file in all_files) {
@@ -44,8 +41,10 @@ for (file in all_files) {
   }
 }
 
-
+print('itsaglobalissue')
+print(getwd())
 source("globals.R")
+print('itsthenextissue')
 source("read_from_user_inputs.R")
 
 # ui ----------------------------------------------------------------------
@@ -108,10 +107,20 @@ ui <- function(request) {
       title = "TEA-CART",
       id = "APP_PAGE",
 
+# footer -----------------------------------------------------------------------
+      footer = tags$div(
+        fluidRow(
+          #SLBOOKMARK
+          column(width = 4,),
+          column(width = 4,),
+          column(width = 4,)
+        )
+      ), 
 # sidebar -----------------------------------------------------------------
 
 
-      sidebar = sidebar(fileInput("user_inputs_upload",
+      sidebar = sidebar(width = 450, 
+                        fileInput("user_inputs_upload",
                                   "Upload User Inputs",
                                   accept = c(".xlsx")),
                         bsTooltip(id = "user_inputs_upload",
@@ -359,7 +368,7 @@ ui <- function(request) {
            HTML("This category represents implementation of any <b>two-way miles of new 
            bicycle or pedestrian facility.</b> The default assumption for these 
            project types is that any new bicycle or pedestrian facility would 
-           be two-way. (i.e., for one-way facilities, please enter half the 
+           be two-way (i.e., for one-way facilities, please enter half the 
            total miles for the facility)."),
            bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                    title = "Cumulative View",
@@ -601,7 +610,7 @@ ui <- function(request) {
                  accordion_panel(
                    "Projects 9 | Traffic Operations",
                    HTML("This category represents any <b>improvements made to traffic operations at intersections </b>, 
-                   such as new or retimed signals or new roundabouts."),
+                   such as new or retimed signals or new traffic-flow roundabouts."),
                    bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                            title = "Cumulative View",
                            placement = "bottom",
@@ -815,7 +824,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Costs 1 | Bicycle & Pedestrian Costs",
-                             HTML("This category represents the <b>overall cost per mile and annual maintenance cost per mile</b> of bicycle or pedestrian facility being implemented."),
+                             HTML("This category represents the <b>overall cost per mile</b> of bicycle or pedestrian facilities being implemented."),
 
                            ),
                            open = FALSE
@@ -899,7 +908,7 @@ ui <- function(request) {
                          accordion(
                            accordion_panel(
                              "Costs 5 | Public Transportation: Rail Costs",
-                             HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new rail vehicles operating in annual maximum service (VOMS)."),
+                             HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new rail cars operating in annual maximum service (VOMS)."),
 
                            ),
                            open = FALSE
@@ -1582,7 +1591,7 @@ nav_panel(title = "Assumptions",
                                  (NOx) and fine particulate matter (PM2.5); 
                                  and daily active trips.<br>
                                  <p>
-                                 For the Scenario Summary, please select the 
+                                 For the Scenario Summary, please select 
                                  an indicator from the dropdown below to compare your selected scenarios 
                                  with the baseline GHG forecast."),
                             fluidRow(
@@ -1630,7 +1639,7 @@ nav_panel(title = "Strategy Summary",
                            selected = NULL,
                            choices = c( 
                              'MT CO2e' = 'total_change_MTCO2',
-                             'VMT (Mile)' = 'total_change_VMT',
+                             'VMT (miles)' = 'total_change_VMT',
                              'MT NOx' = 'total_change_mtnox',
                              'MT PM2.5' = 'total_change_pm25',
                              'Daily Active Trips' = 'total_newtrips')
@@ -1652,7 +1661,7 @@ nav_panel(title = "Strategy Summary",
 
 # cost effectiveness ui ---------------------------------------------------
 
-                  nav_panel(title = "Cost effectiveness",
+                  nav_panel(title = "Cost Effectiveness",
                             HTML("This tab allows users to review the cost effectiveness of each strategy as 
                                  measured by the change in annual output of the indicator (e.g. MT CO2e) per 
                                  $1 million of investment. All cost effectiveness outputs are calculated based  
@@ -1783,9 +1792,13 @@ nav_panel(title = "Strategy Summary",
                 DT::dataTableOutput("source_table")
       ),
       nav_spacer(),
-      nav_menu(
-        title = tags$img(src = "GCC_Logo_Transparent_Stacked.png", height = "30px"),
-        nav_item(tags$a("Visit", href = "https://www.georgetownclimate.org/", target = "_blank")))
+      tags$script(HTML("var header = $('.navbar > .container-fluid');
+      header.append('<div style=\"float:right\"><a href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Transparent_Stacked.png\" alt=\"alt\" style=\"float:right;width:120px;height:60px;\"> </a></div>');
+                       console.log(header)")
+                  ),
+     # nav_menu(
+     #   title = tags$a(tags$img(src = "GCC_Logo_Transparent_Stacked.png", height = "30px"),
+     #                  href = "https://www.georgetownclimate.org/", target = "_blank"))
       
       
     )
@@ -1815,12 +1828,13 @@ server <- function(input, output, session) {
   
   #set reactiveValues ----------------------------------------------------------
   rv <- reactiveValues()
-  rvs <- read_user_inputs_version2(".\\data\\2.User_Inputs.xlsx")
-  rvs_out <- read_output_tables(".\\data\\3.Model_Outputs.xlsx")
+  rvs <- read_user_inputs_version2("data/2.User_Inputs.xlsx")
+  rvs_out <- read_output_tables("data/3.Model_Outputs.xlsx")
   
   #update and record 
   #key_inputs updater ----------------------------------------------------------
   key_inputs_listen <- reactive({
+    print('ki_li trigger')
     list(input$state_input,
          input$base_year,
          input$horizon_year_1,
@@ -1842,8 +1856,8 @@ server <- function(input, output, session) {
                                     prev_input_tab = "")
   
   observeEvent(input$INPUTS_TABS, {
-    req(input$INPUTS_TABS)
-
+    #req(input$INPUTS_TABS)
+    print('tab change')
     which_input_tab$prev_input_tab <- which_input_tab$curr_input_tab
     which_input_tab$curr_input_tab <- input$INPUTS_TABS
     
@@ -1853,7 +1867,7 @@ server <- function(input, output, session) {
                                prev_page = "")
   
   observeEvent(input$APP_PAGE, {
-    req(input$APP_PAGE)
+    #req(input$APP_PAGE)
     if(which_page$prev_page == "ini"){toggle_sidebar(id = "dwn_sidebar")}
     which_page$prev_page <- which_page$curr_page
     which_page$curr_page <- input$APP_PAGE
@@ -1862,34 +1876,60 @@ server <- function(input, output, session) {
   
   #here's where the notification is sent to the user
   observeEvent(input$INPUTS_TABS,{
-
-    req(input$horizon_year_1)
     
     if(which_input_tab$prev_input_tab == "Baseline"){
       warning = c()
+
+      if(is.na(input$grid_emissions_input)|
+         (input$grid_emissions_input<2021)|
+         input$grid_emissions_input>2050){
+        warning = c(warning, "Due to an inncorect input, a default value for Electricity Grid Emissions Net-Zero Year has been assumed.")
+        updateNumericInput(inputId = "grid_emissions_input",value=2030)
+        rvs$Baseline$elec_grid_emissions_net_zero = input$grid_emissions_input
+      }
       
-      if(input$base_year >= input$horizon_year_1){
-        warning = c(warning, "Base Year is higher than Horizon Year 1")
-        }
+      if(is.na(input$base_year)){
+        print('this happened')
+        warning = c(warning, "Due to an inncorect input, a default value for Base Year has been assumed.")
+        updateNumericInput(inputId = "base_year",value=2021)
+        rvs$Baseline$base_year = input$base_year
+        
+      } else if(!is.na(input$horizon_year_1)&
+                !is.na(input$horizon_year_2)&
+                !is.na(input$horizon_year_3)&(
+                  input$base_year >= input$horizon_year_1|
+                  input$base_year >= input$horizon_year_2|
+                  input$base_year >= input$horizon_year_3)){
+        warning = c(warning, "Base Year is higher than ")
+      }
       
-      if(input$base_year >= input$horizon_year_2){
-        warning = c(warning,"Base Year is higher than Horizon Year 2")
-        }
+      if(is.na(input$horizon_year_1)){
+        warning = c(warning, "Due to an inncorect input, a default value for Horizon Year 1 has been assumed.")
+        updateNumericInput(inputId = "horizon_year_1",value=2025)
+        rvs$Baseline$horizon_year_1 = input$horizon_year_1
+        
+      } else if(!is.na(input$horizon_year_2)&
+                !is.na(input$horizon_year_3)&
+                (input$horizon_year_1 >= input$horizon_year_2|
+                input$horizon_year_1 >= input$horizon_year_3)){
+        warning = c(warning,"Horizon Year 1 is higher than future horizon year values.")
+      }
       
-      if(input$base_year >= input$horizon_year_3){
-        warning = c(warning,"Base Year is higher than Horizon Year 3")
-        }
-      if(input$horizon_year_1 >= input$horizon_year_2){
-        warning = c(warning,"Horizon Year 1 is higher than Horizon Year 2")
-        }
-      
-      if(input$horizon_year_1 >= input$horizon_year_3){
-        warning = c(warning,"Horizon Year 1 is higher than Horizon Year 3")
-        }
-      
-      if(input$horizon_year_2 >= input$horizon_year_3){
+      if(is.na(input$horizon_year_2)){
+        warning = c(warning, "Due to an inncorect input, a default value for Horizon Year 2 has been assumed.")
+        updateNumericInput(inputId = "horizon_year_2",value=2030)
+        rvs$Baseline$horizon_year_2 = input$horizon_year_2
+        
+      } else  if(!is.na(input$horizon_year_3)&(input$horizon_year_2 >= input$horizon_year_3)){
         warning = c(warning,"Horizon Year 2 is higher than Horizon Year 3")
-        }
+      }
+      
+      if(is.na(input$horizon_year_3)){
+        warning = c(warning, "Due to an inncorect input, a default value for Horizon Year 3 has been assumed.")
+        updateNumericInput(inputId = "horizon_year_3",value=2050)
+        rvs$Baseline$horizon_year_3 = input$horizon_year_3
+        
+      }
       
       if(length(warning) != 0){
         showNotification(HTML(paste0(warning, sep = '<br/>')), type = "warning")
@@ -1923,9 +1963,9 @@ server <- function(input, output, session) {
     
     })
 
-  
   observeEvent(key_inputs_listen(),{
     print("RUNNING: Update rvs$Baseline key inputs")
+    #browser()
     rvs$Baseline <- data.frame(state = input$state_input,
                                base_year = input$base_year,
                                horizon_year_1 = input$horizon_year_1,
@@ -1948,7 +1988,7 @@ server <- function(input, output, session) {
     if(isTruthy(input$user_inputs_upload)){
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
     } else{
-      user_inputs <- read_user_inputs_excel(".\\data\\2.User_Inputs.xlsx")
+      user_inputs <- read_user_inputs_excel("data/2.User_Inputs.xlsx")
     }
     #browser()
     
@@ -1979,7 +2019,7 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       
-      references <- read_xlsx(".\\data\\2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
+      references <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
             return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Assumptions" = rvs$Assumptions,
                                            "Baseline" = as.data.frame(rvs$Baseline),
@@ -1993,7 +2033,7 @@ server <- function(input, output, session) {
   
   # server sources ---------------------------------------------------
   
-  sources_data <- read_xlsx(".\\data\\sources.xlsx", sheet = 1, col_names = TRUE)
+  sources_data <- read_xlsx("data/sources.xlsx", sheet = 1, col_names = TRUE)
   
   output$source_table <- renderDT({
     DT::datatable(sources_data,
@@ -2024,7 +2064,7 @@ server <- function(input, output, session) {
                       "freight_projs",
                       "expansion_projs")
   
-  read_static_tables(".\\data\\projects.xlsx", projects_names)
+  read_static_tables("data/projects.xlsx", projects_names)
   
   
   # Project Tables: Render ------------------------------------------------------
@@ -2655,7 +2695,7 @@ server <- function(input, output, session) {
                          "evsi_assmps")
   
   
-  read_static_tables(".\\data\\assumptions.xlsx", assumptions_names)
+  read_static_tables("data/assumptions.xlsx", assumptions_names)
   
   
   ## create assumption tables -----------------------------------------------------------
@@ -3570,7 +3610,7 @@ server <- function(input, output, session) {
                       "construction_sheet",
                       "fuel_apportionment_sheet")
   
-  read_static_tables(".\\data\\advanced.xlsx", advanced_names)
+  read_static_tables("data/advanced.xlsx", advanced_names)
   
   
   ## ADVANCED: create tables -----------------------------------------------------------
@@ -4043,7 +4083,7 @@ server <- function(input, output, session) {
                            "roadway_expand_costs_outputs",
                            "intermodal_costs_outputs")
   
-  read_static_tables(".\\data\\costs_outputs.xlsx", costs_outputs_names)
+  read_static_tables("data/costs_outputs.xlsx", costs_outputs_names)
   
   ## COST Outputs: create tables -----------------------------------------------------------
   
@@ -4558,7 +4598,7 @@ server <- function(input, output, session) {
   
   
   # read dummy data
-  scenario_result <- readxl::read_excel(".\\data\\scenario_simplified.xlsx")
+  scenario_result <- readxl::read_excel("data/scenario_simplified.xlsx")
   
   observeEvent(input$scenario_indicator,{
     dat_temp <- scenario_result |> 
@@ -4567,20 +4607,6 @@ server <- function(input, output, session) {
       mutate(year = as.character(year)) |> 
       pivot_wider(names_from = scenario,
                   values_from = mt_reduction)
-    
-    # output$emission_change_graph <- renderPlotly(
-    #   dat_temp |> 
-    #     plotly::plot_ly(x = ~year,
-    #                     y = ~`Scenario 1`,
-    #                     type = 'bar',
-    #                     name = 'Scenario 1' ) |> 
-    #     add_trace(y = ~ `Scenario 2`, name = 'Scenario 2'))
-    
-    # output$emission_change_tbl <- DT::renderDataTable(
-    #   DT::datatable(dat_temp,
-    #                 escape = FALSE,
-    #                 rownames=F,
-    #                 options = list(dom = 't')))
     
   })
   
@@ -4669,24 +4695,22 @@ server <- function(input, output, session) {
       strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
         select('year', Strategy,input$strategy_indicator) %>%
         arrange(year, Strategy)
-      
-
-      base_values <- strategy_temp %>% 
-        group_by(year, Strategy) %>% 
-        summarise(base_value = min(input$strategy_indicator))
-      
-      constant_base <- min(base_values$base_value)
-      
-      
+      #browser()
       plot_ly(strategy_temp, x = ~factor(year), y = ~get(input$strategy_indicator),
-              color = ~Strategy, type = "bar", base = base_values$base_value) %>%
-        layout(xaxis = list(title = "Year", categoryorder = "category"),
+              color = ~Strategy, 
+              text = ~Strategy,
+              type = "bar",
+              hoverinfo = 'text',
+              textposition = 'none',
+              hovertemplate = paste0('%{text} %{x}:<br>', 
+                                     'Emissions: %{y:.4s}<extra></extra>')
+              ) |>
+        layout(xaxis = list(title = "Year"),
                yaxis = list(title = "Total Change"),
-               barmode = "stack",
-               bargroupgap  = 0 ) %>%
-        add_trace( x = ~as.character(year), y = ~constant_base,
-                  type = "bar", marker = list(color = "rgba(0,0,0,0)"),
-                  showlegend = F)
+               barmode = "relative") |> 
+        config(displaylogo = FALSE, 
+               modeBarButtonsToRemove = c("toImage","zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d", "toggleSpikelines", "hoverCompareCartesian", "hoverClosestGeo", "hoverClosest3d", "hoverClosestGeo", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "hoverClosestCartesian"))
+               
     })
 
   
@@ -4839,8 +4863,9 @@ server <- function(input, output, session) {
                             output_format = "pdf_document",
                             output_options = list(
                               keep_tex = TRUE,
-                              verbose = TRUE,
-                              latex_engine = 'xelatex')
+                              verbose = TRUE#,
+                              #latex_engine = 'xelatex'
+                              )
           )
         }
       )
