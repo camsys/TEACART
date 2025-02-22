@@ -53,25 +53,11 @@ ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     # Application UI logic
-    title = "",
-    page_navbar(
-      theme = bs_theme(
-        version = 5,
-        fg = "#0d204d", # this has the same CMYK values as #173A89 but 70% saturation on black as opposed to 46%
-        primary = "#173A89", #2A8627
-        base_font = font_google("Inter"),
-        font_scale = NULL,
-        preset = "pulse",
-        bg = "#fff"
-      ), 
-
-# styles ------------------------------------------------------------------
-
-      
-      
-      # #a0cf66 is a georgetown color but intense - color below is a milder variation
-      tags$head(
-        tags$style(HTML("
+    #title = "",
+    # styles ------------------------------------------------------------------
+    # #a0cf66 is a georgetown color but intense - color below is a milder variation
+    tags$head(
+      tags$style(HTML("
             .accordion-button.collapsed {
                 background-color: #e3ebd5;
             }
@@ -101,19 +87,84 @@ ui <- function(request) {
             .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
             .nav.navbar-nav .form-group.shiny-input-container > label {display: inline;}
         ")),
-        tags$link(rel = "stylesheet", 
-                  href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
-      ),
+      tags$link(rel = "stylesheet", 
+                href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
+    ),
+    
+    page_navbar(
+      
       title = "TEA-CART",
       id = "APP_PAGE",
+      theme = bs_theme(
+        version = 5,
+        fg = "#0d204d", # this has the same CMYK values as #173A89 but 70% saturation on black as opposed to 46%
+        primary = "#173A89", #2A8627
+        base_font = font_google("Inter"),
+        font_scale = NULL,
+        preset = "pulse",
+        bg = "#fff"
+      ), 
 
 # footer -----------------------------------------------------------------------
-      footer = tags$div(
-        fluidRow(
+      footer =  fluidRow(
           #SLBOOKMARK
-          column(width = 4,),
-          column(width = 4,),
-          column(width = 4,)
+          column(width = 4,
+                 tags$a(tags$img(src = "GCC_Logo_Transparent_Stacked.png", height = "30px"),
+                                                    href = "https://www.georgetownclimate.org/", target = "_blank"),
+                 tags$p("Adapted from TEA-CART Excel Model Version 1.8"),tags$br(),
+                 tags$p("Shiny App last updated February 21st,2025"),tags$br(),
+                 tags$p("Prototype under development by Cmabridge Systematics, Inc."),tags$br(),
+                 tags$p("under contract to Gergetown Climate Center"),tags$br(),
+                 tags$p("[[copyright symbol?]] Georgetown Climate Center")
+                 ),
+          #column(width = 2,),
+          column(width = 2,
+                 shiny::actionButton("inputs_btn",
+                                     class = "btn btn-primary",
+                                     label = "Inputs"
+                 ),
+                 tags$ul(
+                   tags$li(
+                     shiny::actionButton("inbaseline",class = "btn btn-secondary",label = "Baseline")),
+                   tags$li(
+                     shiny::actionButton("inprojects",class = "btn btn-secondary",label = "Projects")),
+                   tags$li(
+                     shiny::actionButton("incosts",class = "btn btn-secondary",label = "Costs")),
+                   tags$li(
+                     shiny::actionButton("inassumptions",class = "btn btn-secondary",label = "Assumptions")),
+                   tags$li(
+                     shiny::actionButton("inscenarios",class = "btn btn-secondary",label = "Scenarios")),
+                   tags$li(
+                     shiny::actionButton("inadvanced",class = "btn btn-secondary",label = "Advanced"))
+                 )
+        ),
+        column(width = 2,
+               shiny::actionButton("outputs_btn",
+                                   class = "btn btn-primary",
+                                   label = "Outputs"
+               ),
+               tags$ul(
+                 tags$li(
+                   shiny::actionButton("outbaseline",class = "btn btn-secondary",label = "Baseline GHG Forecast")),
+                 tags$li(
+                   shiny::actionButton("outscenario",class = "btn btn-secondary",label = "Scenario Summary")),
+                 tags$li(
+                   shiny::actionButton("outsummary",class = "btn btn-secondary",label = "Strategy Summary")),
+                 tags$li(
+                   shiny::actionButton("outcosteff",class = "btn btn-secondary",label = "Cost Effectiveness"))
+               )
+        ),
+        column(width = 2,
+               tags$div(class = "make-this-colunar",
+               shiny::actionButton("about_btn",
+                                   class = "btn btn-primary",
+                                   label = "About"
+               ),
+               shiny::actionButton("sources_btn",
+                                   class = "btn btn-primary",
+                                   label = "Sources"
+               )
+               )
         )
       ), 
 # sidebar -----------------------------------------------------------------
@@ -154,17 +205,16 @@ ui <- function(request) {
                 #    h2("Transportation Evaluation and Carbon Reduction Tool (TEA-CART)"),
                 h3("About"),
                 p(),
-                p("The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a
-      comprehensive and dynamic tool aimed at assisting states with selecting
-      and prioritizing transportation capital program investments to effectively
-      support greenhouse gas (GHG) reduction. The tool is designed to accept
-      inputs typically available during the capital programming process. It provides
-      key outputs, including:"),
-      tags$ul(tags$li(p("A baseline inventory and forecast of GHG emissions.")),
-              tags$li(p("GHG impacts of a capital program or a hypothetical set
-                      of capital projects.")),
-              tags$li(p("Information on cost-effectiveness of various project
-                      types."))),
+                p('The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a web-based tool that calculates the expected change in greenhouse gas (GHG) emissions from transportation investments. Questions such as ‘how much would I expect emissions to decrease as a result of adding 10 new miles of bike lanes?’ can be answered within this tool, using values researched from many real-world implementations (see the Sources page for more information). The tool is comprehensive and dynamic. Many types of projects can be evaluated, including bicycle and pedestrian infrastructure, transit services, replacing diesel buses with electric buses, travel demand management programs, traffic operations, charging infrastructure, and more. The tool updates in real-time, so results can be seen as soon as a new project information is provided'),
+                p('The tool is intended primarily to help state, regional, and local agencies prioritize capital program investments to effectively support GHG emissions reduction. One use of this tool is to evaluate a set of new projects proposed within a Statewide Transportation Improvement Program (STIP) or metropolitan TIP required under 49 U.S.C. 5304(g). Another possible use is corridor-level scenario planning, where a corridor design could be compared to alternative designs.'),
+                p('The tool accepts inputs typically available during the capital programming process, such as new lane-miles of infrastructure, number of new electric chargers, or vehicles replaced. The main outputs of the tool include:'),
+      tags$ul(tags$li(p("A baseline estimate of GHG emissions from the main sources of transportation emissions (including light duty vehicles, medium and heavy-duty vehicles, public transit, passenger rail, freight rail, and construction and maintenance),")),
+              tags$li(p("A forecast of future GHG emissions for each state given current trends (i.e., a ‘business-as-usual forecast with no change in investment patterns),")),
+              tags$li(p("A forecast reduction in GHG emissions compared to the baseline, considering the new investments entered by the user,")),
+              tags$li(p("Estimates of change in vehicle miles traveled (VMT), NOx, PM2.5, and active trips for user-provided scenarios,")),
+              tags$li(p("Ability to compare one group of projects to another group of projects, both at a detailed level and a summary level,")),
+              tags$li(p("Tables showing which project types are most cost-effective at reducing GHG emissions."))
+              ),
       h3("Guidance on using the tool"),
       p("As you enter data, please keep the following in mind:"),
       tags$ul(tags$li(p("This application does not require a login and is free to use.")),
@@ -182,23 +232,37 @@ ui <- function(request) {
                         the Scenarios tab and select scenarios for analysis. Either choose 
                         groups of projects (to support a comparison) or click the button 
                         to select all projects for each scenario."))),
-      h3("Version"),
-      HTML("<p>Adapted from TEA-CART Excel Model Version 1.8</p>
-           <p>Shiny App last updated March 27, 2024</p>
-           <p>Prototype under development by Cambridge Systematics, Inc.<br>
-           under contract to Georgetown Climate Center</p>
-           <p>© Georgetown Climate Center")
+      h3('Steps to use the tool'),
+      p(),
+      tags$ol(
+        tags$li(p("Use the navigation panel at the top to select ‘inputs.’")),
+        tags$li(p("Within ‘inputs’, select ‘baseline’ to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.")),
+        tags$li(p("Within ‘projects’, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse")),
+        tags$li(p("When you are done entering data, press CTRL + ENTER on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.")),
+        tags$li(p("Regularly download the data that you have entered. You can download it by clicking the ‘Download User Inputs’ button on the sidebar.")),
+        tags$li(p("If desired, within ‘costs’, enter custom unit costs for the project type. Note that default values have already been provided.")),
+        tags$li(p("Further ‘Assumptions’ for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, please refer to the user guide.")),
+        tags$li(p("Click the boxes to choose which groups of projects to include in scenario analysis: ")),
+        tags$li(p("It is possible to use a custom forecast on the ‘Advanced’ tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. Refer to the user guide for more information.")),
+        tags$li(p("To see the results of the data that have been entered, refer to the Outputs tab.")),
+        tags$li(p("Review the individual tabs within ‘Outputs’ for results. The ‘Baseline GHG Forecast’ tab shows the forecast under a business-as-usual scenario. ‘Scenario Summary’ shows results by scenario, including total emissions and changes relative to the baseline. ‘Strategy Summary’ shows the change in CO2e, VMT, NOx, PM2.5, and Daily Active Trips relative to the baseline. ‘Cost effectiveness’ shows the change in annual output per indicator per $1 million of investment.")),
+        tags$li(p("Click ‘Download Summary Report’ to get a pdf document with all of this information.")),
+      )
+      # h3("Version"),
+      # HTML("<p>Adapted from TEA-CART Excel Model Version 1.8</p>
+      #      <p>Shiny App last updated March 27, 2024</p>
+      #      <p>Prototype under development by Cambridge Systematics, Inc.<br>
+      #      under contract to Georgetown Climate Center</p>
+      #      <p>© Georgetown Climate Center")
       ),
 
-
-
-      
       nav_panel(title = "Inputs",
                 navset_card_pill(
                   id = "INPUTS_TABS",
 
 # baseline inputs ---------------------------------------------------------                  
                   nav_panel(title = "Baseline",
+                            value = "Baseline",
                             fluidRow(HTML("<p>Please enter <b>key inputs</b> below to define the timing and scope of your TEA-CART analysis, including: State, Base Year, Horizon Years, Geographic Scope, and Emissions Scope.<br>
                                           <p>
                                           For specific information on the key inputs, mouse over the <q>i</q> icon next to each input.")),
@@ -1545,13 +1609,12 @@ nav_panel(title = "Assumptions",
 ),
 
 # outputs tab ui ----------------------------------------------------------
-
-
 # baseline outputs ui -----------------------------------------------------
 
 
       nav_panel(title = "Outputs",
                 navset_card_pill(
+                  id = "OUTPUTS_TABS",
                   placement = "above",
                   nav_panel(title = "Baseline GHG Forecast",
                             
@@ -1791,9 +1854,11 @@ nav_panel(title = "Strategy Summary",
                 
                 DT::dataTableOutput("source_table")
       ),
+
+# header logo ------------------------------------------------------------
       nav_spacer(),
       tags$script(HTML("var header = $('.navbar > .container-fluid');
-      header.append('<div style=\"float:right\"><a href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Transparent_Stacked.png\" alt=\"alt\" style=\"float:right;width:120px;height:60px;\"> </a></div>');
+      header.append('<div style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Transparent_Stacked.png\" alt=\"alt\" style=\"float:right;max-width:400px;width:100%;height:auto\"> </a></div>');
                        console.log(header)")
                   ),
      # nav_menu(
@@ -1819,7 +1884,9 @@ theme_set(theme_bw(base_size = 16))
 server <- function(input, output, session) {
   #Test Observe ----------------------------------------------------------------
   #observeEvent(input$state_input, {browser()})
-  
+  # observeEvent(buttonid, {
+  #   nav_select(id = "iforget", selected = "Inputs")
+  # })
   
   #Source Local Scripts --------------------------------------------------------
   source("functions/render_custom_datatable.R", local = T)
@@ -4707,7 +4774,8 @@ server <- function(input, output, session) {
               ) |>
         layout(xaxis = list(title = "Year"),
                yaxis = list(title = "Total Change"),
-               barmode = "relative") |> 
+               barmode = "relative",
+               legend = list(orientation = 'h')) |> 
         config(displaylogo = FALSE, 
                modeBarButtonsToRemove = c("toImage","zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d", "toggleSpikelines", "hoverCompareCartesian", "hoverClosestGeo", "hoverClosest3d", "hoverClosestGeo", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "hoverClosestCartesian"))
                
@@ -4874,6 +4942,57 @@ server <- function(input, output, session) {
   )
 
   
+  #footer buttons-------------------------
+  observeEvent(c(input$inputs_btn,input$inbaseline),{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Baseline")
+  })
+  observeEvent(input$inprojects,{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Projects")
+  })
+  observeEvent(input$incosts,{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Costs")
+  })
+  observeEvent(input$inassumptions,{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Assumptions")
+  })
+  observeEvent(input$inscenarios,{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Scenarios")
+  })
+  observeEvent(input$inadvanced,{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Advanced")
+  })
+  observeEvent(input$outputs_btn,{
+    nav_select(id = "APP_PAGE",selected = "Outputs")
+    nav_select(id = "OUTPUTS_TABS",selected = "Baseline GHG Forecast")
+  })
+  observeEvent(input$outbaseline,{
+    nav_select(id = "APP_PAGE",selected = "Outputs")
+    nav_select(id = "OUTPUTS_TABS",selected = "Baseline GHG Forecast")
+  })
+  observeEvent(input$outscenario,{
+    nav_select(id = "APP_PAGE",selected = "Outputs")
+    nav_select(id = "OUTPUTS_TABS",selected = "Scenario Summary")
+  })
+  observeEvent(input$outsummary,{
+    nav_select(id = "APP_PAGE",selected = "Outputs")
+    nav_select(id = "OUTPUTS_TABS",selected = "Strategy Summary")
+  })
+  observeEvent(input$outcosteff,{
+    nav_select(id = "APP_PAGE",selected = "Outputs")
+    nav_select(id = "OUTPUTS_TABS",selected = "Cost Effectiveness")
+  })
+  observeEvent(input$about_btn,{
+    nav_select(id = "APP_PAGE",selected = "Welcome")
+  })
+  observeEvent(input$sources_btn,{
+    nav_select(id = "APP_PAGE",selected = "Sources")
+  })
 }
 
 # Run the application
