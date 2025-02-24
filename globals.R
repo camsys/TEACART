@@ -121,10 +121,8 @@ get_num_primary_keys <- function(df){
 
 #State Population ----
 #State Population for years 2020, 2030, 2050 - need to project inbetween years
-print('first state population read')
-print(list.files("data"))
 State_Populations <- read_excel("data/1.Raw_Data.xlsx", sheet = "State_Populations")
-print('after state population')
+
 #have to add the 2050 year somehow for approx to work
 for (var in unique(State_Populations$state)){
   temp_state <- State_Populations %>% 
@@ -155,7 +153,6 @@ NHS_VMT <- read_excel("data/1.Raw_Data.xlsx", sheet = "NHS_VMT", range = "A4:R57
     select(state, LDV_pct_on_NHS, TRK_pct_on_NHS)
 
 ##This is the VMT for each state from 2021-2050 - raw number not percentage
-print('here')
 VMT_State_Allocation_raw <- read_excel("data/1.Raw_Data.xlsx", sheet = "VMT_State_Allocation")
 
 VMT_State_Allocation <- right_join(State_Populations,VMT_State_Allocation_raw, by = c('year','state')) %>%
@@ -163,7 +160,7 @@ VMT_State_Allocation <- right_join(State_Populations,VMT_State_Allocation_raw, b
   mutate(us_vmt = sum(state_vmt)) %>%
   mutate(state_vmt_pct_of_national = state_vmt/us_vmt) %>% #dividing by two removes US Total
   ungroup()
-print('here1')
+
 ##this has millions of vehicles for the whole US by year for veh/vehsubtype 
 Stock_Type_Tech_BASE <- read_excel("data/1.Raw_Data.xlsx", sheet = "Stock_Type_Tech_BASE") %>%
   pivot_longer(cols = !c(veh_type, veh_subtype), names_to = "year", values_to = "stock_millions") %>%
@@ -233,7 +230,7 @@ Transit_Costs <- ### Adds zeroes to states that don't have certain transit modes
   left_join(Transit_Costs %>% select(-state_code), by = c("state", "transit_mode")) %>% 
   replace_na(list(total_cost_veh_operations = 0, total_cost_veh_maintainance = 0, total_cost_fuel_lube = 0, total_cost_om = 0)) %>% 
   left_join(Transit_Costs %>% select(state, state_code) %>% filter(!duplicated(state)), by = c("state")) 
-print('here6')
+
 
 # used to rename headers and units during table rendering
 references <- read_excel("data/2.User_Inputs.xlsx",

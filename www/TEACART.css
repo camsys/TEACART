@@ -1,0 +1,142 @@
+h2 {
+  font-weight: bold;
+}
+
+b {
+  color: RGB(var(--bs-emphasis-color-rgb, 0, 0, 0));
+}
+
+.navbar {
+  padding: 0;
+}
+.navbar .navbar-brand {
+  font-size: 1.5rem;
+}
+.navbar .nav {
+  gap: 0;
+}
+.navbar .nav .nav-item {
+  margin: 0;
+  background: none;
+}
+.navbar .nav .nav-item:first-child {
+  margin: 0;
+  display: none;
+}
+.navbar .nav .nav-item:first-child .nav-link {
+  padding: none !important;
+  background: none;
+}
+.navbar .nav .nav-item .nav-link {
+  font-size: 1.4rem;
+  padding: 1rem 3rem !important;
+  background: none;
+  -webkit-transition: background 0.5s ease-in-out;
+  transition: background 0.5s ease-in-out;
+}
+.navbar .nav .nav-item .nav-link.active {
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(rgba(255, 255, 255, 0.15)));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.15) 100%);
+  border: none;
+  font-weight: normal;
+}
+.navbar .nav .nav-item:hover .nav-link {
+  border: none;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(rgba(255, 255, 255, 0.15)));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.15) 100%);
+}
+.navbar .nav .nav-item.dropdown .nav-link {
+  background: none;
+  padding: 1rem 0 !important;
+}
+.navbar .nav .nav-item.dropdown:hover .nav-link {
+  background: none;
+}
+
+@media screen and (max-width: 1200px) {
+  .navbar .nav .nav-item .nav-link {
+    padding: 1rem 2rem !important;
+    font-size: 1.4rem;
+  }
+}
+@media screen and (min-width: 575.98px) {
+  .bslib-sidebar-layout > .collapse-toggle {
+    margin-top: 25px;
+    -webkit-transition: background-color 0.25s ease-in-out;
+    transition: background-color 0.25s ease-in-out;
+  }
+  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=true] {
+    background-color: #DCDEE6;
+  }
+  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=true]:hover {
+    background-color: #C3C7D7;
+  }
+  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=false] {
+    background-color: #25365F;
+  }
+  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=false]:hover {
+    background-color: #566382;
+  }
+  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=false] svg {
+    fill: white !important;
+  }
+  .bslib-sidebar-layout > .sidebar > .sidebar-content {
+    padding-top: 2.5rem;
+  }
+}
+.tab-pane[data-value=Inputs] .card-header {
+  padding: 0;
+}
+.tab-pane[data-value=Inputs] .card-header .nav-item {
+  padding: 0.5rem;
+}
+.tab-pane[data-value=Inputs] .card-header .nav-item:first-child {
+  margin-left: 0.5rem;
+}
+.tab-pane[data-value=Inputs] .card-header .nav-item:not(:nth-child(6)) {
+  background: #E9E9E9;
+}
+.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(5) {
+  position: relative;
+  margin-right: 36px;
+}
+.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(5):after {
+  content: "";
+  display: block;
+  width: 0px;
+  height: 0px;
+  border-style: solid;
+  border-width: 28px 0 28px 35px;
+  border-color: transparent transparent transparent #E9E9E9;
+  -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+  position: absolute;
+  right: -35px;
+  bottom: 0;
+}
+.tab-pane[data-value=Inputs] .baseline-content {
+  background-color: RGBA(var(--bs-emphasis-color-rgb, 0, 0, 0), 0.03);
+  padding: 1rem 0;
+  border: none;
+}
+.tab-pane[data-value=Inputs] .baseline-content .shiny-input-container {
+  margin-bottom: 1rem;
+}
+.tab-pane[data-value=Inputs] .baseline-content .shiny-input-container .control-label span {
+  font-weight: bold;
+  color: RGB(var(--bs-emphasis-color-rgb, 0, 0, 0));
+}
+.tab-pane[data-value=Inputs] .baseline-content .shiny-input-container .control-label p, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-container .control-label .option {
+  font-weight: normal;
+}
+.tab-pane[data-value=Inputs] .baseline-content .well {
+  background: none !important;
+  border: none;
+  padding: 0;
+}
+.tab-pane[data-value=Inputs] .baseline-content .shiny-input-select, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-select *, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-number, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-number * {
+  max-width: 400px;
+}
+.tab-pane[data-value=Inputs] .tab-pane[data-value=Projects] input[type=search] {
+  min-width: 354px;
+}
