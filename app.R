@@ -261,10 +261,10 @@ ui <- function(request) {
 
       nav_panel(title = "Inputs",
                 navset_card_pill(
+                  id = "INPUTS_TABS",
 
 # baseline inputs ---------------------------------------------------------                  
                   nav_panel(title = "Baseline",
-                            value = "Baseline",
                             fluidRow(HTML("<p>Please enter <b>key inputs</b> below to define the timing and scope of your TEA-CART analysis, including: State, Base Year, Horizon Years, Geographic Scope, and Emissions Scope.<br>
                                           <p>
                                           For specific information on the key inputs, mouse over the <q>i</q> icon next to each input.")),
