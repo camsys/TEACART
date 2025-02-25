@@ -23,14 +23,6 @@ p {
   margin: 0;
   background: none;
 }
-.navbar .nav .nav-item:first-child {
-  margin: 0;
-  display: none;
-}
-.navbar .nav .nav-item:first-child .nav-link {
-  padding: none !important;
-  background: none;
-}
 .navbar .nav .nav-item .nav-link {
   font-size: 1.4rem;
   padding: 1rem 3rem !important;
