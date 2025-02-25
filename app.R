@@ -1785,7 +1785,7 @@ nav_panel(title = "Strategy Summary",
 # header logo ------------------------------------------------------------
       nav_spacer(),
       tags$script(HTML("var header = $('.navbar > .container-fluid');
-      header.append('<div style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Transparent_Stacked.png\" alt=\"alt\" style=\"float:right;max-width:400px;width:100%;height:auto\"> </a></div>');
+      header.append('<div style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Contrast.svg\" alt=\"alt\" style=\"float:right;max-width:250px;width:100%;height:auto\"> </a></div>');
                        console.log(header)")
                   ),
      # nav_menu(
