@@ -49,6 +49,10 @@ p {
   background: none;
 }
 
+.card-header-pills {
+  width: 100%;
+}
+
 @media screen and (max-width: 1200px) {
   .navbar .nav .nav-item .nav-link {
     padding: 1rem 2rem !important;
@@ -211,5 +215,59 @@ table tr:hover td {
     width: 250px;
     -webkit-transform: translateY(-10px);
             transform: translateY(-10px);
+  }
+}
+.tab-pane[data-value=Outputs] #cost_view {
+  margin: 0 auto;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.tab-pane[data-value=Outputs] #cost_view #cost_view-label {
+  font-weight: bold;
+}
+.tab-pane[data-value=Outputs] #cost_view .shiny-options-group {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label {
+  width: 300px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  height: 45px;
+  position: relative;
+}
+.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label input {
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  --bs-form-check-bg-image: none;
+  z-index: 0;
+  background-color: #8b9dc4;
+}
+.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label input:checked {
+  background-color: #173A89;
+}
+.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label span {
+  position: absolute;
+  right: 0;
+  left: 0;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1;
+  text-align: center;
+  top: 12.5px;
+  color: white;
+}
+@media screen and (max-width: 1200px) {
+  .tab-pane[data-value=Outputs] #cost_view .shiny-options-group {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
   }
 }
