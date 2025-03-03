@@ -9,6 +9,10 @@ h2
   font-weight: bold
 b
   color: $dark-blue
+.gcc-logo
+  transition: filter .1s ease-in-out
+  &:hover
+    filter: drop-shadow(0 0 .5px white)
 // navbar
 .navbar
   padding: 0
@@ -118,7 +122,7 @@ b
   margin: 1rem -1rem 0 -1rem
   background-color: $blue
   color: white
-  padding: 1rem 1rem 2rem 1rem
+  padding: 1rem
   .footer-logo
     margin-bottom: 1rem
   p
@@ -154,13 +158,31 @@ b
         text-align: left
         &:hover
           text-decoration: underline
+  .make-this-colunar
+    display: flex
+    flex-direction: column
+    >button
+      text-align: left
 @media screen and (max-width: 575.98px)
   .footer
       #inputs_btn, #outputs_btn, #about_btn, #sources_btn, ul
         display: none
-@media screen and (min-width: 575.98px)
+@media screen and (max-width: 991.98px) //tablet
+  .navbar
+    .gcc-logo
+      display: none
+    .navbar-toggle
+      border: none
+@media screen and (min-width: 575.98px) // small
   .html-fill-container
     display: block
-  .bslib-sidebar-layout>.main
+  .bslib-sidebar-layout>.main, .tab-content>.active.html-fill-container
     padding-bottom: 0
     min-height: 100vh
+#shiny-notification-panel
+  top: 8vh
+  left: calc(50% - 33%)
+  width: 66%
+  text-align: center
+  .shiny-notification-error
+    padding: 1rem

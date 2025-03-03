@@ -116,8 +116,8 @@ ui <- function(request) {
 # footer -----------------------------------------------------------------------
       footer =  fluidRow( class="footer",
           #SLBOOKMARK
-          column(width = 7,
-                 tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo"),
+          column(width = 9,
+                 tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                                     href = "https://www.georgetownclimate.org/", target = "_blank"),
                  tags$p("Adapted from TEA-CART Excel Model Version 1.8"),
                  tags$p("Shiny App last updated February 21st,2025"),
@@ -126,7 +126,7 @@ ui <- function(request) {
                  tags$p("© Georgetown Climate Center")
                  ),
           #column(width = 2,),
-          column(width = 2,
+          column(width = 1,
                  shiny::actionButton("inputs_btn",
                                      class = "btn btn-primary",
                                      label = "Inputs"
@@ -146,7 +146,7 @@ ui <- function(request) {
                      shiny::actionButton("inadvanced",class = "btn btn-secondary",label = "Advanced"))
                  )
         ),
-        column(width = 2,
+        column(width = 1,
                shiny::actionButton("outputs_btn",
                                    class = "btn btn-primary",
                                    label = "Outputs"
@@ -1779,15 +1779,15 @@ nav_panel(title = "Strategy Summary",
                 h2("Sources"),
                 p("The following resources were used in developing the TEA-CART tool."),
                 
-                DT::dataTableOutput("source_table")
+                DT::dataTableOutput("source_table"),
+                tags$script(HTML("var header = $('.navbar > .container-fluid');
+      header.append('<div class=\"gcc-logo header-logo\" style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Contrast.svg\" alt=\"alt\" style=\"float:right;max-width:250px;width:100%;height:auto\"> </a></div>');
+                       console.log(header)") # moved this script tag so that it doesn't create a new tab. 
+                  ),
       ),
 
 # header logo ------------------------------------------------------------
       nav_spacer(),
-      tags$script(HTML("var header = $('.navbar > .container-fluid');
-      header.append('<div style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Contrast.svg\" alt=\"alt\" style=\"float:right;max-width:250px;width:100%;height:auto\"> </a></div>');
-                       console.log(header)")
-                  ),
      # nav_menu(
      #   title = tags$a(tags$img(src = "GCC_Logo_Transparent_Stacked.png", height = "30px"),
      #                  href = "https://www.georgetownclimate.org/", target = "_blank"))
@@ -1946,9 +1946,9 @@ server <- function(input, output, session) {
         
       } else if(sum(rvs$Scenarios$Scenario1)+sum(rvs$Scenarios$Scenario2) == 0){
         
-        warning = HTML("You have not selected any Scenarios. <br/> 
-                    Output tabs will show no results without a scenario <br/>
-                    selection. Navigate to Inputs > Scenarios to make your selection")
+        warning = HTML("You have not selected any Scenarios.
+                    Output tabs will show no results without a scenario selection. <br/>
+                    Navigate to Inputs > Scenarios to make your selection")
 
         showNotification(HTML(warning), type = "error")
       }
@@ -4957,6 +4957,8 @@ server <- function(input, output, session) {
     nav_select(id = "APP_PAGE",selected = "Sources")
   })
 }
+
+
 
 # Run the application
 shinyApp(ui, server)
