@@ -131,7 +131,7 @@ table
       width: 15%
       &:hover
         cursor: pointer
-        background-color: #E9E9E9
+        background-color: mix(#d1d8e7, black, 97%)
   .tab-pane[data-value="Advanced"] // Inputs tab
     .row
       overflow-y: scroll
@@ -155,9 +155,9 @@ table
     .datatables
         tr:nth-last-child(-n+3)
           td
-            background-color: $dark-blue
+            background-color: $light-blue
             box-shadow: none
-            color: white
+            color: $dark-blue
   .tab-pane[data-value="Cost effectiveness"]
     .cost-table
       position: relative
