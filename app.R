@@ -114,16 +114,16 @@ ui <- function(request) {
       ), 
 
 # footer -----------------------------------------------------------------------
-      footer =  fluidRow(
+      footer =  fluidRow( class="footer",
           #SLBOOKMARK
-          column(width = 4,
-                 tags$a(tags$img(src = "GCC_Logo_Transparent_Stacked.png", height = "30px"),
+          column(width = 7,
+                 tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo"),
                                                     href = "https://www.georgetownclimate.org/", target = "_blank"),
-                 tags$p("Adapted from TEA-CART Excel Model Version 1.8"),tags$br(),
-                 tags$p("Shiny App last updated February 21st,2025"),tags$br(),
-                 tags$p("Prototype under development by Cmabridge Systematics, Inc."),tags$br(),
-                 tags$p("under contract to Gergetown Climate Center"),tags$br(),
-                 tags$p("[[copyright symbol?]] Georgetown Climate Center")
+                 tags$p("Adapted from TEA-CART Excel Model Version 1.8"),
+                 tags$p("Shiny App last updated February 21st,2025"),
+                 tags$p("Prototype under development by Cambridge Systematics, Inc."),
+                 tags$p("under contract to Gergetown Climate Center"),
+                 tags$p("© Georgetown Climate Center")
                  ),
           #column(width = 2,),
           column(width = 2,
@@ -162,7 +162,7 @@ ui <- function(request) {
                    shiny::actionButton("outcosteff",class = "btn btn-secondary",label = "Cost Effectiveness"))
                )
         ),
-        column(width = 2,
+        column(width = 1,
                tags$div(class = "make-this-colunar",
                shiny::actionButton("about_btn",
                                    class = "btn btn-primary",
