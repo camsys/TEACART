@@ -10,17 +10,6 @@ p {
   max-width: 1440px !important;
 }
 
-.gcc-logo {
-  -webkit-transition: -webkit-filter 0.1s ease-in-out;
-  transition: -webkit-filter 0.1s ease-in-out;
-  transition: filter 0.1s ease-in-out;
-  transition: filter 0.1s ease-in-out, -webkit-filter 0.1s ease-in-out;
-}
-.gcc-logo:hover {
-  -webkit-filter: drop-shadow(0 0 0.5px white);
-          filter: drop-shadow(0 0 0.5px white);
-}
-
 .navbar {
   padding: 0;
 }
@@ -386,4 +375,15 @@ table tr:hover td {
 }
 #shiny-notification-panel .shiny-notification-error {
   padding: 1rem;
+}
+
+.gcc-logo {
+  -webkit-transition: -webkit-filter 0.1s ease-in-out;
+  transition: -webkit-filter 0.1s ease-in-out;
+  transition: filter 0.1s ease-in-out;
+  transition: filter 0.1s ease-in-out, -webkit-filter 0.1s ease-in-out;
+}
+.gcc-logo:hover {
+  -webkit-filter: drop-shadow(0 0 0.5px white);
+          filter: drop-shadow(0 0 0.5px white);
 }
