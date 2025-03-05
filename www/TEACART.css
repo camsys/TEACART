@@ -6,6 +6,17 @@ b {
   color: RGB(var(--bs-emphasis-color-rgb, 0, 0, 0));
 }
 
+.gcc-logo {
+  -webkit-transition: -webkit-filter 0.1s ease-in-out;
+  transition: -webkit-filter 0.1s ease-in-out;
+  transition: filter 0.1s ease-in-out;
+  transition: filter 0.1s ease-in-out, -webkit-filter 0.1s ease-in-out;
+}
+.gcc-logo:hover {
+  -webkit-filter: drop-shadow(0 0 0.5px white);
+          filter: drop-shadow(0 0 0.5px white);
+}
+
 .navbar {
   padding: 0;
 }
@@ -131,4 +142,105 @@ b {
 }
 .tab-pane[data-value=Inputs] .tab-pane[data-value=Projects] input[type=search] {
   min-width: 354px;
+}
+
+.footer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 1rem -1rem 0 -1rem;
+  background-color: #25365F;
+  color: white;
+  padding: 1rem;
+}
+.footer .footer-logo {
+  margin-bottom: 1rem;
+}
+.footer p {
+  line-height: 0.8rem;
+  font-size: 0.8rem;
+}
+.footer #inputs_btn, .footer #outputs_btn, .footer #about_btn, .footer #sources_btn {
+  background: none;
+  border: none;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  opacity: 75%;
+  font-size: 1.2rem;
+  padding: 0;
+}
+.footer #inputs_btn:hover, .footer #outputs_btn:hover, .footer #about_btn:hover, .footer #sources_btn:hover {
+  background: none;
+  color: white;
+  text-decoration: underline;
+}
+.footer #inputs_btn, .footer #outputs_btn, .footer #about_btn {
+  margin-bottom: 0.25rem;
+}
+.footer ul {
+  -webkit-padding-start: 0;
+          padding-inline-start: 0;
+}
+.footer ul li {
+  list-style-type: none;
+  margin-bottom: 0.1rem;
+  background: none;
+}
+.footer ul li .btn {
+  background: none !important;
+  border: none !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+  color: white !important;
+  font-size: 0.8rem;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+.footer ul li .btn:hover {
+  text-decoration: underline;
+}
+.footer .make-this-colunar {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+.footer .make-this-colunar > button {
+  text-align: left;
+}
+
+@media screen and (max-width: 575.98px) {
+  .footer #inputs_btn, .footer #outputs_btn, .footer #about_btn, .footer #sources_btn, .footer ul {
+    display: none;
+  }
+}
+@media screen and (max-width: 991.98px) {
+  .navbar .gcc-logo {
+    display: none;
+  }
+  .navbar .navbar-toggle {
+    border: none;
+  }
+}
+@media screen and (min-width: 575.98px) {
+  .html-fill-container {
+    display: block;
+  }
+  .bslib-sidebar-layout > .main, .tab-content > .active.html-fill-container {
+    padding-bottom: 0;
+    min-height: 100vh;
+  }
+}
+#shiny-notification-panel {
+  top: 8vh;
+  left: 17%;
+  width: 66%;
+  text-align: center;
+}
+#shiny-notification-panel .shiny-notification-error {
+  padding: 1rem;
 }
