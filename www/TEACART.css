@@ -3,7 +3,11 @@ h2 {
 }
 
 b {
-  color: RGB(var(--bs-emphasis-color-rgb, 0, 0, 0));
+  color: var(--bs-dark);
+}
+
+p {
+  max-width: 1440px !important;
 }
 
 .gcc-logo {
@@ -56,6 +60,10 @@ b {
   background: none;
 }
 
+.card-header-pills {
+  width: 100%;
+}
+
 @media screen and (max-width: 1200px) {
   .navbar .nav .nav-item .nav-link {
     padding: 1rem 2rem !important;
@@ -87,6 +95,10 @@ b {
     padding-top: 2.5rem;
   }
 }
+table tr:hover td {
+  background-color: #d6dce9;
+}
+
 .tab-pane[data-value=Inputs] .card-header {
   padding: 0;
 }
@@ -137,7 +149,7 @@ b {
 }
 .tab-pane[data-value=Inputs] .baseline-content .shiny-input-container .control-label span {
   font-weight: bold;
-  color: RGB(var(--bs-emphasis-color-rgb, 0, 0, 0));
+  color: var(--bs-dark);
 }
 .tab-pane[data-value=Inputs] .baseline-content .shiny-input-container .control-label p, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-container .control-label .option {
   font-weight: normal;
@@ -150,8 +162,129 @@ b {
 .tab-pane[data-value=Inputs] .baseline-content .shiny-input-select, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-select *, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-number, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-number * {
   max-width: 400px;
 }
-.tab-pane[data-value=Inputs] .tab-pane[data-value=Projects] input[type=search] {
-  min-width: 354px;
+
+.tab-pane[data-value=Inputs] input[type=search] {
+  min-width: 225px;
+}
+.tab-pane[data-value=Inputs] .table td.dt-right {
+  border: 1px solid lightgrey;
+  width: 15%;
+}
+.tab-pane[data-value=Inputs] .table td.dt-right:hover {
+  cursor: pointer;
+  background-color: #cbd2e0;
+}
+.tab-pane[data-value=Inputs] .tab-pane[data-value=Advanced] .row {
+  overflow-y: scroll;
+}
+
+.tab-pane[data-value=Outputs] .hoverlayer path {
+  stroke-width: 5px;
+  fill: white !important;
+}
+.tab-pane[data-value=Outputs] .hoverlayer text {
+  font-weight: bold;
+  fill: black !important;
+}
+.tab-pane[data-value=Outputs] table.dataTable tr.dtrg-level-0 {
+  color: var(--bs-dark);
+}
+.tab-pane[data-value=Outputs] table.dataTable tr.dtrg-level-0 th {
+  background-color: var(--bs-primary-bg-subtle);
+  font-weight: normal;
+}
+.tab-pane[data-value=Outputs] .tab-pane[data-value="Baseline GHG Forecast"] .datatables tr:nth-last-child(-n+3) td {
+  background-color: var(--bs-primary-bg-subtle);
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  color: var(--bs-dark);
+}
+.tab-pane[data-value=Outputs] .tab-pane[data-value="Cost effectiveness"] .cost-table {
+  position: relative;
+}
+.tab-pane[data-value=Outputs] .tab-pane[data-value="Cost effectiveness"] .cost-table h3 {
+  color: var(--bs-dark);
+  font-weight: 400;
+  font-size: 1rem;
+  background-color: var(--bs-primary-bg-subtle);
+  margin: 0 0.5rem;
+  padding: 0.75rem;
+  text-align: center;
+  font-size: 1rem;
+}
+@media screen and (min-width: 767px) {
+  .tab-pane[data-value=Outputs] .tab-pane[data-value="Cost effectiveness"] .cost-table h3 {
+    text-align: left;
+    width: calc(100% - 1.25rem);
+  }
+  .tab-pane[data-value=Outputs] .tab-pane[data-value="Cost effectiveness"] .cost-table.search h3 {
+    position: absolute;
+    text-align: left;
+    margin: 0;
+    left: 1.25rem;
+    top: 0;
+    background-color: var(--bs-primary-bg-subtle);
+    width: calc(100% - 305px);
+  }
+  .tab-pane[data-value=Outputs] .tab-pane[data-value="Cost effectiveness"] .cost-table.search div.dataTables_wrapper div.dataTables_filter label {
+    width: 250px;
+    -webkit-transform: translateY(-10px);
+            transform: translateY(-10px);
+  }
+}
+.tab-pane[data-value=Outputs] #cost_view {
+  margin: 0 auto;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.tab-pane[data-value=Outputs] #cost_view #cost_view-label {
+  font-weight: bold;
+}
+.tab-pane[data-value=Outputs] #cost_view .shiny-options-group {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label {
+  width: 300px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  height: 45px;
+  position: relative;
+}
+.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label input {
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  --bs-form-check-bg-image: none;
+  z-index: 0;
+  background-color: #8b9dc4;
+}
+.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label input:checked {
+  background-color: #173A89;
+}
+.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label span {
+  position: absolute;
+  right: 0;
+  left: 0;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1;
+  text-align: center;
+  top: 12.5px;
+  color: white;
+}
+@media screen and (max-width: 1200px) {
+  .tab-pane[data-value=Outputs] #cost_view .shiny-options-group {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+  }
 }
 
 .footer {
