@@ -4978,53 +4978,53 @@ server <- function(input, output, session) {
   observeEvent(c(input$inputs_btn,input$inbaseline),{
     nav_select(id = "APP_PAGE",selected = "Inputs")
     nav_select(id = "INPUTS_TABS",selected = "Baseline")
-  })
+  },ignoreInit = T)
   observeEvent(input$inprojects,{
     nav_select(id = "APP_PAGE",selected = "Inputs")
     nav_select(id = "INPUTS_TABS",selected = "Projects")
-  })
+  },ignoreInit = T)
   observeEvent(input$incosts,{
     nav_select(id = "APP_PAGE",selected = "Inputs")
     nav_select(id = "INPUTS_TABS",selected = "Costs")
-  })
+  },ignoreInit = T)
   observeEvent(input$inassumptions,{
     nav_select(id = "APP_PAGE",selected = "Inputs")
     nav_select(id = "INPUTS_TABS",selected = "Assumptions")
-  })
+  },ignoreInit = T)
   observeEvent(input$inscenarios,{
     nav_select(id = "APP_PAGE",selected = "Inputs")
     nav_select(id = "INPUTS_TABS",selected = "Scenarios")
-  })
+  },ignoreInit = T)
   observeEvent(input$inadvanced,{
     nav_select(id = "APP_PAGE",selected = "Inputs")
     nav_select(id = "INPUTS_TABS",selected = "Advanced")
-  })
+  },ignoreInit = T)
   observeEvent(input$outputs_btn,{
     nav_select(id = "APP_PAGE",selected = "Outputs")
     nav_select(id = "OUTPUTS_TABS",selected = "Baseline GHG Forecast")
-  })
+  },ignoreInit = T)
   observeEvent(input$outbaseline,{
     nav_select(id = "APP_PAGE",selected = "Outputs")
     nav_select(id = "OUTPUTS_TABS",selected = "Baseline GHG Forecast")
-  })
+  },ignoreInit = T)
   observeEvent(input$outscenario,{
     nav_select(id = "APP_PAGE",selected = "Outputs")
     nav_select(id = "OUTPUTS_TABS",selected = "Scenario Summary")
-  })
+  },ignoreInit = T)
   observeEvent(input$outsummary,{
     nav_select(id = "APP_PAGE",selected = "Outputs")
     nav_select(id = "OUTPUTS_TABS",selected = "Strategy Summary")
-  })
+  },ignoreInit = T)
   observeEvent(input$outcosteff,{
     nav_select(id = "APP_PAGE",selected = "Outputs")
     nav_select(id = "OUTPUTS_TABS",selected = "Cost Effectiveness")
-  })
+  },ignoreInit = T)
   observeEvent(input$about_btn,{
     nav_select(id = "APP_PAGE",selected = "Welcome")
-  })
+  },ignoreInit = T)
   observeEvent(input$sources_btn,{
     nav_select(id = "APP_PAGE",selected = "Sources")
-  })
+  },ignoreInit = T)
 }
 
 
