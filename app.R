@@ -41,16 +41,15 @@ for (file in all_files) {
   }
 }
 
-print('itsaglobalissue')
-print(getwd())
 source("globals.R")
-print('itsthenextissue')
 source("read_from_user_inputs.R")
 
 # ui ----------------------------------------------------------------------
 
 ui <- function(request) {
+
   tagList(
+
     # Leave this function for adding external resources
     # Application UI logic
     #title = "",
@@ -101,7 +100,7 @@ ui <- function(request) {
     
     page_navbar(
       
-      title = "TEA-CART",
+      #title = "TEA-CART",
       id = "APP_PAGE",
       theme = bs_theme(
         version = 5,
@@ -116,6 +115,7 @@ ui <- function(request) {
 # footer -----------------------------------------------------------------------
       footer =  fluidRow(
           #SLBOOKMARK
+          useShinyjs(),
           column(width = 4,
                  tags$a(tags$img(src = "GCC_Logo_Transparent_Stacked.png", height = "30px"),
                                                     href = "https://www.georgetownclimate.org/", target = "_blank"),
@@ -202,10 +202,14 @@ ui <- function(request) {
       
 
 # welcome page ------------------------------------------------------------
-      
-      nav_panel(title = "Welcome",
+      nav_panel(title = "TEA-CART",
+                p(),
+                h2("Welcome"),
+                p('Lorem Ipsum The Teapot Dome scandal was a political corruption scandal in the United States involving the administration of President Warren G. Harding. It centered on Interior Secretary Albert Bacon Fall, who had leased Navy petroleum reserves at Teapot Dome in Wyoming, as well as two locations in California, to private oil companies at low rates without competitive bidding.[1] The leases were the subject of an investigation by Senator Thomas J. Walsh. Convicted of accepting bribes from the oil companies, Fall became the first presidential cabinet member to go to prison, but no one was convicted of paying the bribes.Before the Watergate scandal, Teapot Dome was regarded as the "greatest and most sensational scandal in the history of American politics".[2] It permanently damaged the reputation of the Harding administration, already hurt by its handling of the Great Railroad Strike of 1922 and Harding\'s 1922 veto of the Bonus Bill.[3] Congress subsequently passed permanent legislation granting itself subpoena power over tax records of any U.S. citizen, regardless of position.[4] These laws are also considered to have empowered Congress generally.[5]')),
+      nav_panel(title = "About",
                 p(),
                 #    h2("Transportation Evaluation and Carbon Reduction Tool (TEA-CART)"),
+                
                 h2("About"),
                 p(),
                 p('The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a web-based tool that calculates the expected change in greenhouse gas (GHG) emissions from transportation investments. Questions such as ‘how much would I expect emissions to decrease as a result of adding 10 new miles of bike lanes?’ can be answered within this tool, using values researched from many real-world implementations (see the Sources page for more information). The tool is comprehensive and dynamic. Many types of projects can be evaluated, including bicycle and pedestrian infrastructure, transit services, replacing diesel buses with electric buses, travel demand management programs, traffic operations, charging infrastructure, and more. The tool updates in real-time, so results can be seen as soon as a new project information is provided'),
@@ -794,32 +798,32 @@ ui <- function(request) {
         DT::dataTableOutput("expansion_projs_tbl")
       ),
       
-      #Custom Projects
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 15 | Custom Project",
-                   HTML("This category allows users to input custom project inputs. For units uses must input either VMT or MT CO2e."),
-                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                           title = "Cumulative View",
-                           placement = "bottom",
-                           options = list(container = "body"),
-                           DTOutput(outputId = "cumul_custom_projs_tbl")
-                   ))
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_custom_projs_tbl", "Reset Projects 15", class = "btn-custom")
-        ),
-        
-      ),
-      fluidRow(
-        DT::dataTableOutput("custom_projs_tbl")
-      ),
+      # #Custom Projects
+      # 
+      # fluidRow(
+      #   column(10,
+      #          accordion(
+      #            accordion_panel(
+      #              "Projects 15 | Custom Project",
+      #              HTML("This category allows users to input custom project inputs. For units uses must input either VMT or MT CO2e."),
+      #              bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+      #                      title = "Cumulative View",
+      #                      placement = "bottom",
+      #                      options = list(container = "body"),
+      #                      DTOutput(outputId = "cumul_custom_projs_tbl")
+      #              ))
+      #            ),
+      #            open = FALSE
+      #          ),
+      #   ),
+      #   column(2,
+      #          actionButton("reset_custom_projs_tbl", "Reset Projects 15", class = "btn-custom")
+      #   ),
+      #   
+      # ),
+      # fluidRow(
+      #   DT::dataTableOutput("custom_projs_tbl")
+      # ),
       
                   ),
 
@@ -1372,7 +1376,11 @@ nav_panel(title = "Assumptions",
                   h3("Scenario Selections"),
                   p(""),
                   DT::DTOutput("scenario_tbl")
-                )
+                ),
+                fluidRow(
+                  column(8, offset = 2, align = "right", actionButton("select_all_scenario1", "Select All for Scenario 1")),
+                  column(2, align = "right", actionButton("select_all_scenario2", "Select All for Scenario 2"))
+                ),
       ),
 
 
@@ -1784,10 +1792,10 @@ nav_panel(title = "Strategy Summary",
 
 # header logo ------------------------------------------------------------
       nav_spacer(),
-      tags$script(HTML("var header = $('.navbar > .container-fluid');
-      header.append('<div style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Contrast.svg\" alt=\"alt\" style=\"float:right;max-width:250px;width:100%;height:auto\"> </a></div>');
-                       console.log(header)")
-                  ),
+      # tags$script(HTML("var header = $('.navbar > .container-fluid');
+      # header.append('<div style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Contrast.svg\" alt=\"alt\" style=\"float:right;max-width:250px;width:100%;height:auto\"> </a></div>');
+      #                  console.log(header)")
+      #             ),
      # nav_menu(
      #   title = tags$a(tags$img(src = "GCC_Logo_Transparent_Stacked.png", height = "30px"),
      #                  href = "https://www.georgetownclimate.org/", target = "_blank"))
@@ -1809,11 +1817,26 @@ theme_set(theme_bw(base_size = 16))
 # Start Server Function ---------------------------------------------------
 
 server <- function(input, output, session) {
+  
+  shinyjs::runjs(
+  "var header = $('.navbar > .container-fluid');
+  const anchor = document.createElement('a');
+  anchor.href = 'https://www.georgetownclimate.org';
+  anchor.target = '_blank';
+  const img = document.createElement('img');
+  img.src = 'GCC_Logo_Transparent_Stacked.png';
+  img.style.width = '100%';
+  img.style.maxWidth = '250px';
+  anchor.appendChild(img);
+  header.append(anchor);
+  console.log(header);"
+  )
   #Test Observe ----------------------------------------------------------------
   #observeEvent(input$state_input, {browser()})
   # observeEvent(buttonid, {
   #   nav_select(id = "iforget", selected = "Inputs")
   # })
+
   
   #Source Local Scripts --------------------------------------------------------
   source("functions/render_custom_datatable.R", local = T)
@@ -3618,6 +3641,22 @@ server <- function(input, output, session) {
   }) 
   
   shinyjs::enable(selector = ".checkbox")
+  
+  observeEvent(input$select_all_scenario1, {
+    #browser()
+    reactive_scenario_updated <- reactive_scenario()
+    ifelse(sum(reactive_scenario_updated$Scenario1) == 12,reactive_scenario_updated$Scenario1<-FALSE,reactive_scenario_updated$Scenario1 <- TRUE)
+    reactive_scenario(reactive_scenario_updated)
+    rvs$Scenarios <- reactive_scenario()
+  })
+  
+  # Observer to select all checkboxes under Scenario 2
+  observeEvent(input$select_all_scenario2, {
+    reactive_scenario_updated <- reactive_scenario()
+    ifelse(sum(reactive_scenario_updated$Scenario2) == 12,reactive_scenario_updated$Scenario2<-FALSE,reactive_scenario_updated$Scenario2 <- TRUE)
+    reactive_scenario(reactive_scenario_updated)
+    rvs$Scenarios <- reactive_scenario()
+  })
   
   # ADVANCED: inputs ---------------------------------------------------------
   
