@@ -77,9 +77,9 @@ b
       padding: .5rem
       &:first-child
         margin-left: .5rem
-      &:not(:nth-child(6)) // grey bg on inputs nav
+      &:nth-child(-n+4) // grey bg on inputs nav
         background: #E9E9E9
-      &:nth-child(5)
+      &:nth-child(4)
         position: relative
         margin-right: 36px
         &:after // add arrow after scenario tab
@@ -94,6 +94,14 @@ b
           position: absolute
           right: -35px
           bottom: 0
+      &:last-of-type
+        margin-left: auto
+        margin-right: 1rem
+        a[data-value="Advanced"]
+          color: grey
+          &[aria-selected="true"]
+            color: white
+          
   .baseline-content
     background-color: $grey
     padding: 1rem 0
