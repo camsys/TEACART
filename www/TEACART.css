@@ -411,6 +411,9 @@ table tr:hover td {
     padding-bottom: 0;
     min-height: 100vh;
   }
+  div.dataTables_wrapper div.dataTables_filter {
+    margin-top: 1rem;
+  }
 }
 #shiny-notification-panel {
   top: 8vh;
