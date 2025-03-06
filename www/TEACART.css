@@ -390,6 +390,10 @@ table tr:hover td {
   .footer #inputs_btn, .footer #outputs_btn, .footer #about_btn, .footer #sources_btn, .footer ul {
     display: none;
   }
+  .tab-pane[data-value=About] img {
+    width: 100%;
+    margin: 0 auto;
+  }
 }
 @media screen and (max-width: 991.98px) {
   .navbar .gcc-logo {
