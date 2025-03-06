@@ -195,11 +195,11 @@ ui <- function(request) {
                                   placement = "right"),
                         downloadButton("user_inputs_download", "Download User Inputs"),
                         HTML("<ol>
-                            <li>Navigate to the <b>Inputs</b> tab</li>
-                            <li>Input your values in the <b>Baseline, Projects, Costs,</b> and <b>Assumptions</b> sections</li>
-                            <li>When you are done entering data, press CTRL <b>+</b> Enter on you rkeyboard to initiate the calculations</li>
-                            <li>Select the desired combination of strategies in the <b>Scenarios</b> section</li>
-                            <li>Navigate to <b>Outputs</b> tab to view your results</li>
+                            <li>Navigate to the <b>Inputs</b> tab.</li>
+                            <li>Input your values in the <b>Baseline, Projects, Costs,</b> and <b>Assumptions</b> sections.</li>
+                            <li>When you are done entering data, press CTRL <b>+</b> Enter on you rkeyboard to initiate the calculations.</li>
+                            <li>Select the desired combination of strategies in the <b>Scenarios</b> section.</li>
+                            <li>Navigate to <b>Outputs</b> tab to view your results.</li>
                             </ol>"),
                         nav_spacer(),
                         nav_spacer(),
@@ -271,7 +271,7 @@ ui <- function(request) {
         tags$li(HTML("Review the individual tabs within <b>Outputs</b> for results. The <b>Baseline GHG Forecast</b> tab shows the forecast under a business-as-usual scenario. <b>Scenario Summary</b> shows results by scenario, including total emissions and changes relative to the baseline. <b>Strategy Summary</b> shows the change in CO2e, VMT, NOx, PM2.5, and Daily Active Trips relative to the baseline. <b>Cost Effectiveness</b> shows the change in annual output per indicator per $1 million of investment.")),
         tags$img(src = 'about_step_11.png'),
         tags$li(HTML("Click <b>Download Summary Report</b> to get a pdf document with all of this information.")),
-        tags$img(src = 'about_step_12.png'),
+        tags$img(src = 'about_step_12.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
       )
       # h3("Version"),
       # HTML("<p>Adapted from TEA-CART Excel Model Version 1.8</p>
