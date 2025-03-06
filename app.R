@@ -182,7 +182,7 @@ ui <- function(request) {
                         h2('Quick Guide'),
                         HTML("<p>This sidebar has a high-level step-by-step guide for 
                         entering and saving data in the TEA CART Tool. 
-                          More information can be found in the <b>About</b> tab</p>
+                          More information can be found in the <b>About</b> tab.</p>
                              <br>
                              <p><b>Upload User Inputs</b></p>"),
                         
@@ -249,21 +249,21 @@ ui <- function(request) {
       p(),
       tags$ol(
         tags$li(HTML("Use the navigation panel at the top to select <b>Inputs.</b>")),
-        tags$img(src = 'about_step_1.png'),
+        tags$img(src = 'about_step_1.png', style = "width: 60%; max-width: intrinsic; height: auto;"),
         tags$li(HTML("Within <b>Inputs</b>, select <b>Baseline</b> to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.")),
-        tags$img(src = 'about_step_2.png'),
+        tags$img(src = 'about_step_2.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
         tags$li(HTML("Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse.")),
-        tags$img(src = 'about_step_3.png'),
+        tags$img(src = 'about_step_3.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
         tags$li("When you are done entering data, press CTRL + ENTER on your keyboard (this initiates the calculation). Data can only be entered for one table at a time."),
-        tags$img(src = 'about_step_4.png'),
+        tags$img(src = 'about_step_4.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
         tags$li(HTML("Regularly download the data that you have entered. You can download it by clicking the <b>Download User Inputs</b> button on the sidebar.")),
-        tags$img(src = 'about_step_5.png'),
+        tags$img(src = 'about_step_5.png', style = "width: 20%; max-width: intrinsic; height: auto;"),
         tags$li(HTML("If desired, within <b>Costs</b>, enter custom unit costs for the project type. Note that default values have already been provided.")),
-        tags$img(src = 'about_step_6.png'),
+        tags$img(src = 'about_step_6.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
         tags$li(HTML("Further <b>Assumptions</b> for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, please refer to the user guide.")),
-        tags$img(src = 'about_step_7.png'),
+        tags$img(src = 'about_step_7.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
         tags$li("Click the boxes to choose which groups of projects to include in scenario analysis."),
-        tags$img(src = 'about_step_8.png'),
+        tags$img(src = 'about_step_8.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
         tags$li(HTML("It is possible to use a custom forecast on the <b>Advanced</b> tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. Refer to the user guide for more information.")),
         
         tags$li(HTML("To see the results of the data that have been entered, refer to the <b>Outputs</b> tab.")),
