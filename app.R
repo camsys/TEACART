@@ -92,7 +92,7 @@ ui <- function(request) {
         tags$link(rel = "stylesheet", 
                   href = "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"),
         tags$link(rel = "stylesheet", 
-                  href = "TEACART.css"),
+                  href = "TEACART.css?v=1.0.0"),
         tags$script(src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"),
         tags$script(src = "TEACART.js")
         
@@ -126,7 +126,7 @@ ui <- function(request) {
                  tags$p("© Georgetown Climate Center")
                  ),
           #column(width = 2,),
-          column(width = 1,
+          column(width = 2,
                  shiny::actionButton("inputs_btn",
                                      class = "btn btn-primary",
                                      label = "Inputs"
@@ -146,7 +146,7 @@ ui <- function(request) {
                      shiny::actionButton("inadvanced",class = "btn btn-secondary",label = "Advanced"))
                  )
         ),
-        column(width = 1,
+        column(width = 2,
                shiny::actionButton("outputs_btn",
                                    class = "btn btn-primary",
                                    label = "Outputs"
@@ -179,7 +179,7 @@ ui <- function(request) {
 
 
       sidebar = sidebar(width = 450, 
-                        h2('Qucik Guide'),
+                        h2('Quick Guide'),
                         HTML("<p>This sidebar has a high-level step-by-step guide for 
                         entering and saving data in the TEA CART Tool. 
                           More information can be found in the <b>About</b> tab</p>
@@ -248,29 +248,29 @@ ui <- function(request) {
       h3('Steps to use the tool'),
       p(),
       tags$ol(
-        tags$li(p("Use the navigation panel at the top to select ‘inputs.’")),
+        tags$li(HTML("Use the navigation panel at the top to select <b>Inputs.</b>")),
         tags$img(src = 'about_step_1.png'),
-        tags$li(p("Within ‘inputs’, select ‘baseline’ to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.")),
+        tags$li(HTML("Within <b>Inputs</b>, select <b>Baseline</b> to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.")),
         tags$img(src = 'about_step_2.png'),
-        tags$li(p("Within ‘projects’, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse")),
+        tags$li(HTML("Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse.")),
         tags$img(src = 'about_step_3.png'),
-        tags$li(p("When you are done entering data, press CTRL + ENTER on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.")),
+        tags$li("When you are done entering data, press CTRL + ENTER on your keyboard (this initiates the calculation). Data can only be entered for one table at a time."),
         tags$img(src = 'about_step_4.png'),
-        tags$li(p("Regularly download the data that you have entered. You can download it by clicking the ‘Download User Inputs’ button on the sidebar.")),
+        tags$li(HTML("Regularly download the data that you have entered. You can download it by clicking the <b>Download User Inputs</b> button on the sidebar.")),
         tags$img(src = 'about_step_5.png'),
-        tags$li(p("If desired, within ‘costs’, enter custom unit costs for the project type. Note that default values have already been provided.")),
+        tags$li(HTML("If desired, within <b>Costs</b>, enter custom unit costs for the project type. Note that default values have already been provided.")),
         tags$img(src = 'about_step_6.png'),
-        tags$li(p("Further ‘Assumptions’ for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, please refer to the user guide.")),
+        tags$li(HTML("Further <b>Assumptions</b> for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, please refer to the user guide.")),
         tags$img(src = 'about_step_7.png'),
-        tags$li(p("Click the boxes to choose which groups of projects to include in scenario analysis: ")),
+        tags$li("Click the boxes to choose which groups of projects to include in scenario analysis."),
         tags$img(src = 'about_step_8.png'),
-        tags$li(p("It is possible to use a custom forecast on the ‘Advanced’ tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. Refer to the user guide for more information.")),
+        tags$li(HTML("It is possible to use a custom forecast on the <b>Advanced</b> tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. Refer to the user guide for more information.")),
         
-        tags$li(p("To see the results of the data that have been entered, refer to the Outputs tab.")),
+        tags$li(HTML("To see the results of the data that have been entered, refer to the <b>Outputs</b> tab.")),
         tags$img(src = 'about_step_10.png'),
-        tags$li(p("Review the individual tabs within ‘Outputs’ for results. The ‘Baseline GHG Forecast’ tab shows the forecast under a business-as-usual scenario. ‘Scenario Summary’ shows results by scenario, including total emissions and changes relative to the baseline. ‘Strategy Summary’ shows the change in CO2e, VMT, NOx, PM2.5, and Daily Active Trips relative to the baseline. ‘Cost effectiveness’ shows the change in annual output per indicator per $1 million of investment.")),
+        tags$li(HTML("Review the individual tabs within <b>Outputs</b> for results. The <b>Baseline GHG Forecast</b> tab shows the forecast under a business-as-usual scenario. <b>Scenario Summary</b> shows results by scenario, including total emissions and changes relative to the baseline. <b>Strategy Summary</b> shows the change in CO2e, VMT, NOx, PM2.5, and Daily Active Trips relative to the baseline. <b>Cost Effectiveness</b> shows the change in annual output per indicator per $1 million of investment.")),
         tags$img(src = 'about_step_11.png'),
-        tags$li(p("Click ‘Download Summary Report’ to get a pdf document with all of this information.")),
+        tags$li(HTML("Click <b>Download Summary Report</b> to get a pdf document with all of this information.")),
         tags$img(src = 'about_step_12.png'),
       )
       # h3("Version"),

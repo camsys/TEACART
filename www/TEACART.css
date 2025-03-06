@@ -59,6 +59,28 @@ p {
     font-size: 1.4rem;
   }
 }
+.bslib-sidebar-layout ol {
+  list-style: none;
+  counter-reset: item;
+}
+.bslib-sidebar-layout ol li {
+  counter-increment: item;
+  margin-bottom: 5px;
+}
+.bslib-sidebar-layout ol li:before {
+  margin-right: 0.5rem;
+  content: counter(item);
+  background: var(--bs-dark);
+  border-radius: 100%;
+  color: white;
+  width: 1.5em;
+  text-align: center;
+  display: inline-block;
+  -webkit-margin-start: -2rem;
+          margin-inline-start: -2rem;
+  font-size: 1rem;
+}
+
 @media screen and (min-width: 575.98px) {
   .bslib-sidebar-layout > .collapse-toggle {
     margin-top: 25px;
@@ -84,6 +106,17 @@ p {
     padding-top: 2.5rem;
   }
 }
+.bslib-sidebar-layout.sidebar-collapsed > .main .footer {
+  margin: 1rem -3rem 0 -3rem;
+}
+
+.tab-pane[data-value=About] img, .tab-pane[data-value=About] li {
+  max-width: 1440px;
+}
+.tab-pane[data-value=About] ol li:not(:first-child) {
+  margin-top: 2rem;
+}
+
 table tr:hover td {
   background-color: #d6dce9;
 }
@@ -284,6 +317,14 @@ table tr:hover td {
   background-color: #25365F;
   color: white;
   padding: 1rem;
+}
+.footer .col-sm-9 {
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 0px;
+          flex: 1 1 0;
+}
+.footer .col-sm-2 {
+  max-width: 150px;
 }
 .footer .footer-logo {
   margin-bottom: 1rem;
