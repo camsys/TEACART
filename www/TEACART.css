@@ -414,6 +414,10 @@ table tr:hover td {
   div.dataTables_wrapper div.dataTables_filter {
     margin-top: 1rem;
   }
+  .tab-pane[data-value=Sources] > .html-fill-item.datatables {
+    -ms-flex-preferred-size: auto;
+        flex-basis: auto;
+  }
 }
 #shiny-notification-panel {
   top: 8vh;
