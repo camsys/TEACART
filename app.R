@@ -271,7 +271,7 @@ ui <- function(request) {
         tags$li(HTML("Review the individual tabs within <b>Outputs</b> for results. The <b>Baseline GHG Forecast</b> tab shows the forecast under a business-as-usual scenario. <b>Scenario Summary</b> shows results by scenario, including total emissions and changes relative to the baseline. <b>Strategy Summary</b> shows the change in CO2e, VMT, NOx, PM2.5, and Daily Active Trips relative to the baseline. <b>Cost Effectiveness</b> shows the change in annual output per indicator per $1 million of investment.")),
         tags$img(src = 'about_step_11.png'),
         tags$li(HTML("Click <b>Download Summary Report</b> to get a pdf document with all of this information.")),
-        tags$img(src = 'about_step_12.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
+        tags$img(src = 'about_step_12.png', style = "width: 20%; max-width: intrinsic; height: auto;"),
       )
       # h3("Version"),
       # HTML("<p>Adapted from TEA-CART Excel Model Version 1.8</p>
