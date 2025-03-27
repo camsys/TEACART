@@ -92,7 +92,7 @@ ui <- function(request) {
         tags$link(rel = "stylesheet", 
                   href = "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"),
         tags$link(rel = "stylesheet", 
-                  href = "TEACART.css?v=1.0.0"),
+                  href = "TEACART.css?v=1.0.1"),
         tags$script(src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"),
         tags$script(src = "TEACART.js")
         
