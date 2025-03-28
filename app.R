@@ -228,7 +228,21 @@ ui <- function(request) {
                 
                 h2("About"),
                 p(),
-                p('The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a web-based tool that calculates the expected change in greenhouse gas (GHG) emissions from transportation investments. Questions such as ‘how much would I expect emissions to decrease as a result of adding 10 new miles of bike lanes?’ can be answered within this tool, using values researched from many real-world implementations (see the Sources page for more information). The tool is comprehensive and dynamic. Many types of projects can be evaluated, including bicycle and pedestrian infrastructure, transit services, replacing diesel buses with electric buses, travel demand management programs, traffic operations, charging infrastructure, and more. The tool updates in real-time, so results can be seen as soon as a new project information is provided'),
+                p('The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) 
+                  is a web-based tool that calculates the expected change in greenhouse 
+                  gas (GHG) emissions from transportation investments. Questions 
+                  such as ‘how much would I expect emissions to decrease as a result 
+                  of adding 10 new miles of bike lanes?’ can be answered within 
+                  this tool, using values researched from many real-world 
+                  implementations (see the Sources page for more information). The 
+                  tool is comprehensive and dynamic. Many types of projects can 
+                  be evaluated, including bicycle and pedestrian infrastructure, 
+                  transit services, replacing diesel buses with electric buses, 
+                  travel demand management programs, traffic operations, charging 
+                  infrastructure, and more. The tool updates in real-time, so 
+                  results can be seen as soon as a new project information is 
+                  provided See the "How-to" tab to review how information is 
+                  entered'),
                 p('The tool is intended primarily to help state, regional, and local agencies prioritize capital program investments to effectively support GHG emissions reduction. One use of this tool is to evaluate a set of new projects proposed within a Statewide Transportation Improvement Program (STIP) or metropolitan TIP required under 49 U.S.C. 5304(g). Another possible use is corridor-level scenario planning, where a corridor design could be compared to alternative designs.'),
                 p('The tool accepts inputs typically available during the capital programming process, such as new lane-miles of infrastructure, number of new electric chargers, or vehicles replaced. The main outputs of the tool include:'),
       tags$ul(tags$li(p("A baseline estimate of GHG emissions from the main sources of transportation emissions (including light duty vehicles, medium and heavy-duty vehicles, public transit, passenger rail, freight rail, and construction and maintenance),")),
