@@ -28,6 +28,8 @@ p
         padding: 1rem 3rem!important
         background: none
         transition: background .5s ease-in-out
+        font-family: "Oswald", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif
+        font-weight: 400
         &.active
           background: linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, rgba(255, 255, 255, 0.15) 100%)
           border: none
@@ -96,6 +98,8 @@ p
     max-width: 1440px
   ol li:not(:first-child)
     margin-top: 2rem
+  #sources_btn, #how_to_btn
+    font-size: 1.25rem
 
 
 // inputs
@@ -308,7 +312,7 @@ table
     flex-direction: column
     >button
       text-align: left
-@media screen and (max-width: 575.98px)
+@media screen and (max-width: 575.98px) // mobile 
   .footer
       #inputs_btn, #outputs_btn, #about_btn, #sources_btn, ul
         display: none
@@ -321,7 +325,7 @@ table
       display: none
     .navbar-toggle
       border: none
-@media screen and (min-width: 575.98px) // small
+@media screen and (min-width: 575.98px) // not mobile
   .html-fill-container
     display: block
   .bslib-sidebar-layout>.main, .tab-content>.active.html-fill-container
@@ -331,6 +335,8 @@ table
     margin-top: 1rem
   .tab-pane[data-value="Sources"] > .html-fill-item.datatables
       flex-basis: auto
+  .tab-pane[data-value="About"], .tab-pane[data-value="TEA-CART"], .tab-pane[data-value="How-to"]
+    padding: 0 1.5rem 
 #shiny-notification-panel
   top: 8vh
   left: calc(50% - 33%)
@@ -342,3 +348,4 @@ table
   transition: filter .1s ease-in-out
   &:hover
     filter: drop-shadow(0 0 0.5px white)
+  
