@@ -10,6 +10,27 @@ p {
   max-width: 1440px !important;
 }
 
+#shiny-notification-panel {
+  top: 8vh;
+  left: 17%;
+  width: 66%;
+  text-align: center;
+}
+#shiny-notification-panel .shiny-notification-error {
+  padding: 1rem;
+}
+
+.gcc-logo {
+  -webkit-transition: -webkit-filter 0.1s ease-in-out;
+  transition: -webkit-filter 0.1s ease-in-out;
+  transition: filter 0.1s ease-in-out;
+  transition: filter 0.1s ease-in-out, -webkit-filter 0.1s ease-in-out;
+}
+.gcc-logo:hover {
+  -webkit-filter: drop-shadow(0 0 0.5px white);
+          filter: drop-shadow(0 0 0.5px white);
+}
+
 .navbar {
   padding: 0;
 }
@@ -123,7 +144,12 @@ p {
 }
 
 table tr:hover td {
-  background-color: #d6dce9;
+  background-color: #f4f5f9;
+}
+
+div.dataTables_wrapper div.dataTables_info {
+  padding-top: 0.5rem;
+  padding-bottom: 1.5rem;
 }
 
 .tab-pane[data-value=Inputs] .card-header {
@@ -199,10 +225,22 @@ table tr:hover td {
 }
 .tab-pane[data-value=Inputs] .table td.dt-right:hover {
   cursor: pointer;
-  background-color: #cbd2e0;
+  background-color: #e1e5ef;
 }
-.tab-pane[data-value=Inputs] .tab-pane[data-value=Advanced] .row {
-  overflow-y: scroll;
+
+.tab-pane[data-value=Advanced] table.dataTable.table-striped > tbody > tr > td:not(:first-child) {
+  border: 1px solid lightgrey;
+}
+.tab-pane[data-value=Advanced] table.dataTable.table-striped > tbody > tr > td:not(:first-child):hover {
+  cursor: pointer;
+  background-color: #e1e5ef;
+}
+.tab-pane[data-value=Advanced] table.dataTable.table-striped > tbody > tr > td:first-child {
+  min-width: 200px;
+}
+.tab-pane[data-value=Advanced] div.dt-row {
+  overflow-y: hidden;
+  overflow-x: scroll;
 }
 
 .tab-pane[data-value=Outputs] .hoverlayer path {
@@ -429,24 +467,4 @@ table tr:hover td {
   .tab-pane[data-value=About], .tab-pane[data-value=TEA-CART], .tab-pane[data-value=How-to] {
     padding: 0 1.5rem;
   }
-}
-#shiny-notification-panel {
-  top: 8vh;
-  left: 17%;
-  width: 66%;
-  text-align: center;
-}
-#shiny-notification-panel .shiny-notification-error {
-  padding: 1rem;
-}
-
-.gcc-logo {
-  -webkit-transition: -webkit-filter 0.1s ease-in-out;
-  transition: -webkit-filter 0.1s ease-in-out;
-  transition: filter 0.1s ease-in-out;
-  transition: filter 0.1s ease-in-out, -webkit-filter 0.1s ease-in-out;
-}
-.gcc-logo:hover {
-  -webkit-filter: drop-shadow(0 0 0.5px white);
-          filter: drop-shadow(0 0 0.5px white);
 }

@@ -13,6 +13,18 @@ b
 p
   max-width: 1440px!important
 
+#shiny-notification-panel
+  top: 8vh
+  left: calc(50% - 33%)
+  width: 66%
+  text-align: center
+  .shiny-notification-error
+    padding: 1rem
+.gcc-logo
+  transition: filter .1s ease-in-out
+  &:hover
+    filter: drop-shadow(0 0 0.5px white)
+
 // navbar
 .navbar
   padding: 0
@@ -103,10 +115,16 @@ p
 
 
 // inputs
+
+// global
+
 table
   tr:hover td
-    background-color: mix(#d1d8e7, white, 90%)
-
+    background-color: mix(#d1d8e7, white, 25%)
+div.dataTables_wrapper 
+  div.dataTables_info
+    padding-top: .5rem
+    padding-bottom: 1.5rem
 
 .tab-pane[data-value="Inputs"] 
   .card-header
@@ -168,10 +186,19 @@ table
       width: 15%
       &:hover
         cursor: pointer
-        background-color: mix(#d1d8e7, black, 97%)
-  .tab-pane[data-value="Advanced"] // Inputs tab
-    .row
-      overflow-y: scroll
+        background-color: mix(#d1d8e7, white, 66%)
+.tab-pane[data-value="Advanced"] // Inputs tab
+  table.dataTable.table-striped > tbody > tr > td
+    &:not(:first-child)      
+      border: 1px solid lightgrey
+      &:hover
+        cursor: pointer
+        background-color: mix(#d1d8e7, white, 66%)
+    &:first-child
+      min-width: 200px
+  div.dt-row
+    overflow-y: hidden
+    overflow-x: scroll
 
 .tab-pane[data-value="Outputs"] // Outputs tab
   .tab-pane[data-value="Baseline GHG Forecast"], .tab-pane[data-value="Scenario Summary"] // Outputs tab
@@ -221,8 +248,8 @@ table
             background-color: $light-blue
             width: calc(100% - 305px)
           div.dataTables_wrapper div.dataTables_filter label
-            width: 250px
-            transform: translateY(-10px)
+              width: 250px
+              transform: translateY(-10px)
   #cost_view
     margin: 0 auto
     text-align: center
@@ -337,15 +364,5 @@ table
       flex-basis: auto
   .tab-pane[data-value="About"], .tab-pane[data-value="TEA-CART"], .tab-pane[data-value="How-to"]
     padding: 0 1.5rem 
-#shiny-notification-panel
-  top: 8vh
-  left: calc(50% - 33%)
-  width: 66%
-  text-align: center
-  .shiny-notification-error
-    padding: 1rem
-.gcc-logo
-  transition: filter .1s ease-in-out
-  &:hover
-    filter: drop-shadow(0 0 0.5px white)
+
   
