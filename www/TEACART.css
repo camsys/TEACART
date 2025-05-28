@@ -297,15 +297,15 @@ div.dataTables_wrapper div.dataTables_info {
             transform: translateY(-10px);
   }
 }
-.tab-pane[data-value=Outputs] #cost_view {
+.tab-pane[data-value=Outputs] .shiny-input-radiogroup {
   margin: 0 auto;
   text-align: center;
   margin-bottom: 1rem;
 }
-.tab-pane[data-value=Outputs] #cost_view #cost_view-label {
+.tab-pane[data-value=Outputs] .shiny-input-radiogroup .control-label {
   font-weight: bold;
 }
-.tab-pane[data-value=Outputs] #cost_view .shiny-options-group {
+.tab-pane[data-value=Outputs] .shiny-input-radiogroup .shiny-options-group {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -313,7 +313,7 @@ div.dataTables_wrapper div.dataTables_info {
       -ms-flex-pack: center;
           justify-content: center;
 }
-.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label {
+.tab-pane[data-value=Outputs] .shiny-input-radiogroup .shiny-options-group label {
   width: 300px;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -321,7 +321,7 @@ div.dataTables_wrapper div.dataTables_info {
   height: 45px;
   position: relative;
 }
-.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label input {
+.tab-pane[data-value=Outputs] .shiny-input-radiogroup .shiny-options-group label input {
   width: 100%;
   height: auto;
   border-radius: 0;
@@ -329,10 +329,10 @@ div.dataTables_wrapper div.dataTables_info {
   z-index: 0;
   background-color: #8b9dc4;
 }
-.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label input:checked {
+.tab-pane[data-value=Outputs] .shiny-input-radiogroup .shiny-options-group label input:checked {
   background-color: #173A89;
 }
-.tab-pane[data-value=Outputs] #cost_view .shiny-options-group label span {
+.tab-pane[data-value=Outputs] .shiny-input-radiogroup .shiny-options-group label span {
   position: absolute;
   right: 0;
   left: 0;
@@ -344,7 +344,7 @@ div.dataTables_wrapper div.dataTables_info {
   color: white;
 }
 @media screen and (max-width: 1200px) {
-  .tab-pane[data-value=Outputs] #cost_view .shiny-options-group {
+  .tab-pane[data-value=Outputs] .shiny-input-radiogroup .shiny-options-group {
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
         -ms-flex-direction: column;
