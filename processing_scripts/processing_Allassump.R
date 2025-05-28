@@ -32,10 +32,6 @@ filter_columns <- function(df, selected_columns, strategy_name) {
     ) %>% na.omit()
 }
 
-
-
-
-#observe({
 scenario_sum <- reactive({
 
 selected_columns <- c("year", "total_newtrips",'total_change_mtnox','total_change_pm25','total_change_VMT','total_change_MTCO2')
@@ -52,7 +48,11 @@ OPS <- filter_columns(output_OPS(),selected_columns,"Traffic Operations")
 EVSE <- filter_columns(output_EVSE(),selected_columns,"Electric Vehicle Charging Infraucture")  
 freight <- filter_columns(output_freight(),selected_columns,"Intermodal Freight Investment")  
 
-all_assump <- rbind(bikeped,MDHD,Micro,pnr,RoadwayExp,TDM,transitElec,TransitService,OPS,EVSE,freight)
+transit_cuts <- filter_columns(output_transitservice_cuts(),selected_columns,"Transit Service Cuts")
+land_use <-  filter_columns(output_land_use(),selected_columns,"Land Use")
+roadway_resurf <-  filter_columns(output_roadway_resurf(),selected_columns,"Roadway Resurfacing")
+
+all_assump <- rbind(bikeped,MDHD,Micro,pnr,RoadwayExp,TDM,transitElec,TransitService,OPS,EVSE,freight,transit_cuts,)
 
 return(all_assump)
 })
@@ -176,8 +176,6 @@ all_costs <- reactive({
      proj_life = 30,
      style ='summary')
    
-   # all_costs <- list(bikeped = bikeped,
-   #                   transit_fixed = transit_fixed)
    all_costs <- list(bikeped = bikeped,
                      transit_fixed = transit_fixed,
                      transit_dr = transit_dr,

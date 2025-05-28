@@ -855,6 +855,82 @@ nav_panel(title = "How-to",
         DT::dataTableOutput("expansion_projs_tbl")
       ),
       
+      #Transit Cuts
+      fluidRow(
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Projects 15 | Transit Service Cuts",
+                   HTML("This category represents ... <b>... .</b>"),
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                              title = "Cumulative View",
+                                              placement = "bottom",
+                                              options = list(container = "body"),
+                                              DTOutput(outputId = "cumul_transit_cuts_projs_tbl")
+                   ))
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_transit_cuts_projs_tbl", "Reset Projects 14", class = "btn-custom")
+        ),
+        
+      ),
+      fluidRow(
+        DT::dataTableOutput("transit_cuts_projs_tbl")
+      ),
+      #Land Use
+      fluidRow(
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Projects 16 | Land Use",
+                   HTML("This category represents ... <b>... .</b>"),
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                              title = "Cumulative View",
+                                              placement = "bottom",
+                                              options = list(container = "body"),
+                                              DTOutput(outputId = "cumul_land_use_projs_tbl")
+                   ))
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_land_use_projs_tbl", "Reset Projects 16", class = "btn-custom")
+        ),
+        
+      ),
+      fluidRow(
+        DT::dataTableOutput("land_use_projs_tbl")
+      ),
+      
+      #Roadway Surfacing
+      fluidRow(
+        column(10,
+               accordion(
+                 accordion_panel(
+                   "Projects 17 | Roadway Resurfacing",
+                   HTML("This category represents ... <b>... .</b>"),
+                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                              title = "Cumulative View",
+                                              placement = "bottom",
+                                              options = list(container = "body"),
+                                              DTOutput(outputId = "cumul_road_resurf_projs_tbl")
+                   ))
+                 ),
+                 open = FALSE
+               ),
+        ),
+        column(2,
+               actionButton("reset_road_resurf_projs_tbl", "Reset Projects 17", class = "btn-custom")
+        ),
+        
+      ),
+      fluidRow(
+        DT::dataTableOutput("road_resurf_projs_tbl")
+      ),
       # #Custom Projects
       # 
       # fluidRow(
@@ -1881,19 +1957,6 @@ theme_set(theme_bw(base_size = 16))
 
 server <- function(input, output, session) {
   
-  # shinyjs::runjs(
-  # "var header = $('.navbar > .container-fluid');
-  # const anchor = document.createElement('a');
-  # anchor.href = 'https://www.georgetownclimate.org';
-  # anchor.target = '_blank';
-  # const img = document.createElement('img');
-  # img.src = 'GCC_Logo_Transparent_Stacked.png';
-  # img.style.width = '100%';
-  # img.style.maxWidth = '250px';
-  # anchor.appendChild(img);
-  # header.append(anchor);
-  # console.log(header);"
-  # )
   #Test Observe ----------------------------------------------------------------
   #observeEvent(input$state_input, {browser()})
   # observeEvent(buttonid, {
@@ -1909,7 +1972,7 @@ server <- function(input, output, session) {
   #set reactiveValues ----------------------------------------------------------
   rv <- reactiveValues()
   rvs <- read_user_inputs_version2("data/2.User_Inputs.xlsx")
-  rvs_out <- read_output_tables("data/3.Model_Outputs.xlsx")
+  rvs_out <- read_output_tables("data/3.Model_Outputs.xlsx") #slnote: what add to this for new modules
   
   #update and record 
   #key_inputs updater ----------------------------------------------------------
@@ -2129,9 +2192,13 @@ server <- function(input, output, session) {
                       "pnr_projs",
                       "evsi_projs",
                       "freight_projs",
-                      "expansion_projs")
+                      "expansion_projs",
+                      "transit_cuts_projs",
+                      "road_resurf_projs",
+                      "land_use"
+                      ) #addednew
   
-  read_static_tables("data/projects.xlsx", projects_names)
+  read_static_tables("data/projects.xlsx", projects_names) #addednew
   
   
   # Project Tables: Render ------------------------------------------------------
@@ -2151,7 +2218,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_bikeped_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 1, my_cols = c("area_type", "facility_type", "unit"))
   })
@@ -2172,7 +2238,6 @@ server <- function(input, output, session) {
     decimal_rows = integer(0))
     
     })
-  
   output$cumul_transit_fixed_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 2, my_cols = c("area_type", "fuel_type", "unit"))
   })
@@ -2193,7 +2258,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
 
   })
-  
   output$cumul_transit_dr_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 3, my_cols = c("area_type", "fuel_type"))
   })
@@ -2214,7 +2278,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_transit_el_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 4, my_cols = c("area_type", "fuel_type", "transit_mode"))
   })
@@ -2235,7 +2298,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_transit_bus_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 5, my_cols = c("unit"))
   })
@@ -2256,7 +2318,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_public_rail_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 6, my_cols = c("fuel_type", "transit_mode"))
   })
@@ -2277,7 +2338,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_tdm_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 7, my_cols = c("unit"))
   })
@@ -2298,7 +2358,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_micro_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 8, my_cols = c("unit"))
   })
@@ -2319,7 +2378,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_traffic_ops_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 9, my_cols = c("area_type", "road_class", "unit"))
   })
@@ -2340,7 +2398,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_mhdev_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 10, my_cols = c("veh_type", "fuel_type"))
   })
@@ -2361,7 +2418,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_pnr_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 11, my_cols = c("unit"))
   })
@@ -2382,7 +2438,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_evsi_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 12, my_cols = c("charge_port_detail"))
   })
@@ -2403,7 +2458,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_freight_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 13, my_cols = c("unit"))
   })
@@ -2424,30 +2478,89 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
   output$cumul_expansion_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 14, my_cols = c("area_type", "road_class", "unit"))
   })
-
-  output$custom_projs_tbl <- renderDT({
+  
+  output$transit_cuts_projs_tbl <- renderDT({
     
-    temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 15,] %>%
-      select(custom_project, unit, value) %>%
-      pivot_wider(names_from = unit, values_from = value) %>%
-      select(-custom_project)
-
-    returnDT<-datatable(
-      temp_send,
-      rownames = FALSE,
-      editable = list(target = 'all'),
-      selection = "none",
-      options = list(
-        pageLength = 6,
-        searching = FALSE,
-        paging = FALSE,
-        info = FALSE
-    ))
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 15,
+      non_editable_cols = c(0, 1, 2),
+      page_length = 10,
+      comma_rows = 0:7,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
   })
+  output$cumul_transit_cuts_projs_tbl <- renderDT({
+    render_cumulative_view_popup(my_rv = rvs, my_table_no = 15, my_cols = c("area_type", "transit_mode","unit"))
+  })
+  
+  output$land_use_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 16,
+      non_editable_cols = c(0, 1),
+      page_length = 10,
+      comma_rows = 0:15,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  output$cumul_land_use_projs_tbl <- renderDT({
+    render_cumulative_view_popup(my_rv = rvs, my_table_no = 16, my_cols = c("land_use","unit"))
+  })
+  
+  output$road_resurf_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 17,
+      non_editable_cols = c(0),
+      page_length = 10,
+      comma_rows = 0:2,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  output$cumul_road_resurf_projs_tbl <- renderDT({
+    render_cumulative_view_popup(my_rv = rvs, my_table_no = 17, my_cols = c("unit"))
+  })
+  
+  # output$custom_projs_tbl <- renderDT({
+  #   
+  #   temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 15,] %>%
+  #     select(custom_project, unit, value) %>%
+  #     pivot_wider(names_from = unit, values_from = value) %>%
+  #     select(-custom_project)
+  # 
+  #   returnDT<-datatable(
+  #     temp_send,
+  #     rownames = FALSE,
+  #     editable = list(target = 'all'),
+  #     selection = "none",
+  #     options = list(
+  #       pageLength = 6,
+  #       searching = FALSE,
+  #       paging = FALSE,
+  #       info = FALSE
+  #   ))
+  # })
   
   # Project Tables: Observe and update edits to projects ------------------------
   # observe edits to the bikeped_projs
@@ -2671,13 +2784,14 @@ server <- function(input, output, session) {
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
     
   })
-
-  observeEvent(input$custom_projs_tbl_cell_edit, {
-    req('')
+  
+  observeEvent(input$transit_cuts_projs_tbl_cell_edit, {
+    
     rvs$Projects[rvs$Projects$table_no_ui == 15,] <- reshaping_projects2(input$expansion_projs_tbl_cell_edit,
                                                                          rvs$Projects,
                                                                          tbl_no = 15,
-                                                                         col1 = 'custom_project',
+                                                                         col1 = 'area_type',
+                                                                         col2 = 'transit_mode',
                                                                          horizon_year_1 = input$horizon_year_1,
                                                                          horizon_year_2 = input$horizon_year_2,
                                                                          horizon_year_3 = input$horizon_year_3)
@@ -2686,6 +2800,48 @@ server <- function(input, output, session) {
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
     
   })
+  observeEvent(input$land_use_projs_tbl_cell_edit, {
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 16,] <- reshaping_projects2(input$land_use_projs_tbl_cell_edit,
+                                                                         rvs$Projects,
+                                                                         tbl_no = 16,
+                                                                         col1 = 'land_use',
+                                                                         horizon_year_1 = input$horizon_year_1,
+                                                                         horizon_year_2 = input$horizon_year_2,
+                                                                         horizon_year_3 = input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  observeEvent(input$road_resurf_projs_tbl_cell_edit, {
+    
+    rvs$Projects[rvs$Projects$table_no_ui == 17,] <- reshaping_projects2(input$road_resurf_projs_tbl_cell_edit,
+                                                                         rvs$Projects,
+                                                                         tbl_no = 17,
+                                                                         horizon_year_1 = input$horizon_year_1,
+                                                                         horizon_year_2 = input$horizon_year_2,
+                                                                         horizon_year_3 = input$horizon_year_3)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  
+  # observeEvent(input$custom_projs_tbl_cell_edit, {
+  #   #req('')
+  #   rvs$Projects[rvs$Projects$table_no_ui == 15,] <- reshaping_projects2(input$expansion_projs_tbl_cell_edit,
+  #                                                                        rvs$Projects,
+  #                                                                        tbl_no = 15,
+  #                                                                        col1 = 'custom_project',
+  #                                                                        horizon_year_1 = input$horizon_year_1,
+  #                                                                        horizon_year_2 = input$horizon_year_2,
+  #                                                                        horizon_year_3 = input$horizon_year_3)
+  #   
+  #   
+  #   #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+  #   
+  # })
   # Project Tables: Reset buttons on projects ---------------------------------------------------
 
   observeEvent(input$reset_bikeped_projs_tbl, {
@@ -2743,10 +2899,18 @@ server <- function(input, output, session) {
   observeEvent(input$reset_expansion_projs_tbl, {
     rvs$Projects[rvs$Projects$table_no_ui == 14,] <- initial_projects[initial_projects$table_no_ui == 14, ]
   })  
-  
-  observeEvent(input$reset_custom_projs_tbl, {
+  observeEvent(input$reset_transit_cuts_projs_tbl, {
     rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
   })  
+  observeEvent(input$transit_cuts_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 16,] <- initial_projects[initial_projects$table_no_ui == 16, ]
+  })  
+  observeEvent(input$reset_land_use_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 17,] <- initial_projects[initial_projects$table_no_ui == 17, ]
+  })  
+  # observeEvent(input$reset_custom_projs_tbl, {
+  #   rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
+  # })  
   
 
   # server assumptions ------------------------------------------------------
@@ -2901,11 +3065,11 @@ server <- function(input, output, session) {
                          "evsi_assmps")
   
   
-  #SETH: NOTE CAN THIS BE REMOVED?
-  observeEvent(input$bikeped_assmps_edit, {
-    bikeped_assmps <<- editData(bikeped_assmps, input$bikeped_assmps_edit, 'bikeped_assmps_tbl')
-  })
-  #NOT CAN THIS BE REMOVED?
+  # #SETH: NOTE CAN THIS BE REMOVED?
+  # observeEvent(input$bikeped_assmps_edit, {
+  #   bikeped_assmps <<- editData(bikeped_assmps, input$bikeped_assmps_edit, 'bikeped_assmps_tbl')
+  # })
+  # #NOTE CAN THIS BE REMOVED?
   
   # observe edits to bikeped_assmps
   observeEvent(input$bikeped_assmps_tbl_cell_edit, {
@@ -3560,7 +3724,9 @@ server <- function(input, output, session) {
                       "Intermodal Freight Investment",
                       "Traffic Operations",
                       "Roadway Expansion",
-                      "Custom Projects")
+                      "Transit Service Cuts",
+                      "Land Use",
+                      "Roadway Resurfacing")
   
   rowName <- function(scenario) {
     as.character(
@@ -3594,75 +3760,20 @@ server <- function(input, output, session) {
                    'Projects 13',
                    'Projects 9',
                    'Projects 14',
-                   ''),
-    Scenario1 = rep(FALSE, 12),
-    Scenario2 = rep(FALSE, 12)
+                   'Projects 15',
+                   'Projects 16',
+                   'Projects 17'),
+    Scenario1 = rep(FALSE, 14),
+    Scenario2 = rep(FALSE, 14)
   )
   
   colnames(dat)[colnames(dat) == "grouped_projects"] <- "Grouped Projects"
   colnames(dat)[colnames(dat) == "relation"] <- "Relation to Project Tab"
   
-  
-  # names(dat) <- c(
-  #   as.character(checkboxInput("col1", label = "Scenario 1")),
-  #   as.character(checkboxInput("col2", label = "Scenario 2"))
-  # )
-  
-  # rownames(dat) <- rowNames
-  
   # Create a reactive data frame
   reactive_scenario <- reactiveVal(dat)
   
   selected_scenario <- reactiveValues(rows = NULL)
-  
-  # output$scenario_tbl <- renderDT({
-  #   browser()
-  #   datatable(
-  #     dat,
-  #     escape = FALSE,
-  #     select = "none",
-  #     options = list(
-  #       columnDefs = list(list(targets = c(1, 2),
-  #                              orderable = FALSE,
-  #                              className = "dt-center")
-  #       ),
-  #       pageLength = 12,
-  #       initComplete = JS(
-  #         "function() {",
-  #         "  $('#col1').on('click', function(){",
-  #         "    var cboxes = $('[id^=col1-]');",
-  #         "    var checked = $('#col1').is(':checked');",
-  #         "    cboxes.each(function(i, cbox) {",
-  #         "      $(cbox).prop('checked', checked);",
-  #         "    });",
-  #         "  });",
-  #         "  $('#col2').on('click', function(){",
-  #         "    var cboxes = $('[id^=col2-]');",
-  #         "    var checked = $('#col2').is(':checked');",
-  #         "    cboxes.each(function(i, cbox) {",
-  #         "      $(cbox).prop('checked', checked);",
-  #         "    });",
-  #         "  });",
-  #         paste(
-  #           sapply(strategy_names, function(scenario) {
-  #             scenarioId <- gsub(" ", "", scenario)
-  #             sprintf(
-  #               "  $('#row%s').on('click', function(){\n    var cboxes = $('[id$=\\'-%s\\']');\n    var checked = $('#row%s').is(':checked');\n    cboxes.each(function(i, cbox) {\n      $(cbox).prop('checked', checked);\n    });\n  });",
-  #               scenarioId, scenarioId, scenarioId
-  #             )
-  #           }),
-  #           collapse = "\n"
-  #         ),
-  #         "}"
-  #       ),
-  #       preDrawCallback =
-  #         JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
-  #       drawCallback =
-  #         JS('function() { Shiny.bindAll(this.api().table().node()); } ')
-  #     )
-  #   )
-  # })
-  # 
   
   # Render the checkbox table
   output$scenario_tbl <- renderDT({
@@ -3708,7 +3819,7 @@ server <- function(input, output, session) {
   observeEvent(input$select_all_scenario1, {
     #browser()
     reactive_scenario_updated <- reactive_scenario()
-    ifelse(sum(reactive_scenario_updated$Scenario1) == 12,reactive_scenario_updated$Scenario1<-FALSE,reactive_scenario_updated$Scenario1 <- TRUE)
+    ifelse(sum(reactive_scenario_updated$Scenario1) == 14,reactive_scenario_updated$Scenario1<-FALSE,reactive_scenario_updated$Scenario1 <- TRUE)
     reactive_scenario(reactive_scenario_updated)
     rvs$Scenarios <- reactive_scenario()
   })
@@ -3716,7 +3827,7 @@ server <- function(input, output, session) {
   # Observer to select all checkboxes under Scenario 2
   observeEvent(input$select_all_scenario2, {
     reactive_scenario_updated <- reactive_scenario()
-    ifelse(sum(reactive_scenario_updated$Scenario2) == 12,reactive_scenario_updated$Scenario2<-FALSE,reactive_scenario_updated$Scenario2 <- TRUE)
+    ifelse(sum(reactive_scenario_updated$Scenario2) == 14,reactive_scenario_updated$Scenario2<-FALSE,reactive_scenario_updated$Scenario2 <- TRUE)
     reactive_scenario(reactive_scenario_updated)
     rvs$Scenarios <- reactive_scenario()
   })
@@ -3736,7 +3847,7 @@ server <- function(input, output, session) {
   
   ## ADVANCED: create tables -----------------------------------------------------------
 
-    output$ev_forecast_sheet_tbl <- renderDT({
+  output$ev_forecast_sheet_tbl <- renderDT({
     render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 1,
@@ -3782,8 +3893,6 @@ server <- function(input, output, session) {
   })
  
   output$pass_rail_sheet_tbl <- renderDT({
-    
-    
     
     callback_pass_rail <- JS(
       "var tbl = $(table.table().node());",
@@ -3891,7 +4000,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
   })
 
-    output$fuel_apportionment_sheet_tbl <- renderDT({
+  output$fuel_apportionment_sheet_tbl <- renderDT({
     
     render_custom_datatable(
       data_reactive = rvs$Advanced,
@@ -3904,21 +4013,8 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
+  
   ## ADVANCED: make editable -----------------------------------------------------------
-  
-  
-  #I think these two top events should be removed
-  # observeEvent(input$ev_forecast_edit, {
-  #   ev_forecast <<- editData(ev_forecast, input$ev_forecast_edit, 'ev_forecast_tbl')
-  # })
-  # 
-  # 
-  # observeEvent(input$vmt_forecast_edit, {
-  #   vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
-  # })
-  
-  
-  # reshaping ev_forecast_sheet_tbl  #checkpoint
   
   observeEvent(input$ev_forecast_sheet_tbl_cell_edit, {
     req(rvs$Advanced)
@@ -3988,9 +4084,8 @@ server <- function(input, output, session) {
                                                                        tbl_no = 7,
                                                                        col_list = c('veh_type'))
   })
+  
   ## ADVANCED: reset buttons ---------------------------------------------------
-
-
   observeEvent(input$reset_ev_forecast_sheet_tbl, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 1,] <- initial_advanced[initial_advanced$table_no_ui == 1, ]
   })  
@@ -4852,18 +4947,23 @@ server <- function(input, output, session) {
   #Processing working ----
 
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
-  source("processing_scripts/processing_BikePed.R", local = TRUE) #Qi done
-  source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi done (confirm with Ben)
-  source("processing_scripts/processing_Micro.R", local = TRUE) #Qi done
+  source("processing_scripts/processing_BikePed.R", local = TRUE) 
+  source("processing_scripts/processing_TransitService.R", local = TRUE)  
+  source("processing_scripts/processing_Micro.R", local = TRUE) 
   source("processing_scripts/processing_OPS.R", local = TRUE)
-  source("processing_scripts/processing_MDHD.R", local = TRUE) #Gui done - needs cost
-  source("processing_scripts/processing_TransitElec.R", local = TRUE)  #Qi done
-  source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi done
-  source("processing_scripts/processing_TDM.R", local = TRUE) #Qi done
-  source("processing_scripts/processing_ParkRide.R", local = TRUE) #Qi done
-  source("processing_scripts/processing_freight.R", local = T) #Gui done - needs cost
-  source("processing_scripts/processing_EVSE.R", local = T) #Gui done - needs cost
-  source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Finished
+  source("processing_scripts/processing_MDHD.R", local = TRUE) 
+  source("processing_scripts/processing_TransitElec.R", local = TRUE)  
+  source("processing_scripts/processing_TransitService.R", local = TRUE) 
+  source("processing_scripts/processing_TDM.R", local = TRUE) 
+  source("processing_scripts/processing_ParkRide.R", local = TRUE) 
+  source("processing_scripts/processing_freight.R", local = T) 
+  source("processing_scripts/processing_EVSE.R", local = T) 
+  source("processing_scripts/processing_RoadwayExp.R", local = TRUE) 
+    
+  source("processing_scripts/processing_TransitService_Cuts.R",local = T) #in progress
+    source("processing_scripts/processing_LandUse.R",local = T) #in progress
+    source("processing_scripts/processing_roadway_resurfacing.R",local = T) #in progress
+    
   source("functions/cost_maker.R", local = TRUE)
   source("processing_scripts/processing_Allassump.R", local = TRUE) #Finished
   
