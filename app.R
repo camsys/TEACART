@@ -14,16 +14,25 @@ library(shiny)
 library(shinyjs)
 library(tinytex)
 library(tools)
-
+library(shinyalert)
+library(knitr)
+library(ggplot2)
+if (!require(kableExtra)) {
+  install.packages("kableExtra")
+  library(kableExtra)
+}
+if (!require(tinytex)) {
+  install_tinytex()
+}
+library(showtext)
+showtext_auto()
+library(scales)
 
 # load source files -------------------------------------------------------
-all_files <- c(
-  list.files("functions", full.names = TRUE)
-#               ,list.files("processing_scripts", full.names = TRUE) # this breaks it at the moment
-               )
+
+all_files <- c(list.files("functions", full.names = TRUE))
 
 data_list <- list()
-
 
 # reading in xlsx and R files only - note
 for (file in all_files) {
@@ -32,18 +41,67 @@ for (file in all_files) {
   }
 }
 
-
 source("globals.R")
 source("read_from_user_inputs.R")
 
 # ui ----------------------------------------------------------------------
 
 ui <- function(request) {
+  
   tagList(
+    
     # Leave this function for adding external resources
     # Application UI logic
-    title = "",
+    #title = "",
+    # styles ------------------------------------------------------------------
+    # #a0cf66 is a georgetown color but intense - color below is a milder variation
+    tags$head(
+      tags$style(HTML("
+            .accordion-button.collapsed {
+                background-color: #e3ebd5;
+            }
+            .btn-custom {
+                background-color: #e3ebd5 !important;
+                height: 54px;
+                width: 100%;
+            } 
+            .well.card-flex {
+            display: flex;
+            flex-direction: row; 
+            }
+            .invisible-well.card-flex {
+            display: flex;
+            flex-direction: row; 
+            }
+             well.invisible-well {
+	          background-color: transparent !important;
+	          border: none !important;
+            box-shadow: none !important;
+             }
+                  .half-card {
+            width: 50%;
+            margin-right: 20px;
+            display: inline-block;
+            }
+            .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
+            .nav.navbar-nav .form-group.shiny-input-container > label {display: inline;}
+            
+        ")),
+      tags$link(rel = "stylesheet", 
+                href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"),
+      tags$link(rel = "stylesheet", 
+                href = "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"),
+      tags$link(rel = "stylesheet", 
+                href = "TEACART.css?v=1.0.1"),
+      tags$script(src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"),
+      tags$script(src = "TEACART.js")
+      
+    ),
+    
     page_navbar(
+      
+      #title = "TEA-CART",
+      id = "APP_PAGE",
       theme = bs_theme(
         version = 5,
         fg = "#0d204d", # this has the same CMYK values as #173A89 but 70% saturation on black as opposed to 46%
@@ -53,94 +111,270 @@ ui <- function(request) {
         preset = "pulse",
         bg = "#fff"
       ), 
-      # #a0cf66 is a georgetown color but intense - color below is a milder variation
-      tags$head(
-        tags$style(HTML("
-            .accordion-button.collapsed {
-                background-color: #e3ebd5;
-            }
-            .btn-custom {
-                background-color: #e3ebd5 !important;;
-            } 
-        ")),
-        tags$link(rel = "stylesheet", 
-                  href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"),
-        tags$style(HTML(
-          '
-      .nav.navbar-nav .form-group.shiny-input-container {margin-bottom: 0; height: 50px;}
-      .nav.navbar-nav .form-group.shiny-input-container > label {display: inline;}
-        '
-        )),
-      ),
-      title = "TEA-CART",
-      sidebar = sidebar(fileInput("user_inputs_upload",
-                                  "Upload User Inputs",
+      
+      # footer -----------------------------------------------------------------------
+      footer =  fluidRow( class="footer",
+                          #SLBOOKMARK
+                          useShinyjs(),
+                          column(width = 9,
+                                 tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
+                                        href = "https://www.georgetownclimate.org/", target = "_blank"),
+                                 tags$p("Adapted from TEA-CART Excel Model Version 1.10"),
+                                 tags$p("Shiny App last updated June 9, 2025"),
+                                 tags$p("Prototype under development by Cambridge Systematics, Inc."),
+                                 tags$p("under contract to Gergetown Climate Center"),
+                                 tags$p("© Georgetown Climate Center")
+                          ),
+                          #column(width = 2,),
+                          column(width = 2,
+                                 shiny::actionButton("inputs_btn",
+                                                     class = "btn btn-primary",
+                                                     label = "Inputs"
+                                 ),
+                                 tags$ul(
+                                   tags$li(
+                                     shiny::actionButton("inbaseline",class = "btn btn-secondary",label = "Baseline")),
+                                   tags$li(
+                                     shiny::actionButton("inprojects",class = "btn btn-secondary",label = "Projects")),
+                                   tags$li(
+                                     shiny::actionButton("incosts",class = "btn btn-secondary",label = "Costs")),
+                                   tags$li(
+                                     shiny::actionButton("inassumptions",class = "btn btn-secondary",label = "Assumptions")),
+                                   tags$li(
+                                     shiny::actionButton("inscenarios",class = "btn btn-secondary",label = "Scenarios")),
+                                   tags$li(
+                                     shiny::actionButton("inadvanced",class = "btn btn-secondary",label = "Advanced"))
+                                 )
+                          ),
+                          column(width = 2,
+                                 shiny::actionButton("outputs_btn",
+                                                     class = "btn btn-primary",
+                                                     label = "Outputs"
+                                 ),
+                                 tags$ul(
+                                   tags$li(
+                                     shiny::actionButton("outbaseline",class = "btn btn-secondary",label = "Baseline GHG Forecast")),
+                                   tags$li(
+                                     shiny::actionButton("outscenario",class = "btn btn-secondary",label = "Scenario Summary")),
+                                   tags$li(
+                                     shiny::actionButton("outsummary",class = "btn btn-secondary",label = "Strategy Summary")),
+                                   tags$li(
+                                     shiny::actionButton("outcosteff",class = "btn btn-secondary",label = "Cost Effectiveness"))
+                                 )
+                          ),
+                          column(width = 1,
+                                 tags$div(class = "make-this-colunar",
+                                          shiny::actionButton("about_btn",
+                                                              class = "btn btn-primary",
+                                                              label = "About"
+                                          ),
+                                          shiny::actionButton("how_to_btn",
+                                                              class = "btn btn-primary",
+                                                              label = "How-to"
+                                          ),
+                                          shiny::actionButton("sources_btn",
+                                                              class = "btn btn-primary",
+                                                              label = "Sources"
+                                          )
+                                 )
+                          )
+      ), 
+      # sidebar -----------------------------------------------------------------
+      
+      
+      sidebar = sidebar(width = 450, 
+                        h2('Quick Guide'),
+                        HTML("<p>This sidebar has a high-level step-by-step guide for 
+                        entering and saving data in the TEA CART Tool. 
+                          More information can be found in the <b>How-to</b> tab.</p>
+                             <br>"),
+                        h4('Returning User'),
+                        HTML("<p><b>Upload User Inputs</b></p>"),
+                        
+                        fileInput("user_inputs_upload",
+                                  label = NULL,
                                   accept = c(".xlsx")),
                         bsTooltip(id = "user_inputs_upload",
                                   "Upload the file generated by the TEA-CART tool with user inputs.",
                                   options = list(container = "body"),
                                   placement = "right"),
+                        h4('Save My Work'),
                         downloadButton("user_inputs_download", "Download User Inputs"),
-                        HTML("<p>
-                             A few reminders:
-                             <ul>
-                            <li>Download data regularly while entering data - if you need to leave the app before finishing, reupload it to resume editing.</li>
-                            <li>Pressing CTRL + ENTER finishes entering 
-                            data for one table.</li>
-                            <li>Enter data for one table at 
-                            a time.</li></ul>"),
+                        h4('New User'),
+                        HTML("<ol>
+                            <li>Navigate to the <b>Inputs</b> tab.</li>
+                            <li>Input your values in the <b>Baseline, Projects, Costs,</b> and <b>Assumptions</b> sections.</li>
+                            <li>When you are done entering data, press CTRL <b>+</b> Enter on you rkeyboard to initiate the calculations.</li>
+                            <li>Select the desired combination of strategies in the <b>Scenarios</b> section.</li>
+                            <li>Navigate to <b>Outputs</b> tab to view your results.</li>
+                            </ol>"),
                         nav_spacer(),
                         nav_spacer(),
                         nav_spacer(),
                         downloadButton("pdf_report","Download Summary Report")),
       
-
-# welcome page ------------------------------------------------------------
-      # Adrinene to ask Terry where to find the Teapot dome text
-      nav_panel(title = "Welcome",
+      
+      # welcome page ------------------------------------------------------------
+      nav_panel(title = "TEA-CART",
                 p(),
-                h3("About"),
-                p(),
-                HTML("<p>Georgetown Climate Center’s (GCC) Transportation Evaluation 
-                and Carbon Reduction Tool (TEA-CART) offers planning-level 
-                analysis to estimate the GHG performance of transportation 
-                capital program investments. The functionality of the tool has 
-                been informed by transportation agency officials. It is 
-                designed to serve as a resource for state Departments of 
-                Transportation (DOT) and Metropolitan Planning Organization 
-                (MPO) practitioners conducting long-term planning, project 
-                prioritization, and performance management.<br>
+                h2("Welcome"),
+                HTML("<p>Welcome to <b>Transportation Evaluation and Carbon 
+                Reduction Tool (TEA-CART)</b>, a web-based application that 
+                supports planning-level analysis to estimate how different 
+                transportation investments will affect future real-world 
+                outcomes for people and the environment.<br>
                 <p>
-The primary purpose of TEA-CART is to help practitioners account for the 
-environmental performance of proposed projects, so they can set meaningful 
-targets for greenhouse gas or vehicle-miles traveled reduction and develop 
-capital plans that prioritize transportation projects that will help achieve 
-those goals. TEA-CART was developed by Cambridge Systematics under contract 
-with the Georgetown Climate Center, which facilitated extensive input from 
-state and federal officials.<br>
-                     <p>
-                     Inputs:</b> Inputs to the tool typically include those 
-                     available during the state or MPO transportation 
-                     capital program planning process. For example:"),
-      tags$ul(tags$li(p("A baseline inventory and forecast of GHG emissions.")),
-              tags$li(p("GHG impacts of a capital program or a hypothetical set
-                      of capital projects.")),
-              tags$li(p("Information on cost-effectiveness of various project
-                      types."))),
-      h3("Version"),
-      p("Based on TEA-CART Excel Model Version 1.8"),
-      p("Shiny App last updated January 15, 2024"),
-      p("draft User Interface (UI) under development by Cambridge Systematics, Inc."),
-      p("under contract to Georgetown Climate Center"),
-      p("© Georgetown Climate Center"),
+<i>Would you like to…<br>
+<p>
+…calculate how a proposed set  of transportation investments might  reduce 
+-- or increase --  greenhouse gas emissions from cars and trucks?<br>
+<p>
+…estimate how adding 10 miles of new bike lanes will affect driver behavior 
+and the number of vehicle-miles traveled?<br>
+<p>
+…compare the air emissions outcomes of one potential portfolio of 
+investments with another?  For example, which would do more to improve 
+air quality in your community: spending $1 million on electric buses and 
+charging infrastructure? or investing those same funds in expanding light 
+rail and transit oriented development?</i> <br>
+<p>
+TEA-CART can help answer these and other questions in ways that are 
+accessible for a variety of users. Anyone can use this tool, but we 
+anticipate that it will be most useful for state, regional, and local 
+agency officials who aim to achieve better climate and public health 
+outcomes through transportation planning and investment decision making.<br>
+<p>
+Click on the “About” tab to learn more about the tool’s inputs, outputs, 
+and potential applications.
+")),
+      
+      # about page --------------------------------------------------------------
+      
+      nav_panel(title = "About",
+                p(),
+                #    h2("Transportation Evaluation and Carbon Reduction Tool (TEA-CART)"),
+                
+                h2("About"),
+                p(),
+                HTML(
+                  "Georgetown Climate Center’s (GCC) Transportation Evaluation 
+                  and Carbon Reduction Tool (TEA-CART) offers planning-level 
+                  analysis to estimate the GHG performance of transportation 
+                  capital program investments. The functionality of the tool 
+                  has been informed by transportation agency officials. It is 
+                  designed to serve as a resource for state Departments of 
+                  Transportation (DOT) and Metropolitan Planning Organization 
+                  (MPO) practitioners conducting long-term planning, project 
+                  prioritization, and performance management. <br>
+                  <p>
+                  The primary purpose of TEA-CART is to help practitioners 
+                  account for the environmental performance of proposed 
+                  projects, so they can set meaningful targets for greenhouse 
+                  gas or vehicle-miles traveled reduction and develop capital 
+                  plans that prioritize transportation projects that will 
+                  help achieve those goals. TEA-CART was developed by 
+                  Cambridge Systematics under contract with the Georgetown 
+                  Climate Center, which facilitated extensive input from 
+                  state and federal officials.<br>
+                  <p>
+                  <b>Tool Functionality:</b> TEA-CART is easy to use, accepting 
+                  simple inputs to evaluate the GHG performance of surface 
+                  transportation capital projects during the planning or 
+                  programming stage. TEA-CART is also highly customizable. 
+                  While the tool is pre-populated with default assumptions 
+                  for both the U.S. overall, as well as each individual 
+                  state. Most assumptions can be substituted with user-provided 
+                  data, when available, so it can also be used by local or 
+                  regional governments (e.g., Metropolitan Planning 
+                  Organizations). <br>
+                  <p>
+                  <b>Inputs:</b> Inputs to the tool typically include those 
+                  available during the state or MPO transportation capital 
+                  program planning process. For example: <br>
+                  <ul><li>New lane-miles of infrastructure,
+                  <li>Number of new electric vehicle chargers,
+                  <li>Number of gas-power buses replaced by electric vehicles, 
+                  <li>Dollars invested in electric bike incentives, or
+                  <li>Dollars invested in roadway resurfacing.
+                  </ul>
+                  <p>
+                  The tool is designed to be updated in real-time, so that 
+                  results can be seen as soon as new project information is 
+                  provided by the user. <br>
+                  <br>
+                  <b>Outputs:</b> The tool generates valuable, customizable outputs, 
+                  including:<pr>
+                  <ul><li>A baseline inventory and forecast of GHG emissions,
+                  <li>Estimated GHG emissions and related impacts of a capital 
+                  program -- or a hypothetical set of capital projects -- 
+                  across user-selected horizon years, and
+                  <li>Information on the cost-effectiveness of various project 
+                  types.
+                  </ul>
+                  "
+                )
+                
+                
       ),
-
-# baseline inputs ---------------------------------------------------------
-
+      
+      
+      # how-to page -------------------------------------------------------------
+      nav_panel(title = "How-to",
+                p(),
+                h3("Guidance on using the tool"),
+                p("As you enter data, please keep the following in mind:"),
+                tags$ul(tags$li(p("This application does not require a login and is free to use.")),
+                        tags$li(p("In the left side panel, there is a button to Download 
+                        User Inputs. It is essential that you download data 
+                        the server after long periods of inactivity. If you need to leave the 
+                        application before completing the analysis, you can later upload the 
+                        saved file to continue your work.")),
+                        tags$li(p("Data are entered in tables. To begin entering (or editing) data, 
+                        double click anywhere in the table using your mouse. When you are done 
+                        entering data, press CTRL + ENTER on your keyboard (this 
+                        initiates the calculation). Data can only be entered for 
+                        one table at a time.")),
+                        tags$li(p("When you are ready to see the results of your analysis, proceed to 
+                        the Scenarios tab and select scenarios for analysis. Either choose 
+                        groups of projects (to support a comparison) or click the button 
+                        to select all projects for each scenario."))),
+                h3('Steps to use the tool'),
+                p(),
+                tags$ol(
+                  tags$li(HTML("Use the navigation panel at the top to select <b>Inputs.</b>")),
+                  tags$img(src = 'about_step_1.png', style = "width: 60%; max-width: intrinsic; height: auto;"),
+                  tags$li(HTML("Within <b>Inputs</b>, select <b>Baseline</b> to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.")),
+                  tags$img(src = 'about_step_2.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
+                  tags$li(HTML("Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse.")),
+                  tags$img(src = 'about_step_3.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
+                  tags$li("When you are done entering data, press CTRL + ENTER on your keyboard (this initiates the calculation). Data can only be entered for one table at a time."),
+                  tags$img(src = 'about_step_4.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
+                  tags$li(HTML("Regularly download the data that you have entered. You can download it by clicking the <b>Download User Inputs</b> button on the sidebar.")),
+                  tags$img(src = 'about_step_5.png', style = "width: 20%; max-width: intrinsic; height: auto;"),
+                  tags$li(HTML("If desired, within <b>Costs</b>, enter custom unit costs for the project type. Note that default values have already been provided.")),
+                  tags$img(src = 'about_step_6.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
+                  tags$li(HTML("Further <b>Assumptions</b> for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, please refer to the user guide.")),
+                  tags$img(src = 'about_step_7.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
+                  tags$li("Click the boxes to choose which groups of projects to include in scenario analysis."),
+                  tags$img(src = 'about_step_8.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
+                  tags$li(HTML("It is possible to use a custom forecast on the <b>Advanced</b> tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. Refer to the user guide for more information.")),
+                  
+                  tags$li(HTML("To see the results of the data that have been entered, refer to the <b>Outputs</b> tab.")),
+                  tags$img(src = 'about_step_10.png'),
+                  tags$li(HTML("Review the individual tabs within <b>Outputs</b> for results. The <b>Baseline GHG Forecast</b> tab shows the forecast under a business-as-usual scenario. <b>Scenario Summary</b> shows results by scenario, including total emissions and changes relative to the baseline. <b>Strategy Summary</b> shows the change in CO2e, VMT, NOx, PM2.5, and Daily Active Trips relative to the baseline. <b>Cost Effectiveness</b> shows the change in annual output per indicator per $1 million of investment.")),
+                  tags$img(src = 'about_step_11.png'),
+                  tags$li(HTML("Click <b>Download Summary Report</b> to get a pdf document with all of this information.")),
+                  tags$img(src = 'about_step_12.png', style = "width: 20%; max-width: intrinsic; height: auto;"),
+                )
+      ),
+      
+      # inputs page -------------------------------------------------------------
       
       nav_panel(title = "Inputs",
                 navset_card_pill(
+                  id = "INPUTS_TABS",
                   
+                  # baseline inputs ---------------------------------------------------------                  
                   nav_panel(title = "Baseline",
                             fluidRow(HTML("<p>Please enter <b>key inputs</b> below to define the timing and scope of your TEA-CART analysis, including: State, Base Year, Horizon Years, Geographic Scope, and Emissions Scope.<br>
                                           <p>
@@ -148,116 +382,113 @@ state and federal officials.<br>
                             fluidRow(
                               DT::dataTableOutput("test_data")
                             ),
+                            p("Select the state, years, and scope of baseline GHG forecast."),
                             fluidRow(
-                              column(6,
+                              class = "baseline-content",
+                              column(12,
                                      
                                      tabPanel(title = "Key Inputs"),
-                                     p("Select the state, years, and scope of baseline GHG forecast."),
-                                     
-                                     selectInput("state_input",
-                                                 HTML(paste('State: ',
-                                                            as.character(tags$i(class = "fa fa-info-circle", title = "The state for which you will be conducting analysis.")),
-                                                            sep = "")
-                                                 ),
-                                                 selected = "Maryland",
-                                                 state.name),
-                                     numericInput("base_year",
-                                                  HTML(paste('Base Year: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The first year of analysis and the reference point for assessing baseline trends.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2021,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(" "),
-                                     numericInput("horizon_year_1",
-                                                  HTML(paste('Horizon Year 1: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The first (future) year for which projects may be entered and the first year for which TEA-CART will generate outputs.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2025,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(" "),
-                                     numericInput("horizon_year_2",
-                                                  HTML(paste('Horizon Year 2: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The second (future) year for which projects may be entered and the second year for which TEA-CART will generate outputs.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2030,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(""),
-                                     numericInput("horizon_year_3",
-                                                  HTML(paste('Horizon Year 3: ',
-                                                             as.character(tags$i(class = "fa fa-info-circle", title = "The third (future) year for which projects may be entered and the third year for which TEA-CART will generate outputs.")),
-                                                             sep = "")
-                                                  ),
-                                                  value = 2050,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1),
-                                     p(""),
-                                     selectInput("transportation_scope",
-                                                 HTML(paste('Transportation System Scope: ',
-                                                            as.character(tags$i(class = "fa fa-info-circle", title = "The scope of your analysis with respect to the roadways. Only emissions from on-road travel are covered by TEA-CART.")),
-                                                            sep = "")
-                                                 ),
-                                                 c("All Roadways","NHS Only"),
-                                                 "All Roadways"),
-                                     p(""),
-                                     selectInput("scope_emissions",
-                                                 "Emissions Scope: Include Electricity",
-                                                 
-                                                 choices = c("Yes" = 1, "No" = 0),
-                                                 selected = "Yes"),
-                                     p(""),
-                                     selectInput("scope_fuels",
-                                                 "Scope Emissions: Include Upstream Fuels",
-                                                 choices = c("Yes" = 1, "No" = 0),
-                                                 selected = "No"),
-                                     bsTooltip("scope_fuels",
-                                               "Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG.",
-                                               "right",
-                                               options = list(container = "body")),
-                                     p(""),
-                                     selectInput("vmt_forecast_input",
-                                                 "VMT Forecast:",
-                                                 c("Default","Custom"),
-                                                 "Default"),
-                                     p(""),
-                                     selectInput("ev_baseline_input",
-                                                 "Vehicle Electrification Baseline:",
-                                                 c("AEO Baseline",
-                                                   "ACC",
-                                                   "ACC II",
-                                                   "ACC II + ACT",
-                                                   "Custom"),
-                                                 "AEO Baseline"),
-                                     p(""),
-                                     numericInput("grid_emissions_input",
-                                                  "Electricity Grid Emissions Net-Zero Year:",
-                                                  value = 2025,
-                                                  min = 2021,
-                                                  max = 2050,
-                                                  step = 1)
-                                     
+                                     tags$div(class = "well invisible-well",
+                                              selectInput("state_input",
+                                                          HTML("<span>State:</span><br><p>Select the state for which you are conducting analysis.</p>"),
+                                                          selected = "Maryland",
+                                                          state.name),
+                                              numericInput("base_year",
+                                                           HTML(paste('<span>Base Year:</span> ',
+                                                                      p("The first year of analysis and the reference point for assessing baseline trends."),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2021,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1),
+                                              p(" "),
+                                              numericInput("horizon_year_1",
+                                                           HTML(paste('<span>Horizon Year 1:</span> ',
+                                                                      p("The first (future) year for which projects may be entered and the first year for which TEA-CART will generate outputs."),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2025,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1),
+                                              p(" "),
+                                              numericInput("horizon_year_2",
+                                                           HTML(paste('<span>Horizon Year 2:</span> ',
+                                                                      p("The second (future) year for which projects may be entered and the second year for which TEA-CART will generate outputs."),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2030,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1),
+                                              p(""),
+                                              numericInput("horizon_year_3",
+                                                           HTML(paste('<span>Horizon Year 3:</span> ',
+                                                                      p("The third (future) year for which projects may be entered and the third year for which TEA-CART will generate outputs."),
+                                                                      sep = "")
+                                                           ),
+                                                           value = 2050,
+                                                           min = 2021,
+                                                           max = 2050,
+                                                           step = 1)),
+                                     br(),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("transportation_scope",
+                                                                   HTML("<span>Transportation System Scope:</span> <br> <p>There are two options:<br>
+                                        All Roadways: Emissions from on-road travel on all state roadways.<br>
+                                        NHS Only: Emissions from on-road travel on National Highway System (NHS) roadways only.<br>
+                                        Note that TEA-CART only includes emissions from on-road travel."),
+                                                                   c("All Roadways","NHS Only"),
+                                                                   "All Roadways")
+                                              ),
+                                              tags$div(class = "half-card",
+                                                       selectInput("vmt_forecast_input",
+                                                                   HTML("<span>VMT Forecast:</span> <br> <p>The vehicle miles traveled (VMT) forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab."),
+                                                                   c("Default","Custom"),
+                                                                   "Default")),           
+                                     ),
+                                     tags$div(class = "well invisible-well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("scope_emissions",
+                                                                   HTML("<span>Emissions Scope: Include Electricity:</span> <br> <p>The scope of transportation emissions reported. By default, all direct emissions (emissions occurring at the vehicle tailpipe) are reported.<br>
+                                                                        Select 'Yes' for Include Electricity to report emissions associated with the electricity used to power electric vehicles."),
+                                                                   choices = c("Yes" = 1, "No" = 0),
+                                                                   selected = "Yes")),
+                                              tags$div(class = "half-card",
+                                                       selectInput("ev_baseline_input",
+                                                                   HTML("<span>Vehicle Electrification Baseline:</span> <br> <p>The vehicle electrification forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab."),
+                                                                   c("AEO Baseline",
+                                                                     "ACC",
+                                                                     "ACC II",
+                                                                     "ACC II + ACT",
+                                                                     "Custom"),
+                                                                   "AEO Baseline")),                                 
+                                     ),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("scope_fuels",
+                                                                   HTML("<span>Scope Emissions: Include Upstream Fuels:</span> <br> <p>Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG"),
+                                                                   choices = c("Yes" = 1, "No" = 0),
+                                                                   selected = "No")
+                                              ),
+                                              tags$div(class = "half-card",
+                                                       numericInput("grid_emissions_input",
+                                                                    HTML("<span>Electricity Grid Emissions Net-Zero Year:</span> <br> <p>The target year for achieving net-zero electricity grid emissions.<br>"),
+                                                                    value = 2025,
+                                                                    min = 2021,
+                                                                    max = 2050,
+                                                                    step = 1)),
+                                     )                                                      
                               )),
-                            # Terry - make a shared class for this button and for the cost_view button?
-                            fluidRow(
-                              radioButtons(inputId = "tool_mode",
-                                         "Select a mode:",
-                                         c("Project Mode" = "project", "Budget Mode" = "budget")))
                   ),
                   
-
-# projects tab ui ---------------------------------------------------------
+                  
+                  # projects tab ui ---------------------------------------------------------
                   nav_panel(title = "Projects",
                             fluidRow(
-                              HTML("<p>Please provide <b>project-level inputs</b> for 
+                              HTML("<p>Please select <b>project-level inputs</b> for 
                                    one or more of the project categories shown 
                                    below, keeping in mind the following two 
                                    rules when entering project-level inputs:<br>
@@ -267,423 +498,448 @@ state and federal officials.<br>
                                    ii) Project inputs from one year are automatically coded to “carry over” into future years. This can be seen in the “Cumulative” category of additions / replacements, where, for every horizon year after the first year, the values represent the total new projects implemented in prior horizon years.<br>
                                    <p>
                                    More information on the input categories can be found by clicking on the pull-down arrow next to each project category."
-                                   ),),
+                              ),),
                             
-          # bike ped
+                            # bike ped
                             
                             fluidRow(
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Projects 1 | Bicycle and
+                                         'Projects 1 | Bicycle and
            Pedestrian Lane Miles of New Infrastructure ',
-           as.character(tags$i(class = "fa fa-info-circle", title = "Hover text")),
-           sep = "")),
-           HTML("This category represents implementation of any <b>two-way miles of new 
+                                         HTML("This category represents implementation of any <b>two-way miles of new 
            bicycle or pedestrian facility.</b> The default assumption for these 
            project types is that any new bicycle or pedestrian facility would 
-           be two-way. (i.e., for one-way facilities, please enter half the 
+           be two-way (i.e., for one-way facilities, please enter half the 
            total miles for the facility)."),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_bikeped_projs_tbl")
+                                         ))
                                        ),
-           id = "acc1",
-           open = FALSE
+                                       id = "acc1",
+                                       open = FALSE
                                      ),
                               ),
-           column(2,
-                  actionButton("reset_bikeped_projs_tbl", "Reset Projects 1", class = "btn-custom"),
-           ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Projects 1", class = "btn-custom"),
+                              ),
                             ),
-           fluidRow(
-             DT::dataTableOutput("bikeped_projs_tbl")
-             
-           ),
-
-
-      
-      # transit fixed route
-      
-      fluidRow(
-        column(10,
-        accordion(
-          accordion_panel(
-               "Projects 2 | Transit: Increased Fixed Route Service",
-               HTML("This category represents additions of <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_projs_tbl")
+                              
+                            ),
+                            
+                            
+                            
+                            # transit fixed route
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 2 | Transit: Increased Fixed Route Service",
+                                         HTML("This category represents additions of <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
                Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
-               )),
-          open = FALSE
-        ),
-        ),
-        column(2,
-               actionButton("reset_transit_fixed_projs_tbl", "Reset Projects 2", class = "btn-custom")
-               ),
-        ),
-        fluidRow(
-          DT::dataTableOutput("transit_fixed_projs_tbl")
-        ),
-
-      
-      # transit DR
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 3 | Transit: Increased Demand Response Service",
-                   HTML("This category represents addition of any <b>new demand response service vehicles operated in maximum service (VOMS).</b> 
+                                         ),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_transit_fixed_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_transit_fixed_projs_tbl", "Reset Projects 2", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("transit_fixed_projs_tbl")
+                            ),
+                            
+                            
+                            # transit DR
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 3 | Transit: Increased Demand Response Service",
+                                         HTML("This category represents addition of any <b>new demand response service vehicles operated in maximum service (VOMS).</b> 
               Demand response service vehicles include non-fixed route services that are initiated by customers and require advanced scheduling, 
                         such as vehicles provided by public entities, nonprofits, and private providers."
-                   ),
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_transit_dr_projs_tbl", "Reset Projects 3", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("transit_dr_projs_tbl")
-      ),
-      
-      # fleet electrification
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 4 | Fleet Electrification",
-                   HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
+                                         ),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_transit_dr_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_transit_dr_projs_tbl", "Reset Projects 3", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("transit_dr_projs_tbl")
+                            ),
+                            
+                            # fleet electrification
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 4 | Fleet Electrification",
+                                         HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
                         with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_transit_el_projs_tbl", "Reset Projects 4", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("transit_el_projs_tbl")
-      ),
-      
-      # bus priority
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 5 | Public Transportation: Bus Priority Treatment",
-                   HTML("This category represents addition of miles of <b>new bus priority treatment</b>. Bus priority treatment refers 
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_transit_el_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_transit_el_projs_tbl", "Reset Projects 4", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("transit_el_projs_tbl")
+                            ),
+                            
+                            # bus priority
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 5 | Public Transportation: Bus Priority Treatment",
+                                         HTML("This category represents addition of miles of <b>new bus priority treatment</b>. Bus priority treatment refers 
                         to the improvement of transit speed and reliability between stops by changing the designation of street space. 
                         Some examples include a bus-only lane, which assigns exclusive street space to buses, and a bus approach lane, 
-                        which assigns exclusive street spaces to buses as they approach an intersection.",)
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_transit_bus_projs_tbl", "Reset Projects 5", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("transit_bus_projs_tbl")
-      ),
-      
-      # public transportation - rail
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 6 | Public Transportation: Rail",
-                   HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>.",)
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_public_rail_projs_tbl", "Reset Projects 6", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("public_rail_projs_tbl")
-      ),
-      
-      
-      # TDM
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 7 | Travel Demand Management / TDM",
-                   HTML("This category represents the <b>number of employees covered through the TDM Program Outreach </b>. 
+                        which assigns exclusive street spaces to buses as they approach an intersection."),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_transit_bus_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_transit_bus_projs_tbl", "Reset Projects 5", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("transit_bus_projs_tbl")
+                            ),
+                            
+                            # public transportation - rail
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 6 | Public Transportation: Rail",
+                                         HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>.",),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_public_rail_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_public_rail_projs_tbl", "Reset Projects 6", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("public_rail_projs_tbl")
+                            ),
+                            
+                            
+                            # TDM
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 7 | Travel Demand Management / TDM",
+                                         HTML("This category represents the <b>number of employees covered through the TDM Program Outreach </b>. 
                    TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
-                   reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",)
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_tdm_projs_tbl", "Reset Projects 7", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("tdm_projs_tbl")
-      ),
-      
-      # Micromobility
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 8 | Micromobility",
-                   HTML("This category represents the <b>number of e-bikes funded </b> through the implementation of <b> e-bike subsidies </b>. 
-                   An e-bike subsidy reimburses part of the cost of an e-bike.",)
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_micro_projs_tbl", "Reset Projects 8", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("micro_projs_tbl")
-      ),
-      
-      # traffic ops
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 9 | Traffic Operations",
-                   HTML("This category represents any <b>improvements made to traffic operations at intersections </b>, 
-                   such as new or retimed signals or new roundabouts.",)
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_traffic_ops_projs_tbl", "Reset Projects 9", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("traffic_ops_projs_tbl")
-      ),
-      
-      # MHDEV
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
-                   HTML("This category represents <b>replacement of any fossil fuel medium or heavy-duty vehicles with electric vehicles</b>, 
-                   with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle.",)
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_mhdev_projs_tbl", "Reset Projects 10", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("mhdev_projs_tbl")
-      ),
-      
-      
-      # Park & Ride
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 11 | Park & Ride Projects",
-                   HTML("This category represents any <b>new addition or expansion of Park and Ride spaces</b>. A Park and Ride space 
-                   allows private transport users to park their vehicles at a large parking space and continue their commute via public transport.",)
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_pnr_projs_tbl", "Reset Projects 11", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("pnr_projs_tbl")
-      ),
-      
-      # EVSI
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 12 | EV Charging Infrastructure",
-                   HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
-                   EV charging ports supply electric power for recharging electric vehicles.",)
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_evsi_projs_tbl", "Reset Projects 13", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("evsi_projs_tbl")
-      ),
-      
-      # freight intermodal facilities
-      
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 13 | Freight Intermodal Facilities",
-                   HTML("This category represents any <b>intermodal freight investment</b>, expressed in millions of dollars.",)
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_freight_projs_tbl", "Reset Projects 13", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("freight_projs_tbl")
-      ),
-      
-      
-      # Roadway expansion
-            
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 14 | Roadway Expansion",
-                   HTML("This category represents addition of any <b>new lane-miles of roadways.</b>",)
-
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_expansion_projs_tbl", "Reset Projects 14", class = "btn-custom")
-        ),
-
-      ),
-      fluidRow(
-        DT::dataTableOutput("expansion_projs_tbl")
-      ),
-      
-      #Transit Cuts
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 15 | Transit Service Cuts",
-                   HTML("This category represents ... <b>... .</b>"),
-                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                              title = "Cumulative View",
-                                              placement = "bottom",
-                                              options = list(container = "body"),
-                                              DTOutput(outputId = "cumul_transit_cuts_projs_tbl")
-                   ))
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_transit_cuts_projs_tbl", "Reset Projects 14", class = "btn-custom")
-        ),
-        
-      ),
-      fluidRow(
-        DT::dataTableOutput("transit_cuts_projs_tbl")
-      ),
-      #Land Use
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 16 | Land Use",
-                   HTML("This category represents ... <b>... .</b>"),
-                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                              title = "Cumulative View",
-                                              placement = "bottom",
-                                              options = list(container = "body"),
-                                              DTOutput(outputId = "cumul_land_use_projs_tbl")
-                   ))
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_land_use_projs_tbl", "Reset Projects 16", class = "btn-custom")
-        ),
-        
-      ),
-      fluidRow(
-        DT::dataTableOutput("land_use_projs_tbl")
-      ),
-      
-      #Roadway Surfacing
-      fluidRow(
-        column(10,
-               accordion(
-                 accordion_panel(
-                   "Projects 17 | Roadway Resurfacing",
-                   HTML("This category represents ... <b>... .</b>"),
-                   bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                              title = "Cumulative View",
-                                              placement = "bottom",
-                                              options = list(container = "body"),
-                                              DTOutput(outputId = "cumul_road_resurf_projs_tbl")
-                   ))
-                 ),
-                 open = FALSE
-               ),
-        ),
-        column(2,
-               actionButton("reset_road_resurf_projs_tbl", "Reset Projects 17", class = "btn-custom")
-        ),
-        
-      ),
-      fluidRow(
-        DT::dataTableOutput("road_resurf_projs_tbl")
-      )),
-
-# budget tab ui -----------------------------------------------------------
-
-nav_panel(title = "Budget",
-          fluidRow(HTML("<p>Please provide <b>budget-level inputs</b> for one 
+                   reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_tdm_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_tdm_projs_tbl", "Reset Projects 7", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("tdm_projs_tbl")
+                            ),
+                            
+                            # Micromobility
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 8 | Micromobility",
+                                         HTML("This category represents the <b>number of e-bikes funded </b> through the implementation of <b> e-bike subsidies </b>. 
+                   An e-bike subsidy reimburses part of the cost of an e-bike."),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_micro_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_micro_projs_tbl", "Reset Projects 8", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("micro_projs_tbl")
+                            ),
+                            
+                            # traffic ops
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 9 | Traffic Operations",
+                                         HTML("This category represents any <b>improvements made to traffic operations at intersections </b>, 
+                   such as new or retimed signals or new traffic-flow roundabouts."),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_traffic_ops_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_traffic_ops_projs_tbl", "Reset Projects 9", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("traffic_ops_projs_tbl")
+                            ),
+                            
+                            # MHDEV
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
+                                         HTML("This category represents <b>replacement of any fossil fuel medium or heavy-duty vehicles with electric vehicles</b>, 
+                   with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle."),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_mhdev_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_mhdev_projs_tbl", "Reset Projects 10", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("mhdev_projs_tbl")
+                            ),
+                            
+                            
+                            # Park & Ride
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 11 | Park & Ride Projects",
+                                         HTML("This category represents any <b>new addition or expansion of Park and Ride spaces</b>. A Park and Ride space 
+                   allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_pnr_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_pnr_projs_tbl", "Reset Projects 11", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("pnr_projs_tbl")
+                            ),
+                            
+                            # EVSI
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 12 | EV Charging Infrastructure",
+                                         HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
+                   EV charging ports supply electric power for recharging electric vehicles."),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_evsi_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_evsi_projs_tbl", "Reset Projects 13", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("evsi_projs_tbl")
+                            ),
+                            
+                            # freight intermodal facilities
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 13 | Freight Intermodal Facilities",
+                                         HTML("This category represents any <b>intermodal freight investment</b>, expressed in millions of dollars."),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_freight_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_freight_projs_tbl", "Reset Projects 13", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("freight_projs_tbl")
+                            ),
+                            
+                            
+                            # Roadway expansion
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 14 | Roadway Expansion",
+                                         HTML("This category represents addition of any <b>new lane-miles of roadways.</b>"),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_expansion_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_expansion_projs_tbl", "Reset Projects 14", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("expansion_projs_tbl")
+                            ),
+                            
+                            # #Custom Projects
+                            # 
+                            # fluidRow(
+                            #   column(10,
+                            #          accordion(
+                            #            accordion_panel(
+                            #              "Projects 15 | Custom Project",
+                            #              HTML("This category allows users to input custom project inputs. For units uses must input either VMT or MT CO2e."),
+                            #              bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                            #                      title = "Cumulative View",
+                            #                      placement = "bottom",
+                            #                      options = list(container = "body"),
+                            #                      DTOutput(outputId = "cumul_custom_projs_tbl")
+                            #              ))
+                            #            ),
+                            #            open = FALSE
+                            #          ),
+                            #   ),
+                            #   column(2,
+                            #          actionButton("reset_custom_projs_tbl", "Reset Projects 15", class = "btn-custom")
+                            #   ),
+                            #   
+                            # ),
+                            # fluidRow(
+                            #   DT::dataTableOutput("custom_projs_tbl")
+                            # ),
+                            
+                  ),
+                  
+                  
+                  
+                  # budget tab ui -----------------------------------------------------------
+                  
+                  nav_panel(title = "Budget",
+                            fluidRow(HTML("<p>Please provide <b>budget-level inputs</b> for one 
                         or more of the project categories shown below, keeping 
                         in mind the following two rules when entering 
                         project-level inputs:<br>
@@ -693,415 +949,415 @@ nav_panel(title = "Budget",
                         horizon year.<br>
                         ii) Spending estimates are assumed to be averages 
                         based on historical data.")
-            
-          ),
-          fluidRow(
-            numericInput("funding_start_year",
-                         HTML(paste('Funding Start Year: ',
-                                    as.character(tags$i(class = "fa fa-info-circle", 
-                                                        title = "The first year of spending.")),
-                                    sep = " ")
+                                     
+                            ),
+                            fluidRow(
+                              numericInput("funding_start_year",
+                                           HTML(paste('Funding Start Year: ',
+                                                      as.character(tags$i(class = "fa fa-info-circle", 
+                                                                          title = "The first year of spending.")),
+                                                      sep = " ")
+                                           ),
+                                           value = 2026,
+                                           min = 2026,
+                                           max = 2050,
+                                           step = 1
                               ),
-                         value = 2026,
-                         min = 2026,
-                         max = 2050,
-                         step = 1
-                         ),
-            numericInput("funding_years",
-                         HTML(paste('Total Years Covered: ',
-                                    as.character(tags$i(class = "fa fa-info-circle", 
-                                                        title = "The total years over which spending occurs.")),
-                                    sep = " ")
-                         ),
-                         value = 5,
-                         min = 1,
-                         max = 20,
-                         step = 1
-            ),
-            # Ben does it break at some point? Should we set a max?
-            # Adrienne this needs to be dynamic - values need to update based on years
-            numericInput("total_budget",
-                         HTML(paste('Total Budget ($M) for 2026-2030:',
-                                    as.character(tags$i(class = "fa fa-info-circle", 
-                                                        title = "Millions of dollars in spending over the entire period.")),
-                                    sep = " ")
-                         ),
-                         value = 200,
-                         min = 1,
-                         max = 10000,
-                         step = 1
-            ),
-            # could this be some kind of floating widget?
-            numericInput("allocated_budget",
-                         HTML(paste('Allocated Budget: ',
-                                    as.character(tags$i(class = "fa fa-info-circle", 
-                                                        title = "This number should be equal to 100.")),
-                                    sep = " ")
-                         ),
-                         value = 100,
-                         min = 90,
-                         max = 100,
-                         step = 1
-            ),
-
-          ),
-          # bike ped
-          # Adrienne search for 'Hover text' and replace
-          # Adrienne confirm with Ben that the text from projects is still applicable
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       HTML(paste('Budget  1 | Bicycle and
+                              numericInput("funding_years",
+                                           HTML(paste('Total Years Covered: ',
+                                                      as.character(tags$i(class = "fa fa-info-circle", 
+                                                                          title = "The total years over which spending occurs.")),
+                                                      sep = " ")
+                                           ),
+                                           value = 5,
+                                           min = 1,
+                                           max = 20,
+                                           step = 1
+                              ),
+                              # Ben does it break at some point? Should we set a max?
+                              # Adrienne this needs to be dynamic - values need to update based on years
+                              numericInput("total_budget",
+                                           HTML(paste('Total Budget ($M) for 2026-2030:',
+                                                      as.character(tags$i(class = "fa fa-info-circle", 
+                                                                          title = "Millions of dollars in spending over the entire period.")),
+                                                      sep = " ")
+                                           ),
+                                           value = 200,
+                                           min = 1,
+                                           max = 10000,
+                                           step = 1
+                              ),
+                              # could this be some kind of floating widget?
+                              numericInput("allocated_budget",
+                                           HTML(paste('Allocated Budget: ',
+                                                      as.character(tags$i(class = "fa fa-info-circle", 
+                                                                          title = "This number should be equal to 100.")),
+                                                      sep = " ")
+                                           ),
+                                           value = 100,
+                                           min = 90,
+                                           max = 100,
+                                           step = 1
+                              ),
+                              
+                            ),
+                            # bike ped
+                            # Adrienne search for 'Hover text' and replace
+                            # Adrienne confirm with Ben that the text from projects is still applicable
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget  1 | Bicycle and
            Pedestrian Lane Miles of New Infrastructure ',
-                                  as.character(tags$i(class = "fa fa-info-circle", title = "Budget spending on bike/ped projects.")),
-                                  sep = "")),
-                       HTML("This category represents spending on any <b>two-way miles of new 
+                                                    as.character(tags$i(class = "fa fa-info-circle", title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on any <b>two-way miles of new 
            bicycle or pedestrian facility.</b> The default assumption for these 
            project types is that any new bicycle or pedestrian facility would 
-           be two-way. For one-way facilities, please enter half the 
-           budget amount."),
-                     ),
-                     open = FALSE
-                   ),
-            ),
-            column(2,
-                   actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
-            ),
-          ),
-          fluidRow(
-            DT::dataTableOutput("bikeped_budget_tbl")
-            
-          ),
-
-  
-),
-
-
-# costs tab ui ------------------------------------------------------------
-      nav_panel(title = "Costs",
-                fluidRow(HTML("<p>This section provides information on 
+           be two-way. (i.e., for one-way facilities, please enter half the 
+           budget amount)."),
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_projs_tbl")
+                              
+                            ),
+                            
+                            
+                  ),
+                  
+                  
+                  # costs tab ui ------------------------------------------------------------
+                  nav_panel(title = "Costs",
+                            fluidRow(HTML("<p>This section provides information on 
                               the <b>cost inputs</b> for the project categories 
                               shown below. Please click on the different fields 
                               to overwrite the default values with any custom 
                               values provided by the user.<br>
                               <p>
                               More information on the categories can be found by clicking the pull-down arrow next to each category.")),
-                
-                # bike ped costs
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 1 | Bicycle & Pedestrian Costs",
-                             HTML("This category represents the <b>overall cost per mile and annual maintenance cost per mile</b> of bicycle or pedestrian facility being implemented."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_bikeped_costs_tbl", "Reset Costs 1", class = "btn-custom")
-                  ),
-
-                ),
-                fluidRow(
-                  DT::dataTableOutput("bikeped_costs_tbl")
-                ),
-                
-                
-                # transit fixed route costs
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 2 | Transit: Fixed Route Service Costs",
-                             HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new fixed route service vehicles."),
-                             ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_transit_fixed_costs_tbl", "Reset Costs 2", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("transit_fixed_costs_tbl")
-                ),
-                
-                
-                # transit DR costs
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 3 | Transit: Demand Response (DR) Service Costs",
-                             HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new demand response service vehicles."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_transit_dr_costs_tbl", "Reset Costs 3", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("transit_dr_costs_tbl")
-                ),
-                
-                
-                # bus priority costs
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 5 | Public Transportation: Bus Priority Treatment Costs",
-                             HTML("This category represents the <b>cost per mile of red paint</b> for addition of miles of new bus priority treatment."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_pub_trans_priority_costs_tbl", "Reset Costs 5", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("pub_trans_priority_costs_tbl")
-                ),
-                
-                
-                # pub trans rail costs
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 6 | Public Transportation: Rail Costs",
-                             HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new rail vehicles operating in annual maximum service (VOMS)."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_pub_trans_rail_costs_tbl", "Reset Costs 6", class = "btn-custom")
-                  ),
-
-                ),
-                fluidRow(
-                  DT::dataTableOutput("pub_trans_rail_costs_tbl")
-                ),
-                
-                
-                # tdm costs
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 7 | Travel Demand Management (TDM) Costs",
-                             HTML("This category represents the <b>cost per employee</b> of the TDM Program Outreach."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_tdm_costs_tbl", "Reset Costs 7", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("tdm_costs_tbl")
-                ),
-                
-                
-                # micromobility costs
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 8 | Micromobility Costs",
-                             HTML("This category represents the <b>subsidy provided per e-bike.</b>"),
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_micro_costs_tbl", "Reset Costs 8", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("micro_costs_tbl")
-                ),
-                
-                
-                
-                # traffic ops costs
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 9 | Traffic Operations - Intersection Improvement Costs",
-                             HTML("This category represents the <b>cost per improvement</b> for any improvements made to traffic operations at intersections."),
-                             
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_traffic_ops_costs_tbl", "Reset Costs 9", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("traffic_ops_costs_tbl")
-                ),
-                
-                
-                # mhdv replacement costs
-                
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 10 | Medium and Heavy Duty Vehicle Replacement Costs",
-                             HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium and heavy-duty vehicles replaced with new electric vehicles."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_mhdev_costs_tbl", "Reset Costs 10", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("mhdev_costs_tbl")
-                ),
-                
-                
-                # p&r costs
-                
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 11 | Park & Ride Costs",
-                             HTML("This category represents the <b>cost per space</b> for any new addition or expansion of Park and Ride spaces."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_pnr_costs_tbl", "Reset Costs 11", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("pnr_costs_tbl")
-                ),
-                
-                
-                # evsi costs
-                
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 12 | EV Charging Infrastructure Costs",
-                             HTML("This category represents the <b>hardware cost per port</b> and <b>installation cost per port</b> for any new addition or expansion of EV charging ports."),
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_evsi_costs_tbl", "Reset Costs 12", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("evsi_costs_tbl")
-                ),
-                
-                # intermodal freight investment costs
-                
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 13 | Intermodal Freight Investment Costs",
-                             HTML("This category represents the <b>cost of any intermodal investment.</b>"),
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_intermodal_costs_tbl", "Reset Costs 13", class = "btn-custom")
+                            
+                            # bike ped costs
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 1 | Bicycle & Pedestrian Costs",
+                                         HTML("This category represents the <b>overall cost per mile</b> of bicycle or pedestrian facilities being implemented."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_costs_tbl", "Reset Costs 1", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_costs_tbl")
+                            ),
+                            
+                            
+                            # transit fixed route costs
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 2 | Transit: Fixed Route Service Costs",
+                                         HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new fixed route service vehicles."),
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_transit_fixed_costs_tbl", "Reset Costs 2", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("transit_fixed_costs_tbl")
+                            ),
+                            
+                            
+                            # transit DR costs
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 3 | Transit: Demand Response (DR) Service Costs",
+                                         HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new demand response service vehicles."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_transit_dr_costs_tbl", "Reset Costs 3", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("transit_dr_costs_tbl")
+                            ),
+                            
+                            
+                            # bus priority costs
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 5 | Public Transportation: Bus Priority Treatment Costs",
+                                         HTML("This category represents the <b>cost per mile of red paint</b> for addition of miles of new bus priority treatment."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_pub_trans_priority_costs_tbl", "Reset Costs 5", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("pub_trans_priority_costs_tbl")
+                            ),
+                            
+                            
+                            # pub trans rail costs
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 6 | Public Transportation: Rail Costs",
+                                         HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new rail vehicles operating in annual maximum service (VOMS)."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_pub_trans_rail_costs_tbl", "Reset Costs 6", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("pub_trans_rail_costs_tbl")
+                            ),
+                            
+                            
+                            # tdm costs
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 7 | Travel Demand Management (TDM) Costs",
+                                         HTML("This category represents the <b>cost per employee</b> of the TDM Program Outreach."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_tdm_costs_tbl", "Reset Costs 7", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("tdm_costs_tbl")
+                            ),
+                            
+                            
+                            # micromobility costs
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 8 | Micromobility Costs",
+                                         HTML("This category represents the <b>subsidy provided per e-bike.</b>"),
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_micro_costs_tbl", "Reset Costs 8", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("micro_costs_tbl")
+                            ),
+                            
+                            
+                            
+                            # traffic ops costs
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 9 | Traffic Operations - Intersection Improvement Costs",
+                                         HTML("This category represents the <b>cost per improvement</b> for any improvements made to traffic operations at intersections."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_traffic_ops_costs_tbl", "Reset Costs 9", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("traffic_ops_costs_tbl")
+                            ),
+                            
+                            
+                            # mhdv replacement costs
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 10 | Medium and Heavy Duty Vehicle Replacement Costs",
+                                         HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium and heavy-duty vehicles replaced with new electric vehicles."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_mhdev_costs_tbl", "Reset Costs 10", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("mhdev_costs_tbl")
+                            ),
+                            
+                            
+                            # p&r costs
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 11 | Park & Ride Costs",
+                                         HTML("This category represents the <b>cost per space</b> for any new addition or expansion of Park and Ride spaces."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_pnr_costs_tbl", "Reset Costs 11", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("pnr_costs_tbl")
+                            ),
+                            
+                            
+                            # evsi costs
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 12 | EV Charging Infrastructure Costs",
+                                         HTML("This category represents the <b>hardware cost per port</b> and <b>installation cost per port</b> for any new addition or expansion of EV charging ports."),
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_evsi_costs_tbl", "Reset Costs 12", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("evsi_costs_tbl")
+                            ),
+                            
+                            # intermodal freight investment costs
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 13 | Intermodal Freight Investment Costs",
+                                         HTML("This category represents the <b>cost of any intermodal investment.</b>"),
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_intermodal_costs_tbl", "Reset Costs 13", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("intermodal_costs_tbl")
+                            ),
+                            
+                            # roadway expansion costs
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 14 | Roadway Expansion Costs",
+                                         HTML("This category represents the <b>capital cost per lane-mile</b> and <b>annual maintenance cost per lane-mile</b> for addition of any new lane-miles of roadways."),
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_roadway_expand_costs_tbl", "Reset Costs 14", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("roadway_expand_costs_tbl")
+                            ),
+                            
+                            
+                            # fuel price costs
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 15 | Fuel Price",
+                                         HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."),
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_fuel_costs_tbl", "Reset Costs 15", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("fuel_costs_tbl")
+                            ),
+                            
+                            
+                            
                   ),
                   
-                ),
-                fluidRow(
-                  DT::dataTableOutput("intermodal_costs_tbl")
-                ),
-                
-                # roadway expansion costs
-                
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 14 | Roadway Expansion Costs",
-                             HTML("This category represents the <b>capital cost per lane-mile</b> and <b>annual maintenance cost per lane-mile</b> for addition of any new lane-miles of roadways."),
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_roadway_expand_costs_tbl", "Reset Costs 14", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("roadway_expand_costs_tbl")
-                ),
-                
-                
-                # fuel price costs
-                
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Costs 15 | Fuel Price",
-                             HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."),
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_fuel_costs_tbl", "Reset Costs 15", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("fuel_costs_tbl")
-                ),
-                
-                
-
-      ),
-
-# assumptions tab ui ------------------------------------------------------
-nav_panel(title = "Assumptions",
-          fluidRow(HTML("<p>This section provides information on the <b>input assumptions</b> for the categories shown below. These inputs affect the GHG impact and effectiveness of each strategy category. Please click on the different fields to overwrite the default values with any custom values provided by the user.<br>
+                  # assumptions tab ui ------------------------------------------------------
+                  nav_panel(title = "Assumptions",
+                            fluidRow(HTML("<p>This section provides information on the <b>input assumptions</b> for the categories shown below. These inputs affect the GHG impact and effectiveness of each strategy category. Please click on the different fields to overwrite the default values with any custom values provided by the user.<br>
                         <p>
                         More information on the categories can be found by clicking the pull-down arrow next to each category.")
-            
-          ),
-          
-          # bike ped parameters
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Assumptions 1 | Bicycle and Pedestrian Parameters",
-                       HTML("<p>
+                                     
+                            ),
+                            
+                            # bike ped parameters
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Assumptions 1 | Bicycle and Pedestrian Parameters",
+                                         HTML("<p>
                                   This category includes the following data types:<br>
                                   <p>
                                   (i) <b>Prior drive mode share of new walkers / bikers</b>, which represents the fraction of new walkers / bikers who would have previously driven a car. This is calculated as a percentage of the new walkers / bikers or “persons per square mile” (ppsm) within the different area types defined.<br>
@@ -1109,27 +1365,27 @@ nav_panel(title = "Assumptions",
                                   (ii) <b>Average trip length</b>, which represents the average Walk and / or Bike trip length in miles.<br>
                                   <p>
                                   (iii) <b>Annualization</b>, which represents the annual number of days multiplier for the mode-shift to walking / biking.")
-                     ),
-                     open = FALSE
-                   ),
-            ),
-            column(2,
-                   actionButton("reset_bikeped_assmps_tbl", "Reset Assumptions 1", class = "btn-custom")
-            ),
-            
-          ),
-          fluidRow(
-            DT::dataTableOutput("bikeped_assmps_tbl")
-          ),
-          
-          
-          # transit parameters
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Assumptions 2 | Transit Parameters",
-                       HTML("
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_assmps_tbl", "Reset Assumptions 1", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_assmps_tbl")
+                            ),
+                            
+                            
+                            # transit parameters
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Assumptions 2 | Transit Parameters",
+                                         HTML("
                                   <p>This category includes the following data types for transit vehicles:<br>
                                   <p>
                                   (i) <b>On-Road Vehicle Fuel Economy</b>, which represents the miles a transit vehicle is able to travel based on its fuel source. This is calculated in miles per gallon of gasoline equivalent (mpgge).<br>
@@ -1143,74 +1399,74 @@ nav_panel(title = "Assumptions",
                                   (v) <b>Vehicle Revenue Mile per Vehicle</b>, which represents the annual miles that a transit vehicle is scheduled to travel or actually travels while in revenue service.<br>
                                   <p>
                                   (vi) <b>Bus Priority Factors</b>, which include bus priority % travel time change, bus ridership elasticity with respect to travel time, number of routes affected, number of daily buses per route, percentage of route-hours affected, and weekday annualization."),
-                       
-                     ),
-                     open = FALSE
-                   ),
-            ),
-            column(2,
-                   actionButton("reset_transit_assmps_tbl", "Reset Assumptions 2", class = "btn-custom")
-            ),
-          ),
-          fluidRow(
-            DT::dataTableOutput("transit_assmps_tbl")
-          ),
-          
-          
-          # tdm parameters
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Assumptions 3 | Travel Demand Management (TDM) Parameters",
-                       HTML("
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_transit_assmps_tbl", "Reset Assumptions 2", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("transit_assmps_tbl")
+                            ),
+                            
+                            
+                            # tdm parameters
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Assumptions 3 | Travel Demand Management (TDM) Parameters",
+                                         HTML("
                                   <p>
                                   This category represents the <b>travel demand management data</b> from the Commuter Reduction Program, which includes the average reduction in one-person-vehicle driving, average work trip length during automobile use, and the corresponding annualization factor."),
-                     ),
-                     open = FALSE
-                   ),
-            ),
-            column(2,
-                   actionButton("reset_tdm_assmps_tbl", "Reset Assumptions 3", class = "btn-custom")
-            ),
-            
-          ),
-          fluidRow(
-            DT::dataTableOutput("tdm_assmps_tbl")
-          ),
-          
-          
-          # micromobility parameters
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Assumptions 4 | Micromobility Parameters",
-                       HTML("
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_tdm_assmps_tbl", "Reset Assumptions 3", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("tdm_assmps_tbl")
+                            ),
+                            
+                            
+                            # micromobility parameters
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Assumptions 4 | Micromobility Parameters",
+                                         HTML("
                                   <p>
                                   <b>Micromobility Data</b>: This category represents the strategy parameters corresponding to E-bike subsidies, including e-bike cost, subsidy coverage of cost, bike trips per week, average trip length, and share of e-bikers previously driving automobiles."),
-                       
-                     ),
-                     open = FALSE
-                   ),
-            ),
-            column(2,
-                   actionButton("reset_micro_assmps_tbl", "Reset Assumptions 4", class = "btn-custom")
-            ),
-            
-          ),
-          fluidRow(
-            DT::dataTableOutput("micro_assmps_tbl")
-          ),
-          
-          
-          # traffic ops paramaters
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Assumptions 5 | Traffic Operations & Roadway Expansion Parameters",
-                       HTML("
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_micro_assmps_tbl", "Reset Assumptions 4", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("micro_assmps_tbl")
+                            ),
+                            
+                            
+                            # traffic ops paramaters
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Assumptions 5 | Traffic Operations & Roadway Expansion Parameters",
+                                         HTML("
                                   <p>
                                   This category includes the following strategy parameters related to <b>traffic operations and roadway expansion</b>:<br>
                                   <p>
@@ -1223,284 +1479,286 @@ nav_panel(title = "Assumptions",
                                   (iv) <b>Travel Speed</b>, which represents the average travel speed of vehicles in miles per hour in each facility type.<br>
                                   <p>
                                   (v) <b>Induced Travel Elasticities</b>, which are the percent change in VMT with respect to percent change in lane-miles or travel time for each facility type."),
-                     ),
-                     open = FALSE
-                   ),
-            ),
-            column(2,
-                   actionButton("reset_traffic_ops_assmps_tbl", "Reset Assumptions 5", class = "btn-custom")
-            ),
-            
-          ),
-          fluidRow(
-            DT::dataTableOutput("traffic_ops_assmps_tbl")
-          ),
-          
-          
-          # MHDV parameters
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Assumptions 6 | Medium & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
-                       HTML("
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_traffic_ops_assmps_tbl", "Reset Assumptions 5", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("traffic_ops_assmps_tbl")
+                            ),
+                            
+                            
+                            # MHDV parameters
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Assumptions 6 | Medium & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
+                                         HTML("
                                   <p>
                                   This category represents the <b>miles driven per replaced medium and heavy duty vehicle per year</b>.
                                   "),
-                       
-                     ),
-                     open = FALSE
-                   ),
-            ),
-            column(2,
-                   actionButton("reset_mhdv_assmps_tbl", "Reset Assumptions 6", class = "btn-custom")
-            ),
-            
-          ),
-          fluidRow(
-            DT::dataTableOutput("mhdv_assmps_tbl")
-          ),
-          
-          
-          # P&R parameters
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Assumptions 7 | Park & Ride Parameters",
-                       HTML("
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_mhdv_assmps_tbl", "Reset Assumptions 6", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("mhdv_assmps_tbl")
+                            ),
+                            
+                            
+                            # P&R parameters
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Assumptions 7 | Park & Ride Parameters",
+                                         HTML("
                                   <p>
                                   This category represents the <b>utilization of park and ride spaces.</b>"),
-                       
-                     ),
-                     open = FALSE
-                   ),
-            ),
-            column(2,
-                   actionButton("reset_pnr_assmps_tbl", "Reset Assumptions 7", class = "btn-custom")
-            ),
-            
-          ),
-          fluidRow(
-            DT::dataTableOutput("pnr_assmps_tbl")
-          ),
-          
-          
-          # evsi parameters
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Assumptions 8 | Electric Vehicle Charging Infrastructure Parameters",
-                       HTML("This category represents the <b>elasticity of the number of vehicle sales with respect to the number of charging ports</b>."),
-                     ),
-                     open = FALSE
-                   ),
-            ),
-            column(2,
-                   actionButton("reset_evsi_assmps_tbl", "Reset Assumptions 8", class = "btn-custom")
-            ),
-            
-          ),
-          fluidRow(
-            DT::dataTableOutput("evsi_assmps_tbl")
-          )
-          
-          
-          
-          
-),
-
-# scenarios tab ui --------------------------------------------------------
-      nav_panel(title = "Scenarios",
-                fluidRow(HTML("<p>This tab provides the different 
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_pnr_assmps_tbl", "Reset Assumptions 7", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("pnr_assmps_tbl")
+                            ),
+                            
+                            
+                            # evsi parameters
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Assumptions 8 | Electric Vehicle Charging Infrastructure Parameters",
+                                         HTML("This category represents the <b>elasticity of the number of vehicle sales with respect to the number of charging ports</b>."),
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_evsi_assmps_tbl", "Reset Assumptions 8", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("evsi_assmps_tbl")
+                            )
+                            
+                            
+                            
+                            
+                  ),
+                  
+                  # scenarios tab ui --------------------------------------------------------
+                  nav_panel(title = "Scenarios",
+                            fluidRow(HTML("<p>This tab provides the different 
                               possible strategies provided in the 
                               TEA-CART analysis. Please select the 
                               desired combination of strategies 
                               to be used as forecast “scenarios.” 
                               The resulting output can be used to 
                               compare up to two different scenarios.")),
-                fluidRow(
-                  p(""),
-                  h3("Scenario Selections"),
-                  p(""),
-                  DT::DTOutput("scenario_tbl")
-                )
-      ),
-
-
-
-# advanced tab ui ---------------------------------------------------------
-      nav_panel(title = "Advanced",
-                HTML("<p>This tab allows users to input advanced custom assumptions."),
-                
-                # custom forecast advanced
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Custom Forecast: Electric Vehicles (EVs)",
-                             HTML("This represents the vehicle electrification forecast used for baseline projections. This is represented by the percentage of vehicles that are EVs.")
-                           ),
-                           open = FALSE
-                         ),
+                            fluidRow(
+                              p(""),
+                              h3("Scenario Selections"),
+                              p(""),
+                              DT::DTOutput("scenario_tbl")
+                            ),
+                            fluidRow(
+                              column(8, offset = 2, align = "right", actionButton("select_all_scenario1", "Select All for Scenario 1")),
+                              column(2, align = "right", actionButton("select_all_scenario2", "Select All for Scenario 2"))
+                            ),
                   ),
-                  column(2,
-                         actionButton("reset_ev_forecast_sheet_tbl", "Reset Custom Forecast", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("ev_forecast_sheet_tbl")
-                ),
-                
-                
-                # VMT Custom forecast
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Custom Forecast: Vehicle Miles Traveled (VMT)",
-                             HTML("This represents the vehicle miles traveled (VMT) forecast used for baseline projections."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_vmt_forecast_sheet_tbl", "Reset VMT Custom Forecast", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("vmt_forecast_sheet_tbl")
-                ),
-
-                                
-                # Onroad Public Transit - Fuel Technology Fraction
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Onroad Public Transit - Fuel Technology Fraction",
-                             HTML("This represents the type and fraction of assumed fuel technologies used by on-road public transit."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_onroad_fuel_tech_frac_sheet_tbl", "Reset Fuel Tech Fraction", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  h3(""),
-                  DT::dataTableOutput("onroad_fuel_tech_frac_sheet_tbl")
-                ),
-                
-                # passenger rail
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Passenger Rail",
-                             HTML("This represents the type of assumed fuel technologies used by passenger rail systems."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_pass_rail_sheet_tbl", "Reset Passenger Rail", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  DT::dataTableOutput("pass_rail_sheet_tbl")
-                ),
-                
-                # Freight Rail
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Freight Rail",
-                             HTML("This represents the assumed annual growth rate of freight rail and the energy intensity as measured in British thermal units (BTU) per ton-mile."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_freight_rail_sheet_tbl", "Reset Freight Rail", class = "btn-custom")
-                  ),
-
-                ),
-                fluidRow(
-                  h3("Freight Rail"),
-                  DT::dataTableOutput("freight_rail_sheet_tbl")
-                ),
-                
-                # Construction and Maintenance
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Construction and Maintenance",
-                             HTML("This represents the estimated emissions from construction and maintenance activities."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_construction_sheet_tbl", "Reset Construction and Maintenance", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  h3("Construction and Maintenance"),
-                  DT::dataTableOutput("construction_sheet_tbl")
-                ),
-                
-                # fuel apportionments
-                fluidRow(
-                  column(10,
-                         accordion(
-                           accordion_panel(
-                             "Fuel Apportionments",
-                             HTML("This represents the percentage of plug-in hybrid electric vehicle (PHEV) miles driven on electricity."),
-
-                           ),
-                           open = FALSE
-                         ),
-                  ),
-                  column(2,
-                         actionButton("reset_fuel_apportionment_sheet_tbl", "Reset Fuel Apportionments", class = "btn-custom")
-                  ),
-                ),
-                fluidRow(
-                  h3("Fuel Apportionments"),
-                  DT::dataTableOutput("fuel_apportionment_sheet_tbl")
-                )
-                
-                
-                
-                
-                
-                
-      )
+                  
+                  
+                  
+                  # advanced tab ui ---------------------------------------------------------
+                  nav_panel(title = "Advanced",
+                            HTML("<p>This tab allows users to input advanced custom assumptions."),
+                            
+                            # custom forecast advanced
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Advanced 1 | Custom Forecast: Electric Vehicles (EVs)",
+                                         HTML("This represents the vehicle electrification forecast used for baseline projections. This is represented by the percentage of vehicles that are EVs.")
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_ev_forecast_sheet_tbl", "Reset Advanced 1", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("ev_forecast_sheet_tbl")
+                            ),
+                            
+                            
+                            # VMT Custom forecast
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Advanced 2 | Custom Forecast: Vehicle Miles Traveled (VMT)",
+                                         HTML("This represents the vehicle miles traveled (VMT) forecast used for baseline projections."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_vmt_forecast_sheet_tbl", "Reset Advanced 2", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("vmt_forecast_sheet_tbl")
+                            ),
+                            
+                            
+                            # Onroad Public Transit - Fuel Technology Fraction
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Advanced 3 | Onroad Public Transit - Fuel Technology Fraction",
+                                         HTML("This represents the type and fraction of assumed fuel technologies used by on-road public transit."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_onroad_fuel_tech_frac_sheet_tbl", "Reset Advanced 3", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              h3(""),
+                              DT::dataTableOutput("onroad_fuel_tech_frac_sheet_tbl")
+                            ),
+                            
+                            # passenger rail
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Advanced 4 | Passenger Rail",
+                                         HTML("This represents the type of assumed fuel technologies used by passenger rail systems."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_pass_rail_sheet_tbl", "Reset Advanced 4", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("pass_rail_sheet_tbl")
+                            ),
+                            
+                            # Freight Rail
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Advanced 5 | Freight Rail",
+                                         HTML("This represents the assumed annual growth rate of freight rail and the energy intensity as measured in British thermal units (BTU) per ton-mile."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_freight_rail_sheet_tbl", "Reset Advanced 5", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              h3("Freight Rail"),
+                              DT::dataTableOutput("freight_rail_sheet_tbl")
+                            ),
+                            
+                            # Construction and Maintenance
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Advanced 6 | Construction and Maintenance",
+                                         HTML("This represents the estimated emissions from construction and maintenance activities."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_construction_sheet_tbl", "Reset Advanced 6", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              h3("Construction and Maintenance"),
+                              DT::dataTableOutput("construction_sheet_tbl")
+                            ),
+                            
+                            # fuel apportionments
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Advanced 7 | Fuel Apportionments",
+                                         HTML("This represents the percentage of plug-in hybrid electric vehicle (PHEV) miles driven on electricity."),
+                                         
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_fuel_apportionment_sheet_tbl", "Reset Advanced 7", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              h3("Fuel Apportionments"),
+                              DT::dataTableOutput("fuel_apportionment_sheet_tbl")
+                            )
+                            
+                            
+                            
+                            
+                            
+                            
+                  )
                 ) # end navset card pill
-),
-
-# outputs tab ui ----------------------------------------------------------
-
-
-# baseline outputs ui -----------------------------------------------------
-
-
+      ),
+      
+      # outputs tab ui ----------------------------------------------------------
+      # baseline outputs ui -----------------------------------------------------
+      
+      
       nav_panel(title = "Outputs",
                 navset_card_pill(
+                  id = "OUTPUTS_TABS",
                   placement = "above",
                   nav_panel(title = "Baseline GHG Forecast",
                             
-                            h2("Baseline GHG Forecast"),
                             HTML("This tab provides a projection 
                                  of baseline emissions for the time 
                                  horizons selected in the Baseline 
@@ -1513,20 +1771,20 @@ nav_panel(title = "Assumptions",
                                      column(width = 6, #move year to top put these two in a card, title pie chart mention year, title drop down "Select year"
                                             plotlyOutput("baseline_ghg_pie", width = "auto", height = "auto")
                                      )
-                                     ),
+                            ),
                             fluidRow(width = 12,
                                      column(width = 10),
                                      column(width = 2, 
-                                     selectInput("pie_graph_year","", choices = c("2021","2025","2030","2050")))
-                                     ),
+                                            selectInput("pie_graph_year","", choices = c("2021","2025","2030","2050")))
+                            ),
                             fluidRow(
-                            DT::dataTableOutput("baseline_outputs")
+                              DT::dataTableOutput("baseline_outputs")
                             )
                   ),
                   
-
-# scenario summary ui ----------------------------------------
-
+                  
+                  # scenario summary ui ----------------------------------------
+                  
                   
                   nav_panel(title = "Scenario Summary",
                             HTML("<p>This tab reports the scenario-level outputs for greenhouse gas 
@@ -1536,9 +1794,9 @@ nav_panel(title = "Assumptions",
                                  (NOx) and fine particulate matter (PM2.5); 
                                  and daily active trips.<br>
                                  <p>
-                                 For the Scenario Summary, please select the 
-                                 desired indicator to compare upto two 
-                                 different scenarios with the baseline forecast."),
+                                 For the Scenario Summary, please select 
+                                 an indicator from the dropdown below to compare your selected scenarios 
+                                 with the baseline GHG forecast."),
                             fluidRow(
                               p(""),
                               title = "Select Indicator",
@@ -1561,182 +1819,197 @@ nav_panel(title = "Assumptions",
                               column(12,
                                      DT::DTOutput('emission_change_tbl'))),
                   ),
-
-
-# strategy summary ui ----------------------------------------
-
-
-nav_panel(title = "Strategy Summary",
-          HTML("<p>This tab reports the strategy-level outputs for greenhouse gas 
+                  
+                  
+                  # strategy summary ui ----------------------------------------
+                  
+                  
+                  nav_panel(title = "Strategy Summary",
+                            HTML("<p>This tab reports the strategy-level outputs for greenhouse gas 
                                  emissions (metric tons of carbon dioxide 
                                  equivalent or MT CO2e); vehicle miles traveled 
                                  (VMT); local pollution from oxides of nitrogen 
                                  (NOx) and fine particulate matter (PM2.5); 
-                                 and daily active trips.<br>
-                                 For the Strategy Summary, please select the 
+                                 and daily active trips.</p>
+                                 <p>For the Strategy Summary, please select the 
                                  desired scenario and indicator to view the 
-                                 changes at the strategy level."),
-          fluidRow(
-            p(""),
-            title = "Select Indicator",
-            selectizeInput(inputId = "strategy_indicator",
-                           label = "Indicator",
-                           selected = NULL,
-                           choices = c( 
-                             'MT CO2e' = 'total_change_MTCO2',
-                             'VMT (Mile)' = 'total_change_VMT',
-                             'MT NOx' = 'total_change_mtnox',
-                             'MT PM2.5' = 'total_change_pm25',
-                             'Daily Active Trips' = 'total_newtrips')
-            ),
-          selectizeInput(inputId = "strategy_scen_select",
-                         label = "Scenario",
-                         selected = NULL,
-                         choices = c( 
-                           'Scenario 1' = 'scen_1',
-                           'Scenario 2' = 'scen_2')
-          )),
-          fluidRow(
-            column(6,
-                   DT::DTOutput('strategy_summary_tbl')),
-            column(6,
-                   plotlyOutput("strategy_summary_graph", width = "auto", height = "auto"))),
-),
-
-
-# cost effectiveness ui ---------------------------------------------------
-
-                  nav_panel(title = "Cost effectiveness",
-                            HTML("This tab allows users to review the cost-effectiveness of each strategy, as measured by the change in annual output of the indicator (e.g. MT CO2e) per $1 million of investment. All cost-effectiveness information is dependent on information entered in the Inputs tab."),
+                                 changes at the strategy level.</p>"),
+                            fluidRow(
+                              p(""),
+                              title = "Select Indicator",
+                              selectizeInput(inputId = "strategy_indicator",
+                                             label = "Indicator",
+                                             selected = NULL,
+                                             choices = c( 
+                                               'MT CO2e' = 'total_change_MTCO2',
+                                               'VMT (miles)' = 'total_change_VMT',
+                                               'MT NOx' = 'total_change_mtnox',
+                                               'MT PM2.5' = 'total_change_pm25',
+                                               'Daily Active Trips' = 'total_newtrips')
+                              ),
+                              selectizeInput(inputId = "strategy_scen_select",
+                                             label = "Scenario",
+                                             selected = NULL,
+                                             choices = c( 
+                                               'Scenario 1' = 'scen_1',
+                                               'Scenario 2' = 'scen_2')
+                              )),
+                            fluidRow(
+                              column(6,
+                                     DT::DTOutput('strategy_summary_tbl')),
+                              column(6,
+                                     plotlyOutput("strategy_summary_graph", width = "auto", height = "auto"))),
+                  ),
+                  
+                  
+                  # cost effectiveness ui ---------------------------------------------------
+                  
+                  nav_panel(title = "Cost Effectiveness",
+                            HTML("This tab allows users to review the cost effectiveness of each strategy as 
+                                 measured by the change in annual output of the indicator (e.g. MT CO2e) per 
+                                 $1 million of investment. All cost effectiveness outputs are calculated based  
+                                 on values entered in the Inputs tab."),
                             fluidRow(
                               radioButtons(inputId = "cost_view",
                                            "Level of detail:",
                                            c("Detail results" = "detail", "Summary results" = "summary")),
                               p("All results are reported in terms of annual change per $M investment."),
-                              h3("Bicycle & Pedestrian"),
-                              p(""),
-                              DT::dataTableOutput("bikeped_costs_outputs_tbl")
+                              fluidRow( class = 'cost-table search',
+                                        h3("Bicycle & Pedestrian"),
+                                        p(""),
+                                        DT::dataTableOutput("bikeped_costs_outputs_tbl")
+                              )
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Transit: Increased Fixed Route Service"),
-                              p(""),
-                              DT::dataTableOutput("transit_fixed_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Transit: Increased Fixed Route Service"),
+                                      p(""),
+                                      DT::dataTableOutput("transit_fixed_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Transit: Increased Demand Response Service"),
-                              p(""),
-                              DT::dataTableOutput("transit_dr_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Transit: Increased Demand Response Service"),
+                                      p(""),
+                                      DT::dataTableOutput("transit_dr_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Public Transportation: Bus Priority Treatment"),
-                              p(""),
-                              DT::dataTableOutput("pub_trans_priority_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Public Transportation: Bus Priority Treatment"),
+                                      p(""),
+                                      DT::dataTableOutput("pub_trans_priority_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Transit: Fleet Electrification"),
-                              p(""),
-                              DT::dataTableOutput("transit_zeb_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Transit: Fleet Electrification"),
+                                      p(""),
+                                      DT::dataTableOutput("transit_zeb_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Public Transportation: Rail"),
-                              p(""),
-                              DT::dataTableOutput("pub_trans_rail_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Public Transportation: Rail"),
+                                      p(""),
+                                      DT::dataTableOutput("pub_trans_rail_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Travel Demand Management"),
-                              p(""),
-                              DT::dataTableOutput("tdm_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Travel Demand Management"),
+                                      p(""),
+                                      DT::dataTableOutput("tdm_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Micromobility"),
-                              p(""),
-                              DT::dataTableOutput("micro_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Micromobility"),
+                                      p(""),
+                                      DT::dataTableOutput("micro_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Traffic Operations: Intersections"),
-                              p(""),
-                              DT::dataTableOutput("traffic_ops_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Traffic Operations: Intersections"),
+                                      p(""),
+                                      DT::dataTableOutput("traffic_ops_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Medium and Heavy Duty Vehicle Replacement (Electrification)"),
-                              p(""),
-                              DT::dataTableOutput("mhdev_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Medium and Heavy Duty Vehicle Replacement (Electrification)"),
+                                      p(""),
+                                      DT::dataTableOutput("mhdev_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Park & Ride"),
-                              p(""),
-                              DT::dataTableOutput("pnr_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Park & Ride"),
+                                      p(""),
+                                      DT::dataTableOutput("pnr_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("EV Charging Infrastructure"),
-                              p(""),
-                              DT::dataTableOutput("evsi_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("EV Charging Infrastructure"),
+                                      p(""),
+                                      DT::dataTableOutput("evsi_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Roadway Expansion"),
-                              p(""),
-                              DT::dataTableOutput("roadway_expand_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Roadway Expansion"),
+                                      p(""),
+                                      DT::dataTableOutput("roadway_expand_costs_outputs_tbl")
                             ),
-                            fluidRow(
-                              p(""),
-                              h3("Intermodal Freight Investment"),
-                              p(""),
-                              DT::dataTableOutput("intermodal_costs_outputs_tbl")
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Intermodal Freight Investment"),
+                                      p(""),
+                                      DT::dataTableOutput("intermodal_costs_outputs_tbl")
                             )
                   ),
                 )),
-
-# fluidRow(
-#   column(10,
-#          accordion(
-#            accordion_panel(
-#              "Title",
-#              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-#              sed do eiusmod tempor incididunt ut labore et dolore magna 
-#              aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
-#              ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-#              Duis aute irure dolor in reprehenderit in voluptate velit 
-#              esse cillum dolore eu fugiat nulla pariatur. Excepteur 
-#              sint occaecat cupidatat non proident, sunt in culpa qui 
-#              officia deserunt mollit anim id est laborum.",
-# 
-#            ),
-#            open = FALSE
-#          ),
-#   ),
-#   column(2,
-#          actionButton("reset_", "Reset ", class = "btn-custom")
-#   ),
-# 
-# ),
-
-
-# sources tab ui ----------------------------------------------------------
-
- 
-
+      
+      # fluidRow(
+      #   column(10,
+      #          accordion(
+      #            accordion_panel(
+      #              "Title",
+      #              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+      #              sed do eiusmod tempor incididunt ut labore et dolore magna 
+      #              aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
+      #              ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+      #              Duis aute irure dolor in reprehenderit in voluptate velit 
+      #              esse cillum dolore eu fugiat nulla pariatur. Excepteur 
+      #              sint occaecat cupidatat non proident, sunt in culpa qui 
+      #              officia deserunt mollit anim id est laborum.",
+      # 
+      #            ),
+      #            open = FALSE
+      #          ),
+      #   ),
+      #   column(2,
+      #          actionButton("reset_", "Reset ", class = "btn-custom")
+      #   ),
+      # 
+      # ),
+      
+      
+      # sources tab ui ----------------------------------------------------------
+      
+      
+      
       nav_panel(title = "Sources",
                 h2("Sources"),
                 p("The following resources were used in developing the TEA-CART tool."),
                 
-                DT::dataTableOutput("source_table")
+                DT::dataTableOutput("source_table"),
+                tags$script(HTML("var header = $('.navbar > .container-fluid');
+      header.append('<div class=\"gcc-logo header-logo\" style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Contrast.svg\" alt=\"alt\" style=\"float:right;max-width:250px;width:100%;height:auto\"> </a></div>');
+                       console.log(header)") # moved this script tag so that it doesn't create a new tab. 
+                ),
       ),
+      
+      # header logo ------------------------------------------------------------
       nav_spacer(),
-      nav_menu(
-        title = tags$img(src = "GCC_Logo_Transparent_Stacked.png", height = "30px"),
-        nav_item(tags$a("Visit", href = "https://www.georgetownclimate.org/", target = "_blank")))
+      # tags$script(HTML("var header = $('.navbar > .container-fluid');
+      # header.append('<div style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Contrast.svg\" alt=\"alt\" style=\"float:right;max-width:250px;width:100%;height:auto\"> </a></div>');
+      #                  console.log(header)")
+      #             ),
+      # nav_menu(
+      #   title = tags$a(tags$img(src = "GCC_Logo_Transparent_Stacked.png", height = "30px"),
+      #                  href = "https://www.georgetownclimate.org/", target = "_blank"))
       
       
     )
@@ -1756,8 +2029,24 @@ theme_set(theme_bw(base_size = 16))
 
 server <- function(input, output, session) {
   
+  # shinyjs::runjs(
+  # "var header = $('.navbar > .container-fluid');
+  # const anchor = document.createElement('a');
+  # anchor.href = 'https://www.georgetownclimate.org';
+  # anchor.target = '_blank';
+  # const img = document.createElement('img');
+  # img.src = 'GCC_Logo_Transparent_Stacked.png';
+  # img.style.width = '100%';
+  # img.style.maxWidth = '250px';
+  # anchor.appendChild(img);
+  # header.append(anchor);
+  # console.log(header);"
+  # )
   #Test Observe ----------------------------------------------------------------
   #observeEvent(input$state_input, {browser()})
+  # observeEvent(buttonid, {
+  #   nav_select(id = "iforget", selected = "Inputs")
+  # })
   
   
   #Source Local Scripts --------------------------------------------------------
@@ -1768,11 +2057,12 @@ server <- function(input, output, session) {
   #set reactiveValues ----------------------------------------------------------
   rv <- reactiveValues()
   rvs <- read_user_inputs_version2("data/2.User_Inputs.xlsx")
-  rvs_out <- read_output_tables("data/3.Model_Outputs.xlsx") #slnote: what add to this for new modules
+  rvs_out <- read_output_tables("data/3.Model_Outputs.xlsx")
   
   #update and record 
   #key_inputs updater ----------------------------------------------------------
   key_inputs_listen <- reactive({
+    print('ki_li trigger')
     list(input$state_input,
          input$base_year,
          input$horizon_year_1,
@@ -1785,6 +2075,120 @@ server <- function(input, output, session) {
          input$vmt_nhs,
          input$ev_baseline_input,
          input$grid_emissions_input)
+  })
+  
+  #page error checker ----------------------------------------------------------
+  
+  #these define which tab/page the users was on
+  which_input_tab <- reactiveValues(curr_input_tab = "",
+                                    prev_input_tab = "")
+  
+  observeEvent(input$INPUTS_TABS, {
+    #req(input$INPUTS_TABS)
+    print('tab change')
+    which_input_tab$prev_input_tab <- which_input_tab$curr_input_tab
+    which_input_tab$curr_input_tab <- input$INPUTS_TABS
+    
+  })
+  
+  which_page <- reactiveValues(curr_page = "ini",
+                               prev_page = "")
+  
+  observeEvent(input$APP_PAGE, {
+    #req(input$APP_PAGE)
+    if(which_page$prev_page == "ini"){toggle_sidebar(id = "dwn_sidebar")}
+    which_page$prev_page <- which_page$curr_page
+    which_page$curr_page <- input$APP_PAGE
+    
+  })
+  
+  #here's where the notification is sent to the user
+  observeEvent(input$INPUTS_TABS,{
+    
+    if(which_input_tab$prev_input_tab == "Baseline"){
+      warning = c()
+      
+      if(is.na(input$grid_emissions_input)|
+         (input$grid_emissions_input<2021)|
+         input$grid_emissions_input>2050){
+        warning = c(warning, "Due to an inncorect input, a default value for Electricity Grid Emissions Net-Zero Year has been assumed.")
+        updateNumericInput(inputId = "grid_emissions_input",value=2030)
+        rvs$Baseline$elec_grid_emissions_net_zero = input$grid_emissions_input
+      }
+      
+      if(is.na(input$base_year)){
+        print('this happened')
+        warning = c(warning, "Due to an inncorect input, a default value for Base Year has been assumed.")
+        updateNumericInput(inputId = "base_year",value=2021)
+        rvs$Baseline$base_year = input$base_year
+        
+      } else if(!is.na(input$horizon_year_1)&
+                !is.na(input$horizon_year_2)&
+                !is.na(input$horizon_year_3)&(
+                  input$base_year >= input$horizon_year_1|
+                  input$base_year >= input$horizon_year_2|
+                  input$base_year >= input$horizon_year_3)){
+        warning = c(warning, "Base Year is higher than ")
+      }
+      
+      if(is.na(input$horizon_year_1)){
+        warning = c(warning, "Due to an inncorect input, a default value for Horizon Year 1 has been assumed.")
+        updateNumericInput(inputId = "horizon_year_1",value=2025)
+        rvs$Baseline$horizon_year_1 = input$horizon_year_1
+        
+      } else if(!is.na(input$horizon_year_2)&
+                !is.na(input$horizon_year_3)&
+                (input$horizon_year_1 >= input$horizon_year_2|
+                 input$horizon_year_1 >= input$horizon_year_3)){
+        warning = c(warning,"Horizon Year 1 is higher than future horizon year values.")
+      }
+      
+      if(is.na(input$horizon_year_2)){
+        warning = c(warning, "Due to an inncorect input, a default value for Horizon Year 2 has been assumed.")
+        updateNumericInput(inputId = "horizon_year_2",value=2030)
+        rvs$Baseline$horizon_year_2 = input$horizon_year_2
+        
+      } else  if(!is.na(input$horizon_year_3)&(input$horizon_year_2 >= input$horizon_year_3)){
+        warning = c(warning,"Horizon Year 2 is higher than Horizon Year 3")
+      }
+      
+      if(is.na(input$horizon_year_3)){
+        warning = c(warning, "Due to an inncorect input, a default value for Horizon Year 3 has been assumed.")
+        updateNumericInput(inputId = "horizon_year_3",value=2050)
+        rvs$Baseline$horizon_year_3 = input$horizon_year_3
+        
+      }
+      
+      if(length(warning) != 0){
+        showNotification(HTML(paste0(warning, sep = '<br/>')), type = "warning")
+      }
+      
+    }
+    
+  })
+  
+  observeEvent(input$APP_PAGE, {
+    
+    if(which_page$curr_page == "Outputs"){
+      if(is.null(rvs$Scenarios)){
+        
+        warning = HTML("You have not selected any Scenarios. <br/> 
+                    Output tabs will show no results without a scenario <br/>
+                    selection. Navigate to Inputs > Scenarios to make your selection")
+        
+        showNotification(HTML(warning, type = "error"))
+        
+      } else if(sum(rvs$Scenarios$Scenario1)+sum(rvs$Scenarios$Scenario2) == 0){
+        
+        warning = HTML("You have not selected any Scenarios.
+                    Output tabs will show no results without a scenario selection. <br/>
+                    Navigate to Inputs > Scenarios to make your selection")
+        
+        showNotification(HTML(warning), type = "error")
+      }
+    }
+    
+    
   })
   
   observeEvent(key_inputs_listen(),{
@@ -1812,7 +2216,7 @@ server <- function(input, output, session) {
     if(isTruthy(input$user_inputs_upload)){
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
     } else{
-      user_inputs <- read_user_inputs_excel(".\\data\\2.User_Inputs.xlsx")
+      user_inputs <- read_user_inputs_excel("data/2.User_Inputs.xlsx")
     }
     
     # Assign each table in user_inputs to rv
@@ -1821,31 +2225,30 @@ server <- function(input, output, session) {
     }
     
   }, ignoreNULL = F, ignoreInit = F)
-
+  
   # Download user inputs -------------------------------------------------------
-
+  
   output$user_inputs_download <- downloadHandler(
     filename = function() {
-      paste0(".\\data\\2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
+      paste0("./data/2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
     },
     content = function(file) {
       
-      references <- read_xlsx(".\\data\\2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
-      
-            return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
+      references <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
+      return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Assumptions" = rvs$Assumptions,
                                            "Baseline" = rvs$Baseline,
                                            "Projects" = rvs$Projects,
                                            "Advanced" = rvs$Advanced,
                                            "References" = references,
                                            "Scenarios" = rvs$Scenarios), 
-                           file = file))
+                                  file = file))
     }
   )
   
   # server sources ---------------------------------------------------
   
-  sources_data <- read_xlsx(".\\data\\sources.xlsx", sheet = 1, col_names = TRUE)
+  sources_data <- read_xlsx("data/sources.xlsx", sheet = 1, col_names = TRUE)
   
   output$source_table <- renderDT({
     DT::datatable(sources_data,
@@ -1861,6 +2264,8 @@ server <- function(input, output, session) {
   
   # Project table inputs ------------------------------------------------------
   
+  # Seth - are you using this? I think everything in this section has been replaced
+  
   projects_names <- c("bikeped_projs",
                       "transit_fixed_projs",
                       "transit_dr_projs",
@@ -1874,13 +2279,9 @@ server <- function(input, output, session) {
                       "pnr_projs",
                       "evsi_projs",
                       "freight_projs",
-                      "expansion_projs",
-                      "transit_cuts_projs",
-                      "road_resurf_projs",
-                      "land_use"
-                      ) #addednew
+                      "expansion_projs")
   
-  read_static_tables("data/projects.xlsx", projects_names) #addednew
+  read_static_tables("data/projects.xlsx", projects_names)
   
   
   # Project Tables: Render ------------------------------------------------------
@@ -1888,7 +2289,7 @@ server <- function(input, output, session) {
   output$bikeped_projs_tbl <- renderDT({
     #req(rvs$Projects)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
-
+    
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 1,
@@ -1900,26 +2301,28 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_bikeped_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 1, my_cols = c("area_type", "facility_type", "unit"))
   })
-
+  
   output$transit_fixed_projs_tbl <- renderDT({
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
     render_custom_datatable(
-    data_reactive = temp_send,
-    table_number = 2,
-    non_editable_cols = c(0, 1, 2, 3),
-    page_length = 10,
-    comma_rows = 0:6,
-    percent_rows = integer(0),
-    currency_rows = integer(0),
-    decimal_rows = integer(0))
+      data_reactive = temp_send,
+      table_number = 2,
+      non_editable_cols = c(0, 1, 2, 3),
+      page_length = 10,
+      comma_rows = 0:6,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
     
-    })
+  })
+  
   output$cumul_transit_fixed_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 2, my_cols = c("area_type", "fuel_type", "unit"))
   })
@@ -1938,8 +2341,9 @@ server <- function(input, output, session) {
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
-
+    
   })
+  
   output$cumul_transit_dr_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 3, my_cols = c("area_type", "fuel_type"))
   })
@@ -1960,6 +2364,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_transit_el_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 4, my_cols = c("area_type", "fuel_type", "transit_mode"))
   })
@@ -1980,6 +2385,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_transit_bus_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 5, my_cols = c("unit"))
   })
@@ -2000,6 +2406,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_public_rail_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 6, my_cols = c("fuel_type", "transit_mode"))
   })
@@ -2020,6 +2427,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_tdm_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 7, my_cols = c("unit"))
   })
@@ -2040,6 +2448,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_micro_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 8, my_cols = c("unit"))
   })
@@ -2060,6 +2469,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_traffic_ops_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 9, my_cols = c("area_type", "road_class", "unit"))
   })
@@ -2080,6 +2490,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_mhdev_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 10, my_cols = c("veh_type", "fuel_type"))
   })
@@ -2100,6 +2511,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_pnr_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 11, my_cols = c("unit"))
   })
@@ -2120,6 +2532,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_evsi_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 12, my_cols = c("charge_port_detail"))
   })
@@ -2140,6 +2553,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_freight_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 13, my_cols = c("unit"))
   })
@@ -2160,131 +2574,72 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
+  
   output$cumul_expansion_projs_tbl <- renderDT({
     render_cumulative_view_popup(my_rv = rvs, my_table_no = 14, my_cols = c("area_type", "road_class", "unit"))
   })
   
-  output$transit_cuts_projs_tbl <- renderDT({
+  output$custom_projs_tbl <- renderDT({
     
-    req(rvs$Projects)
-    temp_send <- rvs$Projects
+    temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 15,] %>%
+      select(custom_project, unit, value) %>%
+      pivot_wider(names_from = unit, values_from = value) %>%
+      select(-custom_project)
     
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 15,
-      non_editable_cols = c(0, 1, 2),
-      page_length = 10,
-      comma_rows = 0:7,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-    
+    returnDT<-datatable(
+      temp_send,
+      rownames = FALSE,
+      editable = list(target = 'all'),
+      selection = "none",
+      options = list(
+        pageLength = 6,
+        searching = FALSE,
+        paging = FALSE,
+        info = FALSE
+      ))
   })
-  output$cumul_transit_cuts_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 15, my_cols = c("area_type", "transit_mode","unit"))
-  })
-  
-  output$land_use_projs_tbl <- renderDT({
-    
-    req(rvs$Projects)
-    temp_send <- rvs$Projects
-    
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 16,
-      non_editable_cols = c(0, 1),
-      page_length = 10,
-      comma_rows = 0:15,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-    
-  })
-  output$cumul_land_use_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 16, my_cols = c("land_use","unit"))
-  })
-  
-  output$road_resurf_projs_tbl <- renderDT({
-    
-    req(rvs$Projects)
-    temp_send <- rvs$Projects
-    
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 17,
-      non_editable_cols = c(0),
-      page_length = 10,
-      comma_rows = 0:2,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-    
-  })
-  output$cumul_road_resurf_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 17, my_cols = c("unit"))
-  })
-  
-  # output$custom_projs_tbl <- renderDT({
-  #   
-  #   temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 15,] %>%
-  #     select(custom_project, unit, value) %>%
-  #     pivot_wider(names_from = unit, values_from = value) %>%
-  #     select(-custom_project)
-  # 
-  #   returnDT<-datatable(
-  #     temp_send,
-  #     rownames = FALSE,
-  #     editable = list(target = 'all'),
-  #     selection = "none",
-  #     options = list(
-  #       pageLength = 6,
-  #       searching = FALSE,
-  #       paging = FALSE,
-  #       info = FALSE
-  #   ))
-  # })
   
   # Project Tables: Observe and update edits to projects ------------------------
   # observe edits to the bikeped_projs
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
     req(rvs$Projects)
-
+    
     rvs$Projects[rvs$Projects$table_no_ui == 1,] <- reshaping_projects2(input$bikeped_projs_tbl_cell_edit,
-                                                                       rvs$Projects,
-                                                                       tbl_no = 1,
-                                                                       col1 = 'area_type',
-                                                                       col2 = 'facility_type',
-                                                                       horizon_year_1 = input$horizon_year_1,
-                                                                       horizon_year_2 = input$horizon_year_2,
-                                                                       horizon_year_3 = input$horizon_year_3)
+                                                                        rvs$Projects,
+                                                                        tbl_no = 1,
+                                                                        col1 = 'area_type',
+                                                                        col2 = 'facility_type',
+                                                                        horizon_year_1 = input$horizon_year_1,
+                                                                        horizon_year_2 = input$horizon_year_2,
+                                                                        horizon_year_3 = input$horizon_year_3)
   })
-
+  
   # observe edits to the transit_fixed_projs
   observeEvent(input$transit_fixed_projs_tbl_cell_edit, {
     req(rvs$Projects)
-
+    
     rvs$Projects[rvs$Projects$table_no_ui == 2,] <- reshaping_projects2(input$transit_fixed_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 2,
-                                                              col1 = 'area_type',
-                                                              col2 = 'fuel_type',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
-    })
+                                                                        rvs$Projects,
+                                                                        tbl_no = 2,
+                                                                        col1 = 'area_type',
+                                                                        col2 = 'fuel_type',
+                                                                        horizon_year_1 = input$horizon_year_1,
+                                                                        horizon_year_2 = input$horizon_year_2,
+                                                                        horizon_year_3 = input$horizon_year_3)
+  })
   
   # observe edits to the transit_dr_projs_tbl_cell_edit
   observeEvent(input$transit_dr_projs_tbl_cell_edit, {
     req(rvs$Projects)
     
     rvs$Projects[rvs$Projects$table_no_ui == 3,] <- reshaping_projects2(input$transit_dr_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 3,
-                                                              col1 = 'area_type',
-                                                              col2 = 'fuel_type',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                                        rvs$Projects,
+                                                                        tbl_no = 3,
+                                                                        col1 = 'area_type',
+                                                                        col2 = 'fuel_type',
+                                                                        horizon_year_1 = input$horizon_year_1,
+                                                                        horizon_year_2 = input$horizon_year_2,
+                                                                        horizon_year_3 = input$horizon_year_3)
   })
   
   # observe edits to the transit_el_projs_tbl
@@ -2292,26 +2647,26 @@ server <- function(input, output, session) {
     req(rvs$Projects)
     # check dup
     rvs$Projects[rvs$Projects$table_no_ui == 4,] <- reshaping_projects2(input$transit_el_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 4,
-                                                              col1 = 'area_type',
-                                                              col2 = 'fuel_type',
-                                                              col3 = 'transit_mode',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                                        rvs$Projects,
+                                                                        tbl_no = 4,
+                                                                        col1 = 'area_type',
+                                                                        col2 = 'fuel_type',
+                                                                        col3 = 'transit_mode',
+                                                                        horizon_year_1 = input$horizon_year_1,
+                                                                        horizon_year_2 = input$horizon_year_2,
+                                                                        horizon_year_3 = input$horizon_year_3)
   })
   
   # observe edits to the transit_bus_projs_tbl  
   observeEvent(input$transit_bus_projs_tbl_cell_edit, {
-
+    
     rvs$Projects[rvs$Projects$table_no_ui == 5,] <- reshaping_projects2(input$transit_bus_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 5,
-                                                              col1 = 'unit',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                                        rvs$Projects,
+                                                                        tbl_no = 5,
+                                                                        col1 = 'unit',
+                                                                        horizon_year_1 = input$horizon_year_1,
+                                                                        horizon_year_2 = input$horizon_year_2,
+                                                                        horizon_year_3 = input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2322,13 +2677,13 @@ server <- function(input, output, session) {
   observeEvent(input$public_rail_projs_tbl_cell_edit, {
     
     rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping_projects2(input$public_rail_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 6,
-                                                              col1 = 'fuel_type',
-                                                              col2 = 'transit_mode',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                                        rvs$Projects,
+                                                                        tbl_no = 6,
+                                                                        col1 = 'fuel_type',
+                                                                        col2 = 'transit_mode',
+                                                                        horizon_year_1 = input$horizon_year_1,
+                                                                        horizon_year_2 = input$horizon_year_2,
+                                                                        horizon_year_3 = input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2337,30 +2692,30 @@ server <- function(input, output, session) {
   
   # observe edits to the tdm_projs_tbl table
   observeEvent(input$tdm_projs_tbl_cell_edit, {
-
+    
     rvs$Projects[rvs$Projects$table_no_ui == 7,] <- reshaping_projects2(input$tdm_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 7,
-                                                              col1 = 'unit',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
-
-
+                                                                        rvs$Projects,
+                                                                        tbl_no = 7,
+                                                                        col1 = 'unit',
+                                                                        horizon_year_1 = input$horizon_year_1,
+                                                                        horizon_year_2 = input$horizon_year_2,
+                                                                        horizon_year_3 = input$horizon_year_3)
+    
+    
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
-
+    
   })
   
   # observe edits to the micro_projs_tbl table
   observeEvent(input$micro_projs_tbl_cell_edit, {
     
     rvs$Projects[rvs$Projects$table_no_ui == 8,] <- reshaping_projects2(input$micro_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 8,
-                                                              col1 = 'unit',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                                        rvs$Projects,
+                                                                        tbl_no = 8,
+                                                                        col1 = 'unit',
+                                                                        horizon_year_1 = input$horizon_year_1,
+                                                                        horizon_year_2 = input$horizon_year_2,
+                                                                        horizon_year_3 = input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2371,14 +2726,14 @@ server <- function(input, output, session) {
   observeEvent(input$traffic_ops_projs_tbl_cell_edit, {
     
     rvs$Projects[rvs$Projects$table_no_ui == 9,] <- reshaping_projects2(input$traffic_ops_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 9,
-                                                              col1 = 'area_type',
-                                                              col2 = 'road_class',
-                                                              col3 = 'unit',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                                        rvs$Projects,
+                                                                        tbl_no = 9,
+                                                                        col1 = 'area_type',
+                                                                        col2 = 'road_class',
+                                                                        col3 = 'unit',
+                                                                        horizon_year_1 = input$horizon_year_1,
+                                                                        horizon_year_2 = input$horizon_year_2,
+                                                                        horizon_year_3 = input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2389,13 +2744,13 @@ server <- function(input, output, session) {
   observeEvent(input$mhdev_projs_tbl_cell_edit, {
     
     rvs$Projects[rvs$Projects$table_no_ui == 10,] <- reshaping_projects2(input$mhdev_projs_tbl_cell_edit,
-                                                              rvs$Projects,
-                                                              tbl_no = 10,
-                                                              col1 = 'veh_type',
-                                                              col2 = 'fuel_type',
-                                                              horizon_year_1 = input$horizon_year_1,
-                                                              horizon_year_2 = input$horizon_year_2,
-                                                              horizon_year_3 = input$horizon_year_3)
+                                                                         rvs$Projects,
+                                                                         tbl_no = 10,
+                                                                         col1 = 'veh_type',
+                                                                         col2 = 'fuel_type',
+                                                                         horizon_year_1 = input$horizon_year_1,
+                                                                         horizon_year_2 = input$horizon_year_2,
+                                                                         horizon_year_3 = input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2406,12 +2761,12 @@ server <- function(input, output, session) {
   observeEvent(input$pnr_projs_tbl_cell_edit, {
     
     rvs$Projects[rvs$Projects$table_no_ui == 11,] <- reshaping_projects2(input$pnr_projs_tbl_cell_edit,
-                                                               rvs$Projects,
-                                                               tbl_no = 11,
-                                                               col1 = 'unit',
-                                                               horizon_year_1 = input$horizon_year_1,
-                                                               horizon_year_2 = input$horizon_year_2,
-                                                               horizon_year_3 = input$horizon_year_3)
+                                                                         rvs$Projects,
+                                                                         tbl_no = 11,
+                                                                         col1 = 'unit',
+                                                                         horizon_year_1 = input$horizon_year_1,
+                                                                         horizon_year_2 = input$horizon_year_2,
+                                                                         horizon_year_3 = input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2422,12 +2777,12 @@ server <- function(input, output, session) {
   observeEvent(input$evsi_projs_tbl_cell_edit, {
     
     rvs$Projects[rvs$Projects$table_no_ui == 12,] <- reshaping_projects2(input$evsi_projs_tbl_cell_edit,
-                                                               rvs$Projects,
-                                                               tbl_no = 12,
-                                                               col1 = 'charge_port_detail',
-                                                               horizon_year_1 = input$horizon_year_1,
-                                                               horizon_year_2 = input$horizon_year_2,
-                                                               horizon_year_3 = input$horizon_year_3)
+                                                                         rvs$Projects,
+                                                                         tbl_no = 12,
+                                                                         col1 = 'charge_port_detail',
+                                                                         horizon_year_1 = input$horizon_year_1,
+                                                                         horizon_year_2 = input$horizon_year_2,
+                                                                         horizon_year_3 = input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2438,12 +2793,12 @@ server <- function(input, output, session) {
   observeEvent(input$freight_projs_tbl_cell_edit, {
     
     rvs$Projects[rvs$Projects$table_no_ui == 13,] <- reshaping_projects2(input$freight_projs_tbl_cell_edit,
-                                                               rvs$Projects,
-                                                               tbl_no = 13,
-                                                               col1 = 'unit',
-                                                               horizon_year_1 = input$horizon_year_1,
-                                                               horizon_year_2 = input$horizon_year_2,
-                                                               horizon_year_3 = input$horizon_year_3)
+                                                                         rvs$Projects,
+                                                                         tbl_no = 13,
+                                                                         col1 = 'unit',
+                                                                         horizon_year_1 = input$horizon_year_1,
+                                                                         horizon_year_2 = input$horizon_year_2,
+                                                                         horizon_year_3 = input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -2454,26 +2809,25 @@ server <- function(input, output, session) {
   observeEvent(input$expansion_projs_tbl_cell_edit, {
     
     rvs$Projects[rvs$Projects$table_no_ui == 14,] <- reshaping_projects2(input$expansion_projs_tbl_cell_edit,
-                                                               rvs$Projects,
-                                                               tbl_no = 14,
-                                                               col1 = 'area_type',
-                                                               col2 = 'road_class',
-                                                               horizon_year_1 = input$horizon_year_1,
-                                                               horizon_year_2 = input$horizon_year_2,
-                                                               horizon_year_3 = input$horizon_year_3)
+                                                                         rvs$Projects,
+                                                                         tbl_no = 14,
+                                                                         col1 = 'area_type',
+                                                                         col2 = 'road_class',
+                                                                         horizon_year_1 = input$horizon_year_1,
+                                                                         horizon_year_2 = input$horizon_year_2,
+                                                                         horizon_year_3 = input$horizon_year_3)
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
     
   })
   
-  observeEvent(input$transit_cuts_projs_tbl_cell_edit, {
-    
+  observeEvent(input$custom_projs_tbl_cell_edit, {
+    req('')
     rvs$Projects[rvs$Projects$table_no_ui == 15,] <- reshaping_projects2(input$expansion_projs_tbl_cell_edit,
                                                                          rvs$Projects,
                                                                          tbl_no = 15,
-                                                                         col1 = 'area_type',
-                                                                         col2 = 'transit_mode',
+                                                                         col1 = 'custom_project',
                                                                          horizon_year_1 = input$horizon_year_1,
                                                                          horizon_year_2 = input$horizon_year_2,
                                                                          horizon_year_3 = input$horizon_year_3)
@@ -2482,50 +2836,8 @@ server <- function(input, output, session) {
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
     
   })
-  observeEvent(input$land_use_projs_tbl_cell_edit, {
-    
-    rvs$Projects[rvs$Projects$table_no_ui == 16,] <- reshaping_projects2(input$land_use_projs_tbl_cell_edit,
-                                                                         rvs$Projects,
-                                                                         tbl_no = 16,
-                                                                         col1 = 'land_use',
-                                                                         horizon_year_1 = input$horizon_year_1,
-                                                                         horizon_year_2 = input$horizon_year_2,
-                                                                         horizon_year_3 = input$horizon_year_3)
-    
-    
-    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
-    
-  })
-  observeEvent(input$road_resurf_projs_tbl_cell_edit, {
-    
-    rvs$Projects[rvs$Projects$table_no_ui == 17,] <- reshaping_projects2(input$road_resurf_projs_tbl_cell_edit,
-                                                                         rvs$Projects,
-                                                                         tbl_no = 17,
-                                                                         horizon_year_1 = input$horizon_year_1,
-                                                                         horizon_year_2 = input$horizon_year_2,
-                                                                         horizon_year_3 = input$horizon_year_3)
-    
-    
-    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
-    
-  })
-  
-  # observeEvent(input$custom_projs_tbl_cell_edit, {
-  #   #req('')
-  #   rvs$Projects[rvs$Projects$table_no_ui == 15,] <- reshaping_projects2(input$expansion_projs_tbl_cell_edit,
-  #                                                                        rvs$Projects,
-  #                                                                        tbl_no = 15,
-  #                                                                        col1 = 'custom_project',
-  #                                                                        horizon_year_1 = input$horizon_year_1,
-  #                                                                        horizon_year_2 = input$horizon_year_2,
-  #                                                                        horizon_year_3 = input$horizon_year_3)
-  #   
-  #   
-  #   #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
-  #   
-  # })
   # Project Tables: Reset buttons on projects ---------------------------------------------------
-
+  
   observeEvent(input$reset_bikeped_projs_tbl, {
     rvs$Projects[rvs$Projects$table_no_ui == 1,] <- initial_projects[initial_projects$table_no_ui == 1, ]
   })  
@@ -2581,41 +2893,18 @@ server <- function(input, output, session) {
   observeEvent(input$reset_expansion_projs_tbl, {
     rvs$Projects[rvs$Projects$table_no_ui == 14,] <- initial_projects[initial_projects$table_no_ui == 14, ]
   })  
-  observeEvent(input$reset_transit_cuts_projs_tbl, {
+  
+  observeEvent(input$reset_custom_projs_tbl, {
     rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
   })  
-  observeEvent(input$transit_cuts_projs_tbl, {
-    rvs$Projects[rvs$Projects$table_no_ui == 16,] <- initial_projects[initial_projects$table_no_ui == 16, ]
-  })  
-  observeEvent(input$reset_land_use_projs_tbl, {
-    rvs$Projects[rvs$Projects$table_no_ui == 17,] <- initial_projects[initial_projects$table_no_ui == 17, ]
-  })  
-  # observeEvent(input$reset_custom_projs_tbl, {
-  #   rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
-  # })  
   
-
-
-# BUDGET: Inputs ----------------------------------------------------------
-
   
-  output$bikeped_budget_tbl <- renderDT({
-    req(rvs$Budget)
-    
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 1,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_budget_table = TRUE,
-      is_advanced_table = FALSE,
-      non_editable_cols = c(0:2),
-      page_length = 10,
-      comma_rows = integer(0),
-      percent_rows = 10:12,
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  })
+  # Budget table inputs -----------------------------------------------------
+  
+  
+  # Budget Tables: Render ---------------------------------------------------
+  
+  
   
   
   
@@ -2631,28 +2920,28 @@ server <- function(input, output, session) {
                          "evsi_assmps")
   
   
-  read_static_tables(".\\data\\assumptions.xlsx", assumptions_names)
+  read_static_tables("data/assumptions.xlsx", assumptions_names)
   
   
   ## create assumption tables -----------------------------------------------------------
   
-
+  
   output$bikeped_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
     
     render_custom_datatable(
-    data_reactive = rvs$Assumptions,
-    table_number = 1,
-    is_year_table = FALSE,
-    non_editable_cols = c(0, 1),  
-    page_length = 10,
-    comma_rows = integer(0),
-    percent_rows = integer(0),
-    currency_rows = integer(0),
-    decimal_rows = 2:7)
+      data_reactive = rvs$Assumptions,
+      table_number = 1,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = 2:7)
   })
   
-
+  
   
   output$transit_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
@@ -2771,19 +3060,19 @@ server <- function(input, output, session) {
                          "evsi_assmps")
   
   
-  # #SETH: NOTE CAN THIS BE REMOVED?
-  # observeEvent(input$bikeped_assmps_edit, {
-  #   bikeped_assmps <<- editData(bikeped_assmps, input$bikeped_assmps_edit, 'bikeped_assmps_tbl')
-  # })
-  # #NOTE CAN THIS BE REMOVED?
+  #SETH: NOTE CAN THIS BE REMOVED?
+  observeEvent(input$bikeped_assmps_edit, {
+    bikeped_assmps <<- editData(bikeped_assmps, input$bikeped_assmps_edit, 'bikeped_assmps_tbl')
+  })
+  #NOT CAN THIS BE REMOVED?
   
   # observe edits to bikeped_assmps
   observeEvent(input$bikeped_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
-
+    
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 1,] <- reshaping_assmp(input$bikeped_assmps_tbl_cell_edit,
-                                                                       rvs$Assumptions,
-                                                                       tbl_no = 1)
+                                                                          rvs$Assumptions,
+                                                                          tbl_no = 1)
   })
   
   #observe edits to transit_assmps
@@ -2791,18 +3080,18 @@ server <- function(input, output, session) {
     req(rvs$Assumptions)
     
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 2,] <- reshaping_assmp(input$transit_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 2
-                                                                             )
+                                                                          rvs$Assumptions,
+                                                                          tbl_no = 2
+    )
   })
   
   #observe edits to tdm_assmps
   observeEvent(input$tdm_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
-
+    
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 3,] <- reshaping_assmp(input$tdm_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 3)
+                                                                          rvs$Assumptions,
+                                                                          tbl_no = 3)
   })
   
   #observe edits to micro_assmps
@@ -2810,8 +3099,8 @@ server <- function(input, output, session) {
     req(rvs$Assumptions)
     
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 4,] <- reshaping_assmp(input$micro_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 4)
+                                                                          rvs$Assumptions,
+                                                                          tbl_no = 4)
   })
   
   #observe edits to traffic_ops_assmps
@@ -2819,8 +3108,8 @@ server <- function(input, output, session) {
     req(rvs$Assumptions)
     
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 5,] <- reshaping_assmp(input$traffic_ops_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 5)
+                                                                          rvs$Assumptions,
+                                                                          tbl_no = 5)
   })
   
   #observe edits to mhdv_assmps
@@ -2828,26 +3117,26 @@ server <- function(input, output, session) {
     req(rvs$Assumptions)
     
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 6,] <- reshaping_assmp(input$mhdv_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 6)
+                                                                          rvs$Assumptions,
+                                                                          tbl_no = 6)
   })
-
+  
   #observe edits to pnr_assmps
   observeEvent(input$pnr_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
     
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 7,] <- reshaping_assmp(input$pnr_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 7)
+                                                                          rvs$Assumptions,
+                                                                          tbl_no = 7)
   })
-
+  
   #observe edits to evsi_assmps
   observeEvent(input$evsi_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
     
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 8,] <- reshaping_assmp(input$evsi_assmps_tbl_cell_edit,
-                                                                             rvs$Assumptions,
-                                                                             tbl_no = 8)
+                                                                          rvs$Assumptions,
+                                                                          tbl_no = 8)
   })
   
   # end of reshaping assumptions
@@ -2881,10 +3170,10 @@ server <- function(input, output, session) {
     evsi_assmps <<- editData(evsi_assmps, input$evsi_assmps_edit, 'evsi_assmps_tbl')
   })
   
-
+  
   # observe reset buttons on assumptions ---------------------------------------------------
   
-
+  
   observeEvent(input$reset_bikeped_assmps_tbl, {
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 1,] <- initial_assumptions[initial_assumptions$table_no_ui == 1, ]
   })  
@@ -2920,10 +3209,10 @@ server <- function(input, output, session) {
   
   # COST: inputs server ------------------------------------------------------------
   ## COST: create input tables -----------------------------------------------------------
-
-    output$bikeped_costs_tbl <- renderDT({
+  
+  output$bikeped_costs_tbl <- renderDT({
     req(rvs$Costs)
-
+    
     render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 1,
@@ -2936,7 +3225,7 @@ server <- function(input, output, session) {
       currency_rows = c(0:21),
       decimal_rows = integer(0))
   })
-
+  
   
   output$transit_fixed_costs_tbl <- renderDT({
     req(rvs$Costs)
@@ -3072,7 +3361,7 @@ server <- function(input, output, session) {
   #                                           autoWidth = TRUE))
   output$pnr_costs_tbl <- renderDT({
     req(rvs$Costs)
-
+    
     render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 10,
@@ -3120,7 +3409,7 @@ server <- function(input, output, session) {
   
   output$fuel_costs_tbl <- renderDT({
     req(rvs$Costs)
-
+    
     render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 13,
@@ -3133,7 +3422,7 @@ server <- function(input, output, session) {
       currency_rows = c(0:10),
       decimal_rows = integer(0))
   })
-
+  
   output$intermodal_costs_tbl <- renderDT({
     req(rvs$Costs)
     
@@ -3152,13 +3441,13 @@ server <- function(input, output, session) {
   
   
   ## COST: make editable -----------------------------------------------------------
-
+  
   
   #reshaping
   #observe change to bikeped_costs_tbl
   observeEvent(input$bikeped_costs_tbl_cell_edit, {
     req(rvs$Costs)
-
+    
     rvs$Costs[rvs$Costs$table_no_ui == 1,] <- reshaping_cost(input$bikeped_costs_tbl_cell_edit,
                                                              rvs$Costs,
                                                              num_col = 2,
@@ -3170,7 +3459,7 @@ server <- function(input, output, session) {
                                                                           'unit'))
   })
   
-
+  
   
   ## observe change to transit_fixed_costs
   observeEvent(input$transit_fixed_costs_tbl_cell_edit, {
@@ -3192,7 +3481,7 @@ server <- function(input, output, session) {
   observeEvent(input$transit_dr_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-        rvs$Costs[rvs$Costs$table_no_ui == 3,] <- reshaping_cost(input$transit_dr_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 3,] <- reshaping_cost(input$transit_dr_costs_tbl_cell_edit,
                                                              rvs$Costs,
                                                              tbl_no = 3,
                                                              num_col = 3, # how many numeric columns,
@@ -3214,7 +3503,7 @@ server <- function(input, output, session) {
                                                              tbl_no = 4,
                                                              num_col = 1,
                                                              col_list = c('unit')
-                                                             )
+    )
   })
   
   
@@ -3223,19 +3512,19 @@ server <- function(input, output, session) {
     req(rvs$Costs)
     
     rvs$Costs[rvs$Costs$table_no_ui == 5,] <- reshaping_cost(input$pub_trans_rail_costs_tbl_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 5,
-                                                              num_col = 3, # how many numeric columns,
-                                                              unit1 = 'per_veh_cap_cost',
-                                                              unit2 = 'per_VRM_fuel_cost',
-                                                              unit3 = 'per_VRM_onm_cost',
-                                                              col_list = c('fuel_type',
-                                                                           'transit_mode',
-                                                                           'unit')
-                                                              )
+                                                             rvs$Costs,
+                                                             tbl_no = 5,
+                                                             num_col = 3, # how many numeric columns,
+                                                             unit1 = 'per_veh_cap_cost',
+                                                             unit2 = 'per_VRM_fuel_cost',
+                                                             unit3 = 'per_VRM_onm_cost',
+                                                             col_list = c('fuel_type',
+                                                                          'transit_mode',
+                                                                          'unit')
+    )
   })
   
-
+  
   ## observe change to pub_trans_rail_costs
   observeEvent(input$tdm_costs_tbl_cell_edit, {
     req(rvs$Costs)
@@ -3263,15 +3552,15 @@ server <- function(input, output, session) {
     req(rvs$Costs)
     
     rvs$Costs[rvs$Costs$table_no_ui == 8,] <- reshaping_cost(input$traffic_ops_costs_tbl_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 8,
-                                                              num_col = 2, # how many numeric columns,
-                                                              unit1 = 'annual_maintenance_cost',
-                                                              unit2 = 'cost_per_improvement',
-                                                              col_list = c('road_class',
-                                                                           'area_type',
-                                                                           'cap_proj_type',
-                                                                           'unit'))
+                                                             rvs$Costs,
+                                                             tbl_no = 8,
+                                                             num_col = 2, # how many numeric columns,
+                                                             unit1 = 'annual_maintenance_cost',
+                                                             unit2 = 'cost_per_improvement',
+                                                             col_list = c('road_class',
+                                                                          'area_type',
+                                                                          'cap_proj_type',
+                                                                          'unit'))
   })
   
   
@@ -3280,15 +3569,15 @@ server <- function(input, output, session) {
     req(rvs$Costs)
     
     rvs$Costs[rvs$Costs$table_no_ui == 9,] <- reshaping_cost(input$mhdev_costs_tbl_cell_edit,
-                                                              rvs$Costs,
-                                                              tbl_no = 9,
-                                                              num_col = 3, # how many numeric columns,
-                                                              unit1 = 'per_VRM_fuel_cost',
-                                                              unit2 = 'per_mile_onm_cost',
-                                                              unit3 = 'per_veh_cap_cost',
-                                                              col_list = c('fuel_type',
-                                                                           'veh_type',
-                                                                           'unit'))
+                                                             rvs$Costs,
+                                                             tbl_no = 9,
+                                                             num_col = 3, # how many numeric columns,
+                                                             unit1 = 'per_VRM_fuel_cost',
+                                                             unit2 = 'per_mile_onm_cost',
+                                                             unit3 = 'per_veh_cap_cost',
+                                                             col_list = c('fuel_type',
+                                                                          'veh_type',
+                                                                          'unit'))
   })
   
   
@@ -3335,14 +3624,14 @@ server <- function(input, output, session) {
   ## observe change to fuel_costs
   observeEvent(input$fuel_costs_tbl_cell_edit, {
     req(rvs$Costs)
-
+    
     rvs$Costs[rvs$Costs$table_no_ui == 13,] <- reshaping_cost(input$fuel_costs_tbl_cell_edit,
                                                               rvs$Costs,
                                                               tbl_no = 13,
                                                               num_col = 1, # how many numeric columns,
                                                               col_list = c('fuel_type'))
   })
- 
+  
   
   ## observe change to intermodal_costs
   observeEvent(input$intermodal_costs_tbl_cell_edit, {
@@ -3354,10 +3643,10 @@ server <- function(input, output, session) {
                                                               num_col = 1,
                                                               col_list = c('unit'))
   }) # end of reshaping
-
+  
   ## COST: observe reset buttons for costs -----------------------------------------
-
-
+  
+  
   observeEvent(input$reset_bikeped_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 1,] <- initial_costs[initial_costs$table_no_ui == 1, ]
   })  
@@ -3430,9 +3719,7 @@ server <- function(input, output, session) {
                       "Intermodal Freight Investment",
                       "Traffic Operations",
                       "Roadway Expansion",
-                      "Transit Service Cuts",
-                      "Land Use",
-                      "Roadway Resurfacing")
+                      "Custom Projects")
   
   rowName <- function(scenario) {
     as.character(
@@ -3466,20 +3753,75 @@ server <- function(input, output, session) {
                    'Projects 13',
                    'Projects 9',
                    'Projects 14',
-                   'Projects 15',
-                   'Projects 16',
-                   'Projects 17'),
-    Scenario1 = rep(FALSE, 14),
-    Scenario2 = rep(FALSE, 14)
+                   ''),
+    Scenario1 = rep(FALSE, 12),
+    Scenario2 = rep(FALSE, 12)
   )
   
   colnames(dat)[colnames(dat) == "grouped_projects"] <- "Grouped Projects"
   colnames(dat)[colnames(dat) == "relation"] <- "Relation to Project Tab"
   
+  
+  # names(dat) <- c(
+  #   as.character(checkboxInput("col1", label = "Scenario 1")),
+  #   as.character(checkboxInput("col2", label = "Scenario 2"))
+  # )
+  
+  # rownames(dat) <- rowNames
+  
   # Create a reactive data frame
   reactive_scenario <- reactiveVal(dat)
   
   selected_scenario <- reactiveValues(rows = NULL)
+  
+  # output$scenario_tbl <- renderDT({
+  #   browser()
+  #   datatable(
+  #     dat,
+  #     escape = FALSE,
+  #     select = "none",
+  #     options = list(
+  #       columnDefs = list(list(targets = c(1, 2),
+  #                              orderable = FALSE,
+  #                              className = "dt-center")
+  #       ),
+  #       pageLength = 12,
+  #       initComplete = JS(
+  #         "function() {",
+  #         "  $('#col1').on('click', function(){",
+  #         "    var cboxes = $('[id^=col1-]');",
+  #         "    var checked = $('#col1').is(':checked');",
+  #         "    cboxes.each(function(i, cbox) {",
+  #         "      $(cbox).prop('checked', checked);",
+  #         "    });",
+  #         "  });",
+  #         "  $('#col2').on('click', function(){",
+  #         "    var cboxes = $('[id^=col2-]');",
+  #         "    var checked = $('#col2').is(':checked');",
+  #         "    cboxes.each(function(i, cbox) {",
+  #         "      $(cbox).prop('checked', checked);",
+  #         "    });",
+  #         "  });",
+  #         paste(
+  #           sapply(strategy_names, function(scenario) {
+  #             scenarioId <- gsub(" ", "", scenario)
+  #             sprintf(
+  #               "  $('#row%s').on('click', function(){\n    var cboxes = $('[id$=\\'-%s\\']');\n    var checked = $('#row%s').is(':checked');\n    cboxes.each(function(i, cbox) {\n      $(cbox).prop('checked', checked);\n    });\n  });",
+  #               scenarioId, scenarioId, scenarioId
+  #             )
+  #           }),
+  #           collapse = "\n"
+  #         ),
+  #         "}"
+  #       ),
+  #       preDrawCallback =
+  #         JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
+  #       drawCallback =
+  #         JS('function() { Shiny.bindAll(this.api().table().node()); } ')
+  #     )
+  #   )
+  # })
+  # 
   
   # Render the checkbox table
   output$scenario_tbl <- renderDT({
@@ -3488,6 +3830,7 @@ server <- function(input, output, session) {
       escape = FALSE,
       #editable = list(target = c(2,3)),
       options = list(
+        paging = FALSE,
         pageLength =12,
         columnDefs = list(
           list(className = 'dt-center', targets = c(3, 4)),
@@ -3516,7 +3859,7 @@ server <- function(input, output, session) {
       reactive_scenario(reactive_scenario_updated)
     }
     rvs$Scenarios <- reactive_scenario()
-
+    
   }) 
   
   shinyjs::enable(selector = ".checkbox")
@@ -3524,7 +3867,7 @@ server <- function(input, output, session) {
   observeEvent(input$select_all_scenario1, {
     #browser()
     reactive_scenario_updated <- reactive_scenario()
-    ifelse(sum(reactive_scenario_updated$Scenario1) == 14,reactive_scenario_updated$Scenario1<-FALSE,reactive_scenario_updated$Scenario1 <- TRUE)
+    ifelse(sum(reactive_scenario_updated$Scenario1) == 12,reactive_scenario_updated$Scenario1<-FALSE,reactive_scenario_updated$Scenario1 <- TRUE)
     reactive_scenario(reactive_scenario_updated)
     rvs$Scenarios <- reactive_scenario()
   })
@@ -3532,7 +3875,7 @@ server <- function(input, output, session) {
   # Observer to select all checkboxes under Scenario 2
   observeEvent(input$select_all_scenario2, {
     reactive_scenario_updated <- reactive_scenario()
-    ifelse(sum(reactive_scenario_updated$Scenario2) == 14,reactive_scenario_updated$Scenario2<-FALSE,reactive_scenario_updated$Scenario2 <- TRUE)
+    ifelse(sum(reactive_scenario_updated$Scenario2) == 12,reactive_scenario_updated$Scenario2<-FALSE,reactive_scenario_updated$Scenario2 <- TRUE)
     reactive_scenario(reactive_scenario_updated)
     rvs$Scenarios <- reactive_scenario()
   })
@@ -3547,11 +3890,11 @@ server <- function(input, output, session) {
                       "construction_sheet",
                       "fuel_apportionment_sheet")
   
-  read_static_tables(".\\data\\advanced.xlsx", advanced_names)
+  read_static_tables("data/advanced.xlsx", advanced_names)
   
   
   ## ADVANCED: create tables -----------------------------------------------------------
-
+  
   output$ev_forecast_sheet_tbl <- renderDT({
     render_custom_datatable(
       data_reactive = rvs$Advanced,
@@ -3583,7 +3926,7 @@ server <- function(input, output, session) {
   })
   
   output$onroad_fuel_tech_frac_sheet_tbl <- renderDT({
-
+    
     render_custom_datatable(
       data_reactive = rvs$Advanced,
       table_number = 3,
@@ -3596,8 +3939,10 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
- 
+  
   output$pass_rail_sheet_tbl <- renderDT({
+    
+    
     
     callback_pass_rail <- JS(
       "var tbl = $(table.table().node());",
@@ -3642,18 +3987,18 @@ server <- function(input, output, session) {
       select(mode_service, unit, value) %>% 
       rename(any_of(references_vector)) %>% 
       datatable(callback = callback_pass_rail, rownames = F)
-      
-      ### OLD
-      # render_custom_datatable(
-      # data_reactive = rvs$Advanced,
-      # table_number = 4,
-      # is_year_table = FALSE,
-      # non_editable_cols = c(0, 1),
-      # page_length = 10,
-      # comma_rows = integer(0),
-      # percent_rows = integer(0),
-      # currency_rows = integer(0),
-      # decimal_rows = integer(0))
+    
+    ### OLD
+    # render_custom_datatable(
+    # data_reactive = rvs$Advanced,
+    # table_number = 4,
+    # is_year_table = FALSE,
+    # non_editable_cols = c(0, 1),
+    # page_length = 10,
+    # comma_rows = integer(0),
+    # percent_rows = integer(0),
+    # currency_rows = integer(0),
+    # decimal_rows = integer(0))
     
     ### WORKS WITH A SIMPLE EXAMPLE BELOW
     # dat_pass_rail <- data.frame(
@@ -3671,12 +4016,12 @@ server <- function(input, output, session) {
     #     )
     #   )
     # )
-
+    
     dtable$dependencies <- c(dtable$dependencies, list(dep))
     return(dtable)
     
   },server = FALSE)
- 
+  
   output$freight_rail_sheet_tbl <- renderDT({
     
     render_custom_datatable(
@@ -3690,7 +4035,7 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
-
+  
   output$construction_sheet_tbl <- renderDT({
     
     render_custom_datatable(
@@ -3704,7 +4049,7 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
-
+  
   output$fuel_apportionment_sheet_tbl <- renderDT({
     
     render_custom_datatable(
@@ -3718,16 +4063,29 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
-  
   ## ADVANCED: make editable -----------------------------------------------------------
+  
+  
+  #I think these two top events should be removed
+  # observeEvent(input$ev_forecast_edit, {
+  #   ev_forecast <<- editData(ev_forecast, input$ev_forecast_edit, 'ev_forecast_tbl')
+  # })
+  # 
+  # 
+  # observeEvent(input$vmt_forecast_edit, {
+  #   vmt_forecast <<- editData(vmt_forecast, input$vmt_forecast_edit, 'vmt_forecast_tbl')
+  # })
+  
+  
+  # reshaping ev_forecast_sheet_tbl  #checkpoint
   
   observeEvent(input$ev_forecast_sheet_tbl_cell_edit, {
     req(rvs$Advanced)
     
     rvs$Advanced[rvs$Advanced$table_no_ui == 1,] <- reshaping_advanced(input$ev_forecast_sheet_tbl_cell_edit,
-                                                                          rvs$Advanced,
-                                                                          tbl_no = 1,
-                                                                          col_list = c('veh_type','year'))
+                                                                       rvs$Advanced,
+                                                                       tbl_no = 1,
+                                                                       col_list = c('veh_type','year'))
   })
   
   # reshaping vmt_forecast_sheet_tbl
@@ -3779,7 +4137,7 @@ server <- function(input, output, session) {
                                                                        tbl_no = 6,
                                                                        col_list = c('unit'))
   })
-
+  
   #reshaping pass_rail_sheet_tbl
   observeEvent(input$fuel_apportionment_sheet_tbl_cell_edit, {
     req(rvs$Advanced)
@@ -3789,8 +4147,9 @@ server <- function(input, output, session) {
                                                                        tbl_no = 7,
                                                                        col_list = c('veh_type'))
   })
-  
   ## ADVANCED: reset buttons ---------------------------------------------------
+  
+  
   observeEvent(input$reset_ev_forecast_sheet_tbl, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 1,] <- initial_advanced[initial_advanced$table_no_ui == 1, ]
   })  
@@ -3826,12 +4185,14 @@ server <- function(input, output, session) {
   
   output$baseline_outputs <- renderDT({
     req(baseline_ghg_forecast())
+    
     dt <- baseline_ghg_forecast()
     
     dt_onroad <- dt %>% ungroup() %>% # select(-veh_supertype) %>% View()
       filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Vehicles")) %>%
-      summarise(across(where(is.numeric),sum)) 
-
+      summarise(across(where(is.numeric),sum))  %>%
+      mutate(veh_supertype = "Total (OnRoad)")
+    
     dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
       #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
       summarise(across(where(is.numeric),sum))
@@ -3854,8 +4215,11 @@ server <- function(input, output, session) {
       dt_fin,
       rownames = FALSE,
       selection = "none",
+      
       options = list(
+        
         pageLength = 10, 
+        paging = FALSE,
         columnDefs = list(
           list(
             targets = '_all',
@@ -3870,7 +4234,7 @@ server <- function(input, output, session) {
                 
                     var formatter = null;
                     if (commaRows.includes(meta.row)) {
-                      formatter = function(d) { return Number(d).toLocaleString('en-US'); };
+                      formatter = function(d) { return Number(d).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
                     }
                     if (percentRows.includes(meta.row)) {
                       formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
@@ -3901,13 +4265,19 @@ server <- function(input, output, session) {
             )
           )
         )
-      ))
+      )) %>%
+      formatStyle(0,
+                  target = "row",
+                  #rows = c(7),
+                  fontWeight = styleRow(c(7,8,9),"bold")
+                  #'font-size' = "11px"
+      )
     return(x)
-
+    
   })
   
   output$baseline_ghg_line <- renderPlotly({
-
+    
     df_lines <- baseline_ghg_forecast_all_years() %>% 
       filter(year >= 2021) %>%
       group_by(year) %>% summarise(Emissions = sum(Emissions))
@@ -3922,7 +4292,7 @@ server <- function(input, output, session) {
       add_trace(df_points, x = ~df_points$year, y = ~df_points$Emissions, type = 'scatter', mode = 'markers',
                 connectgaps = FALSE,
                 text = c("Base Year","Horizon Year 1","Horizon Year 2", "Horizon Year 3"),
-
+                
                 hovertemplate = paste0('%{text}: %{x}<br>', 
                                        'Emissions: %{y:.2s} <br> <extra></extra>'),
                 name = "") %>%
@@ -3930,7 +4300,7 @@ server <- function(input, output, session) {
              xaxis = list(title = 'Year'),
              yaxis = list(title = "Emisions", separatethousands= TRUE)) %>%
       config(displayModeBar = FALSE) 
-
+    
     return(lplot)
   })
   
@@ -3941,6 +4311,9 @@ server <- function(input, output, session) {
     df_in <- df_in %>% ungroup() %>% select(veh_supertype, yr) %>%
       rename("Emissions" = yr)
     
+    # Define colors for the pie slices
+    colors <- c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf")
+    
     comm_plot <- df_in %>% plot_ly(source = "sourceName") %>% 
       add_pie(labels = ~veh_supertype, 
               values = ~Emissions, 
@@ -3949,8 +4322,10 @@ server <- function(input, output, session) {
               direction = "clockwise",
               hovertemplate = ~paste("%{label} <br>", paste0(round(Emissions, digits = 0)," CO2e"), "</br> %{percent} <extra></extra>"), 
               marker = list(colors = ~veh_supertype, line = list(color = "#595959", width = 1)), 
-              #textfont = list(family = "Arial", size = 10), 
-              textposition = "none") %>%
+              #textfont = list(family = "Arial", size = 10),
+              textposition = "none",
+              hoverlabel = list(bgcolor = "white", font = list(color = "black", weight = "bold"), bordercolor = colors, borderwidth = 3)) %>% # Change hover tooltip color and add border
+      
       layout(
         showlegend = TRUE, autosize = T) %>% 
       config(displaylogo = FALSE, 
@@ -3978,7 +4353,7 @@ server <- function(input, output, session) {
                            "roadway_expand_costs_outputs",
                            "intermodal_costs_outputs")
   
-  read_static_tables(".\\data\\costs_outputs.xlsx", costs_outputs_names)
+  read_static_tables("data/costs_outputs.xlsx", costs_outputs_names)
   
   ## COST Outputs: create tables -----------------------------------------------------------
   
@@ -3992,28 +4367,29 @@ server <- function(input, output, session) {
       #val1_scalar = ,
       #val2_scalar = ,
       style = input$cost_view
-      ) %>% 
-      rename(any_of(references_vector))
-
+    ) %>% 
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
+    
     x<-datatable(temp,
-      rownames = FALSE,
-      selection = "none",
-      options = list(
-        pageLength = 50,
-        searching = FALSE,
-        paging = FALSE,
-        info = FALSE)) 
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = TRUE,
+                   paging = FALSE,
+                   info = FALSE)) 
     if(input$cost_view == "detail"){
-    x <- x %>%
-      DT::formatRound(3:7, digits = 3)}
-    return(x)
-    })
+      x <- x %>%
+        DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
   
-#  observe({browser()})
-
+  #  observe({browser()})
+  
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
- 
+    
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
       output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
@@ -4021,93 +4397,97 @@ server <- function(input, output, session) {
       proj_life = 12,
       scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
       style = input$cost_view
-    )%>% rename(any_of(references_vector))
+    ) %>% 
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
     
     x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE))  
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE))  
     
     if(input$cost_view == "detail"){
       x <- x %>%
-      DT::formatRound(4:8, digits = 3)}
+        DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
     
-    return(x)
-      
-      })
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+    
+  })
   
   output$transit_dr_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed DR Costs Outputs")
     temp <- cost_function(
-    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==3,],
-    output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Demand Response Service (VOMS)"),
-    col_sel = c('area_type','fuel_type','transit_mode'),
-    proj_life = 12,
-    scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
-    style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==3,],
+      output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Demand Response Service (VOMS)"),
+      col_sel = c('area_type','fuel_type','transit_mode'),
+      proj_life = 12,
+      scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
+      style = input$cost_view) %>% 
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
     
     x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(4:8, digits = 3)}
-    return(x)
-      
-      })
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+    
+  })
   
   output$pub_trans_priority_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Transit Priority Costs Outputs")
     temp <- cost_function(
-    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==4,],
-    output_table = cost_output_transitservice() %>% filter(table == "Bus Priority"),
-    col_sel = c(),
-    proj_life = 5, 
-    #var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
-    #var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
-    style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==4,],
+      output_table = cost_output_transitservice() %>% filter(table == "Bus Priority"),
+      col_sel = c(),
+      proj_life = 5, 
+      #var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+      #var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
+      style = input$cost_view) %>% 
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
     
     x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>%DT::formatRound(1:5, digits = 3)}
-    return(x)
-    })
-
+      x <- x %>%DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
+  
   public_elec_replacement_cost_table <- reactive({
     print("RENDERING: PT Electric Veh Replacment Costs Outputs")
     scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value")
     
     base <- rvs$Costs[rvs$Costs$table_no_ui %in% c(2,3),] %>% # & rvs$Costs$fuel_type != "Electric",]  %>%
-        group_by(area_type, transit_mode,fuel_type, cost_type) %>% 
-        summarise(value = sum(value)) %>% 
-        pivot_wider(names_from = cost_type, values_from = value) %>% left_join(scalar_list) %>%
-        mutate(var = var1*scalar_1 + var2*scalar_1) %>% #create variable cost based on scalars
-        select(-c(var1,var2)) %>%
-        mutate(annual_cost = cap/12 + var)
+      group_by(area_type, transit_mode,fuel_type, cost_type) %>% 
+      summarise(value = sum(value)) %>% 
+      pivot_wider(names_from = cost_type, values_from = value) %>% left_join(scalar_list) %>%
+      mutate(var = var1*scalar_1 + var2*scalar_1) %>% #create variable cost based on scalars
+      select(-c(var1,var2)) %>%
+      mutate(annual_cost = cap/12 + var)
     
     elec <- base %>%ungroup() %>% filter(fuel_type == "Electric") %>% select(-c(fuel_type, cap, var)) %>% rename(elec_cost = annual_cost)
     
     fin <- left_join(base, elec) %>% filter(fuel_type != "Electric")%>% mutate(annual_cost = elec_cost - annual_cost) %>%
       select(area_type, transit_mode, fuel_type, annual_cost)
     return(fin)
-    })
+  })
   
   output$transit_zeb_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Transit Electric Bus Costs Outputs")
@@ -4118,19 +4498,20 @@ server <- function(input, output, session) {
       proj_life = 12,
       #scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')],
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
     
     x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(4:8, digits = 3)}
-    return(x)
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
   })
   
   output$pub_trans_rail_costs_outputs_tbl <- renderDT({   
@@ -4143,21 +4524,22 @@ server <- function(input, output, session) {
       #BEN: val 1 is only referencing light rail revenue miles 
       scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('transit_mode','value')]%>% rename("scalar_1" = "value"),      
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
     
     x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(3:7, digits = 3)}
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
     
-    return(x)
-    })
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
   
   output$tdm_costs_outputs_tbl <- renderDT({   
     print("RENDERING: TDM Costs Outputs")
@@ -4167,20 +4549,23 @@ server <- function(input, output, session) {
       col_sel = c(),
       proj_life = 1,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
     
-    x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+    x <- datatable(temp,
+                   rownames = FALSE,
+                   selection = "none",
+                   options = list(
+                     pageLength = 50,
+                     searching = FALSE,
+                     paging = FALSE,
+                     info = FALSE))
+    
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(1:5, digits = 3)}
-    return(x)
-    })
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
   
   output$micro_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Micro Costs Outputs")
@@ -4190,20 +4575,21 @@ server <- function(input, output, session) {
       col_sel = c(),
       proj_life = 6,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
     
     x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>%DT::formatRound(1:5, digits = 3)}
-    return(x)
-    })
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
   
   output$traffic_ops_costs_outputs_tbl <- renderDT({   
     print("RENDERING: OPS Costs Outputs")
@@ -4215,20 +4601,22 @@ server <- function(input, output, session) {
       col_sel = c('road_class','area_type','cap_proj_type'),
       proj_life = NA,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) %>% # to show NA in table
+      mutate(year = as.character(year)) %>% rename(Year = year)
     
     x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>%DT::formatRound(5:9, digits = 3)}
-    return(x)
-    })
+      x <- x %>%DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
   
   output$mhdev_costs_outputs_tbl <- renderDT({   
     print("RENDERING: MHDEV Costs Outputs")
@@ -4238,20 +4626,21 @@ server <- function(input, output, session) {
       col_sel = c('veh_type','veh_subtype'),
       proj_life = 12,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
     
     x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(3:7, digits = 3)}
-    return(x)
-    })
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
   
   output$pnr_costs_outputs_tbl <- renderDT({   
     print("RENDERING: PNR Costs Outputs")
@@ -4261,20 +4650,21 @@ server <- function(input, output, session) {
       col_sel = c(),
       proj_life = 30,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
     
-   x<- datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
-   if(input$cost_view == "detail"){
-     x <- x %>% DT::formatRound(1:5, digits = 3)}
-   return(x)
-    })
+    x<- datatable(temp,
+                  rownames = FALSE,
+                  selection = "none",
+                  options = list(
+                    pageLength = 50,
+                    searching = FALSE,
+                    paging = FALSE,
+                    info = FALSE)) 
+    if(input$cost_view == "detail"){
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
   
   output$evsi_costs_outputs_tbl <- renderDT({  
     print("RENDERING: EVSI Costs Outputs")
@@ -4284,20 +4674,21 @@ server <- function(input, output, session) {
       col_sel = c('charge_port_detail'), #Change to port detail?
       proj_life = 10,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
     
     x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>%DT::formatRound(2:6, digits = 3)}
-    return(x)
-    })
+      x <- x %>%DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
   
   output$roadway_expand_costs_outputs_tbl <- renderDT({  
     print("RENDERING: Roadway Exp Costs Outputs")
@@ -4307,20 +4698,21 @@ server <- function(input, output, session) {
       col_sel = c('road_class','area_type'),
       proj_life = 30,#needs to project lifes actually :(
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
     
     x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(3:7, digits = 3)}
-    return(x)
-    })
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
   
   #Fuel Price Table
   
@@ -4332,20 +4724,22 @@ server <- function(input, output, session) {
       col_sel = c(),
       proj_life = 30,
       style = input$cost_view)%>% 
-      rename(any_of(references_vector))
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) %>% # to show NA in table
+      mutate(year = as.character(year)) %>% rename(Year = year)
     
     x<-datatable(temp,
-              rownames = FALSE,
-              selection = "none",
-              options = list(
-                pageLength = 50,
-                searching = FALSE,
-                paging = FALSE,
-                info = FALSE)) 
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE)) 
     if(input$cost_view == "detail"){
-      x <- x %>% DT::formatRound(2:6, digits = 3)}
-    return(x)
-    })
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
   
   
   ## make editable -----------------------------------------------------------
@@ -4376,17 +4770,17 @@ server <- function(input, output, session) {
     currency_rows = NULL
     decimal_rows= NULL
     fin_table<-datatable(results,
-              rownames = FALSE,
-              selection = "none",
-              extension = 'RowGroup',
-              
-              options = list(rowGroup = list(dataSrc = c(5)),
-                             columnDefs = list(list(targets = c(5), visible = FALSE),
-                                               list(
-                                                 targets = '_all',
-                                                 render = DT::JS(
-                                                   sprintf(
-                                                     "function(data, type, row, meta) {
+                         rownames = FALSE,
+                         selection = "none",
+                         extension = 'RowGroup',
+                         
+                         options = list(rowGroup = list(dataSrc = c(5)),
+                                        columnDefs = list(list(targets = c(5), visible = FALSE),
+                                                          list(
+                                                            targets = '_all',
+                                                            render = DT::JS(
+                                                              sprintf(
+                                                                "function(data, type, row, meta) {
                                                      if (type === 'display') {
                                                      var commaRows = [%s];
                                                      var percentRows = [%s];
@@ -4417,22 +4811,22 @@ server <- function(input, output, session) {
                                                      }
                                                      return data;
                                                      }",
-                                                     paste(comma_rows, collapse = ", "), 
-                                                     paste(percent_rows, collapse = ", "),
-                                                     paste(currency_rows, collapse = ", "),
-                                                     paste(decimal_rows, collapse = ", ")
-                                                     )
-                                                   )
-                                                 )
-                                               ),
-                             page_length = 20,
-                             searching = FALSE,
-                             paging = FALSE,
-                             info = FALSE))
+                                                                paste(comma_rows, collapse = ", "), 
+                                                                paste(percent_rows, collapse = ", "),
+                                                                paste(currency_rows, collapse = ", "),
+                                                                paste(decimal_rows, collapse = ", ")
+                                                              )
+                                                            )
+                                                          )
+                                        ),
+                                        page_length = 20,
+                                        searching = FALSE,
+                                        paging = FALSE,
+                                        info = FALSE))
     
     return(fin_table)
   })
-
+  
   output$scenario_line_graph <- renderPlotly({
     #browser()
     table_filt <- input$scenario_indicator
@@ -4444,16 +4838,21 @@ server <- function(input, output, session) {
                                          rvs$Baseline$horizon_year_2,
                                          rvs$Baseline$horizon_year_3)), 
                    names_to = "year", values_to = "value") %>%
-      filter(year != rvs$Baseline$base_year)
-    
+      filter(year != rvs$Baseline$base_year)  %>%
+      mutate(value = as.numeric(value)) %>%
+      mutate(visible = ifelse(Scenario == "Baseline","legendonly","visible"))
+    #max <- max(results$value)
+    #min <- min(results$value)
     
     lplot<-results %>%
       plotly::plot_ly(x = ~ year,
                       y = ~ value,
                       color = ~Scenario,
                       type = 'scatter',
-                      mode = 'lines') %>%
+                      mode = 'lines',
+                      visible = ~visible) %>%
       layout(yaxis = list(title = table_filt, separatethousands= TRUE),
+             xaxis = list(title = "Year"),
              barmode = "group") %>%
       config(displayModeBar = FALSE) 
     
@@ -4469,27 +4868,30 @@ server <- function(input, output, session) {
       filter(table_title == table_filt) %>%
       filter(Scenario != "Baseline") %>% 
       pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
-                            rvs$Baseline$horizon_year_1,
-                            rvs$Baseline$horizon_year_2,
-                            rvs$Baseline$horizon_year_3)), 
+                                         rvs$Baseline$horizon_year_1,
+                                         rvs$Baseline$horizon_year_2,
+                                         rvs$Baseline$horizon_year_3)), 
                    names_to = "year", values_to = "value") %>%
-      filter(year != rvs$Baseline$base_year)
-  
-      
+      filter(year != rvs$Baseline$base_year) %>%
+      mutate(value = as.numeric(value))
+    
+    
     results %>%
       plotly::plot_ly(x = ~ year,
                       y = ~ value,
                       color = ~Scenario,
                       type = 'bar') %>%
       layout(yaxis = list(title = table_filt, separatethousands= TRUE),
+             xaxis = list(title = "Year"),
              barmode = "group") %>%
-      config(displayModeBar = FALSE) 
+      config(displayModeBar = FALSE) %>%
+      layout(hoverlabel = list(bgcolor = "white", font = list(color = "black")))
     
-    })
+  })
   
   
   # read dummy data
-  scenario_result <- readxl::read_excel(".\\data\\scenario_simplified.xlsx")
+  scenario_result <- readxl::read_excel("data/scenario_simplified.xlsx")
   
   observeEvent(input$scenario_indicator,{
     dat_temp <- scenario_result |> 
@@ -4498,20 +4900,6 @@ server <- function(input, output, session) {
       mutate(year = as.character(year)) |> 
       pivot_wider(names_from = scenario,
                   values_from = mt_reduction)
-    
-    # output$emission_change_graph <- renderPlotly(
-    #   dat_temp |> 
-    #     plotly::plot_ly(x = ~year,
-    #                     y = ~`Scenario 1`,
-    #                     type = 'bar',
-    #                     name = 'Scenario 1' ) |> 
-    #     add_trace(y = ~ `Scenario 2`, name = 'Scenario 2'))
-    
-    # output$emission_change_tbl <- DT::renderDataTable(
-    #   DT::datatable(dat_temp,
-    #                 escape = FALSE,
-    #                 rownames=F,
-    #                 options = list(dom = 't')))
     
   })
   
@@ -4530,124 +4918,118 @@ server <- function(input, output, session) {
   
   # server Strategy Summary outputs ------------------------------------------------
   
-# observeEvent(c(input$strategy_scen_select,
-#                input$strategy_indicator),{
-#   req(reactive_scenario())
-
-
-    output$strategy_summary_tbl <- DT::renderDataTable({
-      
-      req(reactive_scenario())
-      
-      if (input$strategy_scen_select == 'scen_1' ){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
-          rename(scen = Scenario1)
-      } else if (input$strategy_scen_select == 'scen_2'){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
-          rename(scen = Scenario2)
-      }
-      
-      strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
-        select('year', Strategy,input$strategy_indicator)
-      
-      total_row <- strategy_temp %>%
+  # observeEvent(c(input$strategy_scen_select,
+  #                input$strategy_indicator),{
+  #   req(reactive_scenario())
+  
+  
+  output$strategy_summary_tbl <- DT::renderDataTable({
+    
+    scen_filter <- reactive_scenario()
+    req( scenario_sum())
+    
+    if (input$strategy_scen_select == 'scen_1' ){
+      scen_select <-   scen_filter %>% select(-'Scenario2') %>%
+        rename(scen = Scenario1)
+    } else if (input$strategy_scen_select == 'scen_2'){
+      scen_select <-   scen_filter %>% select(-'Scenario1') %>% 
+        rename(scen = Scenario2)
+    }
+    
+    strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
+      select('year', Strategy,input$strategy_indicator)
+    
+    total_row <- strategy_temp %>%
+      pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
+      mutate(across(where(is.numeric), ~round(., 2))) %>%
+      summarise(Strategy = "Total", across(where(is.numeric), sum)) 
+    
+    
+    data_temp <- bind_rows(
+      strategy_temp %>%
         pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
-        mutate(across(where(is.numeric), ~round(., 2))) %>%
-        summarise(Strategy = "Total", across(where(is.numeric), sum)) 
-      
-      
-      data_temp <- bind_rows(
-        strategy_temp %>%
-          pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
-          mutate(across(where(is.numeric), ~round(., 2))),
-        total_row
-      ) %>% mutate(across(where(is.numeric), ~ prettyNum(., big.mark = ",")))
-      data_temp %>%
-        DT::datatable(
-          escape = FALSE,
-          rownames = FALSE,
-          options = list(dom = 't', pageLength = 13,
-                         initComplete = JS(
-                           "function(settings, json) {",
-                           "  var table = settings.oInstance.api();",
-                           "  var lastRow = table.rows().count() - 1;",
-                           "  table.rows().every(function(index, element) {",
-                           "    if (index === lastRow) {",
-                           "      $(this.node()).css('font-weight', 'bold');",
-                           "    } else {",
-                           "      $(this.node()).css('font-weight', 'normal');",
-                           "    }",
-                           "  });",
-                           "}")))
-      })
+        mutate(across(where(is.numeric), ~round(., 2))),
+      total_row
+    ) %>% mutate(across(where(is.numeric), ~ prettyNum(., big.mark = ",")))
+    data_temp %>%
+      DT::datatable(
+        escape = FALSE,
+        rownames = FALSE,
+        options = list(dom = 't', pageLength = 13,
+                       initComplete = JS(
+                         "function(settings, json) {",
+                         "  var table = settings.oInstance.api();",
+                         "  var lastRow = table.rows().count() - 1;",
+                         "  table.rows().every(function(index, element) {",
+                         "    if (index === lastRow) {",
+                         "      $(this.node()).css('font-weight', 'bold');",
+                         "    } else {",
+                         "      $(this.node()).css('font-weight', 'normal');",
+                         "    }",
+                         "  });",
+                         "}")))
+  })
   
   
-
-    output$strategy_summary_graph <- renderPlotly({
-      
-      req(reactive_scenario())
-      
-      if (input$strategy_scen_select == 'scen_1' ){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario2') %>%
-          rename(scen = Scenario1)
-      } else if (input$strategy_scen_select == 'scen_2'){
-        scen_select <-   reactive_scenario() %>% select(-'Scenario1') %>% 
-          rename(scen = Scenario2)
-      }
-      
-      strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
-        select('year', Strategy,input$strategy_indicator) %>%
-        arrange(year, Strategy)
-      
-      # browser()
-      
-      base_values <- strategy_temp %>% 
-        group_by(year, Strategy) %>% 
-        summarise(base_value = min(input$strategy_indicator))
-      
-      constant_base <- min(base_values$base_value)
-      
-      
-      plot_ly(strategy_temp, x = ~factor(year), y = ~get(input$strategy_indicator),
-              color = ~Strategy, type = "bar", base = base_values$base_value) %>%
-        layout(xaxis = list(title = "Year", categoryorder = "category"),
-               yaxis = list(title = "Total Change"),
-               barmode = "stack",
-               bargroupgap  = 0 ) %>%
-        add_trace( x = ~as.character(year), y = ~constant_base,
-                  type = "bar", marker = list(color = "rgba(0,0,0,0)"),
-                  showlegend = F)
-    })
-
   
-
+  output$strategy_summary_graph <- renderPlotly({
+    
+    scen_filter <-  reactive_scenario()
+    req( scenario_sum())
+    if (input$strategy_scen_select == 'scen_1' ){
+      scen_select <-   scen_filter %>% select(-'Scenario2') %>%
+        rename(scen = Scenario1)
+    } else if (input$strategy_scen_select == 'scen_2'){
+      scen_select <-   scen_filter %>% select(-'Scenario1') %>% 
+        rename(scen = Scenario2)
+    }
+    
+    strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
+      select('year', Strategy,input$strategy_indicator) %>%
+      arrange(year, Strategy)
+    #browser()
+    plot_ly(strategy_temp, x = ~factor(year), y = ~get(input$strategy_indicator),
+            color = ~Strategy, 
+            text = ~Strategy,
+            type = "bar",
+            hoverinfo = 'text',
+            textposition = 'none',
+            hovertemplate = paste0('%{text} %{x}:<br>', 
+                                   'Emissions: %{y:.4s}<extra></extra>')
+    ) |>
+      layout(xaxis = list(title = "Year"),
+             yaxis = list(title = "Total Change"),
+             barmode = "relative",
+             legend = list(orientation = 'h')) |> 
+      config(displaylogo = FALSE, 
+             modeBarButtonsToRemove = c("toImage","zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d", "toggleSpikelines", "hoverCompareCartesian", "hoverClosestGeo", "hoverClosest3d", "hoverClosestGeo", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "hoverClosestCartesian"))
+    
+  })
+  
+  
+  
   #Processing working ----
-
+  
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
-  source("processing_scripts/processing_BikePed.R", local = TRUE) 
-  source("processing_scripts/processing_TransitService.R", local = TRUE)  
-  source("processing_scripts/processing_Micro.R", local = TRUE) 
+  source("processing_scripts/processing_BikePed.R", local = TRUE) #Qi done
+  source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi done (confirm with Ben)
+  source("processing_scripts/processing_Micro.R", local = TRUE) #Qi done
   source("processing_scripts/processing_OPS.R", local = TRUE)
-  source("processing_scripts/processing_MDHD.R", local = TRUE) 
-  source("processing_scripts/processing_TransitElec.R", local = TRUE)  
-  source("processing_scripts/processing_TransitService.R", local = TRUE) 
-  source("processing_scripts/processing_TDM.R", local = TRUE) 
-  source("processing_scripts/processing_ParkRide.R", local = TRUE) 
-  source("processing_scripts/processing_freight.R", local = T) 
-  source("processing_scripts/processing_EVSE.R", local = T) 
-  source("processing_scripts/processing_RoadwayExp.R", local = TRUE) 
-    
-  source("processing_scripts/processing_TransitService_Cuts.R",local = T) #in progress
-    source("processing_scripts/processing_LandUse.R",local = T) #in progress
-    source("processing_scripts/processing_roadway_resurfacing.R",local = T) #in progress
-    
+  source("processing_scripts/processing_MDHD.R", local = TRUE) #Gui done - needs cost
+  source("processing_scripts/processing_TransitElec.R", local = TRUE)  #Qi done
+  source("processing_scripts/processing_TransitService.R", local = TRUE) #Qi done
+  source("processing_scripts/processing_TDM.R", local = TRUE) #Qi done
+  source("processing_scripts/processing_ParkRide.R", local = TRUE) #Qi done
+  source("processing_scripts/processing_freight.R", local = T) #Gui done - needs cost
+  source("processing_scripts/processing_EVSE.R", local = T) #Gui done - needs cost
+  source("processing_scripts/processing_RoadwayExp.R", local = TRUE) #Finished
   source("functions/cost_maker.R", local = TRUE)
   source("processing_scripts/processing_Allassump.R", local = TRUE) #Finished
   
   #rvs update from different inputs
   #key_inputs update
-
-    key_inputs_listen <- reactive({
+  
+  key_inputs_listen <- reactive({
     list(input$state_input,
          input$base_year,
          input$horizon_year_1,
@@ -4661,51 +5043,16 @@ server <- function(input, output, session) {
          input$ev_baseline_input,
          input$grid_emissions_input)
   })
- 
-  # output$pdf_report <- downloadHandler(
-  #   filename = function(){
-  #     paste("Summary Report",
-  #           Sys.Date(),
-  #           ".pdf",
-  #           sep="")},
-  #   content = function(file){
-  #       #data <- # placeholder now 
-  #       #mutate(center = unlist(center))
-  #       browser()
-  #       output_file <- file.path(getwd(),  glue::glue("{fn}.pdf"))
-  #       unloadNamespace("kableExtra")
-  #       rmarkdown::render(
-  #         input = file.path(getwd(),"Report_Template.qmd"),
-  #         output_file = output_file,
-  #         params = list(
-  #           state <- input$state_input,
-  #           bsae_year <- input$base_year,
-  #           horizon_year_1 <- input$horizon_year_1,
-  #           horizon_year_2<- input$horizon_year_2,
-  #           horizon_year_3 <- input$horizon_year_3,
-  #           trans_scope <- input$transportation_scope,
-  #           em_scope<- input$scope_emissions,
-  #           fuel_scope <-input$scope_fuels,
-  #           vmt <- input$vmt_forecast_input,
-  #           vmt_nhs <- input$vmt_nhs,
-  #           ev<- input$ev_baseline_input,
-  #           grid_em<- input$grid_emissions_input
-  #         )
-  #       )
-  #       file.copy(glue::glue("{fn}.pdf"), file)
-  #       browser()
-  #       
-  #     
-  #   }
-  # )
-
+  
+  ## download PDF report
+  
   output$pdf_report <- downloadHandler(
-
+    
     filename = function(){
-          paste("Summary Report",
-                Sys.Date(),
-                ".pdf",
-                sep="")},
+      paste("Summary Report",
+            Sys.Date(),
+            ".pdf",
+            sep="")},
     content = function(file) {
       
       req(baseline_ghg_forecast())
@@ -4738,7 +5085,10 @@ server <- function(input, output, session) {
                                        table_title == "PM2.5 Reduction (MT)" ~ 'PM2.5',
                                        table_title == "New Daily Active Trips" ~ 'New Daily Active Trips')) %>%
         rename(indicator = table_title) %>%
-        pivot_longer(cols = c(`2021`, `2025`, `2030`, `2050`), 
+        pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
+                                           rvs$Baseline$horizon_year_1,
+                                           rvs$Baseline$horizon_year_2,
+                                           rvs$Baseline$horizon_year_3)), 
                      names_to = "Year",
                      values_to = "mt_reduction") %>%
         mutate(mt_reduction = ifelse(mt_reduction == "-","0",mt_reduction)) %>%
@@ -4776,9 +5126,9 @@ server <- function(input, output, session) {
         lapply(., replace_na_with_string) %>%
         lapply(., remove_year_column) %>%
         make_column_names_proper(.)
-        
+      
       Sys.sleep(1)
-
+      
       # Render the R Markdown file to PDF
       shiny::withProgress(
         message = paste0("Downloading", input$dataset, " Data"),
@@ -4811,17 +5161,74 @@ server <- function(input, output, session) {
                             output_format = "pdf_document",
                             output_options = list(
                               keep_tex = TRUE,
-                              verbose = TRUE,
-                              latex_engine = 'xelatex')
+                              verbose = TRUE#,
+                              #latex_engine = 'xelatex'
+                            )
           )
         }
       )
       
     }
   )
-
   
+  
+  #footer buttons-------------------------
+  observeEvent(c(input$inputs_btn,input$inbaseline),{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Baseline")
+  },ignoreInit = T)
+  observeEvent(input$inprojects,{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Projects")
+  },ignoreInit = T)
+  observeEvent(input$incosts,{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Costs")
+  },ignoreInit = T)
+  observeEvent(input$inassumptions,{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Assumptions")
+  },ignoreInit = T)
+  observeEvent(input$inscenarios,{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Scenarios")
+  },ignoreInit = T)
+  observeEvent(input$inadvanced,{
+    nav_select(id = "APP_PAGE",selected = "Inputs")
+    nav_select(id = "INPUTS_TABS",selected = "Advanced")
+  },ignoreInit = T)
+  observeEvent(input$outputs_btn,{
+    nav_select(id = "APP_PAGE",selected = "Outputs")
+    nav_select(id = "OUTPUTS_TABS",selected = "Baseline GHG Forecast")
+  },ignoreInit = T)
+  observeEvent(input$outbaseline,{
+    nav_select(id = "APP_PAGE",selected = "Outputs")
+    nav_select(id = "OUTPUTS_TABS",selected = "Baseline GHG Forecast")
+  },ignoreInit = T)
+  observeEvent(input$outscenario,{
+    nav_select(id = "APP_PAGE",selected = "Outputs")
+    nav_select(id = "OUTPUTS_TABS",selected = "Scenario Summary")
+  },ignoreInit = T)
+  observeEvent(input$outsummary,{
+    nav_select(id = "APP_PAGE",selected = "Outputs")
+    nav_select(id = "OUTPUTS_TABS",selected = "Strategy Summary")
+  },ignoreInit = T)
+  observeEvent(input$outcosteff,{
+    nav_select(id = "APP_PAGE",selected = "Outputs")
+    nav_select(id = "OUTPUTS_TABS",selected = "Cost Effectiveness")
+  },ignoreInit = T)
+  observeEvent(input$about_btn,{
+    nav_select(id = "APP_PAGE",selected = "Welcome")
+  },ignoreInit = T)
+  observeEvent(input$how_to_btn,{
+    nav_select(id = "APP_PAGE",selected = "How-to")
+  },ignoreInit = T)
+  observeEvent(input$sources_btn,{
+    nav_select(id = "APP_PAGE",selected = "Sources")
+  },ignoreInit = T)
 }
+
+
 
 # Run the application
 shinyApp(ui, server)
