@@ -1,4 +1,4 @@
-# To Seth: Are we using this? I think we should delete it
+# new function for outputs - adrienne working here
 render_custom_datatable_costs_outputs <- function(data_reactive,
                                                   table_number,
                                                   page_length) {

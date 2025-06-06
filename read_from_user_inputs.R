@@ -14,7 +14,6 @@ read_user_inputs_excel <- function(filename){
 
   Baseline <- read_excel(path = filename, sheet = "Baseline") %>% as.vector()
   Costs <- read_excel(path = filename, sheet = "Costs")
-  Budget <- read_excel(path = filename, sheet = "Budget")
   Assumptions <- read_excel(path = filename, sheet = "Assumptions")
   Advanced <- read_excel(path = filename, sheet = "Advanced")
   Projects <- read_excel(path = filename, sheet = "Projects")
@@ -23,7 +22,6 @@ read_user_inputs_excel <- function(filename){
   
   return(list("Baseline" = Baseline,
               "Costs" = Costs,
-              "Budget" = Budget,
               "Assumptions" = Assumptions, 
               "Advanced" = Advanced,
               "Projects" = Projects,
@@ -35,7 +33,6 @@ read_user_inputs_version2 <- function(filename){
   
   Baseline <- read_excel(path = filename, sheet = "Baseline") %>% as.vector()
   Costs <- read_excel(path = filename, sheet = "Costs")
-  Budget <- read_excel(path = filename, sheet = "Budget")
   Assumptions <- read_excel(path = filename, sheet = "Assumptions")
   Advanced <- read_excel(path = filename, sheet = "Advanced")
   Projects <- read_excel(path = filename, sheet = "Projects")
@@ -44,7 +41,6 @@ read_user_inputs_version2 <- function(filename){
   reactive_data <- reactiveValues(
     "Baseline" = Baseline,
     "Costs" = Costs,
-    "Budget" = Budget,
     "Assumptions" = Assumptions, 
     "Advanced" = Advanced,
     "Projects" = Projects,

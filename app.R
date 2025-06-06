@@ -96,32 +96,18 @@ ui <- function(request) {
       
 
 # welcome page ------------------------------------------------------------
-      # Adrinene to ask Terry where to find the Teapot dome text
+      
       nav_panel(title = "Welcome",
                 p(),
+                #    h2("Transportation Evaluation and Carbon Reduction Tool (TEA-CART)"),
                 h3("About"),
                 p(),
-                HTML("<p>Georgetown Climate Center’s (GCC) Transportation Evaluation 
-                and Carbon Reduction Tool (TEA-CART) offers planning-level 
-                analysis to estimate the GHG performance of transportation 
-                capital program investments. The functionality of the tool has 
-                been informed by transportation agency officials. It is 
-                designed to serve as a resource for state Departments of 
-                Transportation (DOT) and Metropolitan Planning Organization 
-                (MPO) practitioners conducting long-term planning, project 
-                prioritization, and performance management.<br>
-                <p>
-The primary purpose of TEA-CART is to help practitioners account for the 
-environmental performance of proposed projects, so they can set meaningful 
-targets for greenhouse gas or vehicle-miles traveled reduction and develop 
-capital plans that prioritize transportation projects that will help achieve 
-those goals. TEA-CART was developed by Cambridge Systematics under contract 
-with the Georgetown Climate Center, which facilitated extensive input from 
-state and federal officials.<br>
-                     <p>
-                     Inputs:</b> Inputs to the tool typically include those 
-                     available during the state or MPO transportation 
-                     capital program planning process. For example:"),
+                p("The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a
+      comprehensive and dynamic tool aimed at assisting states with selecting
+      and prioritizing transportation capital program investments to effectively
+      support greenhouse gas (GHG) reduction. The tool is designed to accept
+      inputs typically available during the programming process. It provides
+      key outputs including:"),
       tags$ul(tags$li(p("A baseline inventory and forecast of GHG emissions.")),
               tags$li(p("GHG impacts of a capital program or a hypothetical set
                       of capital projects.")),
@@ -759,8 +745,8 @@ nav_panel(title = "Budget",
                        HTML("This category represents spending on any <b>two-way miles of new 
            bicycle or pedestrian facility.</b> The default assumption for these 
            project types is that any new bicycle or pedestrian facility would 
-           be two-way. For one-way facilities, please enter half the 
-           budget amount."),
+           be two-way. (i.e., for one-way facilities, please enter half the 
+           budget amount)."),
                      ),
                      open = FALSE
                    ),
@@ -770,7 +756,7 @@ nav_panel(title = "Budget",
             ),
           ),
           fluidRow(
-            DT::dataTableOutput("bikeped_budget_tbl")
+            DT::dataTableOutput("bikeped_projs_tbl")
             
           ),
 
@@ -2595,30 +2581,6 @@ server <- function(input, output, session) {
   # })  
   
 
-
-# BUDGET: Inputs ----------------------------------------------------------
-
-  
-  output$bikeped_budget_tbl <- renderDT({
-    req(rvs$Budget)
-    
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 1,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_budget_table = TRUE,
-      is_advanced_table = FALSE,
-      non_editable_cols = c(0:2),
-      page_length = 10,
-      comma_rows = integer(0),
-      percent_rows = 10:12,
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  })
-  
-  
-  
   # server assumptions ------------------------------------------------------
   
   assumptions_names <- c("bikeped_assmps",
