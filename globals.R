@@ -269,8 +269,7 @@ Tech_Frac_Vision <-   #you should be calling the reactive version Tech_Frac_Visi
   ungroup()
 
 #TechFrac object----
-#I need to match up the columns with what's above for this one
-# GLV 12/21/23: I did the vision 2022 one above, with the helpful code below. We can expand on other options at a later time? - SL, this has been expanded delete this comment when ready
+
 TechFrac <- Stock_Type_Tech_BASE %>% left_join(EV_Forecast, by = c("veh_type", "year")) %>%
   group_by(year, veh_type) %>%
   #Baseline vision 2022 I think aka AEO
