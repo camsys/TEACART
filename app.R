@@ -57,6 +57,20 @@ ui <- function(request) {
     # #a0cf66 is a georgetown color but intense - color below is a milder variation
     tags$head(
       tags$style(HTML("
+      /* Make the sidebar sticky */
+      .bslib-sidebar-layout > .sidebar {
+        position: fixed; !important;
+        top: 65px;
+        width: 350px;
+        height: calc(100vh - 70px);
+        display: flex
+      }
+            .bslib-sidebar-layout > .main {
+        margin-left: -100px;  /* some trial and error here */
+      }
+      
+    ")),
+      tags$style(HTML("
             .accordion-button.collapsed {
                 background-color: #e3ebd5;
             }
@@ -99,7 +113,7 @@ ui <- function(request) {
     ),
     
     page_navbar(
-      
+      position = "fixed-top",
       #title = "TEA-CART",
       id = "APP_PAGE",
       theme = bs_theme(
@@ -183,6 +197,7 @@ ui <- function(request) {
       
       
       sidebar = sidebar(width = 450, 
+                        class = "stick-sidebar",
                         h2('Quick Guide'),
                         HTML("<p>This sidebar has a high-level step-by-step guide for 
                         entering and saving data in the TEA CART Tool. 
@@ -2899,13 +2914,30 @@ server <- function(input, output, session) {
   })  
   
   
-  # Budget table inputs -----------------------------------------------------
   
   
-  # Budget Tables: Render ---------------------------------------------------
+  # BUDGET: Render ---------------------------------------------------
+  
+  output$bikeped_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 1,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:1),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:21),
+      decimal_rows = integer(0))
+  })
   
   
-  
+
   
   
   # server assumptions ------------------------------------------------------
@@ -3703,8 +3735,8 @@ server <- function(input, output, session) {
     rvs$Costs[rvs$Costs$table_no_ui == 14,] <- initial_costs[initial_costs$table_no_ui == 14, ]
   })  
   
-  
-  
+
+
   # SCENARIOS: inputs -------------------------------------------------
   
   
