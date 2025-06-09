@@ -67,6 +67,9 @@ ui <- function(request) {
       }
             .bslib-sidebar-layout > .main {
         margin-left: -100px;  /* some trial and error here */
+            }
+      .main {
+      margin-top: 67.59px;
       }
       
     ")),
