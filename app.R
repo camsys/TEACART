@@ -536,7 +536,7 @@ and potential applications.
                                          ))
                                        ),
                                        id = "acc1",
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -567,7 +567,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_transit_fixed_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -597,7 +597,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_transit_dr_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -625,7 +625,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_transit_el_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -655,7 +655,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_transit_bus_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -682,7 +682,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_public_rail_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -712,7 +712,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_tdm_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -740,7 +740,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_micro_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -768,7 +768,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_traffic_ops_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -796,7 +796,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_mhdev_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -825,7 +825,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_pnr_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -853,7 +853,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_evsi_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -880,7 +880,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_freight_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -908,7 +908,7 @@ and potential applications.
                                                                     DTOutput(outputId = "cumul_expansion_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -935,7 +935,7 @@ and potential applications.
                             #                      DTOutput(outputId = "cumul_custom_projs_tbl")
                             #              ))
                             #            ),
-                            #            open = FALSE
+                            #            open = TRUE
                             #          ),
                             #   ),
                             #   column(2,
@@ -1033,7 +1033,7 @@ and potential applications.
            be two-way. (i.e., for one-way facilities, please enter half the 
            budget amount)."),
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1068,7 +1068,7 @@ and potential applications.
                                          HTML("This category represents the <b>overall cost per mile</b> of bicycle or pedestrian facilities being implemented."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1089,7 +1089,7 @@ and potential applications.
                                          "Costs 2 | Transit: Fixed Route Service Costs",
                                          HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new fixed route service vehicles."),
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1110,7 +1110,7 @@ and potential applications.
                                          HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new demand response service vehicles."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1131,7 +1131,7 @@ and potential applications.
                                          HTML("This category represents the <b>cost per mile of red paint</b> for addition of miles of new bus priority treatment."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1152,7 +1152,7 @@ and potential applications.
                                          HTML("This category represents the <b>capital cost per vehicle, operation and maintenance (O&M) cost per vehicle revenue miles (VRM)</b>, and <b>fuel cost per VRM</b> for addition of any new rail vehicles operating in annual maximum service (VOMS)."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1174,7 +1174,7 @@ and potential applications.
                                          HTML("This category represents the <b>cost per employee</b> of the TDM Program Outreach."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1194,7 +1194,7 @@ and potential applications.
                                          "Costs 8 | Micromobility Costs",
                                          HTML("This category represents the <b>subsidy provided per e-bike.</b>"),
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1216,7 +1216,7 @@ and potential applications.
                                          HTML("This category represents the <b>cost per improvement</b> for any improvements made to traffic operations at intersections."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1238,7 +1238,7 @@ and potential applications.
                                          HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium and heavy-duty vehicles replaced with new electric vehicles."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1260,7 +1260,7 @@ and potential applications.
                                          HTML("This category represents the <b>cost per space</b> for any new addition or expansion of Park and Ride spaces."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1281,7 +1281,7 @@ and potential applications.
                                          "Costs 12 | EV Charging Infrastructure Costs",
                                          HTML("This category represents the <b>hardware cost per port</b> and <b>installation cost per port</b> for any new addition or expansion of EV charging ports."),
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1301,7 +1301,7 @@ and potential applications.
                                          "Costs 13 | Intermodal Freight Investment Costs",
                                          HTML("This category represents the <b>cost of any intermodal investment.</b>"),
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1322,7 +1322,7 @@ and potential applications.
                                          "Costs 14 | Roadway Expansion Costs",
                                          HTML("This category represents the <b>capital cost per lane-mile</b> and <b>annual maintenance cost per lane-mile</b> for addition of any new lane-miles of roadways."),
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1343,7 +1343,7 @@ and potential applications.
                                          "Costs 15 | Fuel Price",
                                          HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."),
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1381,7 +1381,7 @@ and potential applications.
                                   <p>
                                   (iii) <b>Annualization</b>, which represents the annual number of days multiplier for the mode-shift to walking / biking.")
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1416,7 +1416,7 @@ and potential applications.
                                   (vi) <b>Bus Priority Factors</b>, which include bus priority % travel time change, bus ridership elasticity with respect to travel time, number of routes affected, number of daily buses per route, percentage of route-hours affected, and weekday annualization."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1438,7 +1438,7 @@ and potential applications.
                                   <p>
                                   This category represents the <b>travel demand management data</b> from the Commuter Reduction Program, which includes the average reduction in one-person-vehicle driving, average work trip length during automobile use, and the corresponding annualization factor."),
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1462,7 +1462,7 @@ and potential applications.
                                   <b>Micromobility Data</b>: This category represents the strategy parameters corresponding to E-bike subsidies, including e-bike cost, subsidy coverage of cost, bike trips per week, average trip length, and share of e-bikers previously driving automobiles."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1495,7 +1495,7 @@ and potential applications.
                                   <p>
                                   (v) <b>Induced Travel Elasticities</b>, which are the percent change in VMT with respect to percent change in lane-miles or travel time for each facility type."),
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1520,7 +1520,7 @@ and potential applications.
                                   "),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1544,7 +1544,7 @@ and potential applications.
                                   This category represents the <b>utilization of park and ride spaces.</b>"),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1565,7 +1565,7 @@ and potential applications.
                                          "Assumptions 8 | Electric Vehicle Charging Infrastructure Parameters",
                                          HTML("This category represents the <b>elasticity of the number of vehicle sales with respect to the number of charging ports</b>."),
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1617,7 +1617,7 @@ and potential applications.
                                          "Advanced 1 | Custom Forecast: Electric Vehicles (EVs)",
                                          HTML("This represents the vehicle electrification forecast used for baseline projections. This is represented by the percentage of vehicles that are EVs.")
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1638,7 +1638,7 @@ and potential applications.
                                          HTML("This represents the vehicle miles traveled (VMT) forecast used for baseline projections."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1659,7 +1659,7 @@ and potential applications.
                                          HTML("This represents the type and fraction of assumed fuel technologies used by on-road public transit."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1680,7 +1680,7 @@ and potential applications.
                                          HTML("This represents the type of assumed fuel technologies used by passenger rail systems."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1700,7 +1700,7 @@ and potential applications.
                                          HTML("This represents the assumed annual growth rate of freight rail and the energy intensity as measured in British thermal units (BTU) per ton-mile."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1722,7 +1722,7 @@ and potential applications.
                                          HTML("This represents the estimated emissions from construction and maintenance activities."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1743,7 +1743,7 @@ and potential applications.
                                          HTML("This represents the percentage of plug-in hybrid electric vehicle (PHEV) miles driven on electricity."),
                                          
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -1991,7 +1991,7 @@ and potential applications.
       #              officia deserunt mollit anim id est laborum.",
       # 
       #            ),
-      #            open = FALSE
+      #            open = TRUE
       #          ),
       #   ),
       #   column(2,
@@ -2274,6 +2274,7 @@ server <- function(input, output, session) {
                   ),
                   extensions = 'Buttons',
                   filter = 'bottom',
+                  selection = 'none',
                   rownames = FALSE)
   })
   
