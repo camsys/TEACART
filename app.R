@@ -484,7 +484,7 @@ and potential applications.
                                      tags$div(class = "well card-flex",
                                               tags$div(class = "half-card",
                                                        selectInput("scope_fuels",
-                                                                   HTML("<span>Scope Emissions: Include Upstream Fuels:</span> <br> <p>Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG"),
+                                                                   HTML("<span>Emissions Scope: Include Upstream Fuels:</span> <br> <p>Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG"),
                                                                    choices = c("Yes" = 1, "No" = 0),
                                                                    selected = "No")
                                               ),
@@ -1041,7 +1041,7 @@ and potential applications.
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_projs_tbl")
+                              DT::dataTableOutput("bikeped_budget_tbl")
                               
                             ),
                             
@@ -1607,7 +1607,12 @@ and potential applications.
                   
                   # advanced tab ui ---------------------------------------------------------
                   nav_panel(title = "Advanced",
-                            HTML("<p>This tab allows users to input advanced custom assumptions."),
+                            HTML("<p>This tab provides users the ability to enter 
+                                 custom VMT forecasts and custom EV adoption 
+                                 forecasts, as well as other advanced 
+                                 parameters, including fuel mixes for specified 
+                                 vehicle categories and construction and 
+                                 maintenance emissions."),
                             
                             # custom forecast advanced
                             fluidRow(
