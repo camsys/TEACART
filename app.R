@@ -108,6 +108,8 @@ ui <- function(request) {
                 href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"),
       tags$link(rel = "stylesheet", 
                 href = "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"),
+      tags$link(rel = "stylesheet",
+                href = "https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&family=Oswald:wght@300;400;500&display=swap"),
       tags$link(rel = "stylesheet", 
                 href = "TEACART.css?v=1.0.1"),
       tags$script(src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"),
@@ -133,7 +135,7 @@ ui <- function(request) {
       footer =  fluidRow( class="footer",
                           #SLBOOKMARK
                           useShinyjs(),
-                          column(width = 9,
+                          column(width = 12,
                                  tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                         href = "https://www.georgetownclimate.org/", target = "_blank"),
                                  tags$p("Adapted from TEA-CART Excel Model Version 1.10"),
@@ -143,58 +145,58 @@ ui <- function(request) {
                                  tags$p("© Georgetown Climate Center")
                           ),
                           #column(width = 2,),
-                          column(width = 2,
-                                 shiny::actionButton("inputs_btn",
-                                                     class = "btn btn-primary",
-                                                     label = "Inputs"
-                                 ),
-                                 tags$ul(
-                                   tags$li(
-                                     shiny::actionButton("inbaseline",class = "btn btn-secondary",label = "Baseline")),
-                                   tags$li(
-                                     shiny::actionButton("inprojects",class = "btn btn-secondary",label = "Projects")),
-                                   tags$li(
-                                     shiny::actionButton("incosts",class = "btn btn-secondary",label = "Costs")),
-                                   tags$li(
-                                     shiny::actionButton("inassumptions",class = "btn btn-secondary",label = "Assumptions")),
-                                   tags$li(
-                                     shiny::actionButton("inscenarios",class = "btn btn-secondary",label = "Scenarios")),
-                                   tags$li(
-                                     shiny::actionButton("inadvanced",class = "btn btn-secondary",label = "Advanced"))
-                                 )
-                          ),
-                          column(width = 2,
-                                 shiny::actionButton("outputs_btn",
-                                                     class = "btn btn-primary",
-                                                     label = "Outputs"
-                                 ),
-                                 tags$ul(
-                                   tags$li(
-                                     shiny::actionButton("outbaseline",class = "btn btn-secondary",label = "Baseline GHG Forecast")),
-                                   tags$li(
-                                     shiny::actionButton("outscenario",class = "btn btn-secondary",label = "Scenario Summary")),
-                                   tags$li(
-                                     shiny::actionButton("outsummary",class = "btn btn-secondary",label = "Strategy Summary")),
-                                   tags$li(
-                                     shiny::actionButton("outcosteff",class = "btn btn-secondary",label = "Cost Effectiveness"))
-                                 )
-                          ),
-                          column(width = 1,
-                                 tags$div(class = "make-this-colunar",
-                                          shiny::actionButton("about_btn",
-                                                              class = "btn btn-primary",
-                                                              label = "About"
-                                          ),
-                                          shiny::actionButton("how_to_btn",
-                                                              class = "btn btn-primary",
-                                                              label = "How-to"
-                                          ),
-                                          shiny::actionButton("sources_btn",
-                                                              class = "btn btn-primary",
-                                                              label = "Sources"
-                                          )
-                                 )
-                          )
+                          # column(width = 2,
+                          #        shiny::actionButton("inputs_btn",
+                          #                            class = "btn btn-primary",
+                          #                            label = "Inputs"
+                          #        ),
+                          #        tags$ul(
+                          #          tags$li(
+                          #            shiny::actionButton("inbaseline",class = "btn btn-secondary",label = "Baseline")),
+                          #          tags$li(
+                          #            shiny::actionButton("inprojects",class = "btn btn-secondary",label = "Projects")),
+                          #          tags$li(
+                          #            shiny::actionButton("incosts",class = "btn btn-secondary",label = "Costs")),
+                          #          tags$li(
+                          #            shiny::actionButton("inassumptions",class = "btn btn-secondary",label = "Assumptions")),
+                          #          tags$li(
+                          #            shiny::actionButton("inscenarios",class = "btn btn-secondary",label = "Scenarios")),
+                          #          tags$li(
+                          #            shiny::actionButton("inadvanced",class = "btn btn-secondary",label = "Advanced"))
+                          #        )
+                          # ),
+                          # column(width = 2,
+                          #        shiny::actionButton("outputs_btn",
+                          #                            class = "btn btn-primary",
+                          #                            label = "Outputs"
+                          #        ),
+                          #        tags$ul(
+                          #          tags$li(
+                          #            shiny::actionButton("outbaseline",class = "btn btn-secondary",label = "Baseline GHG Forecast")),
+                          #          tags$li(
+                          #            shiny::actionButton("outscenario",class = "btn btn-secondary",label = "Scenario Summary")),
+                          #          tags$li(
+                          #            shiny::actionButton("outsummary",class = "btn btn-secondary",label = "Strategy Summary")),
+                          #          tags$li(
+                          #            shiny::actionButton("outcosteff",class = "btn btn-secondary",label = "Cost Effectiveness"))
+                          #        )
+                          # ),
+                          # column(width = 1,
+                          #        tags$div(class = "make-this-colunar",
+                          #                 shiny::actionButton("about_btn",
+                          #                                     class = "btn btn-primary",
+                          #                                     label = "About"
+                          #                 ),
+                          #                 shiny::actionButton("how_to_btn",
+                          #                                     class = "btn btn-primary",
+                          #                                     label = "How-to"
+                          #                 ),
+                          #                 shiny::actionButton("sources_btn",
+                          #                                     class = "btn btn-primary",
+                          #                                     label = "Sources"
+                          #                 )
+                          #        )
+                          # )
       ), 
       # sidebar -----------------------------------------------------------------
       
@@ -203,9 +205,16 @@ ui <- function(request) {
                         class = "stick-sidebar",
                         h2('Quick Guide'),
                         HTML("<p>This sidebar has a high-level step-by-step guide for 
-                        entering and saving data in the TEA CART Tool. 
-                          More information can be found in the <b>How-to</b> tab.</p>
-                             <br>"),
+                        entering and saving data in the TEA CART Tool. </p>
+                        "),
+                        h4('New User'),
+                        HTML("<ol>
+                            <li>Navigate to the <b>Inputs</b> tab.</li>
+                            <li>Input your values in the <b>Baseline, Projects, Costs,</b> and <b>Assumptions</b> sections.</li>
+                            <li>When you are done entering data, press CTRL <b>+</b> Enter on your keyboard to initiate the calculations.</li>
+                            <li>Select the desired combination of strategies in the <b>Scenarios</b> section.</li>
+                            <li>Navigate to <b>Outputs</b> tab to view your results.</li>
+                            </ol>"),
                         h4('Returning User'),
                         HTML("<p><b>Upload User Inputs</b></p>"),
                         
@@ -218,18 +227,13 @@ ui <- function(request) {
                                   placement = "right"),
                         h4('Save My Work'),
                         downloadButton("user_inputs_download", "Download User Inputs"),
-                        h4('New User'),
-                        HTML("<ol>
-                            <li>Navigate to the <b>Inputs</b> tab.</li>
-                            <li>Input your values in the <b>Baseline, Projects, Costs,</b> and <b>Assumptions</b> sections.</li>
-                            <li>When you are done entering data, press CTRL <b>+</b> Enter on you rkeyboard to initiate the calculations.</li>
-                            <li>Select the desired combination of strategies in the <b>Scenarios</b> section.</li>
-                            <li>Navigate to <b>Outputs</b> tab to view your results.</li>
-                            </ol>"),
-                        nav_spacer(),
-                        nav_spacer(),
-                        nav_spacer(),
-                        downloadButton("pdf_report","Download Summary Report")),
+                        HTML("<p>When you are done entering data, press CTRL <b>+</b> Enter on your keyboard to initiate the calculations.</p>"),
+
+                        # nav_spacer(),
+                        # nav_spacer(),
+                        # nav_spacer(),
+                        downloadButton("pdf_report","Download Summary Report"),
+                        HTML("<p>More information can be found in the <b>How-to</b> tab.</p>")),
       
       
       # welcome page ------------------------------------------------------------
@@ -263,8 +267,14 @@ agency officials who aim to achieve better climate and public health
 outcomes through transportation planning and investment decision making.<br>
 <p>
 Click on the “About” tab to learn more about the tool’s inputs, outputs, 
-and potential applications.
-")),
+and potential applications.<br><br>
+"),
+
+      actionLink("sources_btn", "View Sources"),
+      HTML("<br><br>"),
+      actionLink("how_to_btn", "View User Guide")
+
+),
       
       # about page --------------------------------------------------------------
       
