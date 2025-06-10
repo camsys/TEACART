@@ -1001,7 +1001,7 @@ and potential applications.<br><br>
                                            max = 20,
                                            step = 1
                               ),
-                              # Ben does it break at some point? Should we set a max?
+                              
                               # Adrienne this needs to be dynamic - values need to update based on years
                               numericInput("total_budget",
                                            HTML(paste('Total Budget ($M) for 2026-2030:',
@@ -1072,7 +1072,7 @@ and potential applications.<br><br>
                                        accordion_panel(
                                          HTML(paste('Budget 2 | Transit: Increased Fixed Route Service ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on transit fixed route service.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
                Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."),
@@ -1094,9 +1094,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 3 | Transit: Increased Demand Response Service',
+                                         HTML(paste('Budget 3 | Transit: Increased Demand Response Service ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on transit demand response service.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>new demand 
                                          response service vehicles operated in maximum service (VOMS).</b>
@@ -1122,9 +1122,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 4 | Transit: Fleet Electrification',
+                                         HTML(paste('Budget 4 | Transit: Fleet Electrification ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on transit fleet electrification.")),
                                                     sep = "")),
                                          HTML("This category represents spending toward the <b>replacement 
                                          of any fossil-fueled 
@@ -1149,9 +1149,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 5 | Bus Priority Treatment',
+                                         HTML(paste('Budget 5 | Bus Priority Treatment ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on bus priority treatment.")),
                                                     sep = "")),
                                          HTML("This category represents spending on miles 
                                               of <b>new bus priority treatment.</b> Bus priority 
@@ -1181,9 +1181,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 6 | Public Transportation: Rail',
+                                         HTML(paste('Budget 6 | Public Transportation: Rail ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on rail projects.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>new rail vehicles operating in maximum service (VOMS).</b>"),
                                        ),
@@ -1204,9 +1204,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 7 | Travel Demand Management',
+                                         HTML(paste('Budget 7 | Travel Demand Management ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on travel demand management.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>employment 
                                               covered through the TDM Program Outreach.</b> TDM programs 
@@ -1229,9 +1229,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 8 | Micromobility',
+                                         HTML(paste('Budget 8 | Micromobility ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on micromobility.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>e-bike subsidies</b>. 
                                               An e-bike subsidy reimburses part of the cost of an e-bike."),
@@ -1253,9 +1253,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 9 | Traffic Operations',
+                                         HTML(paste('Budget 9 | Traffic Operations ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on traffic operations.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>improvements 
                                               made to traffic operations at intersections</b>, such as new or retimed signals or new traffic-flow roundabouts."),
@@ -1277,9 +1277,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 10 | Medium and Heavy Duty Vehicle Replacement',
+                                         HTML(paste('Budget 10 | Medium and Heavy Duty Vehicle Replacement ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on medium and heavy duty vehicle replacement.")),
                                                     sep = "")),
                                          HTML("This category represents spending toward <b>replacement 
                                               of any fossil fuel medium or heavy-duty 
@@ -1302,9 +1302,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 11 | Park and Ride',
+                                         HTML(paste('Budget 11 | Park and Ride ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on park and ride projects.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>new addition or expansion of Park and Ride spaces.</b> A Park and Ride space allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
                                        ),
@@ -1325,9 +1325,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 12 | EV Charging Infrastructure',
+                                         HTML(paste('Budget 12 | EV Charging Infrastructure ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on new or expanded EV charging ports.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>new or expanded EV charging ports</b>. EV charging ports supply electric power for recharging electric vehicles."),
                                        ),
@@ -1348,9 +1348,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 13 | Freight Intermodal Facilities',
+                                         HTML(paste('Budget 13 | Freight Intermodal Facilities ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on freight intermodal facilities.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>intermodal freight investments</b>, expressed in millions of dollars."),
                                        ),
@@ -1371,9 +1371,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 14 | Roadway expansion',
+                                         HTML(paste('Budget 14 | Roadway expansion ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on roadway expansion.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>new lane-miles of roadways.</b>"),
                                        ),
@@ -1394,9 +1394,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 15 | Land Use',
+                                         HTML(paste('Budget 15 | Land Use ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on land use.")),
                                                     sep = "")),
                                          HTML("This category represents additional spending 
                                               toward more <b>compact and transit-oriented, walkable 
@@ -1421,9 +1421,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 16 | Transit Service Cuts',
+                                         HTML(paste('Budget 16 | Transit Service Cuts ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on transit service cuts.")),
                                                     sep = "")),
                                          HTML("This category estimates changes that could result from 
                                               funding cuts to transit service. These dollars represent 
@@ -1446,9 +1446,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 17 | Roadway Resurfacing',
+                                         HTML(paste('Budget 17 | Roadway Resurfacing ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on bike/ped projects.")),
+                                                                        title = "Budget spending on roadway resurfacing.")),
                                                     sep = "")),
                                          HTML("This category includes spending to <b>reduce surface roughness 
                                               and decrease rolling resistance on roadways.</b>"),
@@ -3372,7 +3372,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:2),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3391,7 +3391,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:2),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3409,7 +3409,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:2),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3427,7 +3427,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3445,7 +3445,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:2),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3463,7 +3463,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3481,7 +3481,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3499,7 +3499,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:2),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3517,7 +3517,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3535,7 +3535,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3553,7 +3553,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3571,7 +3571,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3589,7 +3589,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:2),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3607,7 +3607,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3625,7 +3625,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:2),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3643,7 +3643,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:3),
+      non_editable_cols = c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
