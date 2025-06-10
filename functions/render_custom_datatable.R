@@ -4,10 +4,10 @@
 render_custom_datatable <- function(#input_reactives,
                                     data_reactive,
                                     table_number,
+                                    is_budget_table = FALSE,
                                     is_year_table = TRUE,
                                     is_cost_table = FALSE,
                                     is_advanced_table = FALSE,
-                                    is_budget_table = FALSE,
                                     non_editable_cols,
                                     page_length,
                                     comma_rows,
@@ -26,6 +26,7 @@ render_custom_datatable <- function(#input_reactives,
   
     conditionally_transform <- function(df) {
       #browser()
+      # note that this function fails if you feed it fewer than five columns
 
     if (is_year_table == TRUE & is_advanced_table == FALSE) {
       df %>%
@@ -36,7 +37,7 @@ render_custom_datatable <- function(#input_reactives,
           rename_with(~as.character(rvs$Baseline$horizon_year_3), horizon_year_3) 
     } else if (is_budget_table == TRUE & is_advanced_table == FALSE & is_cost_table == FALSE & is_year_table == FALSE) {
       df %>% 
-        select(c(category, area_type, facility_type, value))
+        select(c(category, area_type, facility_type, unit, value))
     } else if (is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table_number,]) != 1 & table_number != 13){
       df %>% 
         select(-c(table_no_ui, table_no_ui_revised, 

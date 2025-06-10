@@ -966,7 +966,7 @@ and potential applications.
                         over the years of spending by the corresponding 
                         horizon year.<br>
                         ii) Spending estimates are assumed to be averages 
-                        based on historical data.")
+                        based on historical data.<br>")
                                      
                             ),
                             fluidRow(
@@ -1021,7 +1021,11 @@ and potential applications.
                             ),
                             # bike ped
                             # Adrienne search for 'Hover text' and replace
-                            # Adrienne confirm with Ben that the text from projects is still applicable
+                            fluidRow(
+                              DT::dataTableOutput("funding_summary_tbl")
+                              
+                            ),
+                            p(),
                             fluidRow(
                               column(10,
                                      accordion(
@@ -1623,7 +1627,7 @@ and potential applications.
                                      accordion(
                                        accordion_panel(
                                          "Advanced 1 | Custom Forecast: Electric Vehicles (EVs)",
-                                         HTML("This represents the vehicle electrification forecast used for baseline projections. This is represented by the percentage of vehicles that are EVs.")
+                                         HTML(".This is represented by the percentage of on-road vehicles (stock) that are EVs.")
                                        ),
                                        open = TRUE
                                      ),
@@ -2311,7 +2315,6 @@ server <- function(input, output, session) {
   # Project Tables: Render ------------------------------------------------------
   
   output$bikeped_projs_tbl <- renderDT({
-    #req(rvs$Projects)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
     
     render_custom_datatable(
@@ -2323,7 +2326,6 @@ server <- function(input, output, session) {
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
-    
   })
   
   output$cumul_bikeped_projs_tbl <- renderDT({
@@ -2927,9 +2929,10 @@ server <- function(input, output, session) {
   
   # BUDGET: Render ---------------------------------------------------
   
+  
   output$bikeped_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 1,
@@ -2937,17 +2940,58 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:1),
-      page_length = 10,
+      non_editable_cols = c(0:3),
+      page_length = 21,
       comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = c(0:21),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
       decimal_rows = integer(0))
   })
   
-  
 
+# FUNDING: Render ---------------------------------------------------------
   
+  output$funding_summary_tbl <- renderDataTable({
+    formatted_funding <- rvs$Funding %>%
+      select(-funding_name) %>%
+      rename(any_of(references_vector))
+    
+    datatable(
+      formatted_funding,
+      rownames = FALSE,
+      class = "compact",
+      options = list(
+        paging = FALSE,
+        dom = "t"
+      ),
+      editable = list(
+        target = 'all',
+        disable = list(columns = 0:3)
+      ),
+      selection = "none"
+    ) %>%
+      formatPercentage("% Allocated", digits = 1) %>%
+      formatCurrency("Million $", digits = 1) %>%
+      formatStyle(
+        "Million $",
+        background = styleColorBar(formatted_funding[["Million $"]], "#66cc66"),
+        backgroundSize = "100% 90%",
+        backgroundRepeat = "no-repeat",
+        backgroundPosition = "center"
+      ) %>%
+      formatStyle(
+        "% Allocated",
+        background = styleColorBar(formatted_funding[["% Allocated"]], "#b266b2"),
+        backgroundSize = "100% 90%",
+        backgroundRepeat = "no-repeat",
+        backgroundPosition = "center"
+      )
+  })
+  
+    
+        
+    
+   
   
   # server assumptions ------------------------------------------------------
   
