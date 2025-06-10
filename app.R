@@ -529,8 +529,8 @@ and potential applications.
                                          HTML("This category represents implementation of any <b>two-way miles of new 
            bicycle or pedestrian facility.</b> The default assumption for these 
            project types is that any new bicycle or pedestrian facility would 
-           be two-way (i.e., for one-way facilities, please enter half the 
-           total miles for the facility)."),
+           be two-way. For one-way facilities, please enter half the 
+           total miles for the facility."),
                                          bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                                                                     title = "Cumulative View",
                                                                     placement = "bottom",
@@ -705,7 +705,7 @@ and potential applications.
                                      accordion(
                                        accordion_panel(
                                          "Projects 7 | Travel Demand Management / TDM",
-                                         HTML("This category represents the <b>number of employees covered through the TDM Program Outreach </b>. 
+                                         HTML("This category represents the <b>number of employees covered through the TDM Program Outreach</b>. 
                    TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
                    reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",),
                                          bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
@@ -734,7 +734,7 @@ and potential applications.
                                      accordion(
                                        accordion_panel(
                                          "Projects 8 | Micromobility",
-                                         HTML("This category represents the <b>number of e-bikes funded </b> through the implementation of <b> e-bike subsidies </b>. 
+                                         HTML("This category represents the <b>number of e-bikes funded</b> through the implementation of <b> e-bike subsidies</b>. 
                    An e-bike subsidy reimburses part of the cost of an e-bike."),
                                          bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                                                                     title = "Cumulative View",
@@ -762,8 +762,7 @@ and potential applications.
                                      accordion(
                                        accordion_panel(
                                          "Projects 9 | Traffic Operations",
-                                         HTML("This category represents any <b>improvements made to traffic operations at intersections </b>, 
-                   such as new or retimed signals or new traffic-flow roundabouts."),
+                                         HTML("This category represents any <b>improvements made to traffic operations at intersections</b>, such as new or retimed signals or new traffic-flow roundabouts."),
                                          bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                                                                     title = "Cumulative View",
                                                                     placement = "bottom",
@@ -1017,28 +1016,32 @@ and potential applications.
                                            max = 100,
                                            step = 1
                               ),
-                              
+                            ## FUNDING SUMMARY
+                            
                             ),
-                            # bike ped
-                            # Adrienne search for 'Hover text' and replace
                             fluidRow(
                               DT::dataTableOutput("funding_summary_tbl")
                               
                             ),
                             p(),
+                            
+                            ## BUDGET TABLES
+                            
+                            # bike ped - 1
                             fluidRow(
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget  1 | Bicycle and
+                                         HTML(paste('Budget 1 | Bicycle and
            Pedestrian Lane Miles of New Infrastructure ',
-                                                    as.character(tags$i(class = "fa fa-info-circle", title = "Budget spending on bike/ped projects.")),
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
                                                     sep = "")),
                                          HTML("This category represents spending on any <b>two-way miles of new 
            bicycle or pedestrian facility.</b> The default assumption for these 
            project types is that any new bicycle or pedestrian facility would 
-           be two-way. (i.e., for one-way facilities, please enter half the 
-           budget amount)."),
+           be two-way. For one-way facilities, please enter half the 
+           budget amount."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1051,7 +1054,407 @@ and potential applications.
                               DT::dataTableOutput("bikeped_budget_tbl")
                               
                             ),
-                            
+                            p(),
+                            # transit - 2
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 2 | Transit: Increased Fixed Route Service ',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
+               Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # transit demand response - 3
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 3 | Transit: Increased Demand Response Service',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on <b>new demand 
+                                         response service vehicles operated in maximum service (VOMS).</b>
+                                         Demand response service vehicles include non-fixed route 
+                                         services that are initiated by customers and require 
+                                         advanced scheduling, such as vehicles provided by public
+                                              entities, nonprofits, and private providers."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # transit elec - 4
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 4 | Transit: Fleet Electrification',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending toward the <b>replacement 
+                                         of any fossil-fueled 
+                                              vehicles with an electric vehicle</b>, with the assumption that 
+                                              any new vehicle is again replaced by the new technology type 
+                                              at the end of its life cycle. "),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # transit bus priority - 5
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 5 | Bus Priority Treatment',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on miles 
+                                              of <b>new bus priority treatment.</b> Bus priority 
+                                              treatment refers to the improvement of 
+                                              transit speed and reliability between 
+                                              stops by changing the designation of street 
+                                              space. Some examples include a bus-only 
+                                              lane, which assigns exclusive street 
+                                              space to buses, and a bus approach lane, 
+                                              which assigns exclusive street spaces to 
+                                              buses as they approach an intersection. "),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # rail - 6
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 6 | Public Transportation: Rail',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on <b>new rail vehicles operating in maximum service (VOMS).</b>"),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # tdm - 7
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 7 | Travel Demand Management',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on <b>employment 
+                                              covered through the TDM Program Outreach.</b> TDM programs 
+                                              are designed to shift travel demand and change traveler behavior, with the goal of reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. "),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # micromobility - 8
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 8 | Micromobility',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on <b>e-bike subsidies</b>. 
+                                              An e-bike subsidy reimburses part of the cost of an e-bike."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # traffic ops - 9
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 9 | Traffic Operations',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on <b>improvements 
+                                              made to traffic operations at intersections</b>, such as new or retimed signals or new traffic-flow roundabouts."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # mdhd - 10
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 10 | Medium and Heavy Duty Vehicle Replacement',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending toward <b>replacement 
+                                              of any fossil fuel medium or heavy-duty 
+                                              vehicles with electric vehicles</b>, with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # pnr - 11
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 11 | Park and Ride',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on <b>new addition or expansion of Park and Ride spaces.</b> A Park and Ride space allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # ev - 12
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 12 | EV Charging Infrastructure',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on new or expanded EV charging ports. EV charging ports supply electric power for recharging electric vehicles."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # freight - 13
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 13 | Freight Intermodal Facilities',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on <b>intermodal freight investments</b>, expressed in millions of dollars."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # roadway expansion - 14
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 14 | Roadway expansion',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents spending on <b>new lane-miles of roadways.</b>"),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # land use - 15
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 15 | Land Use',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category represents additional spending 
+                                              toward more compact and transit-oriented, walkable 
+                                              development. Dollars in this category represent 
+                                              incentives for development in walkable, transit-oriented 
+                                              development (TOD) areas."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # transit cuts - 16
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 16 | Transit Service Cuts',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category estimates changes that could result from 
+                                              funding cuts to transit service. These dollars represent 
+                                              the <b>reduced spending in transit</b>."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
+                            # roadway resurfacing - 17
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 17 | Roadway Resurfacing',
+                                                    as.character(tags$i(class = "fa fa-info-circle", 
+                                                                        title = "Budget spending on bike/ped projects.")),
+                                                    sep = "")),
+                                         HTML("This category includes spending to <b>reduce surface roughness 
+                                              and decrease rolling resistance on roadways.</b>"),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("bikeped_budget_tbl")
+                              
+                            ),
+                            p(),
                             
                   ),
                   
