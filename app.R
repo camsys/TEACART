@@ -4727,6 +4727,8 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
   })
   
+  # Question to Seth - did you set this up? It does not look editable. Leaving this for now!
+  
   output$pass_rail_sheet_tbl <- renderDT({
     
     
@@ -4744,7 +4746,7 @@ server <- function(input, output, session) {
       "  onUpdate: onUpdate,",
       "  inputCss: 'my-input-class',",
       "  columns: [2], ",
-      "  rows: [1], ",
+      "  rows: null, ",
       "  confirmationButton: {",
       "    confirmCss: 'my-confirm-class',",
       "    cancelCss: 'my-cancel-class'",
