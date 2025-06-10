@@ -1071,11 +1071,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 2", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("transit_fr_budget_tbl")
                               
                             ),
                             p(),
@@ -1099,11 +1099,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 3", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("transit_dr_budget_tbl")
                               
                             ),
                             p(),
@@ -1126,11 +1126,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 4", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("transit_elec_budget_tbl")
                               
                             ),
                             p(),
@@ -1158,11 +1158,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 5", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("transit_bus_priority_budget_tbl")
                               
                             ),
                             p(),
@@ -1181,11 +1181,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 6", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("rail_budget_tbl")
                               
                             ),
                             p(),
@@ -1206,11 +1206,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 7", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("tdm_budget_tbl")
                               
                             ),
                             p(),
@@ -1230,11 +1230,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 8", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("micromobility_budget_tbl")
                               
                             ),
                             p(),
@@ -1254,11 +1254,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 9", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("traffic_ops_budget_tbl")
                               
                             ),
                             p(),
@@ -1279,11 +1279,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 10", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("mdhd_budget_tbl")
                               
                             ),
                             p(),
@@ -1302,11 +1302,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 11", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("pnr_budget_tbl")
                               
                             ),
                             p(),
@@ -1319,17 +1319,17 @@ and potential applications.
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on bike/ped projects.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on new or expanded EV charging ports. EV charging ports supply electric power for recharging electric vehicles."),
+                                         HTML("This category represents spending on <b>new or expanded EV charging ports</b>. EV charging ports supply electric power for recharging electric vehicles."),
                                        ),
                                        open = TRUE
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 12", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("ev_budget_tbl")
                               
                             ),
                             p(),
@@ -1348,11 +1348,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 13", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("freight_budget_tbl")
                               
                             ),
                             p(),
@@ -1371,11 +1371,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 14", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("expansion_budget_tbl")
                               
                             ),
                             p(),
@@ -1389,8 +1389,8 @@ and potential applications.
                                                                         title = "Budget spending on bike/ped projects.")),
                                                     sep = "")),
                                          HTML("This category represents additional spending 
-                                              toward more compact and transit-oriented, walkable 
-                                              development. Dollars in this category represent 
+                                              toward more <b>compact and transit-oriented, walkable 
+                                              development</b>. Dollars in this category represent 
                                               incentives for development in walkable, transit-oriented 
                                               development (TOD) areas."),
                                        ),
@@ -1398,11 +1398,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 15", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("land_use_budget_tbl")
                               
                             ),
                             p(),
@@ -1423,11 +1423,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 16", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("transit_cuts_budget_tbl")
                               
                             ),
                             p(),
@@ -1447,11 +1447,11 @@ and potential applications.
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 17", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
-                              DT::dataTableOutput("bikeped_budget_tbl")
+                              DT::dataTableOutput("resurfacing_budget_tbl")
                               
                             ),
                             p(),
@@ -3351,6 +3351,295 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
   })
   
+  
+  output$transit_fr_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 2,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  
+  output$transit_dr_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 3,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$transit_elec_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 4,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$transit_bus_priority_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 5,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$rail_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 6,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$tdm_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 7,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$micromobility_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 8,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$traffic_ops_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 9,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$mdhd_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 10,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$pnr_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 11,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$ev_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 12,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$freight_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 13,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$expansion_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 14,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$land_use_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 15,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$transit_cuts_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 16,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$resurfacing_budget_tbl <- renderDT({
+    req(rvs$Budget)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 17,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = 0:21,
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
 
 # FUNDING: Render ---------------------------------------------------------
   
