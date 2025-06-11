@@ -31,7 +31,7 @@ sum_fun <- function(x,meas,val,high,med,low,prefix){
     return("Medium")
   } else if(-1*me/va <= low){
     return("Low")
-  } else {return("Seth you fool you idiot")}
+  } else {return("ERROR")}
   
 }
 

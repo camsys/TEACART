@@ -1290,6 +1290,26 @@ nav_panel(title = "Assumptions",
           ),
           fluidRow(
             DT::dataTableOutput("evsi_assmps_tbl")
+          ),
+          
+          # land use parameters
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Assumptions 9 | Land Use (Smart Growth) Incentives Parameters",
+                       HTML("This category represents ...lorem ipsum <b> lorem ipsum </b>."),
+                     ),
+                     open = FALSE
+                   ),
+            ),
+            column(2,
+                   actionButton("reset_landuse_assmps_tbl", "Reset Assumptions 9", class = "btn-custom")
+            ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("landuse_assmps_tbl")
           )
           
           
@@ -1741,7 +1761,6 @@ theme_set(theme_bw(base_size = 16))
 # Start Server Function ---------------------------------------------------
 
 server <- function(input, output, session) {
-  
   #Test Observe ----------------------------------------------------------------
   #observeEvent(input$state_input, {browser()})
   
@@ -1791,6 +1810,10 @@ server <- function(input, output, session) {
     )
     
     updateSelectInput(inputId = "pie_graph_year", label = "", choices = c(input$base_year, input$horizon_year_1, input$horizon_year_2, input$horizon_year_3))
+  })
+  #change transit assumptions based on state selection
+  observeEvent(input$state_input,{
+    
   })
   
   # Initiate or Upload User Inputs -------------------------------------------
@@ -2455,7 +2478,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$transit_cuts_projs_tbl_cell_edit, {
     
-    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- reshaping_projects2(input$expansion_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- reshaping_projects2(input$transit_cuts_projs_tbl_cell_edit,
                                                                          rvs$Projects,
                                                                          tbl_no = 15,
                                                                          col1 = 'area_type',
@@ -2495,21 +2518,7 @@ server <- function(input, output, session) {
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
     
   })
-  
-  # observeEvent(input$custom_projs_tbl_cell_edit, {
-  #   #req('')
-  #   rvs$Projects[rvs$Projects$table_no_ui == 15,] <- reshaping_projects2(input$expansion_projs_tbl_cell_edit,
-  #                                                                        rvs$Projects,
-  #                                                                        tbl_no = 15,
-  #                                                                        col1 = 'custom_project',
-  #                                                                        horizon_year_1 = input$horizon_year_1,
-  #                                                                        horizon_year_2 = input$horizon_year_2,
-  #                                                                        horizon_year_3 = input$horizon_year_3)
-  #   
-  #   
-  #   #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
-  #   
-  # })
+
   # Project Tables: Reset buttons on projects ---------------------------------------------------
 
   observeEvent(input$reset_bikeped_projs_tbl, {
@@ -2590,7 +2599,8 @@ server <- function(input, output, session) {
                          "traffic_ops_assmps",
                          "mhdv_assmps",
                          "pnr_assmps",
-                         "evsi_assmps")
+                         "evsi_assmps",
+                         "landuse_assmpts")
   
   
   read_static_tables(".\\data\\assumptions.xlsx", assumptions_names)
@@ -2721,6 +2731,21 @@ server <- function(input, output, session) {
       decimal_rows = c(0:15))
   })
   
+  output$landuse_assmps_tbl <- renderDT({
+    req(rvs$Assumptions)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Assumptions,
+      table_number = 9,
+      is_year_table = FALSE,
+      non_editable_cols = c(0, 1),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = c(0:15))
+  })
+  
   ## make tables editable ----------------------------------------------------
   
   assumptions_names <- c("bikeped_assmps",
@@ -2730,14 +2755,8 @@ server <- function(input, output, session) {
                          "traffic_ops_assmps",
                          "mhdv_assmps",
                          "pnr_assmps",
-                         "evsi_assmps")
-  
-  
-  # #SETH: NOTE CAN THIS BE REMOVED?
-  # observeEvent(input$bikeped_assmps_edit, {
-  #   bikeped_assmps <<- editData(bikeped_assmps, input$bikeped_assmps_edit, 'bikeped_assmps_tbl')
-  # })
-  # #NOTE CAN THIS BE REMOVED?
+                         "evsi_assmps",
+                         "landuse_assmps")
   
   # observe edits to bikeped_assmps
   observeEvent(input$bikeped_assmps_tbl_cell_edit, {
@@ -2812,10 +2831,20 @@ server <- function(input, output, session) {
                                                                              tbl_no = 8)
   })
   
+  #observe edits to landuse_assmps
+  observeEvent(input$landuse_assmps_tbl_cell_edit, {
+    req(rvs$Assumptions)
+    
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 9,] <- reshaping_assmp(input$landuse_assmps_tbl_cell_edit,
+                                                                          rvs$Assumptions,
+                                                                          tbl_no = 9)
+  })
+  
   # end of reshaping assumptions
   
   
   observeEvent(input$transit_assmps_edit, {
+    print("does this signal? 06082025")
     transit_assmps <<- editData(transit_assmps, input$transit_assmps_edit, 'transit_assmps_tbl')
   })
   
@@ -2841,6 +2870,10 @@ server <- function(input, output, session) {
   
   observeEvent(input$evsi_assmps_edit, {
     evsi_assmps <<- editData(evsi_assmps, input$evsi_assmps_edit, 'evsi_assmps_tbl')
+  })
+  
+  observeEvent(input$landuse_assmps_edit, {
+    landuse_assmps <<- editData(landuse_assmps, input$landuse_assmps_edit, 'landuse_assmps_tbl')
   })
   
 
@@ -2877,6 +2910,10 @@ server <- function(input, output, session) {
   
   observeEvent(input$reset_evsi_assmps_tbl, {
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 8,] <- initial_assumptions[initial_assumptions$table_no_ui == 8, ]
+  })  
+  
+  observeEvent(input$reset_landuse_assmps_tbl, {
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 9,] <- initial_assumptions[initial_assumptions$table_no_ui == 9, ]
   })  
   
   
@@ -3450,7 +3487,7 @@ server <- function(input, output, session) {
       escape = FALSE,
       #editable = list(target = c(2,3)),
       options = list(
-        pageLength =12,
+        pageLength =14,
         columnDefs = list(
           list(className = 'dt-center', targets = c(3, 4)),
           list(render = JS(
@@ -4310,26 +4347,7 @@ server <- function(input, output, session) {
     })
   
   
-  ## make editable -----------------------------------------------------------
-  
-  #Seth Note: Can this be deleted?
-  costs_outputs_names <- c("bikeped_costs_outputs",
-                           "transit_fixed_costs_outputs",
-                           "transit_dr_costs_outputs",
-                           "pub_trans_priority_costs_outputs",
-                           "transit_zeb_costs_outputs",
-                           "pub_trans_rail_costs_outputs",
-                           "tdm_costs_outputs",
-                           "micro_costs_outputs",
-                           "traffic_ops_costs_outputs",
-                           "mhdev_costs_outputs",
-                           "pnr_costs_outputs",
-                           "evsi_costs_outputs",
-                           "roadway_expand_costs_outputs",
-                           "intermodal_costs_outputs")
-  
-  
-  
+
   # server scenarios outputs ------------------------------------------------
   output$emission_change_tbl <- renderDataTable({
     results <- scenario_summary_results()
@@ -4543,8 +4561,6 @@ server <- function(input, output, session) {
                            "}")))
       })
   
-  
-
     output$strategy_summary_graph <- renderPlotly({
       
       req(reactive_scenario())
@@ -4580,9 +4596,7 @@ server <- function(input, output, session) {
                   type = "bar", marker = list(color = "rgba(0,0,0,0)"),
                   showlegend = F)
     })
-
-  
-
+    
   #Processing working ----
 
   source("processing_scripts/processing_Base_Projections.R", local = TRUE)
@@ -4600,14 +4614,14 @@ server <- function(input, output, session) {
   source("processing_scripts/processing_RoadwayExp.R", local = TRUE) 
     
   source("processing_scripts/processing_TransitService_Cuts.R",local = T) #in progress
-    source("processing_scripts/processing_LandUse.R",local = T) #in progress
-    source("processing_scripts/processing_roadway_resurfacing.R",local = T) #in progress
+  source("processing_scripts/processing_LandUse.R",local = T) #in progress
+  source("processing_scripts/processing_roadway_resurfacing.R",local = T) #in progress
     
   source("functions/cost_maker.R", local = TRUE)
   source("processing_scripts/processing_Allassump.R", local = TRUE) #Finished
   
   #rvs update from different inputs
-  #key_inputs update
+  #key_inputs update -----------------------------------------------------------
 
     key_inputs_listen <- reactive({
     list(input$state_input,
@@ -4624,45 +4638,8 @@ server <- function(input, output, session) {
          input$grid_emissions_input)
   })
  
-  # output$pdf_report <- downloadHandler(
-  #   filename = function(){
-  #     paste("Summary Report",
-  #           Sys.Date(),
-  #           ".pdf",
-  #           sep="")},
-  #   content = function(file){
-  #       #data <- # placeholder now 
-  #       #mutate(center = unlist(center))
-  #       browser()
-  #       output_file <- file.path(getwd(),  glue::glue("{fn}.pdf"))
-  #       unloadNamespace("kableExtra")
-  #       rmarkdown::render(
-  #         input = file.path(getwd(),"Report_Template.qmd"),
-  #         output_file = output_file,
-  #         params = list(
-  #           state <- input$state_input,
-  #           bsae_year <- input$base_year,
-  #           horizon_year_1 <- input$horizon_year_1,
-  #           horizon_year_2<- input$horizon_year_2,
-  #           horizon_year_3 <- input$horizon_year_3,
-  #           trans_scope <- input$transportation_scope,
-  #           em_scope<- input$scope_emissions,
-  #           fuel_scope <-input$scope_fuels,
-  #           vmt <- input$vmt_forecast_input,
-  #           vmt_nhs <- input$vmt_nhs,
-  #           ev<- input$ev_baseline_input,
-  #           grid_em<- input$grid_emissions_input
-  #         )
-  #       )
-  #       file.copy(glue::glue("{fn}.pdf"), file)
-  #       browser()
-  #       
-  #     
-  #   }
-  # )
 
   output$pdf_report <- downloadHandler(
-
     filename = function(){
           paste("Summary Report",
                 Sys.Date(),
