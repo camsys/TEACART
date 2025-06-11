@@ -139,7 +139,7 @@ ui <- function(request) {
                                  tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                         href = "https://www.georgetownclimate.org/", target = "_blank"),
                                  tags$p("Adapted from TEA-CART Excel Model Version 1.10"),
-                                 tags$p("Shiny App last updated June 9, 2025"),
+                                 tags$p("Shiny App last updated June 10, 2025"),
                                  tags$p("Prototype under development by Cambridge Systematics, Inc."),
                                  tags$p("under contract to Gergetown Climate Center"),
                                  tags$p("© Georgetown Climate Center")
@@ -512,7 +512,7 @@ and potential applications.<br><br>
                                      tags$div(class = "well card-flex",
                                               tags$div(class = "half-card",
                                                        selectInput("land_use_factor",
-                                                                   HTML("<span>Increased Tranist includes Land Use Factor:</span> <br> <p>LIPSUMLIPSUMLIPSUM"), #AHFLAG: text
+                                                                   HTML("<span>Apply Land Use Multiplier to Transit Investment:</span> <br> <p>This multiplier represents total VMT reduction, including reductions related to more efficient land use patterns supported by transit, relative to the direct VMT reduction from increased transit ridership."),
                                                                    choices = c("Yes" = 1, "No" = 0),
                                                                    selected = "No")
                                               )
@@ -867,13 +867,14 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 15 | Transit Service Cuts",
-                                         HTML("This category represents ... <b>... .</b>"),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_transit_cuts_projs_tbl")
-                                         ))
+                                         HTML("This category represents <b>cuts to transit service</b> from current service levels.</b>"),
+                                         # bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                         #                            title = "Cumulative View",
+                                         #                            placement = "bottom",
+                                         #                            options = list(container = "body"),
+                                         #                            DTOutput(outputId = "cumul_transit_cuts_projs_tbl")
+                                         # ))
+                                         # FLAG this is the only place the cumulative calculation still exists
                                        ),
                                        open = TRUE
                                      ),
@@ -892,13 +893,9 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 16 | Land Use",
-                                         HTML("This category represents ... <b>... .</b>"),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_land_use_projs_tbl")
-                                         ))
+                                         HTML("This category represents spending and 
+                                         rezoned acres in support of <b>walkable, 
+                                              transit-oriented development (TOD) areas</b>."),
                                        ),
                                        open = TRUE
                                      ),
@@ -918,13 +915,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 17 | Roadway Resurfacing",
-                                         HTML("This category represents ... <b>... .</b>"),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_road_resurf_projs_tbl")
-                                         ))
+                                         HTML("This category indicates lane miles resurfaced to <b>reduce surface roughness and decrease rolling resistance</b> on roadways."),
                                        ),
                                        open = TRUE
                                      ),
@@ -2435,7 +2426,7 @@ and potential applications.<br><br>
                 
                 DT::dataTableOutput("source_table"),
                 tags$script(HTML("var header = $('.navbar > .container-fluid');
-      header.append('<div class=\"gcc-logo header-logo\" style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Contrast.svg\" alt=\"alt\" style=\"float:right;max-width:250px;width:100%;height:auto\"> </a></div>');
+      header.append('<div class=\"gcc-logo header-logo\" style=\"float:left\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Contrast.svg\" alt=\"alt\" style=\"float:left;max-width:250px;width:100%;height:auto\"> </a></div>');
                        console.log(header)") # moved this script tag so that it doesn't create a new tab. 
                 ),
       ),
@@ -2694,7 +2685,7 @@ server <- function(input, output, session) {
   
   # Project table inputs ------------------------------------------------------
   
-  # Seth - are you using this? I think everything in this section has been replaced
+  # SLFLAG - are you using this? I think everything in this section has been replaced
   
   projects_names <- c("bikeped_projs",
                       "transit_fixed_projs",
@@ -3660,6 +3651,12 @@ server <- function(input, output, session) {
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
+
+
+
+# BUDGET: Observe ---------------------------------------------------------
+
+
 
 # FUNDING: Render ---------------------------------------------------------
   
@@ -4764,7 +4761,7 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
   })
   
-  # Question to Seth - did you set this up? It does not look editable. Leaving this for now!
+  # SLFLAG - did you set this up? It does not look editable. Leaving this for now!
   
   output$pass_rail_sheet_tbl <- renderDT({
     

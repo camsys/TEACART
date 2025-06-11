@@ -1,4 +1,5 @@
-# To Seth: Would we break something if we add table type to the arguments and set it that way?
+# SLFLAG: Would we break something if we add table type to the arguments and set it that way?
+# Suggest we flag for a future improvement
 
 # new function
 render_custom_datatable <- function(#input_reactives,
