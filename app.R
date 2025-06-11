@@ -541,12 +541,6 @@ and potential applications.<br><br>
            project types is that any new bicycle or pedestrian facility would 
            be two-way. For one-way facilities, please enter half the 
            total miles for the facility."),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_bikeped_projs_tbl")
-                                         ))
                                        ),
                                        id = "acc1",
                                        open = TRUE
@@ -573,12 +567,7 @@ and potential applications.<br><br>
                                          HTML("This category represents additions of <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
                Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
                                          ),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_transit_fixed_projs_tbl")
-                                         ))
+
                                        ),
                                        open = TRUE
                                      ),
@@ -603,12 +592,7 @@ and potential applications.<br><br>
               Demand response service vehicles include non-fixed route services that are initiated by customers and require advanced scheduling, 
                         such as vehicles provided by public entities, nonprofits, and private providers."
                                          ),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_transit_dr_projs_tbl")
-                                         ))
+                                        
                                        ),
                                        open = TRUE
                                      ),
@@ -631,12 +615,6 @@ and potential applications.<br><br>
                                          "Projects 4 | Fleet Electrification",
                                          HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
                         with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_transit_el_projs_tbl")
-                                         ))
                                        ),
                                        open = TRUE
                                      ),
@@ -661,12 +639,7 @@ and potential applications.<br><br>
                         to the improvement of transit speed and reliability between stops by changing the designation of street space. 
                         Some examples include a bus-only lane, which assigns exclusive street space to buses, and a bus approach lane, 
                         which assigns exclusive street spaces to buses as they approach an intersection."),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_transit_bus_projs_tbl")
-                                         ))
+
                                        ),
                                        open = TRUE
                                      ),
@@ -688,12 +661,7 @@ and potential applications.<br><br>
                                        accordion_panel(
                                          "Projects 6 | Public Transportation: Rail",
                                          HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>.",),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_public_rail_projs_tbl")
-                                         ))
+
                                        ),
                                        open = TRUE
                                      ),
@@ -718,12 +686,7 @@ and potential applications.<br><br>
                                          HTML("This category represents the <b>number of employees covered through the TDM Program Outreach</b>. 
                    TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
                    reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_tdm_projs_tbl")
-                                         ))
+
                                        ),
                                        open = TRUE
                                      ),
@@ -746,12 +709,6 @@ and potential applications.<br><br>
                                          "Projects 8 | Micromobility",
                                          HTML("This category represents the <b>number of e-bikes funded</b> through the implementation of <b> e-bike subsidies</b>. 
                    An e-bike subsidy reimburses part of the cost of an e-bike."),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_micro_projs_tbl")
-                                         ))
                                        ),
                                        open = TRUE
                                      ),
@@ -773,12 +730,6 @@ and potential applications.<br><br>
                                        accordion_panel(
                                          "Projects 9 | Traffic Operations",
                                          HTML("This category represents any <b>improvements made to traffic operations at intersections</b>, such as new or retimed signals or new traffic-flow roundabouts."),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_traffic_ops_projs_tbl")
-                                         ))
                                        ),
                                        open = TRUE
                                      ),
@@ -801,12 +752,6 @@ and potential applications.<br><br>
                                          "Projects 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
                                          HTML("This category represents <b>replacement of any fossil fuel medium or heavy-duty vehicles with electric vehicles</b>, 
                    with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle."),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_mhdev_projs_tbl")
-                                         ))
                                        ),
                                        open = TRUE
                                      ),
@@ -830,12 +775,6 @@ and potential applications.<br><br>
                                          "Projects 11 | Park & Ride Projects",
                                          HTML("This category represents any <b>new addition or expansion of Park and Ride spaces</b>. A Park and Ride space 
                    allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_pnr_projs_tbl")
-                                         ))
                                        ),
                                        open = TRUE
                                      ),
@@ -858,12 +797,6 @@ and potential applications.<br><br>
                                          "Projects 12 | EV Charging Infrastructure",
                                          HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
                    EV charging ports supply electric power for recharging electric vehicles."),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_evsi_projs_tbl")
-                                         ))
                                        ),
                                        open = TRUE
                                      ),
@@ -885,12 +818,6 @@ and potential applications.<br><br>
                                        accordion_panel(
                                          "Projects 13 | Freight Intermodal Facilities",
                                          HTML("This category represents any <b>intermodal freight investment</b>, expressed in millions of dollars."),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_freight_projs_tbl")
-                                         ))
                                        ),
                                        open = TRUE
                                      ),
@@ -913,12 +840,6 @@ and potential applications.<br><br>
                                        accordion_panel(
                                          "Projects 14 | Roadway Expansion",
                                          HTML("This category represents addition of any <b>new lane-miles of roadways.</b>"),
-                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                                                                    title = "Cumulative View",
-                                                                    placement = "bottom",
-                                                                    options = list(container = "body"),
-                                                                    DTOutput(outputId = "cumul_expansion_projs_tbl")
-                                         ))
                                        ),
                                        open = TRUE
                                      ),
@@ -2741,9 +2662,9 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
   })
   
-  output$cumul_bikeped_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 1, my_cols = c("area_type", "facility_type", "unit"))
-  })
+  # output$cumul_bikeped_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 1, my_cols = c("area_type", "facility_type", "unit"))
+  # })
   
   output$transit_fixed_projs_tbl <- renderDT({
     
@@ -2762,9 +2683,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_transit_fixed_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 2, my_cols = c("area_type", "fuel_type", "unit"))
-  })
+  # output$cumul_transit_fixed_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 2, my_cols = c("area_type", "fuel_type", "unit"))
+  # })
   
   output$transit_dr_projs_tbl <- renderDT({
     
@@ -2783,9 +2704,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_transit_dr_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 3, my_cols = c("area_type", "fuel_type"))
-  })
+  # output$cumul_transit_dr_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 3, my_cols = c("area_type", "fuel_type"))
+  # })
   
   output$transit_el_projs_tbl <- renderDT({
     
@@ -2804,9 +2725,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_transit_el_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 4, my_cols = c("area_type", "fuel_type", "transit_mode"))
-  })
+  # output$cumul_transit_el_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 4, my_cols = c("area_type", "fuel_type", "transit_mode"))
+  # })
   
   output$transit_bus_projs_tbl <- renderDT({
     
@@ -2825,9 +2746,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_transit_bus_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 5, my_cols = c("unit"))
-  })
+  # output$cumul_transit_bus_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 5, my_cols = c("unit"))
+  # })
   
   output$public_rail_projs_tbl <- renderDT({
     
@@ -2846,9 +2767,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_public_rail_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 6, my_cols = c("fuel_type", "transit_mode"))
-  })
+  # output$cumul_public_rail_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 6, my_cols = c("fuel_type", "transit_mode"))
+  # })
   
   output$tdm_projs_tbl <- renderDT({
     
@@ -2867,9 +2788,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_tdm_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 7, my_cols = c("unit"))
-  })
+  # output$cumul_tdm_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 7, my_cols = c("unit"))
+  # })
   
   output$micro_projs_tbl <- renderDT({
     
@@ -2888,9 +2809,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_micro_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 8, my_cols = c("unit"))
-  })
+  # output$cumul_micro_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 8, my_cols = c("unit"))
+  # })
   
   output$traffic_ops_projs_tbl <- renderDT({
     
@@ -2909,9 +2830,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_traffic_ops_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 9, my_cols = c("area_type", "road_class", "unit"))
-  })
+  # output$cumul_traffic_ops_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 9, my_cols = c("area_type", "road_class", "unit"))
+  # })
   
   output$mhdev_projs_tbl <- renderDT({
     
@@ -2930,9 +2851,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_mhdev_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 10, my_cols = c("veh_type", "fuel_type"))
-  })
+  # output$cumul_mhdev_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 10, my_cols = c("veh_type", "fuel_type"))
+  # })
   
   output$pnr_projs_tbl <- renderDT({
     
@@ -2951,9 +2872,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_pnr_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 11, my_cols = c("unit"))
-  })
+  # output$cumul_pnr_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 11, my_cols = c("unit"))
+  # })
   
   output$evsi_projs_tbl <- renderDT({
     
@@ -2972,9 +2893,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_evsi_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 12, my_cols = c("charge_port_detail"))
-  })
+  # output$cumul_evsi_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 12, my_cols = c("charge_port_detail"))
+  # })
   
   output$freight_projs_tbl <- renderDT({
     
@@ -2993,9 +2914,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_freight_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 13, my_cols = c("unit"))
-  })
+  # output$cumul_freight_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 13, my_cols = c("unit"))
+  # })
   
   output$expansion_projs_tbl <- renderDT({
     
@@ -3014,9 +2935,9 @@ server <- function(input, output, session) {
     
   })
   
-  output$cumul_expansion_projs_tbl <- renderDT({
-    render_cumulative_view_popup(my_rv = rvs, my_table_no = 14, my_cols = c("area_type", "road_class", "unit"))
-  })
+  # output$cumul_expansion_projs_tbl <- renderDT({
+  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 14, my_cols = c("area_type", "road_class", "unit"))
+  # })
   
   output$custom_projs_tbl <- renderDT({
     
