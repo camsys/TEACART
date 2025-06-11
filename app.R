@@ -508,7 +508,16 @@ and potential applications.<br><br>
                                                                     min = 2021,
                                                                     max = 2050,
                                                                     step = 1)),
-                                     )                                                      
+                                     ),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("land_use_factor",
+                                                                   HTML("<span>Increased Tranist includes Land Use Factor:</span> <br> <p>LIPSUMLIPSUMLIPSUM"), #AHFLAG: text
+                                                                   choices = c("Yes" = 1, "No" = 0),
+                                                                   selected = "No")
+                                              )
+                                              )
+                                     
                               )),
                   ),
                   
@@ -852,33 +861,82 @@ and potential applications.<br><br>
                             fluidRow(
                               DT::dataTableOutput("expansion_projs_tbl")
                             ),
+                            #Transit Cuts
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 15 | Transit Service Cuts",
+                                         HTML("This category represents ... <b>... .</b>"),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_transit_cuts_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_transit_cuts_projs_tbl", "Reset Projects 14", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("transit_cuts_projs_tbl")
+                            ),
+                            #Land Use
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 16 | Land Use",
+                                         HTML("This category represents ... <b>... .</b>"),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_land_use_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_land_use_projs_tbl", "Reset Projects 16", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("land_use_projs_tbl")
+                            ),
                             
-                            # #Custom Projects
-                            # 
-                            # fluidRow(
-                            #   column(10,
-                            #          accordion(
-                            #            accordion_panel(
-                            #              "Projects 15 | Custom Project",
-                            #              HTML("This category allows users to input custom project inputs. For units uses must input either VMT or MT CO2e."),
-                            #              bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                            #                      title = "Cumulative View",
-                            #                      placement = "bottom",
-                            #                      options = list(container = "body"),
-                            #                      DTOutput(outputId = "cumul_custom_projs_tbl")
-                            #              ))
-                            #            ),
-                            #            open = TRUE
-                            #          ),
-                            #   ),
-                            #   column(2,
-                            #          actionButton("reset_custom_projs_tbl", "Reset Projects 15", class = "btn-custom")
-                            #   ),
-                            #   
-                            # ),
-                            # fluidRow(
-                            #   DT::dataTableOutput("custom_projs_tbl")
-                            # ),
+                            #Roadway Surfacing
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 17 | Roadway Resurfacing",
+                                         HTML("This category represents ... <b>... .</b>"),
+                                         bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                                                    title = "Cumulative View",
+                                                                    placement = "bottom",
+                                                                    options = list(container = "body"),
+                                                                    DTOutput(outputId = "cumul_road_resurf_projs_tbl")
+                                         ))
+                                       ),
+                                       open = FALSE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_road_resurf_projs_tbl", "Reset Projects 17", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("road_resurf_projs_tbl")
+                            ),
                             
                   ),
                   
@@ -2651,7 +2709,10 @@ server <- function(input, output, session) {
                       "pnr_projs",
                       "evsi_projs",
                       "freight_projs",
-                      "expansion_projs")
+                      "expansion_projs",
+                      "transit_cuts_projs",
+                      "road_resurf_projs",
+                      "land_use")
   
   read_static_tables("data/projects.xlsx", projects_names)
   
@@ -2672,10 +2733,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
   })
   
-  # output$cumul_bikeped_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 1, my_cols = c("area_type", "facility_type", "unit"))
-  # })
-  
   output$transit_fixed_projs_tbl <- renderDT({
     
     req(rvs$Projects)
@@ -2692,10 +2749,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
-  # output$cumul_transit_fixed_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 2, my_cols = c("area_type", "fuel_type", "unit"))
-  # })
   
   output$transit_dr_projs_tbl <- renderDT({
     
@@ -2714,10 +2767,6 @@ server <- function(input, output, session) {
     
   })
   
-  # output$cumul_transit_dr_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 3, my_cols = c("area_type", "fuel_type"))
-  # })
-  
   output$transit_el_projs_tbl <- renderDT({
     
     req(rvs$Projects)
@@ -2734,10 +2783,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
-  # output$cumul_transit_el_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 4, my_cols = c("area_type", "fuel_type", "transit_mode"))
-  # })
   
   output$transit_bus_projs_tbl <- renderDT({
     
@@ -2756,10 +2801,6 @@ server <- function(input, output, session) {
     
   })
   
-  # output$cumul_transit_bus_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 5, my_cols = c("unit"))
-  # })
-  
   output$public_rail_projs_tbl <- renderDT({
     
     req(rvs$Projects)
@@ -2776,10 +2817,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
-  # output$cumul_public_rail_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 6, my_cols = c("fuel_type", "transit_mode"))
-  # })
   
   output$tdm_projs_tbl <- renderDT({
     
@@ -2798,10 +2835,6 @@ server <- function(input, output, session) {
     
   })
   
-  # output$cumul_tdm_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 7, my_cols = c("unit"))
-  # })
-  
   output$micro_projs_tbl <- renderDT({
     
     req(rvs$Projects)
@@ -2818,10 +2851,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
-  # output$cumul_micro_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 8, my_cols = c("unit"))
-  # })
   
   output$traffic_ops_projs_tbl <- renderDT({
     
@@ -2840,10 +2869,6 @@ server <- function(input, output, session) {
     
   })
   
-  # output$cumul_traffic_ops_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 9, my_cols = c("area_type", "road_class", "unit"))
-  # })
-  
   output$mhdev_projs_tbl <- renderDT({
     
     req(rvs$Projects)
@@ -2860,10 +2885,6 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
     
   })
-  
-  # output$cumul_mhdev_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 10, my_cols = c("veh_type", "fuel_type"))
-  # })
   
   output$pnr_projs_tbl <- renderDT({
     
@@ -2882,9 +2903,6 @@ server <- function(input, output, session) {
     
   })
   
-  # output$cumul_pnr_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 11, my_cols = c("unit"))
-  # })
   
   output$evsi_projs_tbl <- renderDT({
     
@@ -2903,10 +2921,7 @@ server <- function(input, output, session) {
     
   })
   
-  # output$cumul_evsi_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 12, my_cols = c("charge_port_detail"))
-  # })
-  
+
   output$freight_projs_tbl <- renderDT({
     
     req(rvs$Projects)
@@ -2924,9 +2939,6 @@ server <- function(input, output, session) {
     
   })
   
-  # output$cumul_freight_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 13, my_cols = c("unit"))
-  # })
   
   output$expansion_projs_tbl <- renderDT({
     
@@ -2945,30 +2957,59 @@ server <- function(input, output, session) {
     
   })
   
-  # output$cumul_expansion_projs_tbl <- renderDT({
-  #   render_cumulative_view_popup(my_rv = rvs, my_table_no = 14, my_cols = c("area_type", "road_class", "unit"))
-  # })
-  
-  output$custom_projs_tbl <- renderDT({
+
+  output$transit_cuts_projs_tbl <- renderDT({
     
-    temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 15,] %>%
-      select(custom_project, unit, value) %>%
-      pivot_wider(names_from = unit, values_from = value) %>%
-      select(-custom_project)
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
     
-    returnDT<-datatable(
-      temp_send,
-      rownames = FALSE,
-      editable = list(target = 'all'),
-      selection = "none",
-      options = list(
-        pageLength = 6,
-        searching = FALSE,
-        paging = FALSE,
-        info = FALSE
-      ))
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 15,
+      non_editable_cols = c(0, 1, 2),
+      page_length = 10,
+      comma_rows = 0:7,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
   })
+
+  output$land_use_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 16,
+      non_editable_cols = c(0, 1),
+      page_length = 10,
+      comma_rows = 0:15,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+
   
+  output$road_resurf_projs_tbl <- renderDT({
+    
+    req(rvs$Projects)
+    temp_send <- rvs$Projects
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 17,
+      non_editable_cols = c(0),
+      page_length = 10,
+      comma_rows = 0:2,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+
   # Project Tables: Observe and update edits to projects ------------------------
   # observe edits to the bikeped_projs
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
@@ -3296,7 +3337,17 @@ server <- function(input, output, session) {
     rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
   })  
   
+  observeEvent(input$reset_transit_cuts_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
+  })  
   
+  observeEvent(input$reset_road_resurf_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 16,] <- initial_projects[initial_projects$table_no_ui == 16, ]
+  })
+  
+  observeEvent(input$reset_land_use_projs_tbl, {
+    rvs$Projects[rvs$Projects$table_no_ui == 17,] <- initial_projects[initial_projects$table_no_ui == 17, ]
+  })  
   
   
   # BUDGET: Render ---------------------------------------------------
