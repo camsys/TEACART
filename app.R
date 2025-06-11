@@ -875,7 +875,7 @@ and potential applications.<br><br>
                                                                     DTOutput(outputId = "cumul_transit_cuts_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -900,7 +900,7 @@ and potential applications.<br><br>
                                                                     DTOutput(outputId = "cumul_land_use_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
@@ -926,7 +926,7 @@ and potential applications.<br><br>
                                                                     DTOutput(outputId = "cumul_road_resurf_projs_tbl")
                                          ))
                                        ),
-                                       open = FALSE
+                                       open = TRUE
                                      ),
                               ),
                               column(2,
