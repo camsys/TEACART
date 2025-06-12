@@ -37,6 +37,15 @@ p {
 .navbar.navbar-default {
   background-color: #25365F !important;
 }
+.navbar.navbar-default .nav-link, .navbar.navbar-default .nav-tabs > li > a, .navbar.navbar-default .nav-pills > li > a, .navbar.navbar-default :where(ul.nav.navbar-nav > li) > a {
+  color: rgba 255, 255, 255, 0.55 !important;
+}
+.navbar.navbar-default .nav-link:hover, .navbar.navbar-default .nav-tabs > li > a:hover, .navbar.navbar-default .nav-pills > li > a:hover, .navbar.navbar-default :where(ul.nav.navbar-nav > li) > a:hover {
+  color: rgba 255, 255, 255, 0.75 !important;
+}
+.navbar.navbar-default .navbar-nav .nav-link.active, .navbar.navbar-default .navbar-nav .nav-tabs > li > a.active, .navbar.navbar-default .navbar-nav .nav-pills > li > a.active, .navbar.navbar-default .navbar-nav :where(ul.nav.navbar-nav > li) > a.active, .navbar.navbar-default .navbar-nav .nav-link.show, .navbar.navbar-default .navbar-nav .nav-link.in, .navbar.navbar-default .navbar-nav .nav-tabs > li > a.show, .navbar.navbar-default .navbar-nav .nav-tabs > li > a.in, .navbar.navbar-default .navbar-nav .nav-pills > li > a.show, .navbar.navbar-default .navbar-nav .nav-pills > li > a.in, .navbar.navbar-default .navbar-nav :where(ul.nav.navbar-nav > li) > a.show, .navbar.navbar-default .navbar-nav :where(ul.nav.navbar-nav > li) > a.in {
+  color: white !important;
+}
 .navbar .navbar-brand {
   font-size: 1.5rem;
 }
