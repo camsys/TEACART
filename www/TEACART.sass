@@ -30,12 +30,6 @@ p
   padding: 0
   &.navbar-default
     background-color: #25365F!important
-    .nav-link, .nav-tabs>li>a, .nav-pills>li>a, :where(ul.nav.navbar-nav > li)>a
-      color: rgba (255, 255, 255, 0.55)!important
-      &:hover
-        color: rgba (255, 255, 255, 0.75)!important
-    .navbar-nav .nav-link.active, .navbar-nav .nav-tabs>li>a.active, .navbar-nav .nav-pills>li>a.active, .navbar-nav :where(ul.nav.navbar-nav > li)>a.active, .navbar-nav .nav-link.show, .navbar-nav .nav-link.in, .navbar-nav .nav-tabs>li>a.show, .navbar-nav .nav-tabs>li>a.in, .navbar-nav .nav-pills>li>a.show, .navbar-nav .nav-pills>li>a.in, .navbar-nav :where(ul.nav.navbar-nav > li)>a.show, .navbar-nav :where(ul.nav.navbar-nav > li)>a.in
-      color: white!important
   .navbar-brand
     font-size: 1.5rem
   .nav
@@ -50,6 +44,7 @@ p
         transition: background .5s ease-in-out
         font-family: "Oswald", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif
         font-weight: 400
+        color: rgba(255, 255, 255, 0.55)!important
         &.active
           background: linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, rgba(255, 255, 255, 0.15) 100%)
           border: none
@@ -58,6 +53,7 @@ p
         .nav-link
           border: none
           background: linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, rgba(255, 255, 255, 0.15) 100%)
+          color: rgba(255, 255, 255, 0.75)!important
       &.dropdown
         .nav-link
           background: none
