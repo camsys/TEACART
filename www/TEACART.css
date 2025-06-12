@@ -34,6 +34,9 @@ p {
 .navbar {
   padding: 0;
 }
+.navbar.navbar-default {
+  background-color: #25365F !important;
+}
 .navbar .navbar-brand {
   font-size: 1.5rem;
 }

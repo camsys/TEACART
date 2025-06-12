@@ -2436,7 +2436,7 @@ and potential applications.<br><br>
                 
                 DT::dataTableOutput("source_table"),
                 tags$script(HTML("var header = $('.navbar > .container-fluid');
-      header.append('<div class=\"gcc-logo header-logo\" style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Contrast.svg\" alt=\"alt\" style=\"float:right;max-width:250px;width:100%;height:auto\"> </a></div>');
+      header.prepend('<div class=\"gcc-logo header-logo\" style=\"float:right\"><a target=\"_blank\" href=\"https://www.georgetownclimate.org/\"><img src=\"GCC_Logo_Contrast.svg\" alt=\"alt\" style=\"float:right;max-width:250px;width:100%;height:auto\"> </a></div>');
                        console.log(header)") # moved this script tag so that it doesn't create a new tab. 
                 ),
       ),
