@@ -3656,7 +3656,18 @@ server <- function(input, output, session) {
 
 # BUDGET: Observe ---------------------------------------------------------
 
-
+  # this is incomplete
+  
+  ## observe change to budget table
+  # observeEvent(input$bikeped_budget_tbl_cell_edit, {
+  #   req(rvs$Budget)
+  #   
+  #   rvs$Budget[rvs$Budget$table_no_ui == 1,] <- reshaping_budget(input$bikeped_budget_tbl_cell_edit,
+  #                                                            rvs$Budget,
+  #                                                            tbl_no = 1,
+  #                                                            num_col = 3,
+  #                                                            col_list = c('unit'))
+  # })
 
 # FUNDING: Render ---------------------------------------------------------
   
