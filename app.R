@@ -948,6 +948,8 @@ and potential applications.<br><br>
                         based on historical data.<br>")
                                      
                             ),
+                            fluidRow(actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
+                                     actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")),
                             fluidRow(
                               numericInput("funding_start_year",
                                            HTML(paste('Funding Start Year: ',
@@ -3728,7 +3730,33 @@ server <- function(input, output, session) {
       )
   })
   
+#BUDGET - PROJECT IO
+  observeEvent(input$fill_projects_bttn,{
+    browser()
+    temp_budget <- rvs$Budget
+    temp_costs <- rvs$Costs |> filter(cost_type == "cap")
+    test <- left_join(temp_budget,temp_costs)
+    #start <- input$horizon_year_1
+    start <- input$funding_start_year
+    end <- start + input$funding_years
+    allocated_budget <- input$total_budget
+    horizon_year_1_cnt <- sum(c(start:end) < input$horizon_year_1)
+    horizon_year_2_cnt <- sum(c(start:end) < input$horizon_year_2) - horizon_year_1_cnt
+    horizon_year_3_cnt <- sum(c(start:end) < input$horizon_year_3) - horizon_year_2_cnt - horizon_year_1_cnt
     
+    temp_budget |> 
+      mutate(horizon_year_1_perc = horizon_year_1_cnt*value/(input$funding_years+1),
+             horizon_year_2_perc = horizon_year_2_cnt*value/(input$funding_years+1),
+             horizon_year_3_perc = horizon_year_3_cnt*value/(input$funding_years+1),
+             
+             horizon_year_1_value = horizon_year_1_perc*allocated_budget,
+             horizon_year_2_value = horizon_year_2_perc*allocated_budget,
+             horizon_year_3_value = horizon_year_3_perc*allocated_budget) #|>
+      
+    
+             
+    
+    })
         
     
    
@@ -4588,7 +4616,9 @@ server <- function(input, output, session) {
                       "Intermodal Freight Investment",
                       "Traffic Operations",
                       "Roadway Expansion",
-                      "Custom Projects")
+                      "Transit Cuts", 
+                      "Land Use Incentives", 
+                      "Roadway Resurfacing")
   
   rowName <- function(scenario) {
     as.character(
@@ -4622,75 +4652,21 @@ server <- function(input, output, session) {
                    'Projects 13',
                    'Projects 9',
                    'Projects 14',
-                   ''),
-    Scenario1 = rep(FALSE, 12),
-    Scenario2 = rep(FALSE, 12)
+                   'Projects 15',
+                   'Projects 16',
+                   'Projects 17'),
+    Scenario1 = rep(FALSE, 14),
+    Scenario2 = rep(FALSE, 14)
   )
   
   colnames(dat)[colnames(dat) == "grouped_projects"] <- "Grouped Projects"
   colnames(dat)[colnames(dat) == "relation"] <- "Relation to Project Tab"
   
-  
-  # names(dat) <- c(
-  #   as.character(checkboxInput("col1", label = "Scenario 1")),
-  #   as.character(checkboxInput("col2", label = "Scenario 2"))
-  # )
-  
-  # rownames(dat) <- rowNames
-  
+
   # Create a reactive data frame
   reactive_scenario <- reactiveVal(dat)
   
   selected_scenario <- reactiveValues(rows = NULL)
-  
-  # output$scenario_tbl <- renderDT({
-  #   browser()
-  #   datatable(
-  #     dat,
-  #     escape = FALSE,
-  #     select = "none",
-  #     options = list(
-  #       columnDefs = list(list(targets = c(1, 2),
-  #                              orderable = FALSE,
-  #                              className = "dt-center")
-  #       ),
-  #       pageLength = 12,
-  #       initComplete = JS(
-  #         "function() {",
-  #         "  $('#col1').on('click', function(){",
-  #         "    var cboxes = $('[id^=col1-]');",
-  #         "    var checked = $('#col1').is(':checked');",
-  #         "    cboxes.each(function(i, cbox) {",
-  #         "      $(cbox).prop('checked', checked);",
-  #         "    });",
-  #         "  });",
-  #         "  $('#col2').on('click', function(){",
-  #         "    var cboxes = $('[id^=col2-]');",
-  #         "    var checked = $('#col2').is(':checked');",
-  #         "    cboxes.each(function(i, cbox) {",
-  #         "      $(cbox).prop('checked', checked);",
-  #         "    });",
-  #         "  });",
-  #         paste(
-  #           sapply(strategy_names, function(scenario) {
-  #             scenarioId <- gsub(" ", "", scenario)
-  #             sprintf(
-  #               "  $('#row%s').on('click', function(){\n    var cboxes = $('[id$=\\'-%s\\']');\n    var checked = $('#row%s').is(':checked');\n    cboxes.each(function(i, cbox) {\n      $(cbox).prop('checked', checked);\n    });\n  });",
-  #               scenarioId, scenarioId, scenarioId
-  #             )
-  #           }),
-  #           collapse = "\n"
-  #         ),
-  #         "}"
-  #       ),
-  #       preDrawCallback =
-  #         JS('function() { Shiny.unbindAll(this.api().table().node()); }'),
-  #       drawCallback =
-  #         JS('function() { Shiny.bindAll(this.api().table().node()); } ')
-  #     )
-  #   )
-  # })
-  # 
   
   # Render the checkbox table
   output$scenario_tbl <- renderDT({
@@ -4699,7 +4675,7 @@ server <- function(input, output, session) {
       escape = FALSE,
       #editable = list(target = c(2,3)),
       options = list(
-        pageLength =14,
+        pageLength =15,
         columnDefs = list(
           list(className = 'dt-center', targets = c(3, 4)),
           list(render = JS(
