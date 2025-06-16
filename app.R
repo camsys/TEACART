@@ -1731,7 +1731,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Costs 15 | Fuel Price",
-                                         HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."),
+                                         HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."), #AHFLAG
                                        ),
                                        open = TRUE
                                      ),
@@ -1742,6 +1742,26 @@ and potential applications.<br><br>
                             ),
                             fluidRow(
                               DT::dataTableOutput("fuel_costs_tbl")
+                            ),
+                            
+                            #roadway resurfacing 
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 16 | Roadway Resurfacing",
+                                         HTML("This category represents the <b>cost per lane-mile</b> of improving roadway surfaces, based on 20xx data."), #AHFLAG
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_roadwayresurf_costs_tbl", "Reset Costs 15", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("roadwayresurf_costs_tbl")
                             ),
                             
                             
@@ -4256,6 +4276,22 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
   })
   
+  output$roadwayresurf_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Costs,
+      table_number = 15,
+      is_year_table = FALSE,
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:0),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
+  
   output$intermodal_costs_tbl <- renderDT({
     req(rvs$Costs)
     
@@ -5574,6 +5610,7 @@ server <- function(input, output, session) {
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
     return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
   })
+  
   
   # server scenarios outputs ------------------------------------------------
   output$emission_change_tbl <- renderDataTable({

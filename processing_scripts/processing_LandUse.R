@@ -1,4 +1,5 @@
 output_land_use <- reactive({
+  #browser()
   emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light Duty Vehicles')
   
   ff_weighted_temp <- Fuel_Factors_Weighted()
@@ -17,13 +18,13 @@ output_land_use <- reactive({
   assumptions <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 9,] %>%
     filter_all(any_vars(!is.na(.))) |> 
     select(element,unit, value)
-  land_use_factor_vmt <- -1/assumptions$value[assumptions$element == "$ Per Household Shifted"]*assumptions$value[assumptions$element == "People per Household"]*(assumptions$value[assumptions$element == "VMT per Capita: Suburban (High VMT)"] - assumptions$value[assumptions$element == "VMT per Capita: Urban (Low VMT)"])
-  rezone_factor_vmt_residential <- assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] * assumptions$value[assumptions$element == "Urban Density"] * assumptions$value[assumptions$element == "VMT per Household"] * assumptions$value[assumptions$element == "Urban Density"]/assumptions$value[assumptions$element == "Suburban Density"]
-  rezone_factor_vmt_job <- 2*assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Work Trip Length"] * assumptions$value[assumptions$element == "Work Annualization"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
-  rezone_factor_vmt_high <- assumptions$value[assumptions$element == "TOD Density - higher"] *  assumptions$value[assumptions$element == "VMT per Household"] * assumptions$value[assumptions$element == "TOD Density - higher"] / assumptions$value[assumptions$element == "Suburban Density"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] +  
-    2*assumptions$value[assumptions$element == "Work Trip Length"]*assumptions$value[assumptions$element == "Work Annualization"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
-  rezone_factor_vmt_mod <- assumptions$value[assumptions$element == "TOD Density - lower"] *  assumptions$value[assumptions$element == "VMT per Household"] * assumptions$value[assumptions$element == "TOD Density - lower"] / assumptions$value[assumptions$element == "Suburban Density"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] +  
-    2*assumptions$value[assumptions$element == "Work Trip Length"]*assumptions$value[assumptions$element == "Work Annualization"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
+  land_use_factor_vmt <- -1/assumptions$value[assumptions$element == "$ per household shifted"]*assumptions$value[assumptions$element == "People per household"]*(assumptions$value[assumptions$element == "VMT per capita: Suburban (High VMT)"] - assumptions$value[assumptions$element == "VMT per capita: Urban (Low VMT)"])
+  rezone_factor_vmt_residential <- assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] * assumptions$value[assumptions$element == "Urban density"] * assumptions$value[assumptions$element == "VMT per household"] * assumptions$value[assumptions$element == "Urban density"]/assumptions$value[assumptions$element == "Suburban density"]
+  rezone_factor_vmt_job <- 2*assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Work trip length"] * assumptions$value[assumptions$element == "Work annualization factor"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
+  rezone_factor_vmt_high <- assumptions$value[assumptions$element == "TOD density - higher"] *  assumptions$value[assumptions$element == "VMT per household"] * assumptions$value[assumptions$element == "TOD density - higher"] / assumptions$value[assumptions$element == "Suburban density"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] +  
+    2*assumptions$value[assumptions$element == "Work trip length"]*assumptions$value[assumptions$element == "Work annualization factor"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
+  rezone_factor_vmt_mod <- assumptions$value[assumptions$element == "TOD density - lower"] *  assumptions$value[assumptions$element == "VMT per household"] * assumptions$value[assumptions$element == "TOD density - lower"] / assumptions$value[assumptions$element == "Suburban density"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] +  
+    2*assumptions$value[assumptions$element == "Work trip length"]*assumptions$value[assumptions$element == "Work annualization factor"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
   temp <- rvs$Projects[rvs$Projects$table_no_ui == 16,] %>%
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                             year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
@@ -83,13 +84,13 @@ cost_output_land_use <- reactive({
   assumptions <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 9,] %>%
     filter_all(any_vars(!is.na(.))) |> 
     select(element,unit, value)
-  land_use_factor_vmt <- -1000000/assumptions$value[assumptions$element == "$ Per Household Shifted"]*assumptions$value[assumptions$element == "People per Household"]*(assumptions$value[assumptions$element == "VMT per Capita: Suburban (High VMT)"] - assumptions$value[assumptions$element == "VMT per Capita: Urban (Low VMT)"])
-  rezone_factor_vmt_residential <- 18*assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] *  assumptions$value[assumptions$element == "VMT per Household"] 
-  rezone_factor_vmt_job <- 2*assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Work Trip Length"] * assumptions$value[assumptions$element == "Work Annualization"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
-  rezone_factor_vmt_high <- 18*25*assumptions$value[assumptions$element == "VMT per Household"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] +  
-    150*2*assumptions$value[assumptions$element == "Work Trip Length"]*assumptions$value[assumptions$element == "Work Annualization"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
-  rezone_factor_vmt_mod <- 18*15*assumptions$value[assumptions$element == "VMT per Household"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] +  
-    100*2*assumptions$value[assumptions$element == "Work Trip Length"]*assumptions$value[assumptions$element == "Work Annualization"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
+  land_use_factor_vmt <- -1000000/assumptions$value[assumptions$element == "$ per household shifted"]*assumptions$value[assumptions$element == "People per household"]*(assumptions$value[assumptions$element == "VMT per capita: Suburban (High VMT)"] - assumptions$value[assumptions$element == "VMT per capita: Urban (Low VMT)"])
+  rezone_factor_vmt_residential <- 18*assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] *  assumptions$value[assumptions$element == "VMT per household"] 
+  rezone_factor_vmt_job <- 2*assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Work trip length"] * assumptions$value[assumptions$element == "Work annualization factor"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
+  rezone_factor_vmt_high <- 18*25*assumptions$value[assumptions$element == "VMT per household"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] +  
+    150*2*assumptions$value[assumptions$element == "Work trip length"]*assumptions$value[assumptions$element == "Work annualization factor"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
+  rezone_factor_vmt_mod <- 18*15*assumptions$value[assumptions$element == "VMT per household"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] +  
+    100*2*assumptions$value[assumptions$element == "Work trip length"]*assumptions$value[assumptions$element == "Work annualization factor"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
   land_use_base <- data.frame(table = c("Land Use (Smart Growth) Incentives", 
                                               "Increased Residential Density",
                                               "Increased Job Density",
