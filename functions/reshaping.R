@@ -50,6 +50,55 @@ reshaping_projects2 <- function(user_data,
   return(updated_data)
 }
 
+reshaping_budget <- function(user_data,
+                             rvs,
+                             tbl_no,
+                             col1,
+                             col2 = NA,
+                             col3 = NA){
+  browser()
+  no_row =  nrow(user_data)/length(unique(user_data$col))
+  modified_data <- data.frame(matrix(nrow = no_row))
+  for (i in 1:length(unique(user_data$col))) {
+    col_name <- paste0("var", i)
+    if(i == 1){col_name <- 'category'}
+    if(i == length(unique(user_data$col))-1){col_name <- 'unit'}
+    if(i == length(unique(user_data$col))){col_name <- 'value'}
+    modified_data[[col_name]] = user_data$value[user_data$col == i-1]
+  }
+  
+  if(length(unique(user_data$col)) == 4){ # when there is only one str field
+    y_names = c('var2','unit','category')
+    x_names = c(col1,'unit','category')
+  }else if (length(unique(user_data$col)) == 5) { # specifically for tbl9, unit is needed for join. 
+    y_names = c('var2','var3','unit','category')
+    x_names = c(col1,col2,'unit','category')
+  }else if(!is.na(col3)){ # when three columns are needed for joining
+    y_names = c('var2','var3','var4','unit','category')
+    x_names = c(col1,col2,col3,'unit','category')
+  } else{ # all other table can be proper joined by 2 common fields.
+    y_names = c('unit','category')
+    x_names = c('unit','category')
+  }
+  if ("unit" %in% names(rvs)){
+    modified_data <- modified_data  %>%
+      left_join(references, by = c("unit" = "description")) %>%
+      mutate(unit = field) %>%
+      select(-field) 
+  }
+  modified_data <- modified_data %>% 
+    select_if(~any(!is.na(.))) %>%
+    mutate(value = as.numeric(value))
+  
+  updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']] %>%
+    left_join(modified_data, by = setNames(y_names,x_names)) %>% # setNames(y,x) 
+    select(-contains("var"))
+  
+
+  browser()
+  return(updated_data)
+    
+}
 
 ### assumption function
 reshaping_assmp <- function(user_data,

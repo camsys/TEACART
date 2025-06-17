@@ -38,7 +38,7 @@ render_custom_datatable <- function(#input_reactives,
           rename_with(~as.character(rvs$Baseline$horizon_year_3), horizon_year_3) 
     } else if (is_budget_table == TRUE & is_advanced_table == FALSE & is_cost_table == FALSE & is_year_table == FALSE) {
       df %>% 
-        select(c(category, area_type, facility_type, unit, value))
+        select(-c(table_no_ui, table_no_ui_revised,table), -any_of(pivot_col))
     } else if (is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table_number,]) != 1 & table_number != 13){
       df %>% 
         select(-c(table_no_ui, table_no_ui_revised, 
@@ -88,7 +88,7 @@ render_custom_datatable <- function(#input_reactives,
         rename(any_of(references_vector))
     } 
     
-    # browser()
+    #browser()
     
     
 

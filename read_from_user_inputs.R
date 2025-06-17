@@ -36,8 +36,8 @@ read_user_inputs_excel <- function(filename){
 read_user_inputs_version2 <- function(filename){
   
   Baseline <- read_excel(path = filename, sheet = "Baseline") %>% as.vector()
-  Costs <- read_excel(path = filename, sheet = "Costs")
-  Budget <- read_excel(path = filename, sheet = "Budget")
+  Costs <- read_excel(path = filename, sheet = "Costs", col_types = c(rep("text",13),"numeric"))
+  Budget <- read_excel(path = filename, sheet = "Budget", col_types = c(rep("text",14),"numeric"))
   Funding <- read_excel(path = filename, sheet = "Funding_Summary")
   Assumptions <- read_excel(path = filename, sheet = "Assumptions")
   Advanced <- read_excel(path = filename, sheet = "Advanced")

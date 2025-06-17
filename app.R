@@ -514,7 +514,7 @@ and potential applications.<br><br>
                                                        selectInput("land_use_factor",
                                                                    HTML("<span>Apply Land Use Multiplier to Transit Investment:</span> <br> <p>This multiplier represents total VMT reduction, including reductions related to more efficient land use patterns supported by transit, relative to the direct VMT reduction from increased transit ridership."),
                                                                    choices = c("Yes" = 1, "No" = 0),
-                                                                   selected = "No")
+                                                                   selected = 0)
                                               )
                                               )
                                      
@@ -2480,13 +2480,6 @@ theme_set(theme_bw(base_size = 16))
 # Start Server Function ---------------------------------------------------
 
 server <- function(input, output, session) {
-  #Test Observe ----------------------------------------------------------------
-  #observeEvent(input$state_input, {browser()})
-  # observeEvent(buttonid, {
-  #   nav_select(id = "iforget", selected = "Inputs")
-  # })
-  
-  
   #Source Local Scripts --------------------------------------------------------
   source("functions/render_custom_datatable.R", local = T)
   source("functions/reshaping.R", local = T)
@@ -2512,9 +2505,10 @@ server <- function(input, output, session) {
          input$vmt_forecast_input,
          input$vmt_nhs,
          input$ev_baseline_input,
-         input$grid_emissions_input)
+         input$grid_emissions_input,
+         input$land_use_factor)
   })
-  
+
   #page error checker ----------------------------------------------------------
   
   #these define which tab/page the users was on
@@ -2643,15 +2637,13 @@ server <- function(input, output, session) {
                                # vmt_nhs = input$vmt_nhs,
                                vmt_forecast = input$vmt_forecast_input,
                                veh_elec_baseline = input$ev_baseline_input,
-                               elec_grid_emissions_net_zero = input$grid_emissions_input
+                               elec_grid_emissions_net_zero = input$grid_emissions_input,
+                               land_use_factor = input$land_use_factor
     )
     
     updateSelectInput(inputId = "pie_graph_year", label = "", choices = c(input$base_year, input$horizon_year_1, input$horizon_year_2, input$horizon_year_3))
   })
-  #change transit assumptions based on state selection
-  observeEvent(input$state_input,{
-    
-  })
+
   
   # Initiate or Upload User Inputs -------------------------------------------
   observeEvent(input$user_inputs_upload, {
@@ -3395,12 +3387,13 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:2),
+      non_editable_cols = c(0:3),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
       currency_rows = integer(0),
-      decimal_rows = integer(0))
+      decimal_rows = integer(0),
+      pivot_col = c("transit_mode"))
   })
   
   
@@ -3414,12 +3407,13 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:2),
+      non_editable_cols = c(0:3),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
       currency_rows = integer(0),
-      decimal_rows = integer(0))
+      decimal_rows = integer(0),
+      pivot_col = c("transit_mode"))
   })
   
   output$transit_elec_budget_tbl <- renderDT({
@@ -3432,7 +3426,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:2),
+      non_editable_cols = c(0:4),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3468,12 +3462,14 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:2),
+      non_editable_cols = c(0:3),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
       currency_rows = integer(0),
-      decimal_rows = integer(0))
+      decimal_rows = integer(0),
+      
+      pivot_col = c("area_type"))
   })
   
   output$tdm_budget_tbl <- renderDT({
@@ -3527,7 +3523,8 @@ server <- function(input, output, session) {
       comma_rows = integer(0),
       percent_rows = 0:21,
       currency_rows = integer(0),
-      decimal_rows = integer(0))
+      decimal_rows = integer(0),
+      pivot_col = c("road_class"))
   })
   
   output$mdhd_budget_tbl <- renderDT({
@@ -3540,7 +3537,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:1),
+      non_editable_cols = c(0:3),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3576,7 +3573,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:1),
+      non_editable_cols = c(0:2),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3612,7 +3609,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:2),
+      non_editable_cols = c(0:3),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3630,7 +3627,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:1),
+      non_editable_cols = c(0:2),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3648,7 +3645,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0:2),
+      non_editable_cols = c(0:3),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = 0:21,
@@ -3674,22 +3671,264 @@ server <- function(input, output, session) {
       decimal_rows = integer(0))
   })
 
-
-
-# BUDGET: Observe ---------------------------------------------------------
-
-  # this is incomplete
+  # BUDGET: Editable --------------------------------------------------------
+  # observe edits to the bikeped_projs
   
-  ## observe change to budget table
-  # observeEvent(input$bikeped_budget_tbl_cell_edit, {
-  #   req(rvs$Budget)
-  #   
-  #   rvs$Budget[rvs$Budget$table_no_ui == 1,] <- reshaping_budget(input$bikeped_budget_tbl_cell_edit,
-  #                                                            rvs$Budget,
-  #                                                            tbl_no = 1,
-  #                                                            num_col = 3,
-  #                                                            col_list = c('unit'))
-  # })
+  observeEvent(input$bikeped_budget_tbl_cell_edit, {
+    req(rvs$Budget)
+    #print('here')
+    #browser()
+    rvs$Budget[rvs$Budget$table_no_ui == 1,] <- reshaping_budget(input$bikeped_budget_tbl_cell_edit,
+                                                                        rvs$Budget,
+                                                                        tbl_no = 1,
+                                                                        col1 = 'area_type',
+                                                                        col2 = 'facility_type')
+  })
+  
+  # observe edits to the transit_fixed_projs
+  observeEvent(input$transit_fr_budget_tbl_cell_edit, {
+    req(rvs$Budget)
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 2,] <- reshaping_budget(input$transit_fr_budget_tbl_cell_edit,
+                                                                        rvs$Budget,
+                                                                        tbl_no = 2,
+                                                                        col1 = 'area_type',
+                                                                        col2 = 'fuel_type',
+                                                                 col3 = 'transit_mode')
+  })
+  
+  # observe edits to the transit_dr_projs_tbl_cell_edit
+  observeEvent(input$transit_dr_budget_tbl_cell_edit, {
+    req(rvs$Budget)
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 3,] <- reshaping_budget(input$transit_dr_budget_tbl_cell_edit,
+                                                                        rvs$Budget,
+                                                                        tbl_no = 3,
+                                                                        col1 = 'area_type',
+                                                                        col2 = 'fuel_type',
+                                                                 col3 = 'transit_mode')
+  })
+  
+  # observe edits to the transit_el_projs_tbl
+  observeEvent(input$transit_el_budget_tbl_cell_edit, {
+    req(rvs$Budget)
+    # check dup
+    rvs$Budget[rvs$Budget$table_no_ui == 4,] <- reshaping_budget(input$transit_el_budget_tbl_cell_edit,
+                                                                        rvs$Budget,
+                                                                        tbl_no = 4,
+                                                                        col1 = 'area_type',
+                                                                        col2 = 'fuel_type',
+                                                                        col3 = 'transit_mode')
+  })
+  
+  # observe edits to the transit_bus_projs_tbl  
+  observeEvent(input$transit_bus_priority_budget_tbl_cell_edit, {
+    browser()
+    rvs$Budget[rvs$Budget$table_no_ui == 5,] <- reshaping_budget(input$ttransit_bus_priority_budget_tbl_cell_edit,
+                                                                        rvs$Budget,
+                                                                        tbl_no = 5,
+                                                                        col1 = 'unit')
+  })
+  
+  # observe edits to the public_rail_projs table
+  observeEvent(input$rail_budget_tbl_cell_edit, {
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 6,] <- reshaping_budget(input$rail_budget_tbl_cell_edit,
+                                                                        rvs$Budget,
+                                                                        tbl_no = 6,
+                                                                        col1 = 'fuel_type',
+                                                                        col2 = 'transit_mode')
+  })
+  
+  # observe edits to the tdm_projs_tbl table
+  observeEvent(input$tdm_budget_tbl_cell_edit, {
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 7,] <- reshaping_budget(input$tdm_budget_tbl_cell_edit,
+                                                                        rvs$Budget,
+                                                                        tbl_no = 7,
+                                                                        col1 = NA)
+    
+  })
+  
+  # observe edits to the micro_projs_tbl table
+  observeEvent(input$micromobility_budget_tbl_cell_edit, {
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 8,] <- reshaping_budget(input$micromobility_budget_tbl_cell_edit,
+                                                                        rvs$Budget,
+                                                                        tbl_no = 8,
+                                                                        col1 = 'unit')
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  
+  # observe edits to the traffic_ops_projs_tbl table
+  observeEvent(input$traffic_ops_budget_tbl_cell_edit, {
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 9,] <- reshaping_budget(input$traffic_ops_budget_tbl_cell_edit,
+                                                                        rvs$Budget,
+                                                                        tbl_no = 9,
+                                                                        col1 = 'area_type',
+                                                                        col2 = 'road_class',
+                                                                        col3 = 'unit')
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  
+  # observe edits to the mhdev_projs_tbl table
+  observeEvent(input$mdhd_budget_tbl_cell_edit, {
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 10,] <- reshaping_budget(input$mdhd_budget_tbl_cell_edit,
+                                                                         rvs$Budget,
+                                                                         tbl_no = 10,
+                                                                         col1 = 'veh_type',
+                                                                         col2 = 'fuel_type')
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  
+  # observe edits to the mhdev_projs_tbl table
+  observeEvent(input$pnr_budget_tbl_cell_edit, {
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 11,] <- reshaping_budget(input$pnr_budget_tbl_cell_edit,
+                                                                         rvs$Budget,
+                                                                         tbl_no = 11,
+                                                                         col1 = 'unit')
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  
+  # observe edits to the evsi_budget_tbl table
+  observeEvent(input$ev_budget_tbl_cell_edit, {
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 12,] <- reshaping_budget(input$ev_budget_tbl_cell_edit,
+                                                                         rvs$Budget,
+                                                                         tbl_no = 12,
+                                                                         col1 = 'charge_port_detail')
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  
+  # observe edits to the freight_budget_tbl table
+  observeEvent(input$freight_budget_tbl_cell_edit, {
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 13,] <- reshaping_budget(input$freight_budget_tbl_cell_edit,
+                                                                         rvs$Budget,
+                                                                         tbl_no = 13,
+                                                                         col1 = 'unit')
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  
+  # observe edits to the expansion_budget_tbl table
+  observeEvent(input$expansion_budget_tbl_cell_edit, {
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 14,] <- reshaping_budget(input$expansion_budget_tbl_cell_edit,
+                                                                         rvs$Budget,
+                                                                         tbl_no = 14,
+                                                                         col1 = 'area_type',
+                                                                         col2 = 'road_class')
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  
+  observeEvent(input$transit_cuts_budget_tbl_cell_edit, {
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 16,] <- reshaping_budget(input$transit_cuts_budget_tbl_cell_edit,
+                                                                         rvs$Budget,
+                                                                         tbl_no = 16,
+                                                                         col1 = 'area_type',
+                                                                  col2 ='transit_mode')
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  observeEvent(input$land_use_budget_tbl_cell_edit, {
+    
+    rvs$Budget[rvs$Budget$table_no_ui == 15,] <- reshaping_budget(input$land_use_budget_tbl_cell_edit,
+                                                                         rvs$Budget,
+                                                                         tbl_no = 15,
+                                                                         col1 = 'land_use')
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  observeEvent(input$resurfacing_budget_tbl_cell_edit, {
+    #browser()
+    rvs$Budget[rvs$Budget$table_no_ui == 17,] <- reshaping_budget(input$resurfacing_budget_tbl_cell_edit,
+                                                                         rvs$Budget,
+                                                                         tbl_no = 17,
+                                                                  col1 = NA)
+    
+    
+    #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
+    
+  })
+  
+  
+  #BUDGET - PROJECT IO --------------------------------------------------
+  observeEvent(input$fill_projects_bttn,{
+    #browser()
+    temp_budget <- rvs$Budget
+    temp_budget$table_no_ui_revised = as.character(temp_budget$table_no_ui_revised)
+    
+    temp_costs <- rvs$Costs 
+    temp_costs$table_no_ui_revised = as.character(temp_costs$table_no_ui_revised)
+    temp_costs <- temp_costs |> 
+      filter(table_no_ui_revised != "-1") |> 
+      group_by(table_no_ui_revised) |> 
+      summarise(cost_parameter = sum(value))
+    
+    temp_join <- left_join(temp_budget,temp_costs) |> 
+      mutate(cost_parameter = case_when(!is.na(land_use) ~ 1, 
+                                        !is.na(land_use)&land_use == "Land Use Incentives"~1000000,
+                                        TRUE ~ cost_parameter)) #|> mutate(value = 1)
+    #start <- input$horizon_year_1
+    #total <- input$total_budget
+    start <- input$funding_start_year
+    end <- start + input$funding_years
+    total <- input$total_budget*1000000
+    total_years <- sum(c(start:end))
+    horizon_year_1_cnt <- sum(c(start:end) < input$horizon_year_1)
+    horizon_year_2_cnt <- sum(c(start:end) < input$horizon_year_2) - horizon_year_1_cnt
+    horizon_year_3_cnt <- sum(c(start:end) < input$horizon_year_3) - horizon_year_2_cnt - horizon_year_1_cnt
+    
+    foo <- temp_join |> 
+      mutate(horizon_year_1_budget = total*value*(horizon_year_1_cnt/total_years),
+             horizon_year_2_budget = total*value*(horizon_year_2_cnt/total_years),
+             horizon_year_3_budget = total*value*(horizon_year_3_cnt/total_years),
+             horizon_year_1 = horizon_year_1_budget/cost_parameter,
+             horizon_year_2 = horizon_year_2_budget/cost_parameter,
+             horizon_year_3 = horizon_year_3_budget/cost_parameter) |> select(-c(table_no_ui,value,table_no_ui_revised)) |> #View()
+      pivot_longer(cols = c(horizon_year_1, horizon_year_2, horizon_year_3), names_to = "year", values_to = "value") |> 
+      #mutate(value = value_new) |> 
+      select(any_of(names(rvs$Projects))) 
+    temp_projects <- rvs$Projects |> select(-value)
+
+    foo[is.na(foo)] <- "NA"
+    temp_projects[is.na(temp_projects)] <- "NA"
+    foobar <- left_join(temp_projects, foo) 
+    foobar[foobar == "NA"] <- NA
+    foobar[is.na(foobar$value),"value"]<-0
+    #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
+    browser()
+    rvs$Projects <- foobar
+  })
 
 # FUNDING: Render ---------------------------------------------------------
   
@@ -3729,37 +3968,6 @@ server <- function(input, output, session) {
         backgroundPosition = "center"
       )
   })
-  
-#BUDGET - PROJECT IO
-  observeEvent(input$fill_projects_bttn,{
-    browser()
-    temp_budget <- rvs$Budget
-    temp_costs <- rvs$Costs |> filter(cost_type == "cap")
-    test <- left_join(temp_budget,temp_costs)
-    #start <- input$horizon_year_1
-    start <- input$funding_start_year
-    end <- start + input$funding_years
-    allocated_budget <- input$total_budget
-    horizon_year_1_cnt <- sum(c(start:end) < input$horizon_year_1)
-    horizon_year_2_cnt <- sum(c(start:end) < input$horizon_year_2) - horizon_year_1_cnt
-    horizon_year_3_cnt <- sum(c(start:end) < input$horizon_year_3) - horizon_year_2_cnt - horizon_year_1_cnt
-    
-    temp_budget |> 
-      mutate(horizon_year_1_perc = horizon_year_1_cnt*value/(input$funding_years+1),
-             horizon_year_2_perc = horizon_year_2_cnt*value/(input$funding_years+1),
-             horizon_year_3_perc = horizon_year_3_cnt*value/(input$funding_years+1),
-             
-             horizon_year_1_value = horizon_year_1_perc*allocated_budget,
-             horizon_year_2_value = horizon_year_2_perc*allocated_budget,
-             horizon_year_3_value = horizon_year_3_perc*allocated_budget) #|>
-      
-    
-             
-    
-    })
-        
-    
-   
   
   # server assumptions ------------------------------------------------------
   
@@ -5197,7 +5405,8 @@ server <- function(input, output, session) {
                            "pnr_costs_outputs",
                            "evsi_costs_outputs",
                            "roadway_expand_costs_outputs",
-                           "intermodal_costs_outputs")
+                           "intermodal_costs_outputs"
+                           )
   
   read_static_tables("data/costs_outputs.xlsx", costs_outputs_names)
   
@@ -5856,24 +6065,6 @@ server <- function(input, output, session) {
     
   source("functions/cost_maker.R", local = TRUE)
   source("processing_scripts/processing_Allassump.R", local = TRUE) #Finished
-  
-  #rvs update from different inputs
-  #key_inputs update -----------------------------------------------------------
-
-    key_inputs_listen <- reactive({
-    list(input$state_input,
-         input$base_year,
-         input$horizon_year_1,
-         input$horizon_year_2,
-         input$horizon_year_3,
-         input$transportation_scope,
-         input$scope_emissions,
-         input$scope_fuels,
-         input$vmt_forecast_input,
-         input$vmt_nhs,
-         input$ev_baseline_input,
-         input$grid_emissions_input)
-  })
   
   ## download PDF report
   
