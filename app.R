@@ -987,17 +987,17 @@ and potential applications.<br><br>
                                            step = 1
                               ),
                               # could this be some kind of floating widget?
-                              numericInput("allocated_budget",
-                                           HTML(paste('Allocated Budget: ',
-                                                      as.character(tags$i(class = "fa fa-info-circle", 
-                                                                          title = "This number should be equal to 100.")),
-                                                      sep = " ")
-                                           ),
-                                           value = 100,
-                                           min = 90,
-                                           max = 100,
-                                           step = 1
-                              ),
+                              # numericInput("allocated_budget",
+                              #              HTML(paste('Allocated Budget: ',
+                              #                         as.character(tags$i(class = "fa fa-info-circle", 
+                              #                                             title = "This number should be equal to 100.")),
+                              #                         sep = " ")
+                              #              ),
+                              #              value = 100,
+                              #              min = 90,
+                              #              max = 100,
+                              #              step = 1
+                              # ),
                             ## FUNDING SUMMARY
                             
                             ),
@@ -3723,8 +3723,8 @@ server <- function(input, output, session) {
   
   # observe edits to the transit_bus_projs_tbl  
   observeEvent(input$transit_bus_priority_budget_tbl_cell_edit, {
-    browser()
-    rvs$Budget[rvs$Budget$table_no_ui == 5,] <- reshaping_budget(input$ttransit_bus_priority_budget_tbl_cell_edit,
+    #browser()
+    rvs$Budget[rvs$Budget$table_no_ui == 5,] <- reshaping_budget(input$transit_bus_priority_budget_tbl_cell_edit,
                                                                         rvs$Budget,
                                                                         tbl_no = 5,
                                                                         col1 = 'unit')
@@ -3926,7 +3926,7 @@ server <- function(input, output, session) {
     foobar[foobar == "NA"] <- NA
     foobar[is.na(foobar$value),"value"]<-0
     #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
-    browser()
+    #browser()
     rvs$Projects <- foobar
   })
 
