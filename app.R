@@ -2807,14 +2807,14 @@ server <- function(input, output, session) {
   })
   
   output$public_rail_projs_tbl <- renderDT({
-    
+
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 6,
-      non_editable_cols = c(0,1,2),
+      non_editable_cols = c(0,1,2,3),
       page_length = 8,
       comma_rows = 0:3,
       percent_rows = integer(0),
@@ -3091,12 +3091,13 @@ server <- function(input, output, session) {
   
   # observe edits to the public_rail_projs table
   observeEvent(input$public_rail_projs_tbl_cell_edit, {
-    
+    #browser()
     rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping_projects2(input$public_rail_projs_tbl_cell_edit,
                                                                         rvs$Projects,
                                                                         tbl_no = 6,
-                                                                        col1 = 'fuel_type',
-                                                                        col2 = 'transit_mode',
+                                                                        col1 = 'area_type',
+                                                                        col2 = 'fuel_type',
+                                                                        col3 = 'transit_mode',
                                                                         horizon_year_1 = input$horizon_year_1,
                                                                         horizon_year_2 = input$horizon_year_2,
                                                                         horizon_year_3 = input$horizon_year_3)
@@ -3930,6 +3931,48 @@ server <- function(input, output, session) {
     rvs$Projects <- foobar
   })
 
+  observeEvent(input$fill_budget_bttn,{
+    #browser()
+    temp_budget <- rvs$Budget
+    temp_budget$table_no_ui_revised = as.character(temp_budget$table_no_ui_revised)
+    
+    temp_costs <- rvs$Costs 
+    temp_costs$table_no_ui_revised = as.character(temp_costs$table_no_ui_revised)
+    temp_costs <- temp_costs |> 
+      filter(table_no_ui_revised != "-1") |> 
+      group_by(table_no_ui_revised) |> 
+      summarise(cost_parameter = sum(value))
+    
+    temp_join <- left_join(temp_budget,temp_costs) |> 
+      mutate(cost_parameter = case_when(!is.na(land_use) ~ 1, 
+                                        !is.na(land_use)&land_use == "Land Use Incentives"~1000000,
+                                        TRUE ~ cost_parameter)) |> 
+      select(-value)
+    #start <- input$horizon_year_1
+    #total <- input$total_budget
+    #start <- input$funding_start_year
+    #end <- start + input$funding_years
+    total <- input$total_budget*1000000
+    #total_years <- sum(c(start:end))
+    #horizon_year_1_cnt <- sum(c(start:end) < input$horizon_year_1)
+    #horizon_year_2_cnt <- sum(c(start:end) < input$horizon_year_2) - horizon_year_1_cnt
+    #horizon_year_3_cnt <- sum(c(start:end) < input$horizon_year_3) - horizon_year_2_cnt - horizon_year_1_cnt
+    temp_projects <- rvs$Projects
+    temp_join[is.na(temp_join)] <- "NA"
+    temp_projects[is.na(temp_projects)] <- "NA"
+
+    temp_projects <- temp_projects |> group_by_all() |> ungroup(c(year,value)) |> summarise(value = sum(value)) |> select(-table_no_ui)
+    foo <- left_join(temp_join, temp_projects) |> 
+      mutate(value = value*cost_parameter/total) |> 
+      select(-cost_parameter)
+    foo[foo == "NA"] <- NA
+    foo[is.na(foo$value),"value"]<-0
+
+
+    #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
+    #browser()
+    rvs$Budget <- foo
+  })
 # FUNDING: Render ---------------------------------------------------------
   
   output$funding_summary_tbl <- renderDataTable({
