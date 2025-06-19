@@ -1,5 +1,6 @@
 h2 {
   font-weight: bold;
+  font-size: 2rem;
 }
 
 b {
@@ -8,6 +9,10 @@ b {
 
 p {
   max-width: 1440px !important;
+}
+
+ol {
+  margin-bottom: 0;
 }
 
 #shiny-notification-panel {
@@ -111,28 +116,31 @@ p {
 }
 
 @media screen and (min-width: 575.98px) {
-  .bslib-sidebar-layout > .collapse-toggle {
-    margin-top: 25px;
+  .bslib-sidebar-layout > .collapse-toggle, .bslib-sidebar-layout.sidebar-collapsed > .collapse-toggle {
     -webkit-transition: background-color 0.25s ease-in-out;
     transition: background-color 0.25s ease-in-out;
+    top: 100px;
+    left: 18rem;
+    position: sticky;
   }
-  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=true] {
+  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=true], .bslib-sidebar-layout.sidebar-collapsed > .collapse-toggle[aria-expanded=true] {
     background-color: #DCDEE6;
   }
-  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=true]:hover {
+  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=true]:hover, .bslib-sidebar-layout.sidebar-collapsed > .collapse-toggle[aria-expanded=true]:hover {
     background-color: #C3C7D7;
   }
-  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=false] {
+  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=false], .bslib-sidebar-layout.sidebar-collapsed > .collapse-toggle[aria-expanded=false] {
+    left: 0.5rem;
     background-color: #25365F;
   }
-  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=false]:hover {
+  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=false]:hover, .bslib-sidebar-layout.sidebar-collapsed > .collapse-toggle[aria-expanded=false]:hover {
     background-color: #566382;
   }
-  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=false] svg {
+  .bslib-sidebar-layout > .collapse-toggle[aria-expanded=false] svg, .bslib-sidebar-layout.sidebar-collapsed > .collapse-toggle[aria-expanded=false] svg {
     fill: white !important;
   }
-  .bslib-sidebar-layout > .sidebar > .sidebar-content {
-    padding-top: 2.5rem;
+  .bslib-sidebar-layout > .sidebar > .sidebar-content, .bslib-sidebar-layout.sidebar-collapsed > .sidebar > .sidebar-content {
+    padding-top: 2rem;
   }
 }
 .bslib-sidebar-layout.sidebar-collapsed > .main .footer {
@@ -154,8 +162,8 @@ table tr:hover td {
 }
 
 div.dataTables_wrapper div.dataTables_info {
-  padding-top: 0.5rem;
-  padding-bottom: 1.5rem;
+  padding-top: 0 !important;
+  padding-bottom: 2.5rem;
 }
 
 .tab-pane[data-value=Inputs] .card-header {
@@ -167,14 +175,14 @@ div.dataTables_wrapper div.dataTables_info {
 .tab-pane[data-value=Inputs] .card-header .nav-item:first-child {
   margin-left: 0.5rem;
 }
-.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(-n+4) {
+.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(-n+5) {
   background: #E9E9E9;
 }
-.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(4) {
+.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(5) {
   position: relative;
   margin-right: 36px;
 }
-.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(4):after {
+.tab-pane[data-value=Inputs] .card-header .nav-item:nth-child(5):after {
   content: "";
   display: block;
   width: 0px;
@@ -439,7 +447,7 @@ div.dataTables_wrapper div.dataTables_info {
 }
 
 @media screen and (max-width: 575.98px) {
-  .footer #inputs_btn, .footer #outputs_btn, .footer #about_btn, .footer #sources_btn, .footer ul {
+  .footer {
     display: none;
   }
   .tab-pane[data-value=About] img {
@@ -449,11 +457,15 @@ div.dataTables_wrapper div.dataTables_info {
 }
 @media screen and (max-width: 991.98px) {
   .navbar .gcc-logo {
-    display: none;
+    padding: 0.75rem 0;
   }
   .navbar .navbar-toggle {
     border: none;
   }
+  .navbar .navbar-header {
+    width: auto;
+  }
+  /* Make the sidebar sticky */
 }
 @media screen and (min-width: 575.98px) {
   .html-fill-container {
@@ -472,5 +484,21 @@ div.dataTables_wrapper div.dataTables_info {
   }
   .tab-pane[data-value=About], .tab-pane[data-value=TEA-CART], .tab-pane[data-value=How-to] {
     padding: 0 1.5rem;
+  }
+  /* Make the sidebar sticky */
+  .bslib-sidebar-layout > .sidebar {
+    position: fixed;
+    top: 65px;
+    width: 350px;
+    height: calc(100vh - 70px);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+  .bslib-sidebar-layout:not(.sidebar-collapsed) > .main {
+    margin-left: -100px;
+  }
+  .main {
+    margin-top: 67.59px;
   }
 }

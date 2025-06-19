@@ -8,10 +8,13 @@ $blue: #25365F
 
 h2
   font-weight: bold
+  font-size: 2rem
 b
   color: $dark-blue
 p
   max-width: 1440px!important
+ol
+  margin-bottom: 0
 
 #shiny-notification-panel
   top: 8vh
@@ -89,26 +92,32 @@ p
         margin-inline-start: -2rem
         font-size: 1rem
 @media screen and (min-width: 575.98px)
-  .bslib-sidebar-layout
+  .bslib-sidebar-layout, .bslib-sidebar-layout.sidebar-collapsed
     >.collapse-toggle
-      margin-top: 25px
       transition: background-color .25s ease-in-out
+      top: 100px
+      left: 18rem
+      position: sticky
       &[aria-expanded="true"]
         background-color: #DCDEE6
         &:hover
           background-color: #C3C7D7
       &[aria-expanded="false"]
+        left: .5rem
         background-color: #25365F
         &:hover
-          background-color: #566382
+          background-color: #566382      
         svg
           fill: white!important
     >.sidebar>.sidebar-content 
-      padding-top: 2.5rem
+      padding-top: 2rem
 .bslib-sidebar-layout.sidebar-collapsed>.main //sidebar-collapsed
   .footer
     margin: 1rem -3rem 0 -3rem
-
+@media screen and (max-width: 991.98px)
+  .bslib-sidebar-layout, .bslib-sidebar-layout.sidebar-collapsed
+    >.collapse-toggle
+      // top: 70px
 // about
 .tab-pane[data-value="About"]
   img, li
@@ -128,8 +137,8 @@ table
     background-color: mix(#d1d8e7, white, 25%)
 div.dataTables_wrapper 
   div.dataTables_info
-    padding-top: .5rem
-    padding-bottom: 1.5rem
+    padding-top: 0!important
+    padding-bottom: 2.5rem
 
 .tab-pane[data-value="Inputs"] 
   .card-header
@@ -138,9 +147,9 @@ div.dataTables_wrapper
       padding: .5rem
       &:first-child
         margin-left: .5rem
-      &:nth-child(-n+4) // grey bg on inputs nav
+      &:nth-child(-n+5) // grey bg on inputs nav
         background: #E9E9E9
-      &:nth-child(4)
+      &:nth-child(5)
         position: relative
         margin-right: 36px
         &:after // add arrow after scenario tab
@@ -346,17 +355,26 @@ div.dataTables_wrapper
       text-align: left
 @media screen and (max-width: 575.98px) // mobile 
   .footer
-      #inputs_btn, #outputs_btn, #about_btn, #sources_btn, ul
-        display: none
+    // #inputs_btn, #outputs_btn, #about_btn, #sources_btn, ul
+    //   display: none
+    display: none
   .tab-pane[data-value="About"] img
     width: 100%
     margin: 0 auto
 @media screen and (max-width: 991.98px) //tablet
   .navbar
     .gcc-logo
-      display: none
+      padding: 0.75rem 0
     .navbar-toggle
       border: none
+    .navbar-header
+      width: auto
+  .main
+  //  margin-top: 38px!important
+  /* Make the sidebar sticky */
+  .bslib-sidebar-layout > .sidebar
+    // top: 38px !important
+    // width: 350px
 @media screen and (min-width: 575.98px) // not mobile
   .html-fill-container
     display: block
@@ -369,5 +387,14 @@ div.dataTables_wrapper
       flex-basis: auto
   .tab-pane[data-value="About"], .tab-pane[data-value="TEA-CART"], .tab-pane[data-value="How-to"]
     padding: 0 1.5rem 
-
-  
+  /* Make the sidebar sticky */
+  .bslib-sidebar-layout > .sidebar
+    position: fixed
+    top: 65px
+    width: 350px
+    height: calc(100vh - 70px)
+    display: flex
+  .bslib-sidebar-layout:not(.sidebar-collapsed) > .main
+    margin-left: -100px  /* some trial and error here */
+  .main
+   margin-top: 67.59px

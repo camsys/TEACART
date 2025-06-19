@@ -57,23 +57,6 @@ ui <- function(request) {
     # #a0cf66 is a georgetown color but intense - color below is a milder variation
     tags$head(
       tags$style(HTML("
-      /* Make the sidebar sticky */
-      .bslib-sidebar-layout > .sidebar {
-        position: fixed; !important;
-        top: 65px;
-        width: 350px;
-        height: calc(100vh - 70px);
-        display: flex
-      }
-            .bslib-sidebar-layout > .main {
-        margin-left: -100px;  /* some trial and error here */
-            }
-      .main {
-      margin-top: 67.59px;
-      }
-      
-    ")),
-      tags$style(HTML("
             .accordion-button.collapsed {
                 background-color: #e3ebd5;
             }
@@ -178,7 +161,7 @@ ui <- function(request) {
                           #          tags$li(
                           #            shiny::actionButton("outsummary",class = "btn btn-secondary",label = "Strategy Summary")),
                           #          tags$li(
-                          #            shiny::actionButton("outcosteff",class = "btn btn-secondary",label = "Cost Effectiveness"))
+                          #            shiny::actionButton("outcosteff",class = "btn btn-secondary",label = "Cost-Effectiveness"))
                           #        )
                           # ),
                           # column(width = 1,
@@ -204,16 +187,15 @@ ui <- function(request) {
       sidebar = sidebar(width = 450, 
                         class = "stick-sidebar",
                         h2('Quick Guide'),
-                        HTML("<p>This sidebar has a high-level step-by-step guide for 
-                        entering and saving data in the TEA CART Tool. </p>
+                        HTML("<p>This sidebar has a high-level step-by-step guide for entering and saving data in TEA-CART. </p>
                         "),
                         h4('New User'),
                         HTML("<ol>
                             <li>Navigate to the <b>Inputs</b> tab.</li>
-                            <li>Input your values in the <b>Baseline, Projects, Costs,</b> and <b>Assumptions</b> sections.</li>
+                            <li>Input your values in the <b>Baseline, Projects, Costs,</b> and <b>Assumptions</b> tabs.</li>
                             <li>When you are done entering data, press CTRL <b>+</b> Enter on your keyboard to initiate the calculations.</li>
-                            <li>Select the desired combination of strategies in the <b>Scenarios</b> section.</li>
-                            <li>Navigate to <b>Outputs</b> tab to view your results.</li>
+                            <li>Select the desired combination of strategies in the <b>Scenarios</b> tab.</li>
+                            <li>Navigate to the <b>Outputs</b> tab to view your results.</li>
                             </ol>"),
                         h4('Returning User'),
                         HTML("<p><b>Upload User Inputs</b></p>"),
@@ -227,7 +209,7 @@ ui <- function(request) {
                                   placement = "right"),
                         h4('Save My Work'),
                         downloadButton("user_inputs_download", "Download User Inputs"),
-                        HTML("<p>When you are done entering data, press CTRL <b>+</b> Enter on your keyboard to initiate the calculations.</p>"),
+                        HTML("<p>When you are done entering data, remember to press CTRL <b>+</b> Enter on your keyboard to initiate the calculations.</p>"),
 
                         # nav_spacer(),
                         # nav_spacer(),
@@ -389,7 +371,7 @@ and potential applications.<br><br>
                   
                   tags$li(HTML("To see the results of the data that have been entered, refer to the <b>Outputs</b> tab.")),
                   tags$img(src = 'about_step_10.png'),
-                  tags$li(HTML("Review the individual tabs within <b>Outputs</b> for results. The <b>Baseline GHG Forecast</b> tab shows the forecast under a business-as-usual scenario. <b>Scenario Summary</b> shows results by scenario, including total emissions and changes relative to the baseline. <b>Strategy Summary</b> shows the change in CO2e, VMT, NOx, PM2.5, and Daily Active Trips relative to the baseline. <b>Cost Effectiveness</b> shows the change in annual output per indicator per $1 million of investment.")),
+                  tags$li(HTML("Review the individual tabs within <b>Outputs</b> for results. The <b>Baseline GHG Forecast</b> tab shows the forecast under a business-as-usual scenario. <b>Scenario Summary</b> shows results by scenario, including total emissions and changes relative to the baseline. <b>Strategy Summary</b> shows the change in CO2e, VMT, NOx, PM2.5, and Daily Active Trips relative to the baseline. <b>Cost-Effectiveness</b> shows the change in annual output per indicator per $1 million of investment.")),
                   tags$img(src = 'about_step_11.png'),
                   tags$li(HTML("Click <b>Download Summary Report</b> to get a pdf document with all of this information.")),
                   tags$img(src = 'about_step_12.png', style = "width: 20%; max-width: intrinsic; height: auto;"),
@@ -404,9 +386,8 @@ and potential applications.<br><br>
                   
                   # baseline inputs ---------------------------------------------------------                  
                   nav_panel(title = "Baseline",
-                            fluidRow(HTML("<p>Please enter <b>key inputs</b> below to define the timing and scope of your TEA-CART analysis, including: State, Base Year, Horizon Years, Geographic Scope, and Emissions Scope.<br>
-                                          <p>
-                                          For specific information on the key inputs, mouse over the <q>i</q> icon next to each input.")),
+                            fluidRow(HTML("<p>Please enter <b>key inputs</b> below to define the timing and scope of your TEA-CART analysis, including: State, Base Year, Horizon Years, Geographic Scope, and Emissions Scope.</p><br>"
+                                          )),
                             fluidRow(
                               DT::dataTableOutput("test_data")
                             ),
@@ -669,7 +650,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 6 | Public Transportation: Rail",
-                                         HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>.",),
+                                         HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>. This category represents addition of any new rail vehicles operating in maximum service (VOMS), including service on light rail or streetcar lines, heavy rail, and commuter rail.",),
 
                                        ),
                                        open = TRUE
@@ -781,8 +762,8 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 11 | Park & Ride Projects",
-                                         HTML("This category represents any <b>new addition or expansion of Park and Ride spaces</b>. A Park and Ride space 
+                                         "Projects 11 | Park-and-Ride Projects",
+                                         HTML("This category represents any <b>new addition or expansion of Park-and-Ride spaces</b>. A Park-and-Ride space 
                    allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
                                        ),
                                        open = TRUE
@@ -848,7 +829,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 14 | Roadway Expansion",
-                                         HTML("This category represents addition of any <b>new lane-miles of roadways.</b>"),
+                                         HTML("This category represents addition of any <b>new lane-miles of roadways. This category represents addition of any new lane-miles of roadways, based on the facility type of the roadway and the area type of the facility.</b>"),
                                        ),
                                        open = TRUE
                                      ),
@@ -867,7 +848,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 15 | Transit Service Cuts",
-                                         HTML("This category represents <b>cuts to transit service</b> from current service levels.</b>"),
+                                         HTML("This category represents <b>cuts to transit service</b> from current service levels, resulting from funding cuts.</b>"),
                                          # bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                                          #                            title = "Cumulative View",
                                          #                            placement = "bottom",
@@ -895,7 +876,7 @@ and potential applications.<br><br>
                                          "Projects 16 | Land Use",
                                          HTML("This category represents spending and 
                                          rezoned acres in support of <b>walkable, 
-                                              transit-oriented development (TOD) areas</b>."),
+                                              transit-oriented development (TOD) areas</b>, using land use strategies such as placing destinations closer together and in environments more conducive to transit and non-motorized travel."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1249,9 +1230,9 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 10 | Medium and Heavy Duty Vehicle Replacement ',
+                                         HTML(paste('Budget 10 | Medium- and Heavy-Duty Vehicle Replacement ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on medium and heavy duty vehicle replacement.")),
+                                                                        title = "Budget spending on medium and heavy-duty vehicle replacement.")),
                                                     sep = "")),
                                          HTML("This category represents spending toward <b>replacement 
                                               of any fossil fuel medium or heavy-duty 
@@ -1274,11 +1255,11 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 11 | Park and Ride ',
+                                         HTML(paste('Budget 11 | Park-and-Ride ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on park and ride projects.")),
+                                                                        title = "Budget spending on Park-and-Ride projects.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>new addition or expansion of Park and Ride spaces.</b> A Park and Ride space allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
+                                         HTML("This category represents spending on <b>new addition or expansion of Park-and-Ride spaces.</b> A Park-and-Ride space allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1649,7 +1630,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Costs 11 | Park & Ride Costs",
-                                         HTML("This category represents the <b>cost per space</b> for any new addition or expansion of Park and Ride spaces."),
+                                         HTML("This category represents the <b>cost per space</b> for any new addition or expansion of Park-and-Ride spaces."),
                                          
                                        ),
                                        open = TRUE
@@ -1953,7 +1934,7 @@ and potential applications.<br><br>
                                          "Assumptions 7 | Park & Ride Parameters",
                                          HTML("
                                   <p>
-                                  This category represents the <b>utilization of park and ride spaces.</b>"),
+                                  This category represents the <b>utilization of Park-and-Ride spaces.</b>"),
                                          
                                        ),
                                        open = TRUE
@@ -2044,7 +2025,7 @@ and potential applications.<br><br>
                                  forecasts, as well as other advanced 
                                  parameters, including fuel mixes for specified 
                                  vehicle categories and construction and 
-                                 maintenance emissions."),
+                                 maintenance emissions.</p><br>"),
                             
                             # custom forecast advanced
                             fluidRow(
@@ -2052,7 +2033,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Advanced 1 | Custom Forecast: Electric Vehicles (EVs)",
-                                         HTML(".This is represented by the percentage of on-road vehicles (stock) that are EVs.")
+                                         HTML("This is represented by the percentage of on-road vehicles (stock) that are EVs.")
                                        ),
                                        open = TRUE
                                      ),
@@ -2146,7 +2127,7 @@ and potential applications.<br><br>
                               
                             ),
                             fluidRow(
-                              h3("Freight Rail"),
+                              # h3("Freight Rail"),
                               DT::dataTableOutput("freight_rail_sheet_tbl")
                             ),
                             
@@ -2167,7 +2148,7 @@ and potential applications.<br><br>
                               ),
                             ),
                             fluidRow(
-                              h3("Construction and Maintenance"),
+                              # h3("Construction and Maintenance"),
                               DT::dataTableOutput("construction_sheet_tbl")
                             ),
                             
@@ -2188,7 +2169,7 @@ and potential applications.<br><br>
                               ),
                             ),
                             fluidRow(
-                              h3("Fuel Apportionments"),
+                              # h3("Fuel Apportionments"),
                               DT::dataTableOutput("fuel_apportionment_sheet_tbl")
                             )
                             
@@ -2314,17 +2295,17 @@ and potential applications.<br><br>
                   ),
                   
                   
-                  # cost effectiveness ui ---------------------------------------------------
+                  # cost-effectiveness ui ---------------------------------------------------
                   
-                  nav_panel(title = "Cost Effectiveness",
-                            HTML("This tab allows users to review the cost effectiveness of each strategy as 
+                  nav_panel(title = "Cost-Effectiveness",
+                            HTML("This tab allows users to review the cost-effectiveness of each strategy as 
                                  measured by the change in annual output of the indicator (e.g. MT CO2e) per 
-                                 $1 million of investment. All cost effectiveness outputs are calculated based  
+                                 $1 million of investment. All cost-effectiveness outputs are calculated based  
                                  on values entered in the Inputs tab."),
                             fluidRow(
                               radioButtons(inputId = "cost_view",
                                            "Level of detail:",
-                                           c("Detail results" = "detail", "Summary results" = "summary")),
+                                           c("Detailed results" = "detail", "Summary results" = "summary")),
                               p("All results are reported in terms of annual change per $M investment."),
                               fluidRow( class = 'cost-table search',
                                         h3("Bicycle & Pedestrian"),
@@ -4817,7 +4798,7 @@ server <- function(input, output, session) {
                       "Transit Service Expansion",
                       "Micromobility",
                       "Travel Demand Management",
-                      "Park and Ride",
+                      "Park-and-Ride",
                       "Transit Electrification",
                       "MD/HD Truck Replacement",
                       "Electric Vehicle Charging Infraucture",
@@ -5243,12 +5224,12 @@ server <- function(input, output, session) {
     dt <- baseline_ghg_forecast()
     
     dt_onroad <- dt %>% ungroup() %>% # select(-veh_supertype) %>% View()
-      filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Vehicles")) %>%
+      filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Vehicles")) %>%
       summarise(across(where(is.numeric),sum))  %>%
       mutate(veh_supertype = "Total (OnRoad)")
     
     dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-      #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+      #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
       summarise(across(where(is.numeric),sum))
     
     growth <- dt_all[[1,1]]
@@ -6082,11 +6063,11 @@ server <- function(input, output, session) {
       dt <- baseline_ghg_forecast()
       
       dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-        filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+        filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
         summarise(across(where(is.numeric),sum)) %>%
         mutate(veh_supertype = "Total (Onroad Vehicles)")
       dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-        #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+        #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
         summarise(across(where(is.numeric),sum))
       growth <- dt_all[[1,1]]
       dt_growth <- dt_all %>% 
@@ -6237,7 +6218,7 @@ server <- function(input, output, session) {
   },ignoreInit = T)
   observeEvent(input$outcosteff,{
     nav_select(id = "APP_PAGE",selected = "Outputs")
-    nav_select(id = "OUTPUTS_TABS",selected = "Cost Effectiveness")
+    nav_select(id = "OUTPUTS_TABS",selected = "Cost-Effectiveness")
   },ignoreInit = T)
   observeEvent(input$about_btn,{
     nav_select(id = "APP_PAGE",selected = "Welcome")
