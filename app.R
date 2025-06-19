@@ -1010,7 +1010,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 1", class = "btn-custom"),
+                                     actionButton("reset_bikeped_budget_tbl", "Reset Budget 1", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1034,7 +1034,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 2", class = "btn-custom"),
+                                     actionButton("reset_transit_fr_budget_tbl", "Reset Budget 2", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1062,7 +1062,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 3", class = "btn-custom"),
+                                     actionButton("reset_transit_dr_budget_tbl", "Reset Budget 3", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1089,7 +1089,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 4", class = "btn-custom"),
+                                     actionButton("reset_transit_elec_budget_tbl", "Reset Budget 4", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1121,7 +1121,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 5", class = "btn-custom"),
+                                     actionButton("reset_transit_bus_priority_budget_tbl", "Reset Budget 5", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1144,7 +1144,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 6", class = "btn-custom"),
+                                     actionButton("reset_rail_budget_tbl", "Reset Budget 6", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1169,7 +1169,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 7", class = "btn-custom"),
+                                     actionButton("reset_tdm_budget_tbl", "Reset Budget 7", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1193,7 +1193,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 8", class = "btn-custom"),
+                                     actionButton("reset_micromobility_budget_tbl", "Reset Budget 8", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1217,7 +1217,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 9", class = "btn-custom"),
+                                     actionButton("reset_traffic_ops_budget_tbl", "Reset Budget 9", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1242,7 +1242,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 10", class = "btn-custom"),
+                                     actionButton("reset_mdhd_budget_tbl", "Reset Budget 10", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1265,7 +1265,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 11", class = "btn-custom"),
+                                     actionButton("reset_pnr_budget_tbl", "Reset Budget 11", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1288,7 +1288,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 12", class = "btn-custom"),
+                                     actionButton("reset_ev_budget_tbl", "Reset Budget 12", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1311,7 +1311,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 13", class = "btn-custom"),
+                                     actionButton("reset_freight_budget_tbl", "Reset Budget 13", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1334,7 +1334,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 14", class = "btn-custom"),
+                                     actionButton("reset_expansion_budget_tbl", "Reset Budget 14", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1361,7 +1361,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 15", class = "btn-custom"),
+                                     actionButton("reset_land_use_budget_tbl", "Reset Budget 15", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1386,7 +1386,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 16", class = "btn-custom"),
+                                     actionButton("reset_transit_cuts_budget_tbl", "Reset Budget 16", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1410,7 +1410,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_bikeped_projs_tbl", "Reset Budget 17", class = "btn-custom"),
+                                     actionButton("reset_resurfacing_budget_tbl", "Reset Budget 17", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -4277,6 +4277,82 @@ server <- function(input, output, session) {
     landuse_assmps <<- editData(landuse_assmps, input$landuse_assmps_edit, 'landuse_assmps_tbl')
   })
   
+  
+
+# observe reset button on budget ------------------------------------------
+
+  # adrienne here
+  
+  observeEvent(input$reset_bikeped_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 1,] <- initial_budget[initial_budget$table_no_ui == 1, ]
+  })
+  
+  observeEvent(input$reset_transit_fr_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 2,] <- initial_budget[initial_budget$table_no_ui == 2, ]
+  })
+  
+  observeEvent(input$reset_transit_dr_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 3,] <- initial_budget[initial_budget$table_no_ui == 3, ]
+  })
+  
+  observeEvent(input$reset_transit_elec_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 4,] <- initial_budget[initial_budget$table_no_ui == 4, ]
+  })
+  
+  observeEvent(input$reset_transit_bus_priority_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 5,] <- initial_budget[initial_budget$table_no_ui == 5, ]
+  })
+  
+  observeEvent(input$reset_rail_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 6,] <- initial_budget[initial_budget$table_no_ui == 6, ]
+  })
+  
+  observeEvent(input$reset_tdm_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 7,] <- initial_budget[initial_budget$table_no_ui == 7, ]
+  })
+  
+  observeEvent(input$reset_micromobility_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 8,] <- initial_budget[initial_budget$table_no_ui == 8, ]
+  })
+  
+  observeEvent(input$reset_traffic_ops_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 9,] <- initial_budget[initial_budget$table_no_ui == 9, ]
+  })
+  
+  observeEvent(input$reset_mdhd_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 10,] <- initial_budget[initial_budget$table_no_ui == 10, ]
+  })
+  
+  observeEvent(input$reset_pnr_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 11,] <- initial_budget[initial_budget$table_no_ui == 11, ]
+  })
+  
+  observeEvent(input$reset_ev_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 12,] <- initial_budget[initial_budget$table_no_ui == 12, ]
+  })
+  
+  observeEvent(input$reset_freight_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 13,] <- initial_budget[initial_budget$table_no_ui == 13, ]
+  })
+  
+  
+  observeEvent(input$reset_expansion_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 14,] <- initial_budget[initial_budget$table_no_ui == 14, ]
+  })
+  
+  observeEvent(input$reset_land_use_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 15,] <- initial_budget[initial_budget$table_no_ui == 15, ]
+  })
+  
+  observeEvent(input$reset_transit_cuts_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 16,] <- initial_budget[initial_budget$table_no_ui == 16, ]
+  })
+  
+  observeEvent(input$reset_resurfacing_budget_tbl, {
+    rvs$Budget[rvs$Budget$table_no_ui == 17,] <- initial_budget[initial_budget$table_no_ui == 17, ]
+  })
+  
+
 
   # observe reset buttons on assumptions ---------------------------------------------------
   

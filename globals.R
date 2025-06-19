@@ -246,6 +246,10 @@ initial_projects <- read_excel("data/2.User_Inputs.xlsx",
                                sheet ="Projects",
                                col_names = TRUE)
 
+initial_budget <- read_excel("data/2.User_Inputs.xlsx",
+                             sheet = "Budget",
+                             col_names = TRUE)
+
 initial_assumptions <- read_excel("data/2.User_Inputs.xlsx",
                                   sheet ="Assumptions",
                                   col_names = TRUE)
