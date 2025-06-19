@@ -829,7 +829,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 14 | Roadway Expansion",
-                                         HTML("This category represents addition of any <b>new lane-miles of roadways. This category represents addition of any new lane-miles of roadways, based on the facility type of the roadway and the area type of the facility.</b>"),
+                                         HTML("This category represents addition of any <b>new lane-miles of roadways, based  on the facility type of the roadway and the area type of the facility.</b>"),
                                        ),
                                        open = TRUE
                                      ),
@@ -1305,7 +1305,7 @@ and potential applications.<br><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on freight intermodal facilities.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>intermodal freight investments</b>, expressed in millions of dollars."),
+                                         HTML("This category represents spending on <b>intermodal freight investments</b>."),
                                        ),
                                        open = TRUE
                                      ),
