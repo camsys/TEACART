@@ -2664,7 +2664,7 @@ server <- function(input, output, session) {
   
   output$user_inputs_download <- downloadHandler(
     filename = function() {
-      paste0("./data/2.User_Inputs_", format(Sys.time(), "%H:%M"), ".xlsx")
+      paste0("./data/2.User_Inputs_", format(Sys.time(), "%m-%d_%H-%M"), ".xlsx")
     },
     content = function(file) {
       
@@ -2673,6 +2673,8 @@ server <- function(input, output, session) {
                                            "Assumptions" = rvs$Assumptions,
                                            "Baseline" = rvs$Baseline,
                                            "Projects" = rvs$Projects,
+                                           "Budget" = rvs$Budget,
+                                           "Funding_Summary" = rvs$Funding,
                                            "Advanced" = rvs$Advanced,
                                            "References" = references,
                                            "Scenarios" = rvs$Scenarios), 
@@ -3678,7 +3680,7 @@ server <- function(input, output, session) {
   observeEvent(input$bikeped_budget_tbl_cell_edit, {
     req(rvs$Budget)
     #print('here')
-    #browser()
+    browser()
     rvs$Budget[rvs$Budget$table_no_ui == 1,] <- reshaping_budget(input$bikeped_budget_tbl_cell_edit,
                                                                         rvs$Budget,
                                                                         tbl_no = 1,
@@ -6203,7 +6205,7 @@ server <- function(input, output, session) {
           Sys.sleep(1)
           shiny::incProgress(5/10)
           unloadNamespace("kableExtra")
-          
+          browser()
           rmarkdown::render(input = paste0(getwd(),"/Report_Template.qmd"),
                             output_file = file,
                             params = list(
@@ -6221,7 +6223,12 @@ server <- function(input, output, session) {
                               vmt = input$vmt_forecast_input,
                               vmt_nhs = input$vmt_nhs,
                               ev = input$ev_baseline_input,
-                              grid_em = input$grid_emissions_input
+                              grid_em = input$grid_emissions_input,
+                              lu = input$land_use_factor,
+                              funding_tbl = rvs$Funding,
+                              funding_yr = input$funding_start_year,
+                              funding_dur = input$funding_years,
+                              funding_bgt = input$total_budget
                             ),
                             output_format = "pdf_document",
                             output_options = list(
