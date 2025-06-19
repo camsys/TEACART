@@ -513,7 +513,7 @@ and potential applications.<br><br>
                                    <p>
                                    i) All projects are assumed to be “constructed” or “in operation” by the corresponding horizon year. For example, if the user inputs 2 miles of new bicycle lanes under the first horizon year (e.g., 2025) in the “New” category of additions / replacements, it is assumed that those bike lanes will be fully constructed by 2025.<br>
                                    <p>
-                                   ii) Project inputs from one year are automatically coded to “carry over” into future years. This can be seen in the “Cumulative” category of additions / replacements, where, for every horizon year after the first year, the values represent the total new projects implemented in prior horizon years.<br>
+                                   ii) Project inputs from one year are automatically coded to “carry over” into future years (i.e., miles of new bike lane constructed in 2010 are “carried over” into future years and continue to operate past their construction year).<br>
                                    <p>
                                    More information on the input categories can be found by clicking on the pull-down arrow next to each project category."
                               ),),
@@ -807,7 +807,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 13 | Freight Intermodal Facilities",
-                                         HTML("This category represents any <b>intermodal freight investment</b>, expressed in millions of dollars."),
+                                         HTML("This category represents annual growth rate of freight rail, the energy intensity as measured in British Thermal Units (BTU) per ton-mile, and the change in annual VMT or ton-miles per unit of investment."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1428,9 +1428,7 @@ and potential applications.<br><br>
                               the <b>cost inputs</b> for the project categories 
                               shown below. Please click on the different fields 
                               to overwrite the default values with any custom 
-                              values provided by the user.<br>
-                              <p>
-                              More information on the categories can be found by clicking the pull-down arrow next to each category.")),
+                              values provided by the user.")),
                             
                             # bike ped costs
                             fluidRow(
