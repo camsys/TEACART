@@ -388,9 +388,9 @@ and potential applications.<br><br>
                   nav_panel(title = "Baseline",
                             fluidRow(HTML("<p>Please enter <b>key inputs</b> below to define the timing and scope of your TEA-CART analysis, including: State, Base Year, Horizon Years, Geographic Scope, and Emissions Scope.</p><br>"
                                           )),
-                            fluidRow(
-                              DT::dataTableOutput("test_data")
-                            ),
+                            # fluidRow(
+                            #   DT::dataTableOutput("test_data")
+                            # ),
                             p("Select the state, years, and scope of baseline GHG forecast."),
                             fluidRow(
                               class = "baseline-content",
@@ -401,7 +401,7 @@ and potential applications.<br><br>
                                               selectInput("state_input",
                                                           HTML("<span>State:</span><br><p>Select the state for which you are conducting analysis.</p>"),
                                                           selected = "Maryland",
-                                                          state.name),
+                                                          c(state.name,"United States")),
                                               numericInput("base_year",
                                                            HTML(paste('<span>Base Year:</span> ',
                                                                       p("The first year of analysis and the reference point for assessing baseline trends."),
@@ -4931,7 +4931,7 @@ server <- function(input, output, session) {
                       "Transit Service Expansion",
                       "Micromobility",
                       "Travel Demand Management",
-                      "Park-and-Ride",
+                      "Park and Ride",
                       "Transit Electrification",
                       "MD/HD Truck Replacement",
                       "Electric Vehicle Charging Infraucture",
