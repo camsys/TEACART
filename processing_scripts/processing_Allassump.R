@@ -47,12 +47,12 @@ TransitService <- filter_columns(output_TransitService(),selected_columns,"Trans
 OPS <- filter_columns(output_OPS(),selected_columns,"Traffic Operations")  
 EVSE <- filter_columns(output_EVSE(),selected_columns,"Electric Vehicle Charging Infraucture")  
 freight <- filter_columns(output_freight(),selected_columns,"Intermodal Freight Investment")  
-
+#browser()
 transit_cuts <- filter_columns(output_transitservice_cuts(),selected_columns,"Transit Service Cuts")
 land_use <-  filter_columns(output_land_use(),selected_columns,"Land Use")
 roadway_resurf <-  filter_columns(output_roadway_resurf(),selected_columns,"Roadway Resurfacing")
 
-all_assump <- rbind(bikeped,MDHD,Micro,pnr,RoadwayExp,TDM,transitElec,TransitService,OPS,EVSE,freight,transit_cuts,)
+all_assump <- rbind(bikeped,MDHD,Micro,pnr,RoadwayExp,TDM,transitElec,TransitService,OPS,EVSE,freight,transit_cuts,land_use,roadway_resurf)
 
 return(all_assump)
 })
@@ -175,6 +175,25 @@ all_costs <- reactive({
      col_sel = c(),
      proj_life = 30,
      style ='summary')
+   browser()
+   transit_cuts<- cost_function(
+     ini_cost_table =NA,
+     output_table = cost_output_transitservice_cuts(),
+     col_sel = c(),
+     proj_life = 12,
+     style ='summary')
+   land_use<- cost_function(
+     ini_cost_table = NA,
+     output_table = cost_output_land_use(),
+     col_sel = c(),
+     proj_life = NA,
+     style ='summary')
+   roadway_resurf<- cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==15,],
+     output_table = cost_output_roadway_resurf(),
+     col_sel = c(),
+     proj_life = NA,
+     style ='summary')
    
    all_costs <- list(bikeped = bikeped,
                      transit_fixed = transit_fixed,
@@ -189,6 +208,9 @@ all_costs <- reactive({
                      pnr=pnr,
                      evsi=evsi,
                      roadway=roadway,
-                     intermodal=intermodal)
+                     intermodal=intermodal,
+                     transit_cuts = transit_cuts,
+                     land_use = land_use,
+                     roadway_resurf = roadway_resurf)
    return(all_costs)
        })

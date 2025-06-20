@@ -2404,12 +2404,24 @@ and potential applications.<br><br>
                                       p(""),
                                       DT::dataTableOutput("roadway_expand_costs_outputs_tbl")
                             ),
-                            fluidRow( class = 'cost-table',
-                                      p(""),
-                                      h3("Intermodal Freight Investment"),
-                                      p(""),
-                                      DT::dataTableOutput("intermodal_costs_outputs_tbl")
-                            )
+                            # fluidRow( class = 'cost-table',
+                            #           p(""),
+                            #           h3("Transit Service Cuts"),
+                            #           p(""),
+                            #           DT::dataTableOutput("transitservice_cuts_costs_outputs_tbl")
+                            # ),
+                            # fluidRow( class = 'cost-table',
+                            #           p(""),
+                            #           h3("Land Use"),
+                            #           p(""),
+                            #           DT::dataTableOutput("land_use_cuts_costs_outputs_tbl")
+                            # ),
+                            # fluidRow( class = 'cost-table',
+                            #           p(""),
+                            #           h3("Roadway Resurfacing"),
+                            #           p(""),
+                            #           DT::dataTableOutput("roadway_resurf_cuts_costs_outputs_tbl")
+                            # )
                   ),
                 )),
       
@@ -2967,7 +2979,7 @@ server <- function(input, output, session) {
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+    #browser()
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 15,
@@ -3240,11 +3252,13 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$transit_cuts_projs_tbl_cell_edit, {
-    
+    #browser()
     rvs$Projects[rvs$Projects$table_no_ui == 15,] <- reshaping_projects2(input$transit_cuts_projs_tbl_cell_edit,
                                                                          rvs$Projects,
                                                                          tbl_no = 15,
-                                                                         col1 = 'custom_project',
+                                                                         col1 ='area_type',
+                                                                         col2 = 'transit_mode',
+                                                                         col3 = 'unit',
                                                                          horizon_year_1 = input$horizon_year_1,
                                                                          horizon_year_2 = input$horizon_year_2,
                                                                          horizon_year_3 = input$horizon_year_3)
@@ -4867,8 +4881,8 @@ server <- function(input, output, session) {
                       "Intermodal Freight Investment",
                       "Traffic Operations",
                       "Roadway Expansion",
-                      "Transit Cuts", 
-                      "Land Use Incentives", 
+                      "Transit Service Cuts", 
+                      "Land Use", 
                       "Roadway Resurfacing")
   
   rowName <- function(scenario) {
@@ -5281,6 +5295,7 @@ server <- function(input, output, session) {
   # BASELINE GHG FORECAST -------------------------------------------------
   
   output$baseline_outputs <- renderDT({
+    #browser()
     req(baseline_ghg_forecast())
     
     dt <- baseline_ghg_forecast()
@@ -5815,7 +5830,7 @@ server <- function(input, output, session) {
   #Fuel Price Table
   
   output$intermodal_costs_outputs_tbl <- renderDT({
-    print("RENDERING: Intermodal Costs Outputs")
+    print("RENDERING: Transit Service Cuts Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==14,],
       output_table = output_cost_OPS(),
@@ -5838,6 +5853,85 @@ server <- function(input, output, session) {
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
     return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
   })
+  
+  # output$transitservice_cuts_costs_outputs_tbl <- renderDT({
+  #   print("RENDERING: Transit Service Costs Outputs")
+  #   browser()
+  #   temp <- cost_function(
+  #     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
+  #     output_table = cost_output_transitservice_cuts(),
+  #     col_sel = c('area_type','transit_mode','unit'),
+  #     proj_life = 12,
+  #     scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
+  #     style = input$cost_view)%>% 
+  #     rename(any_of(references_vector)) %>%
+  #     mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) %>% # to show NA in table
+  #     mutate(year = as.character(year)) %>% rename(Year = year)
+  #   
+  #   x<-datatable(temp,
+  #                rownames = FALSE,
+  #                selection = "none",
+  #                options = list(
+  #                  pageLength = 50,
+  #                  searching = FALSE,
+  #                  paging = FALSE,
+  #                  info = FALSE)) 
+  #   if(input$cost_view == "detail"){
+  #     x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+  #   return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  # })
+  # 
+  # output$land_use_cuts_costs_outputs_tbl <- renderDT({
+  #   print("RENDERING: Land Use Costs Outputs")
+  #   browser()
+  #   temp <- cost_function(
+  #     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==16,],
+  #     output_table = cost_output_land_use(),
+  #     col_sel = c(),
+  #     proj_life = 12,
+  #     style = input$cost_view)%>% 
+  #     rename(any_of(references_vector)) %>%
+  #     mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) %>% # to show NA in table
+  #     mutate(year = as.character(year)) %>% rename(Year = year)
+  #   
+  #   x<-datatable(temp,
+  #                rownames = FALSE,
+  #                selection = "none",
+  #                options = list(
+  #                  pageLength = 50,
+  #                  searching = FALSE,
+  #                  paging = FALSE,
+  #                  info = FALSE)) 
+  #   if(input$cost_view == "detail"){
+  #     x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+  #   return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  # })
+  # 
+  # output$roadway_resurf_cuts_costs_outputs_tbl <- renderDT({
+  #   print("RENDERING: Roadway Resurfacing Costs Outputs")
+  #   browser()
+  #   temp <- cost_function(
+  #     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==17,],
+  #     output_table = cost_output_roadway_resurf(),
+  #     col_sel = c(),
+  #     proj_life = 12,
+  #     style = input$cost_view)%>% 
+  #     rename(any_of(references_vector)) %>%
+  #     mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) %>% # to show NA in table
+  #     mutate(year = as.character(year)) %>% rename(Year = year)
+  #   
+  #   x<-datatable(temp,
+  #                rownames = FALSE,
+  #                selection = "none",
+  #                options = list(
+  #                  pageLength = 50,
+  #                  searching = FALSE,
+  #                  paging = FALSE,
+  #                  info = FALSE)) 
+  #   if(input$cost_view == "detail"){
+  #     x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+  #   return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  # })
   
   
   # server scenarios outputs ------------------------------------------------
@@ -6002,7 +6096,7 @@ server <- function(input, output, session) {
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-    
+    #browser() #not done
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     
@@ -6051,7 +6145,7 @@ server <- function(input, output, session) {
   
   
   output$strategy_summary_graph <- renderPlotly({
-    
+    #browser()
     scen_filter <-  reactive_scenario()
     req( scenario_sum())
     if (input$strategy_scen_select == 'scen_1' ){
@@ -6075,8 +6169,10 @@ server <- function(input, output, session) {
             hovertemplate = paste0('%{text} %{x}:<br>', 
                                    'Emissions: %{y:.4s}<extra></extra>')
     ) |>
-      layout(xaxis = list(title = "Year"),
+      layout(#xaxis = list(title = "Year", standoff = 5),
              yaxis = list(title = "Total Change"),
+             
+             margin = list(b = 10),
              barmode = "relative",
              legend = list(orientation = 'h')) |> 
       config(displaylogo = FALSE, 

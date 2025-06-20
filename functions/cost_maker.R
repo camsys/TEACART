@@ -42,7 +42,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
                           scalar_list = NULL, #this is only neccesary for transit table
                           style
                           ){
-  
+  #browser()
 
   cols <- c(col_sel, 'cost_type') #add cost type to the columns that will be used for groupin
   
@@ -77,7 +77,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
       pivot_wider(names_from = cost_type, values_from = value) %>% left_join(scalar_list) %>%
       mutate(var = var1*scalar_1 + var2*scalar_1) %>% #create variable cost based on scalars
       select(-c(var1,var2,scalar_1)) %>%
-      mutate(annual_cost = cap/proj_life + var) %>%
+      mutate(annual_cost = cap/proj_life + var) %>% 
       select(-c(cap,var))
     
   } else if('var' %in% unique(ini_cost_table$cost_type)){

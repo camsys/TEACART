@@ -16,6 +16,7 @@ render_custom_datatable <- function(#input_reactives,
                                     currency_rows,
                                     decimal_rows,
                                     pivot_col = c()) {
+
   req(input$base_year)
   req(input$horizon_year_1)
   req(input$horizon_year_2)
