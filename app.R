@@ -929,9 +929,10 @@ and potential applications.<br><br>
                         based on historical data.<br>")
                                      
                             ),
-                            fluidRow(actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
+                            fluidRow(class = "budget-buttons",
+                                     actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
                                      actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")),
-                            fluidRow(
+                            fluidRow( class = "budget-inputs",
                               numericInput("funding_start_year",
                                            HTML(paste('Funding Start Year: ',
                                                       as.character(tags$i(class = "fa fa-info-circle", 
@@ -2655,15 +2656,21 @@ server <- function(input, output, session) {
   
   output$user_inputs_download <- downloadHandler(
     filename = function() {
-      paste0("./data/2.User_Inputs_", format(Sys.time(), "%m-%d_%H-%M"), ".xlsx")
+      paste0("2.User_Inputs_", format(Sys.time(), "%m-%d_%H-%M"), ".xlsx")
     },
     content = function(file) {
+      
+      # in Projects tab replace horizon years with actual year
+      Prj_tbl <- rvs$Projects %>% 
+        mutate(year = case_when( year == 'horizon_year_1' ~ input$horizon_year_1,
+                                 year == 'horizon_year_2' ~ input$horizon_year_2,
+                                 year == 'horizon_year_3' ~ input$horizon_year_3))
       
       references <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Assumptions" = rvs$Assumptions,
                                            "Baseline" = rvs$Baseline,
-                                           "Projects" = rvs$Projects,
+                                           "Projects" = Prj_tbl,
                                            "Budget" = rvs$Budget,
                                            "Funding_Summary" = rvs$Funding,
                                            "Advanced" = rvs$Advanced,
@@ -2719,7 +2726,6 @@ server <- function(input, output, session) {
   
   output$bikeped_projs_tbl <- renderDT({
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
-    
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 1,

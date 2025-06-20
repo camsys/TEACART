@@ -191,6 +191,17 @@ div.dataTables_wrapper
     
     .shiny-input-select, .shiny-input-select *, .shiny-input-number, .shiny-input-number *
       max-width: 400px
+
+  .budget-buttons // Budget buttons
+    display: flex
+    justify-content: center
+    margin: 1rem 0
+    .btn
+      width: calc( 50% - 1rem )
+      margin: 0 .5rem
+  .budget-inputs // Budget inputs
+    justify-content: center
+
 .tab-pane[data-value="Inputs"] // Inputs tab
   input[type="search"]
     min-width: 225px
@@ -201,7 +212,7 @@ div.dataTables_wrapper
       &:hover
         cursor: pointer
         background-color: mix(#d1d8e7, white, 66%)
-.tab-pane[data-value="Advanced"] // Inputs tab
+.tab-pane[data-value="Advanced"] // Advanced Tab
   table.dataTable.table-striped > tbody > tr > td
     &:not(:first-child)      
       border: 1px solid lightgrey
@@ -361,6 +372,12 @@ div.dataTables_wrapper
   .tab-pane[data-value="About"] img
     width: 100%
     margin: 0 auto
+  .main
+   margin-top: 67.59px
+  .budget-buttons .btn
+    width: 100%!important
+    margin: .5rem 0!important
+
 @media screen and (max-width: 991.98px) //tablet
   .navbar
     .gcc-logo

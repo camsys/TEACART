@@ -229,6 +229,24 @@ div.dataTables_wrapper div.dataTables_info {
 .tab-pane[data-value=Inputs] .baseline-content .shiny-input-select, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-select *, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-number, .tab-pane[data-value=Inputs] .baseline-content .shiny-input-number * {
   max-width: 400px;
 }
+.tab-pane[data-value=Inputs] .budget-buttons {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin: 1rem 0;
+}
+.tab-pane[data-value=Inputs] .budget-buttons .btn {
+  width: calc(50% - 1rem);
+  margin: 0 0.5rem;
+}
+.tab-pane[data-value=Inputs] .budget-inputs {
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
 
 .tab-pane[data-value=Inputs] input[type=search] {
   min-width: 225px;
@@ -453,6 +471,13 @@ div.dataTables_wrapper div.dataTables_info {
   .tab-pane[data-value=About] img {
     width: 100%;
     margin: 0 auto;
+  }
+  .main {
+    margin-top: 67.59px;
+  }
+  .budget-buttons .btn {
+    width: 100% !important;
+    margin: 0.5rem 0 !important;
   }
 }
 @media screen and (max-width: 991.98px) {

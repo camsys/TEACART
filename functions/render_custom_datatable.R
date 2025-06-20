@@ -25,18 +25,17 @@ render_custom_datatable <- function(#input_reactives,
 
   select_fun <- function(x) !all(is.na(x)|x == '')
   
-  
     conditionally_transform <- function(df) {
       #browser()
       # note that this function fails if you feed it fewer than five columns
-
+# browser()
     if (is_year_table == TRUE & is_advanced_table == FALSE) {
       df %>%
         pivot_wider(names_from = year, values_from = value) %>%
-        select(-c(table_no_ui, table, category)) %>%
-          rename_with(~as.character(rvs$Baseline$horizon_year_1), horizon_year_1) %>%
-          rename_with(~as.character(rvs$Baseline$horizon_year_2), horizon_year_2) %>%
-          rename_with(~as.character(rvs$Baseline$horizon_year_3), horizon_year_3) 
+        select(-c(table_no_ui, table, category)) #%>%
+          #rename_with(~as.character(rvs$Baseline$horizon_year_1), horizon_year_1) %>%
+          #rename_with(~as.character(rvs$Baseline$horizon_year_2), horizon_year_2) %>%
+          #rename_with(~as.character(rvs$Baseline$horizon_year_3), horizon_year_3) 
     } else if (is_budget_table == TRUE & is_advanced_table == FALSE & is_cost_table == FALSE & is_year_table == FALSE) {
       df %>% 
         select(-c(table_no_ui, table_no_ui_revised,table), -any_of(pivot_col))
