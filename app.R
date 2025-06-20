@@ -929,9 +929,10 @@ and potential applications.<br><br>
                         based on historical data.<br>")
                                      
                             ),
-                            fluidRow(actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
+                            fluidRow(class = "budget-buttons",
+                                     actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
                                      actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")),
-                            fluidRow(
+                            fluidRow( class = "budget-inputs",
                               numericInput("funding_start_year",
                                            HTML(paste('Funding Start Year: ',
                                                       as.character(tags$i(class = "fa fa-info-circle", 
