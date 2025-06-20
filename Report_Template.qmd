@@ -23,6 +23,11 @@ params:
  ghg_data: NULL
  scen_data: NULL
  cost_data: NULL
+ lu: NULL
+ funding_tbl: NULL
+ funding_yr: NULL
+ funding_dur: NULL
+ funding_bgt: NULL
 document:
   top-margin: "0.5in"
 ---
@@ -101,6 +106,13 @@ if(params$em_scope == 1){
 
 }
 
+if(params$lu == 1){
+  lu <- "Yes"
+}else{
+    lu <- "No"
+
+}
+
 print(tagList(
       cat(
         paste0('State: ',params$state,  "  \n\n  ",
@@ -114,7 +126,9 @@ print(tagList(
                'VMT Forecast: ',params$vmt,"  \n\n  ",
                'Vehicle Electrification Baseline: ', params$ev, "  \n\n  ",
                'Electricity Grid Emissions Net-Zero Year: ',
-               params$grid_em,  "  \n\n  "
+               params$grid_em,  "  \n\n  ",
+               'Land Use Multiplier to Transit Investment Applied: ',
+               params$lu,  "  \n\n  "
 
       ))))
 
@@ -397,3 +411,35 @@ writeLines("")
 }
 
 ```
+
+## 3. Budget Summary
+
+Add descrptive text here talk about what this budget section is about 
+```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
+#| echo: false
+#| warning: false
+#| message: false
+
+
+## these are the parameters user defined for the budget
+
+print(tagList( cat( paste0('Funding Start Year: ',params$funding_yr,  "  \n\n  ",
+               'Total Years Covered: ', params$funding_dur, " \n\n ", 'Total Budget ($M): ',params$funding_bgt, " \n\n " ))))
+
+## generate the table for
+budget_tbl <- params$funding_tbl %>% select(-'funding_name') %>%
+  mutate(perc_allocated = percent(perc_allocated, accuracy = 1)) %>%
+  rename('Funding Summary' = 'funding_summary',
+         '% Allocated' = 'perc_allocated',
+         'Million $' = '$million')
+
+print(tagList(
+      cat("\n\n",'Table 18: Funding Allocation Summary', "\n\n")))
+
+kable(budget_tbl, digits = 1) %>%
+    kable_styling(position = "left", full_width = FALSE) %>%
+  row_spec(nrow(budget_tbl), bold = TRUE, background = "#f0f0f0")
+
+
+```
+
