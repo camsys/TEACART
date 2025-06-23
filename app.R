@@ -5016,7 +5016,7 @@ server <- function(input, output, session) {
   
   # Render the checkbox table
   output$scenario_tbl <- renderDT({
-    browser()
+    # browser()
     datatable(
       reactive_scenario(),
       escape = FALSE,
