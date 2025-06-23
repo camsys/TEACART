@@ -187,6 +187,8 @@ Stock_Type <- AEO_VMT %>%
 print('here3')
 
 #Other Data Sources
+costtimeseries <- read_excel("data/1.Raw_Data.xlsx", sheet = "Cost_TimeSeries")
+
 HPMS <- read_excel("data/1.Raw_Data.xlsx", sheet = "HPMS")
 
 Fuel_Econs <- read_excel("data/1.Raw_Data.xlsx", sheet = "Fuel_Econs")
