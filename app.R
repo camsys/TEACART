@@ -2650,6 +2650,8 @@ server <- function(input, output, session) {
       rvs[[name]] <- user_inputs[[name]]
     }
     
+    #updateSelectInput()
+    
   }, ignoreNULL = F, ignoreInit = F)
   
   # Download user inputs -------------------------------------------------------
@@ -3975,8 +3977,44 @@ server <- function(input, output, session) {
     rvs$Budget <- foo
   })
 # FUNDING: Render ---------------------------------------------------------
+  observe({
+    tempf<-rvs$Funding |> select(-perc_allocated)
+    total <- rvs$Budget$value |> sum(na.rm = T)
+    tempb<-rvs$Budget |> 
+      mutate(category = case_when(
+        category == "Bicycle and Pedestrian" ~ "Bicycle and Pedestrian",
+        category == "EV Charging Infrastructure" ~ "Electric Vehicles and Charging Infrastructure",
+        table %in% c("Transit: Increased Fixed Route Service (VOMS)",
+                     "Transit: Increased Demand Response Service (VOMS)",
+                     "Public Transportation: Rail (VOMS)",
+                     "Public Transportation: Bus Priority Treatment"
+                        )~"Transit Service Expansion",
+        table %in% c("Fleet Electrification") ~ "Transit Electrification",
+        category == "Travel Demand Management"~"Travel Demand Management",
+        category == "Micromobility"~"Micromobility",
+        category == "Traffic Operations"~"Traffic Operations",
+        category == "Medium and Heavy Duty Vehicle Replacement"~ "MHDV Replacement",
+        category == "Park and Ride"~"Park and Ride",
+        category == "EV Charging Infrastructure"~"Electric Vehicles and Charging Infrastructure",
+        category == "Freight Intermodal Facilities" ~ "Freight Intermodal",
+        category == "Roadway expansion" ~ "Roadway Expansion",
+        category == "Roadway Resurfacing"~"Roadway Resurfacing",
+        category == "Land Use" ~ "Land Use", 
+        category == "Transit Service Cuts" ~ "Transit Service Cuts",
+        TRUE ~ "zzzERROR")
+        ) |> 
+      group_by(category) |> 
+      summarise(perc_allocated = sum(value, na.rm = T)) |>
+      add_row(category = "Total","perc_allocated" = total)
+    
+    temp <- left_join(tempf, tempb, by = c("funding_summary" = "category"))
+    temp[,3] <- temp[,4]*input$total_budget
+      
+    rvs$Funding <- temp
+    })
   
   output$funding_summary_tbl <- renderDataTable({
+    #browser()
     formatted_funding <- rvs$Funding %>%
       select(-funding_name) %>%
       rename(any_of(references_vector))

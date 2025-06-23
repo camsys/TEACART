@@ -1188,7 +1188,7 @@ EmRate_Electric_MDHD <- reactive({
 # Outputs ---------------------------------------------------------------------
 scenario_summary_results <- reactive({    #req('')
   #req(reactive_scenario())
-  browser()
+  #browser()
   base_year <- rvs$Baseline$base_year
   
   dt <- baseline_ghg_forecast()
