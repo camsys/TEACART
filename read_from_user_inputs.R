@@ -20,8 +20,7 @@ read_user_inputs_excel <- function(filename){
   Advanced <- read_excel(path = filename, sheet = "Advanced")
   Projects <- read_excel(path = filename, sheet = "Projects")
   Scenarios <- read_excel(path = filename, sheet = "Scenarios")
-  
-  
+
   return(list("Baseline" = Baseline,
               "Costs" = Costs,
               "Budget" = Budget,

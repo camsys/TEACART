@@ -2480,6 +2480,7 @@ server <- function(input, output, session) {
   #set reactiveValues ----------------------------------------------------------
   rv <- reactiveValues()
   rvs <- read_user_inputs_version2("data/2.User_Inputs.xlsx")
+
   rvs_out <- read_output_tables("data/3.Model_Outputs.xlsx")
   
   #update and record 
@@ -2638,6 +2639,36 @@ server <- function(input, output, session) {
 
   
   # Initiate or Upload User Inputs -------------------------------------------
+  # observeEvent(input$user_inputs_upload, {
+  #   if(isTruthy(input$user_inputs_upload)){
+  #     rvs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
+  #     browser()
+  #     
+  #     ## update baseline page options
+  #     updateSelectInput(session, "state_input", selected = rvs$Baseline$state)
+  #     updateSelectInput(session, "base_year", selected = rvs$Baseline$base_year)
+  #     updateSelectInput(session, "horizon_year_1", selected = rvs$Baseline$horizon_year_1)
+  #     updateSelectInput(session, "horizon_year_2", selected = rvs$Baseline$horizon_year_2)
+  #     updateSelectInput(session, "horizon_year_3", selected = rvs$Baseline$horizon_year_3)
+  #     updateSelectInput(session, "transportation_scope", selected = rvs$Baseline$trans_system_scope)
+  #     updateSelectInput(session, "scope_emissions", selected = ifelse(rvs$Baseline$include_electricity, "1", "0"))
+  #     updateSelectInput(session, "scope_fuels", selected = ifelse(rvs$Baseline$include_upstream_fuels, "1", "0"))
+  #     updateSelectInput(session, "vmt_forecast_input", selected = rvs$Baseline$vmt_forecast)
+  #     updateSelectInput(session, "ev_baseline_input", selected = rvs$Baseline$veh_elec_baseline)
+  #     updateSelectInput(session, "grid_emissions_input", selected = rvs$Baseline$elec_grid_emissions_net_zero)
+  #     updateSelectInput(session, "land_use_factor", selected = ifelse(rvs$Baseline$land_use_factor == 'Yes', "1", "0"))
+  #     
+  #   } else{
+  #     rvs <- rvs
+  #   }
+  #   
+  #   # # Assign each table in user_inputs to rv
+  #   # for(name in names(user_inputs)) {
+  #   #   rvs[[name]] <- user_inputs[[name]]
+  #   # }
+  #    browser()
+  # }, ignoreNULL = F, ignoreInit = F)
+  
   observeEvent(input$user_inputs_upload, {
     if(isTruthy(input$user_inputs_upload)){
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
@@ -2645,10 +2676,27 @@ server <- function(input, output, session) {
       user_inputs <- read_user_inputs_excel("data/2.User_Inputs.xlsx")
     }
     
-    # Assign each table in user_inputs to rv
+    
     for(name in names(user_inputs)) {
       rvs[[name]] <- user_inputs[[name]]
     }
+    
+    # Assign each table in user_inputs to rv
+    
+    ## update baseline page options
+    updateSelectInput(session, "state_input", selected = rvs$Baseline$state)
+    updateSelectInput(session, "base_year", selected = rvs$Baseline$base_year)
+    updateSelectInput(session, "horizon_year_1", selected = rvs$Baseline$horizon_year_1)
+    updateSelectInput(session, "horizon_year_2", selected = rvs$Baseline$horizon_year_2)
+    updateSelectInput(session, "horizon_year_3", selected = rvs$Baseline$horizon_year_3)
+    updateSelectInput(session, "transportation_scope", selected = rvs$Baseline$trans_system_scope)
+    updateSelectInput(session, "scope_emissions", selected = ifelse(rvs$Baseline$include_electricity, "1", "0"))
+    updateSelectInput(session, "scope_fuels", selected = ifelse(rvs$Baseline$include_upstream_fuels, "1", "0"))
+    updateSelectInput(session, "vmt_forecast_input", selected = rvs$Baseline$vmt_forecast)
+    updateSelectInput(session, "ev_baseline_input", selected = rvs$Baseline$veh_elec_baseline)
+    updateSelectInput(session, "grid_emissions_input", selected = rvs$Baseline$elec_grid_emissions_net_zero)
+    updateSelectInput(session, "land_use_factor", selected = ifelse(rvs$Baseline$land_use_factor == 'Yes', "1", "0"))
+    
     
   }, ignoreNULL = F, ignoreInit = F)
   
@@ -2659,18 +2707,18 @@ server <- function(input, output, session) {
       paste0("2.User_Inputs_", format(Sys.time(), "%m-%d_%H-%M"), ".xlsx")
     },
     content = function(file) {
-      
+  
       # in Projects tab replace horizon years with actual year
-      Prj_tbl <- rvs$Projects %>% 
-        mutate(year = case_when( year == 'horizon_year_1' ~ input$horizon_year_1,
-                                 year == 'horizon_year_2' ~ input$horizon_year_2,
-                                 year == 'horizon_year_3' ~ input$horizon_year_3))
-      
+      # Prj_tbl <- rvs$Projects %>% 
+      #   mutate(year = case_when( year == 'horizon_year_1' ~ input$horizon_year_1,
+      #                            year == 'horizon_year_2' ~ input$horizon_year_2,
+      #                            year == 'horizon_year_3' ~ input$horizon_year_3))
+      # browser()
       references <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Assumptions" = rvs$Assumptions,
-                                           "Baseline" = rvs$Baseline,
-                                           "Projects" = Prj_tbl,
+                                           "Baseline" = data.frame(rvs$Baseline),
+                                           "Projects" = rvs$Projects,
                                            "Budget" = rvs$Budget,
                                            "Funding_Summary" = rvs$Funding,
                                            "Advanced" = rvs$Advanced,
@@ -2725,7 +2773,9 @@ server <- function(input, output, session) {
   # Project Tables: Render ------------------------------------------------------
   
   output$bikeped_projs_tbl <- renderDT({
+    req(rvs)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
+     # browser()
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 1,
@@ -4955,49 +5005,18 @@ server <- function(input, output, session) {
   }
   rowNames <- vapply(strategy_names, rowName, character(1))
   
-  # dat <- data.frame(
-  #   vapply(strategy_names, function(scenario){
-  #     as.character(
-  #       checkboxInput(paste0("col1-", gsub(" ", "", scenario)), label = NULL)
-  #     )
-  #   }, character(1)),
-  #   vapply(strategy_names, function(scenario){
-  #     as.character(
-  #       checkboxInput(paste0("col2-", gsub(" ", "", scenario)), label = NULL)
-  #     )
-  #   }, character(1))
-  # )
-  dat <- data.frame(
-    `grouped_projects` = c(strategy_names),
-    `relation` = c('Projects 1',
-                   'Projects 2, Projects 3, Projects 5, Projects 6',
-                   'Projects 8',
-                   'Projects 7',
-                   'Projects 11',
-                   'Projects 2, Projects 3, Projects 4',
-                   'Projects 10',
-                   'Projects 12',
-                   'Projects 13',
-                   'Projects 9',
-                   'Projects 14',
-                   'Projects 15',
-                   'Projects 16',
-                   'Projects 17'),
-    Scenario1 = rep(FALSE, 14),
-    Scenario2 = rep(FALSE, 14)
-  )
-  
-  colnames(dat)[colnames(dat) == "grouped_projects"] <- "Grouped Projects"
-  colnames(dat)[colnames(dat) == "relation"] <- "Relation to Project Tab"
-  
-
   # Create a reactive data frame
-  reactive_scenario <- reactiveVal(dat)
+  reactive_scenario <- reactiveVal()
+  observe({
+    req(rvs$Scenarios)
+    reactive_scenario(rvs$Scenarios)
+  })
   
   selected_scenario <- reactiveValues(rows = NULL)
   
   # Render the checkbox table
   output$scenario_tbl <- renderDT({
+    browser()
     datatable(
       reactive_scenario(),
       escape = FALSE,
@@ -5031,7 +5050,7 @@ server <- function(input, output, session) {
       reactive_scenario(reactive_scenario_updated)
     }
     rvs$Scenarios <- reactive_scenario()
-    
+    # browser()
   }) 
   
   shinyjs::enable(selector = ".checkbox")
