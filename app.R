@@ -1994,7 +1994,7 @@ and potential applications.<br><br>
                    accordion(
                      accordion_panel(
                        "Assumptions 9 | Land Use (Smart Growth) Incentives Parameters",
-                       HTML("This category represents ...lorem ipsum <b> lorem ipsum </b>."),
+                       HTML("This category represents <b>new spending per household shifted to a 'smart growth' area.</b>"),
                      ),
                      open = TRUE
                    ),
