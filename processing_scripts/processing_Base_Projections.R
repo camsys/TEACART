@@ -589,14 +589,14 @@ Em_OnRoad_Base <- reactive({
       temp_eob %>% filter(!phev_bin) %>% mutate(emissions = ev_emissions) %>% mutate(fuel_type = "Electricity")
     ) %>%
     group_by(veh_type, fuel_type, year) %>%
-    summarise(MT_CO2e_direct= sum(emissions)) %>% 
+    summarise(MT_CO2e_direct= sum(emissions,na.rm = T)) %>% 
     left_join(Fuel_Factors_Baselines[Fuel_Factors_Baselines$units == "upstream_life_cycle_factor",c("fuel_type","value")]) %>%
     mutate(MT_CO2e_upstream = value*MT_CO2e_direct) %>% select(-value)
   
   return(em_on_road_base)
   }) #Check if Qi is using this
 Em_OnRoad_Base_up <- reactive({
-  #SETH I want to change this so electricity emissions are pulled out better. Gotta check what it might effect with the group
+
   temp_eob<- left_join(VMT_Type_Tech_Base()[,c('veh_type','veh_subtype','year','mmt_by_subtype')],
                        EmRate_by_Tech()[,c('veh_type','veh_subtype','year','emission_rate')]) %>%
     left_join(PHEV_Em_Apportionment()[,c('veh_type','year','PHEV_elc_per_em')])
@@ -607,14 +607,14 @@ Em_OnRoad_Base_up <- reactive({
     mutate(uses_electiricity = as.numeric(veh_subtype %in% ev_fuel_types)) %>%
     mutate(emissions = ifelse(phev_bin, mmt_by_subtype*emission_rate, (1-PHEV_elc_per_em)*mmt_by_subtype*emission_rate)) %>%
     mutate(ev_emissions = ifelse(phev_bin,   uses_electiricity*mmt_by_subtype*emission_rate, uses_electiricity*(PHEV_elc_per_em)*mmt_by_subtype*emission_rate))
-  
+  temp_eob$emissions[temp_eob$veh_subtype %in% c("EV","EV100","EV200","EV300")]<-0
   em_on_road_base<-temp_eob %>%
     group_by(veh_type,fuel_type, year) %>%
     summarise(MT_CO2e_direct= sum(emissions),
               MT_CO2e_electricity = sum(ev_emissions)) %>% 
     left_join(Fuel_Factors_Baselines[Fuel_Factors_Baselines$units == "upstream_life_cycle_factor",c("fuel_type","value")]) %>%
     mutate(MT_CO2e_upstream = value*MT_CO2e_direct) %>% select(-value) %>%
-    mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
+    mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>% 
     group_by(veh_supertype, year) %>%
     summarise(MT_CO2e_direct= sum(MT_CO2e_direct, na.rm = T),
               MT_CO2e_electricity = sum(MT_CO2e_electricity, na.rm = T),
@@ -764,7 +764,7 @@ freight_rail_emissions <- reactive({ #not sure where we need this so I'm leaving
 
 #Public Transit----
 public_transit_emissions <- reactive({ #not sure where we need this so I'm leaving it in this indeterminate form for now
- 
+ #browser()
   #these are apportionment for each public transit fuel type in baseline parameters
   input_MB_app_diesel<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Bus" & rvs$Advanced$fuel_type == "Diesel"] %>% as.numeric()
   input_MB_app_CNG<-rvs$Advanced$value[rvs$Advanced$table_no_ui == 3 & rvs$Advanced$transit_mode == "Bus" & rvs$Advanced$fuel_type == "CNG"]%>% as.numeric()
@@ -874,7 +874,7 @@ public_transit_emissions <- reactive({ #not sure where we need this so I'm leavi
     ) %>% 
     mutate(MT_CO2e_direct  = MB_Emissions_Direct+DR_Emissions_Direct+CB_Emissions_Direct,
            MT_CO2e_electricity   = MB_Emissions_Electricity+DR_Emissions_Electricity+CB_Emissions_Electricity,
-           MT_CO2e_upstream = MB_Emissions_Upstream+DR_Emissions_Upstream+CB_Emissions_Upstream) %>%
+           MT_CO2e_upstream = MB_Emissions_Upstream+DR_Emissions_Upstream+CB_Emissions_Upstream) %>% #View()
     select(year, MT_CO2e_direct, MT_CO2e_electricity, MT_CO2e_upstream )
   
   return(Public_Transit)
@@ -925,7 +925,7 @@ construction_and_maintenance <- reactive({
  })
 #Final Baseline Return 
 baseline_ghg_forecast <- reactive({
-  
+
   use_e = rvs$Baseline$include_electricity %>% as.numeric()
   use_up = rvs$Baseline$include_upstream_fuels %>% as.numeric()
   #Em_OnRoad_Base_up()
@@ -938,7 +938,7 @@ baseline_ghg_forecast <- reactive({
                        rvs$Baseline$horizon_year_2,
                        rvs$Baseline$horizon_year_3)) %>%
     mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% 
-    select(veh_supertype,year, Emissions) %>%
+    select(veh_supertype,year, Emissions) %>% #View()
     
     rbind(
       
@@ -948,7 +948,7 @@ baseline_ghg_forecast <- reactive({
                            rvs$Baseline$horizon_year_2,
                            rvs$Baseline$horizon_year_3)) %>%
         mutate(veh_supertype = "Public Transit") %>%
-        mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% 
+        mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% #View()
         select(veh_supertype,year, Emissions)
       
     ) %>%
@@ -1104,7 +1104,8 @@ VMT_Type_Tech_Base <- reactive({ #this is VMT
 VMT_Forecast <- reactive({
   
   AEO_VMT %>%
-    left_join(filter(VMT_State_Allocation, state == rvs$Baseline$state) %>% select(year, state_vmt_pct_of_national), by = join_by(year)) %>%
+    left_join(filter(VMT_State_Allocation, state == rvs$Baseline$state) %>% select(year, state_vmt_pct_of_national), 
+              by = join_by(year)) %>%
     mutate(state_vmt_AEO = VMT_AEO * state_vmt_pct_of_national) # state VMT forecast 
   
 })
@@ -1196,7 +1197,7 @@ EmRate_Electric_MDHD <- reactive({
 # Outputs ---------------------------------------------------------------------
 scenario_summary_results <- reactive({    #req('')
   #req(reactive_scenario())
-  browser()
+  #browser()
   base_year <- rvs$Baseline$base_year
   
   dt <- baseline_ghg_forecast()

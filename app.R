@@ -60,6 +60,9 @@ ui <- function(request) {
             .accordion-button.collapsed {
                 background-color: #e3ebd5;
             }
+            ol.spaced-images li {
+            margin-bottom: 2em;
+            }
             .btn-custom {
                 background-color: #e3ebd5 !important;
                 height: 54px;
@@ -351,30 +354,46 @@ and potential applications.<br><br>
                 h3('Steps to use the tool'),
                 p(),
                 tags$ol(
-                  tags$li(HTML("Use the navigation panel at the top to select <b>Inputs.</b>")),
-                  tags$img(src = 'about_step_1.png', style = "width: 60%; max-width: intrinsic; height: auto;"),
-                  tags$li(HTML("Within <b>Inputs</b>, select <b>Baseline</b> to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.")),
-                  tags$img(src = 'about_step_2.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
-                  tags$li(HTML("Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse.")),
-                  tags$img(src = 'about_step_3.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
-                  tags$li("When you are done entering data, press CTRL + ENTER on your keyboard (this initiates the calculation). Data can only be entered for one table at a time."),
-                  tags$img(src = 'about_step_4.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
-                  tags$li(HTML("Regularly download the data that you have entered. You can download it by clicking the <b>Download User Inputs</b> button on the sidebar.")),
-                  tags$img(src = 'about_step_5.png', style = "width: 20%; max-width: intrinsic; height: auto;"),
-                  tags$li(HTML("If desired, within <b>Costs</b>, enter custom unit costs for the project type. Note that default values have already been provided.")),
-                  tags$img(src = 'about_step_6.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
-                  tags$li(HTML("Further <b>Assumptions</b> for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, please refer to the user guide.")),
-                  tags$img(src = 'about_step_7.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
-                  tags$li("Click the boxes to choose which groups of projects to include in scenario analysis."),
-                  tags$img(src = 'about_step_8.png', style = "width: 70%; max-width: intrinsic; height: auto;"),
-                  tags$li(HTML("It is possible to use a custom forecast on the <b>Advanced</b> tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. Refer to the user guide for more information.")),
-                  
-                  tags$li(HTML("To see the results of the data that have been entered, refer to the <b>Outputs</b> tab.")),
-                  tags$img(src = 'about_step_10.png'),
-                  tags$li(HTML("Review the individual tabs within <b>Outputs</b> for results. The <b>Baseline GHG Forecast</b> tab shows the forecast under a business-as-usual scenario. <b>Scenario Summary</b> shows results by scenario, including total emissions and changes relative to the baseline. <b>Strategy Summary</b> shows the change in CO2e, VMT, NOx, PM2.5, and Daily Active Trips relative to the baseline. <b>Cost-Effectiveness</b> shows the change in annual output per indicator per $1 million of investment.")),
-                  tags$img(src = 'about_step_11.png'),
-                  tags$li(HTML("Click <b>Download Summary Report</b> to get a pdf document with all of this information.")),
-                  tags$img(src = 'about_step_12.png', style = "width: 20%; max-width: intrinsic; height: auto;"),
+                  class = "spaced-images",
+                  tags$li(HTML("Use the navigation panel at the top to select <b>Inputs.</b><p>")),
+                  tags$img(src = '1.svg', style = "width: 90%; max-width: intrinsic; height: auto;"),
+                  HTML("<br><br>"),
+                  tags$li(HTML("Within <b>Inputs</b>, select <b>Baseline</b> to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.<br><p>")),
+                  tags$img(src = '2.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
+                  HTML("<br><br>"),
+                  tags$li(HTML("Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse.<br><p>")),
+                  tags$img(src = '3.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
+                  HTML("<br><br>"),
+                  tags$li(HTML("When you are done entering data, press CTRL + ENTER on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.<br><p>")),
+                  tags$img(src = '4.svg', style = "width: 90%; max-width: intrinsic; height: auto; display: block;"),
+                  HTML("<br><br>"),
+                  tags$li(HTML("In the Budget tab, data can be entered the same way. Double click values to begin entering.<br><p>")),
+                  tags$img(src = '5.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
+                  HTML("<br><br>"),
+                  tags$li(HTML("When entering Budget values, you must also update the <b>Projects</b> before beginning the calculation. Or, fill <b>Budget</b> values by updating from Projects.<br><p>")),
+                  tags$img(src = '6.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
+                  HTML("<br><br>"),
+                  tags$li(HTML("Regularly download the data that you have entered. You can download it by clicking the <b>Download User Inputs</b> button on the sidebar.<br><p>")),
+                  tags$img(src = '7.svg', style = "width: 20%; max-width: intrinsic; height: auto; display: block;"),
+                  HTML("<br><br>"),
+                  tags$li(HTML("If desired, within <b>Costs</b>, enter custom unit costs for the project type. Note that default values have already been provided.<br><p>")),
+                  tags$img(src = '8.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
+                  HTML("<br><br>"),
+                  tags$li(HTML("Further <b>Assumptions</b> for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, please refer to the user guide.<br><p>")),
+                  tags$img(src = '9.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
+                  HTML("<br><br>"),
+                  tags$li(HTML("Click the boxes to choose which groups of projects to include in the Scenario analysis.<br><p>")),
+                  tags$img(src = '10.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
+                  HTML("<br><br>"),
+                  tags$li(HTML("It is possible to use a custom forecast on the <b>Advanced</b> tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. Refer to the user guide for more information.<br><p>")),
+                  HTML("<br><br>"),
+                  tags$li(HTML("To see the results of the data that have been entered, refer to the <b>Outputs</b> tab.<br><p>")),
+                  tags$img(src = '11.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
+                  HTML("<br><br>"),
+#                  tags$li(HTML("Review the individual tabs within the <b>Outputs</b> for results. The <b>Baseline GHG Forecast</b> tab shows the forecast under a business-as-usual scenario. <b>Scenario Summary</b> shows results by scenario, including total emissions and changes relative to the baseline. <b>Strategy Summary</b> shows the change in CO2e, VMT, NOx, PM2.5, and Daily Active Trips relative to the baseline. <b>Cost-Effectiveness</b> shows the change in annual output per indicator per $1 million of investment.<br><p>")),
+#                  tags$img(src = 'about_step_11.png'),
+                  tags$li(HTML("Click <b>Download Summary Report</b> to get a pdf document with all of this information.<br><p>")),
+                  tags$img(src = '12.svg', style = "width: 20%; max-width: 100%; height: auto; display: block;"),
                 )
       ),
       
@@ -520,7 +539,7 @@ and potential applications.<br><br>
                                    <p>
                                    ii) Project inputs from one year are automatically coded to “carry over” into future years (i.e., miles of new bike lane constructed in 2010 are “carried over” into future years and continue to operate past their construction year).<br>
                                    <p>
-                                   More information on the input categories can be found by clicking on the pull-down arrow next to each project category."
+                                   "
                               ),),
                             
                             # bike ped
@@ -1980,7 +1999,7 @@ and potential applications.<br><br>
                    accordion(
                      accordion_panel(
                        "Assumptions 9 | Land Use (Smart Growth) Incentives Parameters",
-                       HTML("This category represents ...lorem ipsum <b> lorem ipsum </b>."),
+                       HTML("This category represents <b>new spending per household shifted to a 'smart growth' area.</b>"),
                      ),
                      open = TRUE
                    ),
@@ -4002,8 +4021,44 @@ server <- function(input, output, session) {
     rvs$Budget <- foo
   })
 # FUNDING: Render ---------------------------------------------------------
+  observe({
+    tempf<-rvs$Funding |> select(-perc_allocated)
+    total <- rvs$Budget$value |> sum(na.rm = T)
+    tempb<-rvs$Budget |> 
+      mutate(category = case_when(
+        category == "Bicycle and Pedestrian" ~ "Bicycle and Pedestrian",
+        category == "EV Charging Infrastructure" ~ "Electric Vehicles and Charging Infrastructure",
+        table %in% c("Transit: Increased Fixed Route Service (VOMS)",
+                     "Transit: Increased Demand Response Service (VOMS)",
+                     "Public Transportation: Rail (VOMS)",
+                     "Public Transportation: Bus Priority Treatment"
+                        )~"Transit Service Expansion",
+        table %in% c("Fleet Electrification") ~ "Transit Electrification",
+        category == "Travel Demand Management"~"Travel Demand Management",
+        category == "Micromobility"~"Micromobility",
+        category == "Traffic Operations"~"Traffic Operations",
+        category == "Medium and Heavy Duty Vehicle Replacement"~ "MHDV Replacement",
+        category == "Park and Ride"~"Park and Ride",
+        category == "EV Charging Infrastructure"~"Electric Vehicles and Charging Infrastructure",
+        category == "Freight Intermodal Facilities" ~ "Freight Intermodal",
+        category == "Roadway expansion" ~ "Roadway Expansion",
+        category == "Roadway Resurfacing"~"Roadway Resurfacing",
+        category == "Land Use" ~ "Land Use", 
+        category == "Transit Service Cuts" ~ "Transit Service Cuts",
+        TRUE ~ "zzzERROR")
+        ) |> 
+      group_by(category) |> 
+      summarise(perc_allocated = sum(value, na.rm = T)) |>
+      add_row(category = "Total","perc_allocated" = total)
+    
+    temp <- left_join(tempf, tempb, by = c("funding_summary" = "category"))
+    temp[,3] <- temp[,4]*input$total_budget
+      
+    rvs$Funding <- temp
+    })
   
   output$funding_summary_tbl <- renderDataTable({
+    #browser()
     formatted_funding <- rvs$Funding %>%
       select(-funding_name) %>%
       rename(any_of(references_vector))
@@ -5111,85 +5166,94 @@ server <- function(input, output, session) {
   # SLFLAG - did you set this up? It does not look editable. Leaving this for now!
   
   output$pass_rail_sheet_tbl <- renderDT({
+    #browser()
     
     
-    
-    callback_pass_rail <- JS(
-      "var tbl = $(table.table().node());",
-      "var id = tbl.closest('.datatables').attr('id');",
-      "function onUpdate() {",
-      "  var cellinfo = [{",
-      "    value: updatedCell.data()",
-      "  }];",
-      "  Shiny.setInputValue(id + '_cell_edit:DT.cellInfo', cellinfo);",
-      "}",
-      "table.MakeCellsEditable({",
-      "  onUpdate: onUpdate,",
-      "  inputCss: 'my-input-class',",
-      "  columns: [2], ",
-      "  rows: null, ",
-      "  confirmationButton: {",
-      "    confirmCss: 'my-confirm-class',",
-      "    cancelCss: 'my-cancel-class'",
-      "  },",
-      "  inputTypes: [",
-      "    {",
-      "      column: 2,",
-      "      type: 'list',",
-      "      options: [",
-      "        {value: 'Diesel', display: 'Diesel'},",
-      "        {value: 'Electric',      display: 'Electric'},",
-      "      ]",
-      "    }",
-      "  ]",
-      "});")
-    
-    path <- "./www" # folder containing the files dataTables.cellEdit.js
-    
-    # and dataTables.cellEdit.css
-    dep <- htmltools::htmlDependency(
-      "CellEdit", "1.0.19", path, 
-      script = "dataTables.cellEdit.js", stylesheet = "dataTables.cellEdit.css")
-    
-    dtable <- 
-      rvs$Advanced %>%
-      filter(table_no_ui == 4) %>% 
-      select(mode_service, unit, value) %>% 
-      rename(any_of(references_vector)) %>% 
-      datatable(callback = callback_pass_rail, rownames = F)
-    
-    ### OLD
-    # render_custom_datatable(
-    # data_reactive = rvs$Advanced,
-    # table_number = 4,
-    # is_year_table = FALSE,
-    # non_editable_cols = c(0, 1),
-    # page_length = 10,
-    # comma_rows = integer(0),
-    # percent_rows = integer(0),
-    # currency_rows = integer(0),
-    # decimal_rows = integer(0))
-    
-    ### WORKS WITH A SIMPLE EXAMPLE BELOW
-    # dat_pass_rail <- data.frame(
-    #   Action = c("Keep data", "Keep data", "Keep data"),
-    #   X = c(1, 2, 3),
-    #   Y = c("a", "b", "c")
-    # )
+    # callback_pass_rail <- JS(
+    #   "var tbl = $(table.table().node());",
+    #   "var id = tbl.closest('.datatables').attr('id');",
+    #   "function onUpdate() {",
+    #   "  var cellinfo = [{",
+    #   "    value: updatedCell.data()",
+    #   "  }];",
+    #   "  Shiny.setInputValue(id + '_cell_edit:DT.cellInfo', cellinfo);",
+    #   "}",
+    #   "table.MakeCellsEditable({",
+    #   "  onUpdate: onUpdate,",
+    #   "  inputCss: 'my-input-class',",
+    #   "  columns: [2], ",
+    #   "  rows: null, ",
+    #   "  confirmationButton: {",
+    #   "    confirmCss: 'my-confirm-class',",
+    #   "    cancelCss: 'my-cancel-class'",
+    #   "  },",
+    #   "  inputTypes: [",
+    #   "    {",
+    #   "      column: 2,",
+    #   "      type: 'list',",
+    #   "      options: [",
+    #   "        {value: 'Diesel', display: 'Diesel'},",
+    #   "        {value: 'Electric',      display: 'Electric'},",
+    #   "      ]",
+    #   "    }",
+    #   "  ]",
+    #   "});")
     # 
-    # ## the datatable
-    # dtable <- datatable(
-    #   dat_pass_rail, callback = callback_pass_rail, rownames = FALSE, 
-    #   options = list(
-    #     columnDefs = list(
-    #       list(targets = "_all", className = "dt-center")
-    #     )
-    #   )
-    # )
-    
-    dtable$dependencies <- c(dtable$dependencies, list(dep))
-    return(dtable)
-    
+    # path <- "./www" # folder containing the files dataTables.cellEdit.js
+    # 
+    # # and dataTables.cellEdit.css
+    # dep <- htmltools::htmlDependency(
+    #   "CellEdit", "1.0.19", path, 
+    #   script = "dataTables.cellEdit.js", stylesheet = "dataTables.cellEdit.css")
+    # 
+    # dtable <- 
+    #   rvs$Advanced %>%
+    #   filter(table_no_ui == 4) %>% 
+    #   select(mode_service, unit, value) %>% 
+    #   rename(any_of(references_vector)) %>% 
+    #   datatable(callback = callback_pass_rail, rownames = F)
+    # 
+    # ### OLD
+    # # render_custom_datatable(
+    # # data_reactive = rvs$Advanced,
+    # # table_number = 4,
+    # # is_year_table = FALSE,
+    # # non_editable_cols = c(0, 1),
+    # # page_length = 10,
+    # # comma_rows = integer(0),
+    # # percent_rows = integer(0),
+    # # currency_rows = integer(0),
+    # # decimal_rows = integer(0))
+    # 
+    # ### WORKS WITH A SIMPLE EXAMPLE BELOW
+    # # dat_pass_rail <- data.frame(
+    # #   Action = c("Keep data", "Keep data", "Keep data"),
+    # #   X = c(1, 2, 3),
+    # #   Y = c("a", "b", "c")
+    # # )
+    # # 
+    # # ## the datatable
+    # # dtable <- datatable(
+    # #   dat_pass_rail, callback = callback_pass_rail, rownames = FALSE, 
+    # #   options = list(
+    # #     columnDefs = list(
+    # #       list(targets = "_all", className = "dt-center")
+    # #     )
+    # #   )
+    # # )
+    # 
+    # dtable$dependencies <- c(dtable$dependencies, list(dep))
+    # return(dtable)
+    render_custom_datatable(
+      data_reactive = rvs$Advanced,
+      table_number = 4,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:1),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
   },server = FALSE)
   
   output$freight_rail_sheet_tbl <- renderDT({
@@ -5281,11 +5345,21 @@ server <- function(input, output, session) {
   #reshaping pass_rail_sheet_tbl
   observeEvent(input$pass_rail_sheet_tbl_cell_edit, {
     req(rvs$Advanced)
-    
-    rvs$Advanced[rvs$Advanced$table_no_ui == 4,] <- reshaping_advanced(input$pass_rail_sheet_tbl_cell_edit,
-                                                                       rvs$Advanced,
-                                                                       tbl_no = 4,
-                                                                       col_list = c('mode_service','unit'))
+    #browser()
+    temp <- reshaping_advanced(input$pass_rail_sheet_tbl_cell_edit,
+                               rvs$Advanced,
+                               tbl_no = 4,
+                               col_list = c('mode_service','unit'))
+    old <- rvs$Advanced[rvs$Advanced$table_no_ui == 4,]
+    if(sum(temp$value %in% c("Diesel","Electric")) != 4){
+      vals <- temp$value[!(temp$value %in% c("Diesel","Electric"))]
+      warning = paste0("Please input either Diesel or Electric (case sensative) for Advanced Table 4, you imputed the value(s): ", vals)
+      
+
+      rvs$Advanced[rvs$Advanced$table_no_ui == 4,] <- old
+      showNotification(HTML(warning), type = "error")
+      print('next')
+    } else {rvs$Advanced[rvs$Advanced$table_no_ui == 4,] <- temp}
   })
   
   #reshaping freight_rail_sheet_tbl
