@@ -496,7 +496,12 @@ and potential applications.<br><br>
                                                                    HTML("<span>Apply Land Use Multiplier to Transit Investment:</span> <br> <p>This multiplier represents total VMT reduction, including reductions related to more efficient land use patterns supported by transit, relative to the direct VMT reduction from increased transit ridership."),
                                                                    choices = c("Yes" = 1, "No" = 0),
                                                                    selected = 0)
-                                              )
+                                              ),
+                                              tags$div(class = "half-card",
+                                                       selectInput("include_rail",
+                                                                    HTML("<span>Include Rail Emission:</span> <br> <p>Include rail in emissions evaluation.<br>"),
+                                                                    choices = c("Yes" = 1, "No" = 0),
+                                                                   selected = 0)),
                                               )
                                      
                               )),
@@ -2639,35 +2644,6 @@ server <- function(input, output, session) {
 
   
   # Initiate or Upload User Inputs -------------------------------------------
-  # observeEvent(input$user_inputs_upload, {
-  #   if(isTruthy(input$user_inputs_upload)){
-  #     rvs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
-  #     browser()
-  #     
-  #     ## update baseline page options
-  #     updateSelectInput(session, "state_input", selected = rvs$Baseline$state)
-  #     updateSelectInput(session, "base_year", selected = rvs$Baseline$base_year)
-  #     updateSelectInput(session, "horizon_year_1", selected = rvs$Baseline$horizon_year_1)
-  #     updateSelectInput(session, "horizon_year_2", selected = rvs$Baseline$horizon_year_2)
-  #     updateSelectInput(session, "horizon_year_3", selected = rvs$Baseline$horizon_year_3)
-  #     updateSelectInput(session, "transportation_scope", selected = rvs$Baseline$trans_system_scope)
-  #     updateSelectInput(session, "scope_emissions", selected = ifelse(rvs$Baseline$include_electricity, "1", "0"))
-  #     updateSelectInput(session, "scope_fuels", selected = ifelse(rvs$Baseline$include_upstream_fuels, "1", "0"))
-  #     updateSelectInput(session, "vmt_forecast_input", selected = rvs$Baseline$vmt_forecast)
-  #     updateSelectInput(session, "ev_baseline_input", selected = rvs$Baseline$veh_elec_baseline)
-  #     updateSelectInput(session, "grid_emissions_input", selected = rvs$Baseline$elec_grid_emissions_net_zero)
-  #     updateSelectInput(session, "land_use_factor", selected = ifelse(rvs$Baseline$land_use_factor == 'Yes', "1", "0"))
-  #     
-  #   } else{
-  #     rvs <- rvs
-  #   }
-  #   
-  #   # # Assign each table in user_inputs to rv
-  #   # for(name in names(user_inputs)) {
-  #   #   rvs[[name]] <- user_inputs[[name]]
-  #   # }
-  #    browser()
-  # }, ignoreNULL = F, ignoreInit = F)
   
   observeEvent(input$user_inputs_upload, {
     if(isTruthy(input$user_inputs_upload)){
@@ -2696,6 +2672,7 @@ server <- function(input, output, session) {
     updateSelectInput(session, "ev_baseline_input", selected = rvs$Baseline$veh_elec_baseline)
     updateSelectInput(session, "grid_emissions_input", selected = rvs$Baseline$elec_grid_emissions_net_zero)
     updateSelectInput(session, "land_use_factor", selected = ifelse(rvs$Baseline$land_use_factor == 'Yes', "1", "0"))
+    updateSelectInput(session, "include_rail", selected = ifelse(rvs$Baseline$include_rail == 'Yes', "1", "0"))
     
     
   }, ignoreNULL = F, ignoreInit = F)
@@ -2708,16 +2685,16 @@ server <- function(input, output, session) {
     },
     content = function(file) {
   
-      # in Projects tab replace horizon years with actual year
-      # Prj_tbl <- rvs$Projects %>% 
-      #   mutate(year = case_when( year == 'horizon_year_1' ~ input$horizon_year_1,
-      #                            year == 'horizon_year_2' ~ input$horizon_year_2,
-      #                            year == 'horizon_year_3' ~ input$horizon_year_3))
-      # browser()
+    
+      base_input <- data.frame(rvs$Baseline) %>%
+        mutate(include_electricity = ifelse(include_electricity == 1,'TRUE','FALSE'),
+               include_upstream_fuels = ifelse(include_upstream_fuels  == 1, 'TRUE','FALSE'),
+               land_use_factor = ifelse(land_use_factor == 1, 'Yes','No'))
+      
       references <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
                                            "Assumptions" = rvs$Assumptions,
-                                           "Baseline" = data.frame(rvs$Baseline),
+                                           "Baseline" = base_input,
                                            "Projects" = rvs$Projects,
                                            "Budget" = rvs$Budget,
                                            "Funding_Summary" = rvs$Funding,
@@ -5379,7 +5356,7 @@ server <- function(input, output, session) {
   output$baseline_outputs <- renderDT({
     #browser()
     req(baseline_ghg_forecast())
-    
+    browser()
     dt <- baseline_ghg_forecast()
     
     dt_onroad <- dt %>% ungroup() %>% # select(-veh_supertype) %>% View()
@@ -6381,7 +6358,7 @@ server <- function(input, output, session) {
           Sys.sleep(1)
           shiny::incProgress(5/10)
           unloadNamespace("kableExtra")
-          browser()
+          # browser()
           rmarkdown::render(input = paste0(getwd(),"/Report_Template.qmd"),
                             output_file = file,
                             params = list(

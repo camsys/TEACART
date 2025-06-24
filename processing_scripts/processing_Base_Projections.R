@@ -925,6 +925,7 @@ construction_and_maintenance <- reactive({
  })
 #Final Baseline Return 
 baseline_ghg_forecast <- reactive({
+  
   use_e = rvs$Baseline$include_electricity %>% as.numeric()
   use_up = rvs$Baseline$include_upstream_fuels %>% as.numeric()
   #Em_OnRoad_Base_up()
@@ -985,6 +986,13 @@ baseline_ghg_forecast <- reactive({
     ) %>%
     pivot_wider(names_from= year, values_from = Emissions)
  
+  
+  if (input$include_rail == '0'){
+    temp[temp$veh_supertype %in% c("Passenger Rail", "Freight Rail"), 2:ncol(temp)] <- 0
+  } else {
+    temp <- temp
+  }
+  
  return(temp)
 })
 
