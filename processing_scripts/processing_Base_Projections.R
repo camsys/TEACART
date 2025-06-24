@@ -874,7 +874,7 @@ public_transit_emissions <- reactive({ #not sure where we need this so I'm leavi
     ) %>% 
     mutate(MT_CO2e_direct  = MB_Emissions_Direct+DR_Emissions_Direct+CB_Emissions_Direct,
            MT_CO2e_electricity   = MB_Emissions_Electricity+DR_Emissions_Electricity+CB_Emissions_Electricity,
-           MT_CO2e_upstream = MB_Emissions_Upstream+DR_Emissions_Upstream+CB_Emissions_Upstream) %>% View()
+           MT_CO2e_upstream = MB_Emissions_Upstream+DR_Emissions_Upstream+CB_Emissions_Upstream) %>% #View()
     select(year, MT_CO2e_direct, MT_CO2e_electricity, MT_CO2e_upstream )
   
   return(Public_Transit)
@@ -925,7 +925,7 @@ construction_and_maintenance <- reactive({
  })
 #Final Baseline Return 
 baseline_ghg_forecast <- reactive({
-  browser()
+  #browser()
   use_e = rvs$Baseline$include_electricity %>% as.numeric()
   use_up = rvs$Baseline$include_upstream_fuels %>% as.numeric()
   #Em_OnRoad_Base_up()
