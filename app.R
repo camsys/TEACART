@@ -5170,85 +5170,94 @@ server <- function(input, output, session) {
   # SLFLAG - did you set this up? It does not look editable. Leaving this for now!
   
   output$pass_rail_sheet_tbl <- renderDT({
+    #browser()
     
     
-    
-    callback_pass_rail <- JS(
-      "var tbl = $(table.table().node());",
-      "var id = tbl.closest('.datatables').attr('id');",
-      "function onUpdate() {",
-      "  var cellinfo = [{",
-      "    value: updatedCell.data()",
-      "  }];",
-      "  Shiny.setInputValue(id + '_cell_edit:DT.cellInfo', cellinfo);",
-      "}",
-      "table.MakeCellsEditable({",
-      "  onUpdate: onUpdate,",
-      "  inputCss: 'my-input-class',",
-      "  columns: [2], ",
-      "  rows: null, ",
-      "  confirmationButton: {",
-      "    confirmCss: 'my-confirm-class',",
-      "    cancelCss: 'my-cancel-class'",
-      "  },",
-      "  inputTypes: [",
-      "    {",
-      "      column: 2,",
-      "      type: 'list',",
-      "      options: [",
-      "        {value: 'Diesel', display: 'Diesel'},",
-      "        {value: 'Electric',      display: 'Electric'},",
-      "      ]",
-      "    }",
-      "  ]",
-      "});")
-    
-    path <- "./www" # folder containing the files dataTables.cellEdit.js
-    
-    # and dataTables.cellEdit.css
-    dep <- htmltools::htmlDependency(
-      "CellEdit", "1.0.19", path, 
-      script = "dataTables.cellEdit.js", stylesheet = "dataTables.cellEdit.css")
-    
-    dtable <- 
-      rvs$Advanced %>%
-      filter(table_no_ui == 4) %>% 
-      select(mode_service, unit, value) %>% 
-      rename(any_of(references_vector)) %>% 
-      datatable(callback = callback_pass_rail, rownames = F)
-    
-    ### OLD
-    # render_custom_datatable(
-    # data_reactive = rvs$Advanced,
-    # table_number = 4,
-    # is_year_table = FALSE,
-    # non_editable_cols = c(0, 1),
-    # page_length = 10,
-    # comma_rows = integer(0),
-    # percent_rows = integer(0),
-    # currency_rows = integer(0),
-    # decimal_rows = integer(0))
-    
-    ### WORKS WITH A SIMPLE EXAMPLE BELOW
-    # dat_pass_rail <- data.frame(
-    #   Action = c("Keep data", "Keep data", "Keep data"),
-    #   X = c(1, 2, 3),
-    #   Y = c("a", "b", "c")
-    # )
+    # callback_pass_rail <- JS(
+    #   "var tbl = $(table.table().node());",
+    #   "var id = tbl.closest('.datatables').attr('id');",
+    #   "function onUpdate() {",
+    #   "  var cellinfo = [{",
+    #   "    value: updatedCell.data()",
+    #   "  }];",
+    #   "  Shiny.setInputValue(id + '_cell_edit:DT.cellInfo', cellinfo);",
+    #   "}",
+    #   "table.MakeCellsEditable({",
+    #   "  onUpdate: onUpdate,",
+    #   "  inputCss: 'my-input-class',",
+    #   "  columns: [2], ",
+    #   "  rows: null, ",
+    #   "  confirmationButton: {",
+    #   "    confirmCss: 'my-confirm-class',",
+    #   "    cancelCss: 'my-cancel-class'",
+    #   "  },",
+    #   "  inputTypes: [",
+    #   "    {",
+    #   "      column: 2,",
+    #   "      type: 'list',",
+    #   "      options: [",
+    #   "        {value: 'Diesel', display: 'Diesel'},",
+    #   "        {value: 'Electric',      display: 'Electric'},",
+    #   "      ]",
+    #   "    }",
+    #   "  ]",
+    #   "});")
     # 
-    # ## the datatable
-    # dtable <- datatable(
-    #   dat_pass_rail, callback = callback_pass_rail, rownames = FALSE, 
-    #   options = list(
-    #     columnDefs = list(
-    #       list(targets = "_all", className = "dt-center")
-    #     )
-    #   )
-    # )
-    
-    dtable$dependencies <- c(dtable$dependencies, list(dep))
-    return(dtable)
-    
+    # path <- "./www" # folder containing the files dataTables.cellEdit.js
+    # 
+    # # and dataTables.cellEdit.css
+    # dep <- htmltools::htmlDependency(
+    #   "CellEdit", "1.0.19", path, 
+    #   script = "dataTables.cellEdit.js", stylesheet = "dataTables.cellEdit.css")
+    # 
+    # dtable <- 
+    #   rvs$Advanced %>%
+    #   filter(table_no_ui == 4) %>% 
+    #   select(mode_service, unit, value) %>% 
+    #   rename(any_of(references_vector)) %>% 
+    #   datatable(callback = callback_pass_rail, rownames = F)
+    # 
+    # ### OLD
+    # # render_custom_datatable(
+    # # data_reactive = rvs$Advanced,
+    # # table_number = 4,
+    # # is_year_table = FALSE,
+    # # non_editable_cols = c(0, 1),
+    # # page_length = 10,
+    # # comma_rows = integer(0),
+    # # percent_rows = integer(0),
+    # # currency_rows = integer(0),
+    # # decimal_rows = integer(0))
+    # 
+    # ### WORKS WITH A SIMPLE EXAMPLE BELOW
+    # # dat_pass_rail <- data.frame(
+    # #   Action = c("Keep data", "Keep data", "Keep data"),
+    # #   X = c(1, 2, 3),
+    # #   Y = c("a", "b", "c")
+    # # )
+    # # 
+    # # ## the datatable
+    # # dtable <- datatable(
+    # #   dat_pass_rail, callback = callback_pass_rail, rownames = FALSE, 
+    # #   options = list(
+    # #     columnDefs = list(
+    # #       list(targets = "_all", className = "dt-center")
+    # #     )
+    # #   )
+    # # )
+    # 
+    # dtable$dependencies <- c(dtable$dependencies, list(dep))
+    # return(dtable)
+    render_custom_datatable(
+      data_reactive = rvs$Advanced,
+      table_number = 4,
+      is_year_table = FALSE,
+      non_editable_cols = c(0:1),  
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
   },server = FALSE)
   
   output$freight_rail_sheet_tbl <- renderDT({
@@ -5340,11 +5349,21 @@ server <- function(input, output, session) {
   #reshaping pass_rail_sheet_tbl
   observeEvent(input$pass_rail_sheet_tbl_cell_edit, {
     req(rvs$Advanced)
-    
-    rvs$Advanced[rvs$Advanced$table_no_ui == 4,] <- reshaping_advanced(input$pass_rail_sheet_tbl_cell_edit,
-                                                                       rvs$Advanced,
-                                                                       tbl_no = 4,
-                                                                       col_list = c('mode_service','unit'))
+    #browser()
+    temp <- reshaping_advanced(input$pass_rail_sheet_tbl_cell_edit,
+                               rvs$Advanced,
+                               tbl_no = 4,
+                               col_list = c('mode_service','unit'))
+    old <- rvs$Advanced[rvs$Advanced$table_no_ui == 4,]
+    if(sum(temp$value %in% c("Diesel","Electric")) != 4){
+      vals <- temp$value[!(temp$value %in% c("Diesel","Electric"))]
+      warning = paste0("Please input either Diesel or Electric (case sensative) for Advanced Table 4, you imputed the value(s): ", vals)
+      
+
+      rvs$Advanced[rvs$Advanced$table_no_ui == 4,] <- old
+      showNotification(HTML(warning), type = "error")
+      print('next')
+    } else {rvs$Advanced[rvs$Advanced$table_no_ui == 4,] <- temp}
   })
   
   #reshaping freight_rail_sheet_tbl

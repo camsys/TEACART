@@ -157,8 +157,8 @@ VMT_State_Allocation_raw <- read_excel("data/1.Raw_Data.xlsx", sheet = "VMT_Stat
 
 VMT_State_Allocation <- right_join(State_Populations,VMT_State_Allocation_raw, by = c('year','state')) %>%
   group_by(year) %>% 
-  mutate(us_vmt = sum(state_vmt)) %>%
-  mutate(state_vmt_pct_of_national = state_vmt/us_vmt) %>% #dividing by two removes US Total
+  mutate(us_vmt = sum(state_vmt)/2) %>% #divide by two to remove us total
+  mutate(state_vmt_pct_of_national = state_vmt/us_vmt) %>%
   ungroup()
 
 ##this has millions of vehicles for the whole US by year for veh/vehsubtype 
