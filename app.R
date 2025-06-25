@@ -1394,37 +1394,13 @@ and potential applications.<br><br>
                               
                             ),
                             p(),
-                            # transit cuts - 16
+
+                            # roadway resurfacing - 16
                             fluidRow(
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 16 | Transit Service Cuts ',
-                                                    as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on transit service cuts.")),
-                                                    sep = "")),
-                                         HTML("This category estimates changes that could result from 
-                                              funding cuts to transit service. These dollars represent 
-                                              the <b>reduced spending in transit</b>."),
-                                       ),
-                                       open = TRUE
-                                     ),
-                              ),
-                              column(2,
-                                     actionButton("reset_transit_cuts_budget_tbl", "Reset Budget 16", class = "btn-custom"),
-                              ),
-                            ),
-                            fluidRow(
-                              DT::dataTableOutput("transit_cuts_budget_tbl")
-                              
-                            ),
-                            p(),
-                            # roadway resurfacing - 17
-                            fluidRow(
-                              column(10,
-                                     accordion(
-                                       accordion_panel(
-                                         HTML(paste('Budget 17 | Roadway Resurfacing ',
+                                         HTML(paste('Budget 16 | Roadway Resurfacing ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on roadway resurfacing.")),
                                                     sep = "")),
@@ -1435,7 +1411,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_resurfacing_budget_tbl", "Reset Budget 17", class = "btn-custom"),
+                                     actionButton("reset_resurfacing_budget_tbl", "Reset Budget 16", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
