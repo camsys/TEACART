@@ -125,7 +125,7 @@ ui <- function(request) {
                                  tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                         href = "https://www.georgetownclimate.org/", target = "_blank"),
                                  tags$p("Adapted from TEA-CART Excel Model Version 1.10"),
-                                 tags$p("Shiny App last updated June 10, 2025"),
+                                 tags$p("Shiny App last updated June 24, 2025"),
                                  tags$p("Prototype under development by Cambridge Systematics, Inc."),
                                  tags$p("under contract to Gergetown Climate Center"),
                                  tags$p("© Georgetown Climate Center")
@@ -257,7 +257,7 @@ and potential applications.<br><br>
 
       actionLink("sources_btn", "View Sources"),
       HTML("<br><br>"),
-      actionLink("how_to_btn", "View User Guide")
+      actionLink("guide_btn", "View User Guide")
 
 ),
       
@@ -6521,6 +6521,9 @@ server <- function(input, output, session) {
   },ignoreInit = T)
   observeEvent(input$how_to_btn,{
     nav_select(id = "APP_PAGE",selected = "How-to")
+  },ignoreInit = T)
+  observeEvent(input$guide_btn,{
+    shinyjs::runjs("window.open('TEACART User Guide and Methodology v.1.10.3.pdf', '_blank')")
   },ignoreInit = T)
   observeEvent(input$sources_btn,{
     nav_select(id = "APP_PAGE",selected = "Sources")

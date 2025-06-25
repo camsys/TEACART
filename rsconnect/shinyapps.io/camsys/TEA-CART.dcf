@@ -5,7 +5,7 @@ account: camsys
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 10756708
-bundleId: 10434807
+bundleId: 10514074
 url: https://camsys.shinyapps.io/TEA-CART/
 version: 1
 asMultiple: FALSE

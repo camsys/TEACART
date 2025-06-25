@@ -153,7 +153,9 @@ ol {
 .tab-pane[data-value=About] ol li:not(:first-child) {
   margin-top: 2rem;
 }
-.tab-pane[data-value=About] #sources_btn, .tab-pane[data-value=About] #how_to_btn {
+.tab-pane[data-value=About] #sources_btn,
+.tab-pane[data-value=About] #how_to_btn,
+.tab_pane[data-value=About] #guide_btn {
   font-size: 1.25rem;
 }
 
