@@ -195,7 +195,7 @@ ui <- function(request) {
                         h4('New User'),
                         HTML("<ol>
                             <li>Navigate to the <b>Inputs</b> tab.</li>
-                            <li>Input your values in the <b>Baseline, Projects, Costs,</b> and <b>Assumptions</b> tabs.</li>
+                            <li>Input your values in the <b>Baseline, Projects / Budget, Costs,</b> and <b>Assumptions</b> tabs.</li>
                             <li>When you are done entering data, press CTRL <b>+</b> Enter on your keyboard to initiate the calculations.</li>
                             <li>Select the desired combination of strategies in the <b>Scenarios</b> tab.</li>
                             <li>Navigate to the <b>Outputs</b> tab to view your results.</li>
@@ -1606,8 +1606,8 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Costs 10 | Medium and Heavy Duty Vehicle Replacement Costs",
-                                         HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium and heavy-duty vehicles replaced with new electric vehicles."),
+                                         "Costs 10 | Medium- and Heavy-Duty Vehicle Replacement Costs",
+                                         HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium- and heavy-duty vehicles replaced with new electric vehicles."),
                                          
                                        ),
                                        open = TRUE
@@ -1752,9 +1752,7 @@ and potential applications.<br><br>
                   
                   # assumptions tab ui ------------------------------------------------------
                   nav_panel(title = "Assumptions",
-                            fluidRow(HTML("<p>This section provides information on the <b>input assumptions</b> for the categories shown below. These inputs affect the GHG impact and effectiveness of each strategy category. Please click on the different fields to overwrite the default values with any custom values provided by the user.<br>
-                        <p>
-                        More information on the categories can be found by clicking the pull-down arrow next to each category.")
+                            fluidRow(HTML("<p>This section provides information on the <b>input assumptions</b> for the categories shown below. These inputs affect the GHG impact and effectiveness of each strategy category. Please click on the different fields to overwrite the default values with any custom values provided by the user.")
                                      
                             ),
                             
@@ -1908,7 +1906,7 @@ and potential applications.<br><br>
                                          "Assumptions 6 | Medium & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
                                          HTML("
                                   <p>
-                                  This category represents the <b>miles driven per replaced medium and heavy duty vehicle per year</b>.
+                                  This category represents the <b>miles driven per replaced medium- and heavy-duty vehicle per year</b>.
                                   "),
                                          
                                        ),
@@ -2362,7 +2360,7 @@ and potential applications.<br><br>
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Medium and Heavy Duty Vehicle Replacement (Electrification)"),
+                                      h3("Medium- and Heavy-Duty Vehicle Replacement (Electrification)"),
                                       p(""),
                                       DT::dataTableOutput("mhdev_costs_outputs_tbl")
                             ),
@@ -4013,7 +4011,7 @@ server <- function(input, output, session) {
         category == "Travel Demand Management"~"Travel Demand Management",
         category == "Micromobility"~"Micromobility",
         category == "Traffic Operations"~"Traffic Operations",
-        category == "Medium and Heavy Duty Vehicle Replacement"~ "MHDV Replacement",
+        category == "Medium- and Heavy-Duty Vehicle Replacement"~ "MHDV Replacement",
         category == "Park and Ride"~"Park and Ride",
         category == "EV Charging Infrastructure"~"Electric Vehicles and Charging Infrastructure",
         category == "Freight Intermodal Facilities" ~ "Freight Intermodal",
@@ -5410,12 +5408,12 @@ server <- function(input, output, session) {
     dt <- baseline_ghg_forecast()
     
     dt_onroad <- dt %>% ungroup() %>% # select(-veh_supertype) %>% View()
-      filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Vehicles")) %>%
+      filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
       summarise(across(where(is.numeric),sum))  %>%
       mutate(veh_supertype = "Total (OnRoad)")
     
     dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-      #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+      #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
       summarise(across(where(is.numeric),sum))
     
     growth <- dt_all[[1,1]]
@@ -6330,11 +6328,11 @@ server <- function(input, output, session) {
       dt <- baseline_ghg_forecast()
       
       dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-        filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+        filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
         summarise(across(where(is.numeric),sum)) %>%
         mutate(veh_supertype = "Total (Onroad Vehicles)")
       dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-        #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+        #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
         summarise(across(where(is.numeric),sum))
       growth <- dt_all[[1,1]]
       dt_growth <- dt_all %>% 
