@@ -24,6 +24,8 @@ output_TransitService <- reactive({
   }
 
   getdisplacedAuto <- function(year_selected){
+    if(rvs$Baseline$land_use_factor == 1){lu_factor <- rvs$Assumptions[rvs$Assumptions$transit_category == "Land Use Multiplier" & !is.na(rvs$Assumptions$transit_category),"value"][[1]]} else {lu_factor =1}
+    
     transit_service_base <- transit_service_base %>%
       left_join(Assumptions_transitservice2,by = c('area_type','transit_mode')) %>%
       rename(pax_mi_fact = value) %>%
@@ -31,7 +33,7 @@ output_TransitService <- reactive({
       rename(mode_fact = value) %>% 
       # start calculate vmt change
       mutate(add_vrm = VOMS * avg_vrm,
-             total_change_VMT = add_vrm *  -pax_mi_fact * mode_fact) %>%
+             total_change_VMT = add_vrm *  -pax_mi_fact * mode_fact * lu_factor) %>%
       mutate_if(is.numeric, list(~replace_na(., 0))) %>%
       filter(if_any(everything(), ~!is.na(.)))
 
@@ -263,6 +265,7 @@ output_TransitService <- reactive({
 })
    
 cost_output_transitservice <- reactive({
+  if(rvs$Baseline$land_use_factor == 1){lu_factor <- rvs$Assumptions[rvs$Assumptions$transit_category == "Land Use Multiplier" & !is.na(rvs$Assumptions$transit_category),"value"][[1]]} else {lu_factor =1}
   
   emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light Duty Vehicles')
   co2emrate <- emrate_by_tech_ldv$CO2e_millions[emrate_by_tech_ldv$year== rvs$Baseline$horizon_year_1]
@@ -302,8 +305,8 @@ cost_output_transitservice <- reactive({
    output_transitservice_cost <- transitservice_base %>%
      mutate(allyear_emrate = ifelse(allyear_emrate != 0, allyear_emrate, onroad_elect_emrate)) %>%
     mutate(total_change_gGHG = avg_vrm * allyear_emrate + (avg_vrm * pax_mi_fact * mode_fact * -CO2e_millions),
-           total_change_VMT = ifelse(grepl("Rail",transit_mode), - avg_vrm * mode_fact * pax_mi_fact,
-                                     - avg_vrm * mode_fact * pax_mi_fact + avg_vrm),
+           total_change_VMT = ifelse(grepl("Rail",transit_mode), - avg_vrm * mode_fact * pax_mi_fact * lu_factor,
+                                     - avg_vrm * mode_fact * pax_mi_fact * lu_factor + avg_vrm),
            total_change_gnox = case_when(fuel_type == 'CNG' ~ -avg_vrm * mode_fact * pax_mi_fact * 
                                            fuel_factorNox * base_impf +(avg_vrm * fuel_factorCNGbus_NOX),
                                          fuel_type == 'Electric' ~ -avg_vrm * mode_fact * pax_mi_fact * fuel_factorNox * base_impf,
