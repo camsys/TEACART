@@ -125,7 +125,7 @@ ui <- function(request) {
                                  tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                         href = "https://www.georgetownclimate.org/", target = "_blank"),
                                  tags$p("Adapted from TEA-CART Excel Model Version 1.10"),
-                                 tags$p("Shiny App last updated June 10, 2025"),
+                                 tags$p("Shiny App last updated June 25, 2025"),
                                  tags$p("Prototype under development by Cambridge Systematics, Inc."),
                                  tags$p("under contract to Gergetown Climate Center"),
                                  tags$p("© Georgetown Climate Center")
@@ -195,7 +195,7 @@ ui <- function(request) {
                         h4('New User'),
                         HTML("<ol>
                             <li>Navigate to the <b>Inputs</b> tab.</li>
-                            <li>Input your values in the <b>Baseline, Projects, Costs,</b> and <b>Assumptions</b> tabs.</li>
+                            <li>Input your values in the <b>Baseline, Projects / Budget, Costs,</b> and <b>Assumptions</b> tabs.</li>
                             <li>When you are done entering data, press CTRL <b>+</b> Enter on your keyboard to initiate the calculations.</li>
                             <li>Select the desired combination of strategies in the <b>Scenarios</b> tab.</li>
                             <li>Navigate to the <b>Outputs</b> tab to view your results.</li>
@@ -257,7 +257,7 @@ and potential applications.<br><br>
 
       actionLink("sources_btn", "View Sources"),
       HTML("<br><br>"),
-      actionLink("how_to_btn", "View User Guide")
+      actionLink("guide_btn", "View User Guide")
 
 ),
       
@@ -1394,37 +1394,13 @@ and potential applications.<br><br>
                               
                             ),
                             p(),
-                            # transit cuts - 16
+
+                            # roadway resurfacing - 16
                             fluidRow(
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 16 | Transit Service Cuts ',
-                                                    as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on transit service cuts.")),
-                                                    sep = "")),
-                                         HTML("This category estimates changes that could result from 
-                                              funding cuts to transit service. These dollars represent 
-                                              the <b>reduced spending in transit</b>."),
-                                       ),
-                                       open = TRUE
-                                     ),
-                              ),
-                              column(2,
-                                     actionButton("reset_transit_cuts_budget_tbl", "Reset Budget 16", class = "btn-custom"),
-                              ),
-                            ),
-                            fluidRow(
-                              DT::dataTableOutput("transit_cuts_budget_tbl")
-                              
-                            ),
-                            p(),
-                            # roadway resurfacing - 17
-                            fluidRow(
-                              column(10,
-                                     accordion(
-                                       accordion_panel(
-                                         HTML(paste('Budget 17 | Roadway Resurfacing ',
+                                         HTML(paste('Budget 16 | Roadway Resurfacing ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on roadway resurfacing.")),
                                                     sep = "")),
@@ -1435,7 +1411,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_resurfacing_budget_tbl", "Reset Budget 17", class = "btn-custom"),
+                                     actionButton("reset_resurfacing_budget_tbl", "Reset Budget 16", class = "btn-custom"),
                               ),
                             ),
                             fluidRow(
@@ -1630,8 +1606,8 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Costs 10 | Medium and Heavy Duty Vehicle Replacement Costs",
-                                         HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium and heavy-duty vehicles replaced with new electric vehicles."),
+                                         "Costs 10 | Medium- and Heavy-Duty Vehicle Replacement Costs",
+                                         HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium- and heavy-duty vehicles replaced with new electric vehicles."),
                                          
                                        ),
                                        open = TRUE
@@ -1776,9 +1752,7 @@ and potential applications.<br><br>
                   
                   # assumptions tab ui ------------------------------------------------------
                   nav_panel(title = "Assumptions",
-                            fluidRow(HTML("<p>This section provides information on the <b>input assumptions</b> for the categories shown below. These inputs affect the GHG impact and effectiveness of each strategy category. Please click on the different fields to overwrite the default values with any custom values provided by the user.<br>
-                        <p>
-                        More information on the categories can be found by clicking the pull-down arrow next to each category.")
+                            fluidRow(HTML("<p>This section provides information on the <b>input assumptions</b> for the categories shown below. These inputs affect the GHG impact and effectiveness of each strategy category. Please click on the different fields to overwrite the default values with any custom values provided by the user.")
                                      
                             ),
                             
@@ -1932,7 +1906,7 @@ and potential applications.<br><br>
                                          "Assumptions 6 | Medium & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
                                          HTML("
                                   <p>
-                                  This category represents the <b>miles driven per replaced medium and heavy duty vehicle per year</b>.
+                                  This category represents the <b>miles driven per replaced medium- and heavy-duty vehicle per year</b>.
                                   "),
                                          
                                        ),
@@ -2386,7 +2360,7 @@ and potential applications.<br><br>
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Medium and Heavy Duty Vehicle Replacement (Electrification)"),
+                                      h3("Medium- and Heavy-Duty Vehicle Replacement (Electrification)"),
                                       p(""),
                                       DT::dataTableOutput("mhdev_costs_outputs_tbl")
                             ),
@@ -4037,7 +4011,7 @@ server <- function(input, output, session) {
         category == "Travel Demand Management"~"Travel Demand Management",
         category == "Micromobility"~"Micromobility",
         category == "Traffic Operations"~"Traffic Operations",
-        category == "Medium and Heavy Duty Vehicle Replacement"~ "MHDV Replacement",
+        category == "Medium- and Heavy-Duty Vehicle Replacement"~ "MHDV Replacement",
         category == "Park and Ride"~"Park and Ride",
         category == "EV Charging Infrastructure"~"Electric Vehicles and Charging Infrastructure",
         category == "Freight Intermodal Facilities" ~ "Freight Intermodal",
@@ -5434,12 +5408,12 @@ server <- function(input, output, session) {
     dt <- baseline_ghg_forecast()
     
     dt_onroad <- dt %>% ungroup() %>% # select(-veh_supertype) %>% View()
-      filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Vehicles")) %>%
+      filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
       summarise(across(where(is.numeric),sum))  %>%
       mutate(veh_supertype = "Total (OnRoad)")
     
     dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-      #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+      #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
       summarise(across(where(is.numeric),sum))
     
     growth <- dt_all[[1,1]]
@@ -6354,11 +6328,11 @@ server <- function(input, output, session) {
       dt <- baseline_ghg_forecast()
       
       dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-        filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+        filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
         summarise(across(where(is.numeric),sum)) %>%
         mutate(veh_supertype = "Total (Onroad Vehicles)")
       dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-        #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+        #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
         summarise(across(where(is.numeric),sum))
       growth <- dt_all[[1,1]]
       dt_growth <- dt_all %>% 
@@ -6521,6 +6495,9 @@ server <- function(input, output, session) {
   },ignoreInit = T)
   observeEvent(input$how_to_btn,{
     nav_select(id = "APP_PAGE",selected = "How-to")
+  },ignoreInit = T)
+  observeEvent(input$guide_btn,{
+    shinyjs::runjs("window.open('TEACART User Guide and Methodology v.1.10.3.pdf', '_blank')")
   },ignoreInit = T)
   observeEvent(input$sources_btn,{
     nav_select(id = "APP_PAGE",selected = "Sources")
