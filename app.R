@@ -2629,7 +2629,8 @@ server <- function(input, output, session) {
                                vmt_forecast = input$vmt_forecast_input,
                                veh_elec_baseline = input$ev_baseline_input,
                                elec_grid_emissions_net_zero = input$grid_emissions_input,
-                               land_use_factor = input$land_use_factor
+                               land_use_factor = input$land_use_factor,
+                               include_rail = input$include_rail
     )
     
     updateSelectInput(inputId = "pie_graph_year", label = "", choices = c(input$base_year, input$horizon_year_1, input$horizon_year_2, input$horizon_year_3))
@@ -2678,11 +2679,11 @@ server <- function(input, output, session) {
     },
     content = function(file) {
   
-    
       base_input <- data.frame(rvs$Baseline) %>%
         mutate(include_electricity = ifelse(include_electricity == 1,'TRUE','FALSE'),
                include_upstream_fuels = ifelse(include_upstream_fuels  == 1, 'TRUE','FALSE'),
-               land_use_factor = ifelse(land_use_factor == 1, 'Yes','No'))
+               land_use_factor = ifelse(land_use_factor == 1, 'Yes','No'),
+               include_rail = ifelse(include_rail == 1, 'Yes','No'))
       
       references <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
@@ -5404,7 +5405,6 @@ server <- function(input, output, session) {
   output$baseline_outputs <- renderDT({
     #browser()
     req(baseline_ghg_forecast())
-    browser()
     dt <- baseline_ghg_forecast()
     
     dt_onroad <- dt %>% ungroup() %>% # select(-veh_supertype) %>% View()
@@ -6203,7 +6203,7 @@ server <- function(input, output, session) {
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-    #browser() #not done
+    browser() #not done
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     
@@ -6218,6 +6218,7 @@ server <- function(input, output, session) {
     strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
       select('year', Strategy,input$strategy_indicator)
     
+    # browser()
     total_row <- strategy_temp %>%
       pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
       mutate(across(where(is.numeric), ~round(., 2))) %>%
@@ -6230,11 +6231,12 @@ server <- function(input, output, session) {
         mutate(across(where(is.numeric), ~round(., 2))),
       total_row
     ) %>% mutate(across(where(is.numeric), ~ prettyNum(., big.mark = ",")))
+    
     data_temp %>%
       DT::datatable(
         escape = FALSE,
         rownames = FALSE,
-        options = list(dom = 't', pageLength = 13,
+        options = list(dom = 't', pageLength = 14,
                        initComplete = JS(
                          "function(settings, json) {",
                          "  var table = settings.oInstance.api();",
@@ -6389,6 +6391,11 @@ server <- function(input, output, session) {
         return(updated_list)
       }
       
+      observe({
+        req(all_costs())
+        print(str(all_costs()))
+      })
+      
       cost_data <- all_costs() %>%
         lapply(., replace_underscores) %>%
         lapply(., replace_na_with_string) %>%
@@ -6429,7 +6436,8 @@ server <- function(input, output, session) {
                               funding_tbl = rvs$Funding,
                               funding_yr = input$funding_start_year,
                               funding_dur = input$funding_years,
-                              funding_bgt = input$total_budget
+                              funding_bgt = input$total_budget,
+                              rail = input$include_rail
                             ),
                             output_format = "pdf_document",
                             output_options = list(

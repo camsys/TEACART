@@ -28,6 +28,7 @@ params:
  funding_yr: NULL
  funding_dur: NULL
  funding_bgt: NULL
+ rail: NULL
 document:
   top-margin: "0.5in"
 ---
@@ -49,6 +50,11 @@ library(dplyr)
 library(showtext)
 showtext_auto()
 library(scales)
+
+## for font
+library(showtext)
+showtext_auto()
+font_add("Arial", regular = "arial.ttf")
 
 
 # functions: 
@@ -113,6 +119,13 @@ if(params$lu == 1){
 
 }
 
+if(params$rail == 1){
+  rail_include <- "Yes"
+}else{
+    rail_include <- "No"
+
+}
+
 print(tagList(
       cat(
         paste0('State: ',params$state,  "  \n\n  ",
@@ -128,7 +141,9 @@ print(tagList(
                'Electricity Grid Emissions Net-Zero Year: ',
                params$grid_em,  "  \n\n  ",
                'Land Use Multiplier to Transit Investment Applied: ',
-               params$lu,  "  \n\n  "
+               params$lu,  "  \n\n  ",
+               'Include Rail Mode in Emission Estimation: ',
+               rail_include,  "  \n\n  "
 
       ))))
 
@@ -171,14 +186,18 @@ fig_list <- c("Total (Onroad Vehicles)", "Total (All Transportation)")
 for ( var in fig_list){
   
     if (var == 'Total (Onroad Vehicles)') {
-    title <- "On-Road Transportation Emissions"
+    title <- "Figure 1: On-Road Transportation Emissions"
   } else if (var == 'Total (All Transportation)') {
-    title <- "All Transportation Emissions"
+    title <- "Figure 2: All Transportation Emissions"
   }
   
   data_temp <- GHG_forecast %>%
     filter(`Emissions` == var)
-  
+   
+  print(tagList(cat("  \n\n  ")))
+cat(paste0("\n\n####"))  ## added to avoid title to show on the same line as the headers.
+cat(paste0("\n\n",title, "\n\n"))
+
   ghg_fore <- ggplot(data_temp,
                aes(y = Emission, x = year, group = 1)) +
     geom_line(color = '#E69F00', size = 1) + 
@@ -186,8 +205,8 @@ for ( var in fig_list){
     ylab("Emissions (MT CO2e) ") +
     scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) + 
     xlab(NULL) +
-    ggtitle(title) +
-        theme_classic() 
+    # ggtitle(title) +
+        theme_classic(base_family = "Arial") 
 # print(ghg_fore +  theme_classic())
   print(ghg_fore + theme(
     axis.title.x = element_text(size = 11),
@@ -227,6 +246,8 @@ year_list <- c(unique(GHG_forecast$year))
 #            `Emission Source` = paste0(`Emissions` ," (",round(fraction *100,digits = 1), " %",")"))
 # knitr::kable(check, caption = "Example Table", align = "c")
 # print(check)
+figure_num <- 3
+
 for ( var in year_list){
   data_temp <- GHG_forecast %>%
     filter(`Emissions` %in% source_list, year == var) %>%
@@ -235,7 +256,12 @@ for ( var in year_list){
            ymin = c(0, head(ymax, n=-1)),
            labelPosition = (ymax + ymin)/ 2,
            `Emission Source` = paste0(`Emissions` ," (",round(fraction *100,digits = 1), " %",")"))
-  
+
+  cat(paste0("\n\n####"))  ## added to avoid title to show on the same line as the headers.
+   # print(tagList(
+   #    cat("Figure ", figure_num, figure_num,': Transportation Emission: ', var)))
+   cat(paste0("\n\n","Figure ", figure_num,': Transportation Emission: ', var, "\n\n"))
+   
 print(ggplot(data_temp,
              aes(ymax = ymax,
                  ymin = ymin,
@@ -246,18 +272,20 @@ print(ggplot(data_temp,
   scale_fill_brewer(palette = 'RdYlBu') +
   coord_polar(theta = "y") +
   xlim(c(2, 4)) +
-  ggtitle(paste0('Transportation Emission: ', var))+
+  # ggtitle(paste0("Figure ", figure_num,': Transportation Emission: ', var))+
    ggplot2::theme_void() +
    ggplot2::theme(
      plot.background = element_rect(fill = "white"),
      plot.title = element_text(size = 12),
      legend.text.align = 0
    )
-) + theme_classic() 
+) + theme_classic(base_family = "Arial") 
     
 print(tagList(cat("  \n\n  ")))
       print(tagList(cat("  \\newpage  ")))
       print(tagList(cat("  \n\n  ")))
+      
+      figure_num <- figure_num + 1
 }
 
 
@@ -279,9 +307,10 @@ print(tagList(cat("  \n\n  ")))
 # scenarioresults <- readxl::read_excel(path3)
 scenarioresults <- params$scen_data
 
-scenarioresults$indicator = gsub("CO2", "CO₂",scenarioresults$indicator )
+# scenarioresults$indicator = gsub("CO2", "CO$_2$",scenarioresults$indicator )
 
 indicators <- unique(scenarioresults$indicator)
+fig_num <- 7
 
   for (i in indicators){
 data_temp <- scenarioresults %>%
@@ -291,6 +320,9 @@ data_temp <- scenarioresults %>%
   mutate(Year = as.factor(Year)) %>%
   mutate(Scenario = ifelse(Scenario == 'Scenario1', 'Scenario 1', 'Scenario 2'))
 
+cat(paste0("\n\n####"))  ## added to avoid title to show on the same line as the headers.
+cat(paste0("\n\n","Figure ", fig_num,": Reduction in ", i, " (From Baseline) ", "\n\n"))
+
   scen <- ggplot(data_temp,
                aes(fill = Scenario,
                    y = mt_reduction,
@@ -298,8 +330,8 @@ data_temp <- scenarioresults %>%
     geom_bar(position="dodge", stat="identity")+
        scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) +
       ylab(paste0(i," Change")) +
-      ggtitle(paste0("Reduction in ", i, " (From Baseline)")) +
-            theme_classic() +
+      # ggtitle(paste0("Figure ",fig_num, ": Reduction in ", i, " (From Baseline)")) +
+            theme_classic(base_family = "Arial") +
           xlab(NULL)
 
 print(scen + theme(
@@ -313,7 +345,7 @@ print(scen + theme(
   print(tagList(cat("  \n\n  ")))
       print(tagList(cat("  \\newpage  ")))
       print(tagList(cat("  \n\n  ")))
-
+fig_num <- fig_num +1
  }
 
 ```
@@ -367,6 +399,9 @@ if (ncol(df) == 5){
 
  print(tagList(
       cat("###", title_list[num], "\n\n")))
+  
+ print(tagList(
+      cat("Table ", num, ": ",title_list[num], "Cost Effectiveness Summary", "\n\n")))
  if(var == 'bikeped'){
  print(df %>%
    #select(1,8:ncol(.)) %>%
@@ -414,7 +449,8 @@ writeLines("")
 
 ## 3. Budget Summary
 
-Add descrptive text here talk about what this budget section is about 
+Add descrptive text here talk about what this budget section is about
+
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
 #| warning: false
@@ -423,8 +459,11 @@ Add descrptive text here talk about what this budget section is about
 
 ## these are the parameters user defined for the budget
 
-print(tagList( cat( paste0('Funding Start Year: ',params$funding_yr,  "  \n\n  ",
-               'Total Years Covered: ', params$funding_dur, " \n\n ", 'Total Budget ($M): ',params$funding_bgt, " \n\n " ))))
+print(tagList( cat( paste0(
+  "  \n\n  ",
+  'Funding Start Year: ',params$funding_yr,  "  \n\n  ",
+  'Total Years Covered: ', params$funding_dur, " \n\n ",
+  'Total Budget ($M): ',params$funding_bgt, " \n\n " ))))
 
 ## generate the table for
 budget_tbl <- params$funding_tbl %>% select(-'funding_name') %>%
@@ -434,7 +473,7 @@ budget_tbl <- params$funding_tbl %>% select(-'funding_name') %>%
          'Million $' = '$million')
 
 print(tagList(
-      cat("\n\n",'Table 18: Funding Allocation Summary', "\n\n")))
+      cat("\n\n",'Table 15: Funding Allocation Summary', "\n\n")))
 
 kable(budget_tbl, digits = 1) %>%
     kable_styling(position = "left", full_width = FALSE) %>%
@@ -442,4 +481,3 @@ kable(budget_tbl, digits = 1) %>%
 
 
 ```
-
