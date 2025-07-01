@@ -2514,6 +2514,8 @@ server <- function(input, output, session) {
     
   })
   
+
+  
   which_page <- reactiveValues(curr_page = "ini",
                                prev_page = "")
   
@@ -2629,6 +2631,7 @@ server <- function(input, output, session) {
                                vmt_forecast = input$vmt_forecast_input,
                                veh_elec_baseline = input$ev_baseline_input,
                                elec_grid_emissions_net_zero = input$grid_emissions_input,
+                               include_rail = input$include_rail,
                                land_use_factor = input$land_use_factor
     )
     
@@ -3996,6 +3999,7 @@ server <- function(input, output, session) {
   })
 # FUNDING: Render ---------------------------------------------------------
   observe({
+    #browser()
     tempf<-rvs$Funding |> select(-perc_allocated)
     total <- rvs$Budget$value |> sum(na.rm = T)
     tempb<-rvs$Budget |> 
@@ -5013,6 +5017,7 @@ server <- function(input, output, session) {
   
   # Create a reactive data frame
   reactive_scenario <- reactiveVal()
+  
   observe({
     req(rvs$Scenarios)
     reactive_scenario(rvs$Scenarios)
@@ -5022,7 +5027,7 @@ server <- function(input, output, session) {
   
   # Render the checkbox table
   output$scenario_tbl <- renderDT({
-    # browser()
+    #browser()
     datatable(
       reactive_scenario(),
       escape = FALSE,
@@ -6044,6 +6049,7 @@ server <- function(input, output, session) {
   # server scenarios outputs ------------------------------------------------
   output$emission_change_tbl <- renderDataTable({
     results <- scenario_summary_results()
+    browser()
     comma_rows = c(0:4,7:11,14:19)
     percent_rows = c(5,6,12,13)
     currency_rows = NULL

@@ -925,9 +925,15 @@ construction_and_maintenance <- reactive({
  })
 #Final Baseline Return 
 baseline_ghg_forecast <- reactive({
-
-  use_e = rvs$Baseline$include_electricity %>% as.numeric()
-  use_up = rvs$Baseline$include_upstream_fuels %>% as.numeric()
+  #browser()
+  
+  use_e = rvs$Baseline$include_electricity# %>% as.numeric()
+  use_up = rvs$Baseline$include_upstream_fuels# %>% as.numeric()
+  use_rr = rvs$Baseline$include_rail
+  if(use_e %in% c("TRUE","1","Yes","YES")){use_e <- 1} else {use_e <- 0}
+  if(use_up %in% c("TRUE","1","Yes","YES")){use_up <- 1} else {use_up <- 0}
+  if(use_rr %in% c("TRUE","1","Yes","YES")){use_rr <- 1} else {use_rr <- 0}
+    
   #Em_OnRoad_Base_up()
   #public_transit_emissions()
   #passenger_rail_emissions()
@@ -960,7 +966,7 @@ baseline_ghg_forecast <- reactive({
                            rvs$Baseline$horizon_year_2,
                            rvs$Baseline$horizon_year_3)) %>%
         mutate(veh_supertype = "Passenger Rail") %>%
-        mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity)%>% 
+        mutate(Emissions = (MT_CO2e_direct + use_e*MT_CO2e_electricity)*use_rr)%>% 
         select(veh_supertype,year, Emissions)
       
     ) %>%
@@ -972,7 +978,7 @@ baseline_ghg_forecast <- reactive({
                            rvs$Baseline$horizon_year_2,
                            rvs$Baseline$horizon_year_3)) %>%
         mutate(veh_supertype = "Freight Rail") %>%
-        mutate(Emissions = MT_CO2e_direct)%>% 
+        mutate(Emissions = MT_CO2e_direct*use_rr)%>% 
         select(veh_supertype,year, Emissions)
     ) %>% rbind(
       construction_and_maintenance()%>%
@@ -987,21 +993,18 @@ baseline_ghg_forecast <- reactive({
     pivot_wider(names_from= year, values_from = Emissions)
  
   
-  if (input$include_rail == '0'){
-    temp[temp$veh_supertype %in% c("Passenger Rail", "Freight Rail"), 2:ncol(temp)] <- 0
-  } else {
-    temp <- temp
-  }
-  
  return(temp)
 })
 
 baseline_ghg_forecast_all_years <- reactive({
-  use_e = rvs$Baseline$include_electricity %>% as.numeric()
-  use_up = rvs$Baseline$include_upstream_fuels %>% as.numeric()
-  #Em_OnRoad_Base_up()
-  #public_transit_emissions()
-  #passenger_rail_emissions()
+  
+  use_e = rvs$Baseline$include_electricity# %>% as.numeric()
+  use_up = rvs$Baseline$include_upstream_fuels# %>% as.numeric()
+  use_rr = rvs$Baseline$include_rail
+  if(use_e %in% c("TRUE","1","Yes","YES")){use_e <- 1} else {use_e <- 0}
+  if(use_up %in% c("TRUE","1","Yes","YES")){use_up <- 1} else {use_up <- 0}
+  if(use_rr %in% c("TRUE","1","Yes","YES")){use_rr <- 1} else {use_rr <- 0}
+  
   
   temp<- Em_OnRoad_Base_up() %>%
     #filter(year %in% c(2021, 
@@ -1031,7 +1034,7 @@ baseline_ghg_forecast_all_years <- reactive({
         #                   rvs$Baseline$horizon_year_2,
         #                   rvs$Baseline$horizon_year_3)) %>%
         mutate(veh_supertype = "Passenger Rail") %>%
-        mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity)%>% 
+        mutate(Emissions = (MT_CO2e_direct + use_e*MT_CO2e_electricity)*use_rr)%>% 
         select(veh_supertype,year, Emissions)
       
     ) %>%
@@ -1043,7 +1046,7 @@ baseline_ghg_forecast_all_years <- reactive({
         #                   rvs$Baseline$horizon_year_2,
         #                   rvs$Baseline$horizon_year_3)) %>%
         mutate(veh_supertype = "Freight Rail") %>%
-        mutate(Emissions = MT_CO2e_direct)%>% 
+        mutate(Emissions = (MT_CO2e_direct)*use_rr)%>% 
         select(veh_supertype,year, Emissions)
     ) %>% rbind(
       construction_and_maintenance()%>%
@@ -1197,7 +1200,7 @@ EmRate_Electric_MDHD <- reactive({
 # Outputs ---------------------------------------------------------------------
 scenario_summary_results <- reactive({    #req('')
   #req(reactive_scenario())
-  #browser()
+  browser()
   base_year <- rvs$Baseline$base_year
   
   dt <- baseline_ghg_forecast()
@@ -1205,7 +1208,7 @@ scenario_summary_results <- reactive({    #req('')
   
   dt_emissions_base <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
     #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
-    summarise(across(where(is.numeric),sum)) %>%
+    summarise(across(where(is.numeric),~sum(.x,na.rm = T))) %>%
     pivot_longer(cols = everything(), names_to = "year") %>%
     mutate(Scenario = "Baseline")
   
@@ -1235,8 +1238,8 @@ scenario_summary_results <- reactive({    #req('')
   
   scen_co2 <- strategy_temp %>% mutate(year = as.character(year)) %>% 
     group_by(year) %>%
-    summarise(Scenario1 = sum(total_change_MTCO2*Scenario1),
-              Scenario2 = sum(total_change_MTCO2*Scenario2)) %>%
+    summarise(Scenario1 = sum(total_change_MTCO2*Scenario1,na.rm = T),
+              Scenario2 = sum(total_change_MTCO2*Scenario2,na.rm = T)) %>%
     pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario") #%>%
     #left_join(dt_emissions_base %>% rename(add = value) %>% select(-Scenario), by = "year") %>%
     #mutate(value = value + add) %>% 
