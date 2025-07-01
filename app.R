@@ -5404,7 +5404,7 @@ server <- function(input, output, session) {
   output$baseline_outputs <- renderDT({
     #browser()
     req(baseline_ghg_forecast())
-    browser()
+    #browser()
     dt <- baseline_ghg_forecast()
     
     dt_onroad <- dt %>% ungroup() %>% # select(-veh_supertype) %>% View()

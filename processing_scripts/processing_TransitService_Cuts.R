@@ -8,7 +8,6 @@ output_transitservice_cuts <- reactive({
   # req(rvs)
   # req(CO2e_Category_Averages())
   # req(Fuel_Factors_Weighted())
-  
   # get the follow values from the Fuel_Factors_Revision,
   fuelconv_ditoga <- Fuel_Factors_Revision$fuel_conversion[Fuel_Factors_Revision$veh_subtype == 'Diesel ICE' & Fuel_Factors_Revision$veh_type == 'Medium Duty Trucks']
   fuelfact_disblend <- Fuel_Factors_Revision$fuel_carbon_content[Fuel_Factors_Revision$veh_subtype == 'Diesel ICE' & Fuel_Factors_Revision$veh_type == 'Medium Duty Trucks']
@@ -192,12 +191,13 @@ cost_output_transitservice_cuts <- reactive({
     filter(table != 'Fleet Electrification') %>%
     select(-'category',-'table_no_ui', -contains("total_"), - 'VOMS', -'unit',-'year',-'merge_col')
   
+  if(rvs$Baseline$land_use_factor == 1){lu_factor <- rvs$Assumptions[rvs$Assumptions$transit_category == "Land Use Multiplier" & !is.na(rvs$Assumptions$transit_category),"value"][[1]]} else {lu_factor =1}
   
   output_transitservice_cost <- transitservice_base %>%
     mutate(allyear_emrate = ifelse(allyear_emrate != 0, allyear_emrate, onroad_elect_emrate)) %>%
     mutate(total_change_gGHG = avg_vrm * allyear_emrate + (avg_vrm * pax_mi_fact * mode_fact * -CO2e_millions),
-           total_change_VMT = ifelse(grepl("Rail",transit_mode), - avg_vrm * mode_fact * pax_mi_fact,
-                                     - avg_vrm * mode_fact * pax_mi_fact + avg_vrm),
+           total_change_VMT = ifelse(grepl("Rail",transit_mode), - avg_vrm * mode_fact * pax_mi_fact * lu_factor,
+                                     - avg_vrm * mode_fact * pax_mi_fact * lu_factor + avg_vrm),
            total_change_gnox = case_when(fuel_type == 'CNG' ~ -avg_vrm * mode_fact * pax_mi_fact * 
                                            fuel_factorNox * base_impf +(avg_vrm * fuel_factorCNGbus_NOX),
                                          fuel_type == 'Electric' ~ -avg_vrm * mode_fact * pax_mi_fact * fuel_factorNox * base_impf,
