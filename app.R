@@ -1,4 +1,4 @@
-#library(shiny)
+library(shiny)
 library(bslib)
 library(tidyverse)
 library(readxl)
@@ -674,7 +674,11 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 6 | Public Transportation: Rail",
-                                         HTML("This category represents addition of any <b>new rail vehicles operating in maximum service (VOMS)</b>. This category represents addition of any new rail vehicles operating in maximum service (VOMS), including service on light rail or streetcar lines, heavy rail, and commuter rail.",),
+                                         HTML("This category represents addition of any 
+                                              <b>new rail vehicles operating in maximum 
+                                              service (VOMS)</b>, including service on 
+                                              light rail or streetcar lines, heavy 
+                                              rail, and commuter rail.",),
 
                                        ),
                                        open = TRUE
@@ -831,7 +835,12 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 13 | Freight Intermodal Facilities",
-                                         HTML("This category represents annual growth rate of freight rail, the energy intensity as measured in British Thermal Units (BTU) per ton-mile, and the change in annual VMT or ton-miles per unit of investment."),
+                                         HTML("This category represents the assumed 
+                                         annual growth rate 
+                                              of freight rail, the energy intensity as 
+                                              measured in British Thermal Units (BTU) 
+                                              per ton-mile, and the change in annual 
+                                              VMT or ton-miles per unit of investment."),
                                        ),
                                        open = TRUE
                                      ),
@@ -853,7 +862,9 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 14 | Roadway Expansion",
-                                         HTML("This category represents addition of any <b>new lane-miles of roadways, based  on the facility type of the roadway and the area type of the facility.</b>"),
+                                         HTML("This category represents addition of any <b>new lane-miles of roadways,</b> 
+                                              based  on the facility type of the roadway 
+                                              and the area type of the facility."),
                                        ),
                                        open = TRUE
                                      ),
@@ -957,7 +968,7 @@ and potential applications.<br><br>
                                      actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
                                      actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")),
                             fluidRow( class = "budget-inputs",
-                              numericInput("funding_start_year",
+                              numericInput("budget_start_year",
                                            HTML(paste('Funding Start Year: ',
                                                       as.character(tags$i(class = "fa fa-info-circle", 
                                                                           title = "The first year of spending.")),
@@ -968,7 +979,7 @@ and potential applications.<br><br>
                                            max = 2050,
                                            step = 1
                               ),
-                              numericInput("funding_years",
+                              numericInput("budget_years_covered",
                                            HTML(paste('Total Years Covered: ',
                                                       as.character(tags$i(class = "fa fa-info-circle", 
                                                                           title = "The total years over which spending occurs.")),
@@ -981,29 +992,20 @@ and potential applications.<br><br>
                               ),
                               
                               # Adrienne this needs to be dynamic - values need to update based on years
-                              numericInput("total_budget",
-                                           HTML(paste('Total Budget ($M) for 2026-2030:',
-                                                      as.character(tags$i(class = "fa fa-info-circle", 
-                                                                          title = "Millions of dollars in spending over the entire period.")),
+                              #uiOutput("budget_range"),
+
+#                              could this be some kind of floating widget?
+                              numericInput("budget_total",
+                                           HTML(paste('Allocated Budget: ',
+                                                      as.character(tags$i(class = "fa fa-info-circle",
+                                                                          title = "This number should be equal to 100.")),
                                                       sep = " ")
                                            ),
-                                           value = 200,
-                                           min = 1,
-                                           max = 10000,
+                                           value = 100,
+                                           min = 90,
+                                           max = 100,
                                            step = 1
                               ),
-                              # could this be some kind of floating widget?
-                              # numericInput("allocated_budget",
-                              #              HTML(paste('Allocated Budget: ',
-                              #                         as.character(tags$i(class = "fa fa-info-circle", 
-                              #                                             title = "This number should be equal to 100.")),
-                              #                         sep = " ")
-                              #              ),
-                              #              value = 100,
-                              #              min = 90,
-                              #              max = 100,
-                              #              step = 1
-                              # ),
                             ## FUNDING SUMMARY
                             
                             ),
@@ -1429,7 +1431,8 @@ and potential applications.<br><br>
                               the <b>cost inputs</b> for the project categories 
                               shown below. Please click on the different fields 
                               to overwrite the default values with any custom 
-                              values provided by the user.")),
+                              values provided by the user.<br>
+                                          <br>")),
                             
                             # bike ped costs
                             fluidRow(
@@ -2306,80 +2309,80 @@ and potential applications.<br><br>
                               p("All results are reported in terms of annual change per $M investment."),
                               fluidRow( class = 'cost-table search',
                                         h3("Bicycle & Pedestrian"),
-                                        p(""),
                                         DT::dataTableOutput("bikeped_costs_outputs_tbl")
+                                        # AH to remove the search box here
                               )
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Transit: Increased Fixed Route Service"),
                                       p(""),
+                                      h3("Transit: Increased Fixed Route Service"),
                                       DT::dataTableOutput("transit_fixed_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Transit: Increased Demand Response Service"),
                                       p(""),
+                                      h3("Transit: Increased Demand Response Service"),
                                       DT::dataTableOutput("transit_dr_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Public Transportation: Bus Priority Treatment"),
                                       p(""),
+                                      h3("Public Transportation: Bus Priority Treatment"),
                                       DT::dataTableOutput("pub_trans_priority_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Transit: Fleet Electrification"),
                                       p(""),
+                                      h3("Transit: Fleet Electrification"),
                                       DT::dataTableOutput("transit_zeb_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Public Transportation: Rail"),
                                       p(""),
+                                      h3("Public Transportation: Rail"),
                                       DT::dataTableOutput("pub_trans_rail_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Travel Demand Management"),
                                       p(""),
+                                      h3("Travel Demand Management"),
                                       DT::dataTableOutput("tdm_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Micromobility"),
                                       p(""),
+                                      h3("Micromobility"),
                                       DT::dataTableOutput("micro_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Traffic Operations: Intersections"),
                                       p(""),
+                                      h3("Traffic Operations: Intersections"),
                                       DT::dataTableOutput("traffic_ops_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Medium- and Heavy-Duty Vehicle Replacement (Electrification)"),
                                       p(""),
+                                      h3("Medium- and Heavy-Duty Vehicle Replacement (Electrification)"),
                                       DT::dataTableOutput("mhdev_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Park & Ride"),
                                       p(""),
+                                      h3("Park & Ride"),
                                       DT::dataTableOutput("pnr_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("EV Charging Infrastructure"),
                                       p(""),
+                                      h3("EV Charging Infrastructure"),
                                       DT::dataTableOutput("evsi_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Roadway Expansion"),
                                       p(""),
+                                      h3("Roadway Expansion"),
                                       DT::dataTableOutput("roadway_expand_costs_outputs_tbl")
                             ),
                             # fluidRow( class = 'cost-table',
@@ -2497,8 +2500,14 @@ server <- function(input, output, session) {
          input$vmt_nhs,
          input$ev_baseline_input,
          input$grid_emissions_input,
-         input$land_use_factor)
+         input$land_use_factor,
+         input$budget_start_year,
+         input$budget_years_covered,
+         input$budget_total)
   })
+  
+
+
 
   #page error checker ----------------------------------------------------------
   
@@ -2618,7 +2627,7 @@ server <- function(input, output, session) {
   
   observeEvent(key_inputs_listen(),{
     print("RUNNING: Update rvs$Baseline key inputs")
-    
+    browser()
     rvs$Baseline <- data.frame(state = input$state_input,
                                base_year = input$base_year,
                                horizon_year_1 = input$horizon_year_1,
@@ -2631,11 +2640,19 @@ server <- function(input, output, session) {
                                vmt_forecast = input$vmt_forecast_input,
                                veh_elec_baseline = input$ev_baseline_input,
                                elec_grid_emissions_net_zero = input$grid_emissions_input,
+                               land_use_factor = input$land_use_factor,
                                include_rail = input$include_rail,
-                               land_use_factor = input$land_use_factor
+                               budget_start_year = input$budget_start_year,
+                               budget_years_covered = input$budget_years_covered,
+                               budget_total = input$budget_total
     )
     
-    updateSelectInput(inputId = "pie_graph_year", label = "", choices = c(input$base_year, input$horizon_year_1, input$horizon_year_2, input$horizon_year_3))
+    updateSelectInput(inputId = "pie_graph_year",
+                      label = "",
+                      choices = c(input$base_year,
+                                  input$horizon_year_1,
+                                  input$horizon_year_2,
+                                  input$horizon_year_3))
   })
 
   
@@ -2655,7 +2672,7 @@ server <- function(input, output, session) {
     
     # Assign each table in user_inputs to rv
     
-    ## update baseline page options
+    ## update baseline page options & now budget options
     updateSelectInput(session, "state_input", selected = rvs$Baseline$state)
     updateSelectInput(session, "base_year", selected = rvs$Baseline$base_year)
     updateSelectInput(session, "horizon_year_1", selected = rvs$Baseline$horizon_year_1)
@@ -2669,6 +2686,9 @@ server <- function(input, output, session) {
     updateSelectInput(session, "grid_emissions_input", selected = rvs$Baseline$elec_grid_emissions_net_zero)
     updateSelectInput(session, "land_use_factor", selected = ifelse(rvs$Baseline$land_use_factor == 'Yes', "1", "0"))
     updateSelectInput(session, "include_rail", selected = ifelse(rvs$Baseline$include_rail == 'Yes', "1", "0"))
+    updateSelectInput(session, "budget_start_year", selected = rvs$Baseline$budget_start_year)
+    updateSelectInput(session, "budget_years_covered", selected = rvs$Baseline$budget_years_covered)
+    updateSelectInput(session, "budget_total", selected = rvs$Baseline$budget_total)
     
     
   }, ignoreNULL = F, ignoreInit = F)
@@ -2742,6 +2762,28 @@ server <- function(input, output, session) {
   
   read_static_tables("data/projects.xlsx", projects_names)
   
+  
+
+# Budget Inputs: Render ---------------------------------------------------
+
+
+  observe({
+    req(rvs$Baseline$budget_start_year)
+    req(rvs$Baseline$budget_years_covered)
+    
+    start_year <- rvs$Baseline$budget_start_year
+    end_year <- rvs$Baseline$budget_start_year + rvs$Baseline$budget_years_covered
+    
+    updateNumericInput(
+      inputId = "budget_total",
+      label = HTML(paste0("Total Budget ($M) for ", start_year, " - ", end_year,":"),
+                          as.character(tags$i(class = "fa fa-info-circle",
+                                              title = "Millions of dollars in spending over the entire period.")),
+                          sep = " ")
+      )
+      
+    
+  })
   
   # Project Tables: Render ------------------------------------------------------
   
@@ -3702,7 +3744,7 @@ server <- function(input, output, session) {
   observeEvent(input$bikeped_budget_tbl_cell_edit, {
     req(rvs$Budget)
     #print('here')
-    browser()
+    #browser()
     rvs$Budget[rvs$Budget$table_no_ui == 1,] <- reshaping_budget(input$bikeped_budget_tbl_cell_edit,
                                                                         rvs$Budget,
                                                                         tbl_no = 1,
@@ -3924,10 +3966,10 @@ server <- function(input, output, session) {
                                         !is.na(land_use)&land_use == "Land Use Incentives"~1000000,
                                         TRUE ~ cost_parameter)) #|> mutate(value = 1)
     #start <- input$horizon_year_1
-    #total <- input$total_budget
-    start <- input$funding_start_year
-    end <- start + input$funding_years
-    total <- input$total_budget*1000000
+    #total <- input$budget_total
+    start <- input$budget_start_year
+    end <- start + input$budget_years_covered
+    total <- input$budget_total*1000000
     total_years <- sum(c(start:end))
     horizon_year_1_cnt <- sum(c(start:end) < input$horizon_year_1)
     horizon_year_2_cnt <- sum(c(start:end) < input$horizon_year_2) - horizon_year_1_cnt
@@ -3973,10 +4015,10 @@ server <- function(input, output, session) {
                                         TRUE ~ cost_parameter)) |> 
       select(-value)
     #start <- input$horizon_year_1
-    #total <- input$total_budget
-    #start <- input$funding_start_year
-    #end <- start + input$funding_years
-    total <- input$total_budget*1000000
+    #total <- input$budget_total
+    #start <- input$budget_start_year
+    #end <- start + input$budget_years_covered
+    total <- input$budget_total*1000000
     #total_years <- sum(c(start:end))
     #horizon_year_1_cnt <- sum(c(start:end) < input$horizon_year_1)
     #horizon_year_2_cnt <- sum(c(start:end) < input$horizon_year_2) - horizon_year_1_cnt
@@ -4015,7 +4057,7 @@ server <- function(input, output, session) {
         category == "Travel Demand Management"~"Travel Demand Management",
         category == "Micromobility"~"Micromobility",
         category == "Traffic Operations"~"Traffic Operations",
-        category == "Medium- and Heavy-Duty Vehicle Replacement"~ "MHDV Replacement",
+        category == "Medium and Heavy Duty Vehicle Replacement"~ "MHDV Replacement",
         category == "Park and Ride"~"Park and Ride",
         category == "EV Charging Infrastructure"~"Electric Vehicles and Charging Infrastructure",
         category == "Freight Intermodal Facilities" ~ "Freight Intermodal",
@@ -4029,8 +4071,10 @@ server <- function(input, output, session) {
       summarise(perc_allocated = sum(value, na.rm = T)) |>
       add_row(category = "Total","perc_allocated" = total)
     
+
+    
     temp <- left_join(tempf, tempb, by = c("funding_summary" = "category"))
-    temp[,3] <- temp[,4]*input$total_budget
+    temp[,3] <- temp[,4]*input$budget_total
       
     rvs$Funding <- temp
     })
@@ -4046,6 +4090,9 @@ server <- function(input, output, session) {
       rownames = FALSE,
       class = "compact",
       options = list(
+        columnDefs = list(
+          list(orderable = FALSE, targets = "_all")
+        ),
         paging = FALSE,
         dom = "t"
       ),
@@ -5409,7 +5456,7 @@ server <- function(input, output, session) {
   output$baseline_outputs <- renderDT({
     #browser()
     req(baseline_ghg_forecast())
-    #browser()
+
     dt <- baseline_ghg_forecast()
     
     dt_onroad <- dt %>% ungroup() %>% # select(-veh_supertype) %>% View()
@@ -6433,9 +6480,9 @@ server <- function(input, output, session) {
                               grid_em = input$grid_emissions_input,
                               lu = input$land_use_factor,
                               funding_tbl = rvs$Funding,
-                              funding_yr = input$funding_start_year,
-                              funding_dur = input$funding_years,
-                              funding_bgt = input$total_budget
+                              funding_yr = input$budget_start_year,
+                              funding_dur = input$budget_years_covered,
+                              funding_bgt = input$budget_total
                             ),
                             output_format = "pdf_document",
                             output_options = list(
