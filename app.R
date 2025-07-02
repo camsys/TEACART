@@ -816,7 +816,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 12 | EV Charging Infrastructure",
+                                         "Projects 12 | Charging Infrastructure and EV Incentives ",
                                          HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
                    EV charging ports supply electric power for recharging electric vehicles."),
                                        ),
@@ -1305,7 +1305,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 12 | EV Charging Infrastructure ',
+                                         HTML(paste('Budget 12 | Charging Infrastructure and EV Incentives ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on new or expanded EV charging ports.")),
                                                     sep = "")),
@@ -1370,56 +1370,56 @@ and potential applications.<br><br>
                             ),
                             p(),
                             # land use - 15
-                            fluidRow(
-                              column(10,
-                                     accordion(
-                                       accordion_panel(
-                                         HTML(paste('Budget 15 | Land Use ',
-                                                    as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on land use.")),
-                                                    sep = "")),
-                                         HTML("This category represents additional spending 
-                                              toward more <b>compact and transit-oriented, walkable 
-                                              development</b>. Dollars in this category represent 
-                                              incentives for development in walkable, transit-oriented 
-                                              development (TOD) areas."),
-                                       ),
-                                       open = TRUE
-                                     ),
-                              ),
-                              column(2,
-                                     actionButton("reset_land_use_budget_tbl", "Reset Budget 15", class = "btn-custom"),
-                              ),
-                            ),
-                            fluidRow(
-                              DT::dataTableOutput("land_use_budget_tbl")
-                              
-                            ),
-                            p(),
+                            # fluidRow(
+                            #   column(10,
+                            #          accordion(
+                            #            accordion_panel(
+                            #              HTML(paste('Budget 15 | Land Use ',
+                            #                         as.character(tags$i(class = "fa fa-info-circle", 
+                            #                                             title = "Budget spending on land use.")),
+                            #                         sep = "")),
+                            #              HTML("This category represents additional spending 
+                            #                   toward more <b>compact and transit-oriented, walkable 
+                            #                   development</b>. Dollars in this category represent 
+                            #                   incentives for development in walkable, transit-oriented 
+                            #                   development (TOD) areas."),
+                            #            ),
+                            #            open = TRUE
+                            #          ),
+                            #   ),
+                            #   column(2,
+                            #          actionButton("reset_land_use_budget_tbl", "Reset Budget 15", class = "btn-custom"),
+                            #   ),
+                            # ),
+                            # fluidRow(
+                            #   DT::dataTableOutput("land_use_budget_tbl")
+                            #   
+                            # ),
+                            # p(),
 
                             # roadway resurfacing - 16
-                            fluidRow(
-                              column(10,
-                                     accordion(
-                                       accordion_panel(
-                                         HTML(paste('Budget 16 | Roadway Resurfacing ',
-                                                    as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on roadway resurfacing.")),
-                                                    sep = "")),
-                                         HTML("This category includes spending to <b>reduce surface roughness 
-                                              and decrease rolling resistance on roadways.</b>"),
-                                       ),
-                                       open = TRUE
-                                     ),
-                              ),
-                              column(2,
-                                     actionButton("reset_resurfacing_budget_tbl", "Reset Budget 16", class = "btn-custom"),
-                              ),
-                            ),
-                            fluidRow(
-                              DT::dataTableOutput("resurfacing_budget_tbl")
-                              
-                            ),
+                            # fluidRow(
+                            #   column(10,
+                            #          accordion(
+                            #            accordion_panel(
+                            #              HTML(paste('Budget 16 | Roadway Resurfacing ',
+                            #                         as.character(tags$i(class = "fa fa-info-circle", 
+                            #                                             title = "Budget spending on roadway resurfacing.")),
+                            #                         sep = "")),
+                            #              HTML("This category includes spending to <b>reduce surface roughness 
+                            #                   and decrease rolling resistance on roadways.</b>"),
+                            #            ),
+                            #            open = TRUE
+                            #          ),
+                            #   ),
+                            #   column(2,
+                            #          actionButton("reset_resurfacing_budget_tbl", "Reset Budget 16", class = "btn-custom"),
+                            #   ),
+                            # ),
+                            # fluidRow(
+                            #   DT::dataTableOutput("resurfacing_budget_tbl")
+                            #   
+                            # ),
                             p(),
                             
                   ),
@@ -4086,7 +4086,6 @@ server <- function(input, output, session) {
     
     datatable(
       formatted_funding,
-      rownames = FALSE,
       class = "compact",
       options = list(
         columnDefs = list(
@@ -4095,6 +4094,7 @@ server <- function(input, output, session) {
         paging = FALSE,
         dom = "t"
       ),
+      rownames = TRUE,
       callback = JS("
                   table.on('draw', function(){
                   table.columns([0,1,2,3]).nodes().flatten().to$().addClass('no-click');
