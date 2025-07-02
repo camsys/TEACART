@@ -727,6 +727,7 @@ passenger_rail_emissions <- reactive({
         lr_em_electricity*(rvs$Advanced$value[rvs$Advanced$table_no_ui == 4&rvs$Advanced$mode_service == "Light Rail"&rvs$Advanced$unit == "energy_source"]=="Electric"),
     ) %>%
     select(year,MT_CO2e_direct,MT_CO2e_electricity)
+  
   return(temp)
 })
 

@@ -56,7 +56,7 @@ reshaping_budget <- function(user_data,
                              col1,
                              col2 = NA,
                              col3 = NA){
-  #browser()
+  browser()
   no_row =  nrow(user_data)/length(unique(user_data$col))
   modified_data <- data.frame(matrix(nrow = no_row))
   for (i in 1:length(unique(user_data$col))) {
@@ -68,17 +68,17 @@ reshaping_budget <- function(user_data,
   }
   
   if(length(unique(user_data$col)) == 4){ # when there is only one str field
-    y_names = c('var2','unit','category')
-    x_names = c(col1,'unit','category')
+    y_names = c('var2')#,'unit','category')
+    x_names = c(col1)#,'unit','category')
   }else if (length(unique(user_data$col)) == 5) { # specifically for tbl9, unit is needed for join. 
-    y_names = c('var2','var3','unit','category')
-    x_names = c(col1,col2,'unit','category')
+    y_names = c('var2','var3')#,'unit','category')
+    x_names = c(col1,col2)#,'unit','category')
   }else if(!is.na(col3)){ # when three columns are needed for joining
-    y_names = c('var2','var3','var4','unit','category')
-    x_names = c(col1,col2,col3,'unit','category')
+    y_names = c('var2','var3','var4')#,'unit','category')
+    x_names = c(col1,col2,col3)#,'unit','category')
   } else{ # all other table can be proper joined by 2 common fields.
-    y_names = c('unit','category')
-    x_names = c('unit','category')
+    y_names = c()#c('unit','category')
+    x_names = c()#c('unit','category')
   }
   if ("unit" %in% names(rvs)){
     modified_data <- modified_data  %>%

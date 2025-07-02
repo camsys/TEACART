@@ -16,7 +16,7 @@ render_custom_datatable <- function(#input_reactives,
                                     currency_rows,
                                     decimal_rows,
                                     pivot_col = c()) {
-  #if(table_number == 4){browser()}
+  if(is_budget_table & table_number == 1){browser()}
 
   req(input$base_year)
   req(input$horizon_year_1)
@@ -98,6 +98,18 @@ render_custom_datatable <- function(#input_reactives,
       # browser()
     } 
     
+    if(is_budget_table){
+      reshaped_table <- data_reactive  %>%
+        filter(table_no_ui == table_number) %>% 
+        conditionally_transform() %>% 
+        ungroup() %>%
+        select(where(select_fun)) %>% #NOTE: This will delete columns with NAs so if you send it empty data watch out
+        left_join(references, by = c("unit" = "field")) %>%
+        mutate(unit = description) %>%
+        select(-description,-category,-unit) %>% #NOTE: this is where we remove the category and unit field easy to add back
+        #mutate(unit = map_chr(unit, ~ references_vector[.x] %||% .x)) %>%
+        rename(any_of(references_vector))
+    }
     #browser()
     
     
