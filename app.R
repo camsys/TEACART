@@ -3968,7 +3968,8 @@ server <- function(input, output, session) {
   #BUDGET - PROJECT IO --------------------------------------------------
   observeEvent(input$fill_projects_bttn,{
     #browser()
-    temp_budget <- rvs$Budget
+    temp_budget <- rvs$Budget |> 
+      mutate(value = value/100)
     temp_budget$table_no_ui_revised = as.character(temp_budget$table_no_ui_revised)
     
     temp_costs <- rvs$Costs 
@@ -4016,7 +4017,8 @@ server <- function(input, output, session) {
 
   observeEvent(input$fill_budget_bttn,{
     #browser()
-    temp_budget <- rvs$Budget
+    temp_budget <- rvs$Budget |> 
+      mutate(value = value/100)
     temp_budget$table_no_ui_revised = as.character(temp_budget$table_no_ui_revised)
     
     temp_costs <- rvs$Costs 
@@ -4122,7 +4124,7 @@ server <- function(input, output, session) {
       ),
       selection = "none"
     ) %>%
-      formatPercentage("% Allocated", digits = 1) %>%
+      formatCurrency("% Allocated", digits = 1, currency = "%", before = F) %>%
       formatCurrency("Million $", digits = 1) %>%
       formatStyle(
         "Million $",

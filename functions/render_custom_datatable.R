@@ -108,11 +108,71 @@ render_custom_datatable <- function(#input_reactives,
         mutate(unit = description) %>%
         select(-description,-category,-unit) %>% #NOTE: this is where we remove the category and unit field easy to add back
         #mutate(unit = map_chr(unit, ~ references_vector[.x] %||% .x)) %>%
+        #mutate(value = value/100)|>
         rename(any_of(references_vector))
-    }
-    #browser()
-    
-    
+      
+      returnDT<-datatable(
+        reshaped_table,
+        rownames = FALSE, # looks like a big edit to change this - will need to tweak the reshaping function and set units for the first column
+        editable = list(target = 'all', disable = list(columns = non_editable_cols)),
+        selection = "none",
+        options = list(
+          pageLength = page_length,
+          paging = FALSE,
+          # scrollX = TRUE,
+          # scrollY = TRUE,
+          columnDefs = list(
+            list(
+              targets = '_all',
+              render = DT::JS(
+                sprintf(
+                  "function(data, type, row, meta) {
+                  if (type === 'display') {
+                    var commaRows = [%s];
+                    var percentRows = [%s];\
+                    var currencyRows = [%s];
+                    var decimalRows = [%s];
+                
+                    var formatter = null;
+                    if (commaRows.includes(meta.row)) {
+                      formatter = function(d) { return Number(d).toLocaleString('en-US'); };
+                    }
+                    if (percentRows.includes(meta.row)) {
+                      formatter = function(d) { return (Number(d) * 100).toFixed(2) + '%%'; };
+                    }
+                                        if (percentRows.includes(meta.row)) {
+                      formatter = function(d) { return (Number(d)).toFixed(2) + '%%'; };
+                    }
+                    if (currencyRows.includes(meta.row)) {
+                      formatter = function(d) { return '$' + Number(d).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+                    }
+                    if (decimalRows.includes(meta.row)) {
+                      formatter = function(d) { return Number(d).toLocaleString('en-US', {maximumFractionDigits: 2}); };
+                    }
+                    
+                //console.log('the data: ' + data)
+                //console.log('the type: '+ type)
+                //console.log('the row: ' + row)
+                //console.log('the meta: ' + meta)
+                //console.log('the formatter' + formatter)
+                
+                
+                    return formatter && !isNaN(data) && data !== null && data !== '' ? formatter(data) : data;
+                  }
+                  return data;
+                }",
+                  paste(comma_rows, collapse = ", "), 
+                  paste(percent_rows, collapse = ", "),
+                  paste(currency_rows, collapse = ", "),
+                  paste(decimal_rows, collapse = ", ")
+                )
+              )
+            )
+          )
+        )
+      )  |> formatCurrency("Value",digits = 0, currency = "%", before = F)
+      
+    } else {  
 
     returnDT<-datatable(
       reshaped_table,
@@ -170,7 +230,8 @@ render_custom_datatable <- function(#input_reactives,
           )
         )
       )
-    )  
+    )
+    }
     #print('fin')
     return(returnDT)
 }
