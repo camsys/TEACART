@@ -33,7 +33,7 @@ read_user_inputs_excel <- function(filename){
 
 # used to read in reactive values (rvs)
 read_user_inputs_version2 <- function(filename){
-  
+  #browser()
   Baseline <- read_excel(path = filename, sheet = "Baseline") %>% as.vector()
   Costs <- read_excel(path = filename, sheet = "Costs", col_types = c(rep("text",13),"numeric"))
   Budget <- read_excel(path = filename, sheet = "Budget", col_types = c(rep("text",14),"numeric"))
