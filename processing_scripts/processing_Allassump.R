@@ -175,19 +175,19 @@ all_costs <- reactive({
      col_sel = c(),
      proj_life = 30,
      style ='summary')
-   browser()
-   transit_cuts<- cost_function(
-     ini_cost_table =NA,
-     output_table = cost_output_transitservice_cuts(),
-     col_sel = c(),
-     proj_life = 12,
-     style ='summary')
-   land_use<- cost_function(
-     ini_cost_table = NA,
-     output_table = cost_output_land_use(),
-     col_sel = c(),
-     proj_life = NA,
-     style ='summary')
+   #browser()
+   # transit_cuts<- cost_function(
+   #   ini_cost_table =NA,
+   #   output_table = cost_output_transitservice_cuts(),
+   #   col_sel = c(),
+   #   proj_life = 12,
+   #   style ='summary')
+   # land_use<- cost_function(
+   #   ini_cost_table = NA,
+   #   output_table = cost_output_land_use(),
+   #   col_sel = c(),
+   #   proj_life = NA,
+   #   style ='summary')
    roadway_resurf<- cost_function(
      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==15,],
      output_table = cost_output_roadway_resurf(),
@@ -209,8 +209,8 @@ all_costs <- reactive({
                      evsi=evsi,
                      roadway=roadway,
                      intermodal=intermodal,
-                     transit_cuts = transit_cuts,
-                     land_use = land_use,
+                     #transit_cuts = transit_cuts,
+                     #land_use = land_use,
                      roadway_resurf = roadway_resurf)
    return(all_costs)
        })

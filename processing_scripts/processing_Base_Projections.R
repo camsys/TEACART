@@ -1200,7 +1200,7 @@ EmRate_Electric_MDHD <- reactive({
 # Outputs ---------------------------------------------------------------------
 scenario_summary_results <- reactive({    #req('')
   #req(reactive_scenario())
-  browser()
+  #browser()
   base_year <- rvs$Baseline$base_year
   
   dt <- baseline_ghg_forecast()
@@ -1232,7 +1232,7 @@ scenario_summary_results <- reactive({    #req('')
   base_year_4_VMT <- dt_VMT_base$value[dt_VMT_base$year == rvs$Baseline$horizon_year_3]
   
   scen_select <-   reactive_scenario() 
-  
+ # scen_select |> mutate(`Grouped Projects` = ifelse(`Grouped Projects` == "Park-and-Ride"),"Park and Ride", `Grouped Projects`))
   strategy_temp <- scenario_sum() %>% left_join(scen_select, by = c("Strategy" = "Grouped Projects")) %>% 
     select('year', Strategy,Scenario1, Scenario2, total_newtrips, total_change_mtnox, total_change_pm25, total_change_VMT, total_change_MTCO2)
   
@@ -1247,14 +1247,14 @@ scenario_summary_results <- reactive({    #req('')
   
   scen_VMT <- strategy_temp %>%
     group_by(year) %>%
-    summarise(Scenario1 = sum(total_change_VMT*Scenario1)/1000000,
-              Scenario2 = sum(total_change_VMT*Scenario2)/1000000) %>%
+    summarise(Scenario1 = sum(total_change_VMT*Scenario1,na.rm=T)/1000000,
+              Scenario2 = sum(total_change_VMT*Scenario2,na.rm=T)/1000000) %>%
     pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")
   
   scen_NOX <- strategy_temp %>%
     group_by(year) %>%
-    summarise(Scenario1 = sum(total_change_mtnox*Scenario1),
-              Scenario2 = sum(total_change_mtnox*Scenario2)) %>%
+    summarise(Scenario1 = sum(total_change_mtnox*Scenario1,na.rm=T),
+              Scenario2 = sum(total_change_mtnox*Scenario2,na.rm=T)) %>%
     pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")%>% 
     pivot_wider(names_from= year, values_from = value)  %>%
     mutate(table_title = "NOx Reduction (MT)")
@@ -1263,8 +1263,8 @@ scenario_summary_results <- reactive({    #req('')
   
   scen_PM25 <- strategy_temp %>%
     group_by(year) %>%
-    summarise(Scenario1 = sum(total_change_pm25*Scenario1),
-              Scenario2 = sum(total_change_pm25*Scenario2)) %>%
+    summarise(Scenario1 = sum(total_change_pm25*Scenario1,na.rm=T),
+              Scenario2 = sum(total_change_pm25*Scenario2,na.rm=T)) %>%
     pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")%>% 
     pivot_wider(names_from= year, values_from = value)  %>%
     mutate(table_title = "PM2.5 Reduction (MT)")
@@ -1273,8 +1273,8 @@ scenario_summary_results <- reactive({    #req('')
   
   scen_NewTrips <- strategy_temp %>%
     group_by(year) %>%
-    summarise(Scenario1 = sum(total_newtrips*Scenario1),
-              Scenario2 = sum(total_newtrips*Scenario2)) %>%
+    summarise(Scenario1 = sum(total_newtrips*Scenario1,na.rm=T),
+              Scenario2 = sum(total_newtrips*Scenario2,na.rm=T)) %>%
     pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")%>% 
     pivot_wider(names_from= year, values_from = value)  %>% 
     mutate(table_title = "New Daily Active Trips")
