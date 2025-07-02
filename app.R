@@ -57,6 +57,10 @@ ui <- function(request) {
     # #a0cf66 is a georgetown color but intense - color below is a milder variation
     tags$head(
       tags$style(HTML("
+            .no-click {
+            pointer-events: none;
+            background-color: #f9f9f9;
+            }
             .accordion-button.collapsed {
                 background-color: #e3ebd5;
             }
@@ -991,10 +995,6 @@ and potential applications.<br><br>
                                            step = 1
                               ),
                               
-                              # Adrienne this needs to be dynamic - values need to update based on years
-                              #uiOutput("budget_range"),
-
-#                              could this be some kind of floating widget?
                               numericInput("budget_total",
                                            HTML(paste('Allocated Budget: ',
                                                       as.character(tags$i(class = "fa fa-info-circle",
@@ -4095,6 +4095,11 @@ server <- function(input, output, session) {
         paging = FALSE,
         dom = "t"
       ),
+      callback = JS("
+                  table.on('draw', function(){
+                  table.columns([0,1,2,3]).nodes().flatten().to$().addClass('no-click');
+                  });
+                  "),
       editable = list(
         target = 'all',
         disable = list(columns = 0:3)
