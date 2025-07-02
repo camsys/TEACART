@@ -1007,11 +1007,12 @@ and potential applications.<br><br>
                             
                             ),
                             fluidRow(
-                              DT::dataTableOutput("funding_summary_tbl")
+                              DT::dataTableOutput("funding_summary_tbl"),
+                              p(),
+                              p(),
                               
                             ),
-                            p(),
-                            p(),
+
                             
                             
                             ## BUDGET TABLES
@@ -1369,7 +1370,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 14 | Roadway expansion ',
+                                         HTML(paste('Budget 14 | Roadway Expansion ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on roadway expansion.")),
                                                     sep = "")),
@@ -4062,16 +4063,17 @@ server <- function(input, output, session) {
     tempb<-rvs$Budget |> 
       mutate(category = case_when(
         category == "Bicycle and Pedestrian" ~ "Bicycle and Pedestrian Lane Miles of New Infrastructure",
-        category == "EV Charging Infrastructure" ~ "Electric Vehicles and Charging Infrastructure",
-        category == "Transit: Increased Fixed Route Service (VOMS)" ~ "Transit: Increased Fixed Route Service",
-        category == "Transit: Increased Demand Response Service (VOMS)" ~ "Transit: Increased Demand Response Service",
-        category == "Fleet Electrification" ~ "Transit: Fleet Electrification",
+        category == "Transit: Increased Fixed Route Service" ~ "Transit: Increased Fixed Route Service",
+        category == "Transit: Increased Demand Response Service" ~ "Transit: Increased Demand Response Service",
+        category == "Transit: Fleet Electrification" ~ "Transit: Fleet Electrification",
+        category == "Bus Priority Treatment" ~ "Bus Priority Treatment",
+        category == "Public Transportation: Rail" ~ "Public Transportation: Rail",
         category == "Travel Demand Management"~"Travel Demand Management",
         category == "Micromobility"~"Micromobility",
         category == "Traffic Operations"~"Traffic Operations",
-        category == "Medium and Heavy Duty Vehicle Replacement"~ "Medium- and Heavy-Duty Vehicle Replacement",
+        category == "Medium- and Heavy-Duty Vehicle Replacement"~ "Medium- and Heavy-Duty Vehicle Replacement",
         category == "Park and Ride"~"Park-and-Ride",
-        category == "EV Charging Infrastructure"~"Charging Infrastructure and EV Incentives",
+        category == "EV Charging Infrastructure" ~ "Charging Infrastructure and EV Incentives",
         category == "Freight Intermodal Facilities" ~ "Freight Intermodal Facilities",
         category == "Roadway expansion" ~ "Roadway Expansion",
         category == "Roadway Resurfacing"~"Roadway Resurfacing",
