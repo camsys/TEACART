@@ -16,7 +16,7 @@ render_custom_datatable <- function(#input_reactives,
                                     currency_rows,
                                     decimal_rows,
                                     pivot_col = c()) {
-  if(is_budget_table & table_number == 1){browser()}
+ #if(is_budget_table & table_number == 1){browser()}
 
   req(input$base_year)
   req(input$horizon_year_1)
