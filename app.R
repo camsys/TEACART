@@ -2522,7 +2522,8 @@ server <- function(input, output, session) {
          input$land_use_factor,
          input$budget_start_year,
          input$budget_years_covered,
-         input$budget_total)
+         input$budget_total,
+         input$include_rail)
   })
   
 
