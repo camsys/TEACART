@@ -1007,10 +1007,13 @@ and potential applications.<br><br>
                             
                             ),
                             fluidRow(
-                              DT::dataTableOutput("funding_summary_tbl")
+                              DT::dataTableOutput("funding_summary_tbl"),
+                              p(),
+                              p(),
                               
                             ),
-                            p(),
+
+                            
                             
                             ## BUDGET TABLES
                             
@@ -1270,7 +1273,7 @@ and potential applications.<br><br>
                                                     sep = "")),
                                          HTML("This category represents spending toward <b>replacement 
                                               of any fossil fuel medium or heavy-duty 
-                                              vehicles with electric vehicles</b>,expressed as a 
+                                              vehicles with electric vehicles</b>, expressed as a 
                                               percentage (%) of the total budget (shown at the 
                                               top of this tab). Any new vehicles are assumed to 
                                               be replaced again by the new technology type at the end of its life cycle."),
@@ -1319,7 +1322,13 @@ and potential applications.<br><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on new or expanded EV charging ports.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>new or expanded EV charging ports</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab). EV charging ports supply electric power for recharging electric vehicles."),
+                                         HTML("This category represents spending on <b>new 
+                                              or expanded EV charging ports</b>, expressed 
+                                              as a percentage (%) of the total budget (shown 
+                                              at the top of this tab). EV charging ports 
+                                              supply electric power for recharging 
+                                              electric vehicles. EV incentives 
+                                              offset the cost of EVs for purchasers."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1361,7 +1370,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 14 | Roadway expansion ',
+                                         HTML(paste('Budget 14 | Roadway Expansion ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on roadway expansion.")),
                                                     sep = "")),
@@ -1407,29 +1416,29 @@ and potential applications.<br><br>
                             # ),
                             # p(),
 
-                            # roadway resurfacing - 16
-                            # fluidRow(
-                            #   column(10,
-                            #          accordion(
-                            #            accordion_panel(
-                            #              HTML(paste('Budget 16 | Roadway Resurfacing ',
-                            #                         as.character(tags$i(class = "fa fa-info-circle", 
-                            #                                             title = "Budget spending on roadway resurfacing.")),
-                            #                         sep = "")),
-                            #              HTML("This category includes spending to <b>reduce surface roughness 
-                            #                   and decrease rolling resistance on roadways,</b> expressed as a percentage (%) of the total budget (shown at the top of this tab)."),
-                            #            ),
-                            #            open = TRUE
-                            #          ),
-                            #   ),
-                            #   column(2,
-                            #          actionButton("reset_resurfacing_budget_tbl", "Reset Budget 16", class = "btn-custom"),
-                            #   ),
-                            # ),
-                            # fluidRow(
-                            #   DT::dataTableOutput("resurfacing_budget_tbl")
-                            #   
-                            # ),
+#                           roadway resurfacing - 15
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 15 | Roadway Resurfacing ',
+                                                    as.character(tags$i(class = "fa fa-info-circle",
+                                                                        title = "Budget spending on roadway resurfacing.")),
+                                                    sep = "")),
+                                         HTML("This category includes spending to <b>reduce surface roughness
+                                              and decrease rolling resistance on roadways,</b> expressed as a percentage (%) of the total budget (shown at the top of this tab)."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_resurfacing_budget_tbl", "Reset Budget 15", class = "btn-custom"),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("resurfacing_budget_tbl")
+
+                            ),
                             p(),
                             
                   ),
@@ -2513,7 +2522,8 @@ server <- function(input, output, session) {
          input$land_use_factor,
          input$budget_start_year,
          input$budget_years_covered,
-         input$budget_total)
+         input$budget_total,
+         input$include_rail)
   })
   
 
@@ -3445,7 +3455,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(0:1),#c(0:3),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3464,7 +3474,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(0:1),#c(0:3),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0),
       pivot_col = c("transit_mode"))
@@ -3484,7 +3494,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(0:1),#c(0:3),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0),
       pivot_col = c("transit_mode"))
@@ -3503,7 +3513,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(0:2),#c(0:4),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3521,7 +3531,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3539,7 +3549,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(0:1),#c(0:3),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0),
       
@@ -3559,7 +3569,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3577,7 +3587,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3595,7 +3605,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(0),#c(0:2),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0),
       pivot_col = c("road_class"))
@@ -3614,7 +3624,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(0:1),#c(0:3),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3632,7 +3642,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3650,7 +3660,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(0),#c(0:2),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3668,7 +3678,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3686,7 +3696,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(0:1),#c(0:3),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3704,7 +3714,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(0),#c(0:2),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3722,7 +3732,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(0:1),#c(0:3),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -3740,7 +3750,7 @@ server <- function(input, output, session) {
       non_editable_cols = c(),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
-      percent_rows = 0:21,
+      percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
   })
@@ -4053,25 +4063,23 @@ server <- function(input, output, session) {
     total <- rvs$Budget$value |> sum(na.rm = T)
     tempb<-rvs$Budget |> 
       mutate(category = case_when(
-        category == "Bicycle and Pedestrian" ~ "Bicycle and Pedestrian",
-        category == "EV Charging Infrastructure" ~ "Electric Vehicles and Charging Infrastructure",
-        table %in% c("Transit: Increased Fixed Route Service (VOMS)",
-                     "Transit: Increased Demand Response Service (VOMS)",
-                     "Public Transportation: Rail (VOMS)",
-                     "Public Transportation: Bus Priority Treatment"
-                        )~"Transit Service Expansion",
-        table %in% c("Fleet Electrification") ~ "Transit Electrification",
+        category == "Bicycle and Pedestrian" ~ "Bicycle and Pedestrian Lane Miles of New Infrastructure",
+        category == "Transit: Increased Fixed Route Service" ~ "Transit: Increased Fixed Route Service",
+        category == "Transit: Increased Demand Response Service" ~ "Transit: Increased Demand Response Service",
+        category == "Transit: Fleet Electrification" ~ "Transit: Fleet Electrification",
+        category == "Bus Priority Treatment" ~ "Bus Priority Treatment",
+        category == "Public Transportation: Rail" ~ "Public Transportation: Rail",
         category == "Travel Demand Management"~"Travel Demand Management",
         category == "Micromobility"~"Micromobility",
         category == "Traffic Operations"~"Traffic Operations",
-        category == "Medium and Heavy Duty Vehicle Replacement"~ "MHDV Replacement",
-        category == "Park and Ride"~"Park and Ride",
-        category == "EV Charging Infrastructure"~"Electric Vehicles and Charging Infrastructure",
-        category == "Freight Intermodal Facilities" ~ "Freight Intermodal",
+        category == "Medium- and Heavy-Duty Vehicle Replacement"~ "Medium- and Heavy-Duty Vehicle Replacement",
+        category == "Park and Ride"~"Park-and-Ride",
+        category == "EV Charging Infrastructure" ~ "Charging Infrastructure and EV Incentives",
+        category == "Freight Intermodal Facilities" ~ "Freight Intermodal Facilities",
         category == "Roadway expansion" ~ "Roadway Expansion",
         category == "Roadway Resurfacing"~"Roadway Resurfacing",
-        category == "Land Use" ~ "Land Use", 
-        category == "Transit Service Cuts" ~ "Transit Service Cuts",
+        # category == "Land Use" ~ "Land Use", 
+        # category == "Transit Service Cuts" ~ "Transit Service Cuts",
         TRUE ~ "zzzERROR")
         ) |> 
       group_by(category) |> 
@@ -6268,7 +6276,7 @@ server <- function(input, output, session) {
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-    browser() #not done
+    #browser() #not done
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     
