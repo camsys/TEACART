@@ -996,15 +996,12 @@ and potential applications.<br><br>
                               ),
                               
                               numericInput("budget_total",
-                                           HTML(paste('Allocated Budget: ',
+                                           HTML(paste0('Allocated Budget: ',
                                                       as.character(tags$i(class = "fa fa-info-circle",
                                                                           title = "This number should be equal to 100.")),
                                                       sep = " ")
                                            ),
-                                           value = 100,
-                                           min = 90,
-                                           max = 100,
-                                           step = 1
+                                           value = 100
                               ),
                             ## FUNDING SUMMARY
                             
@@ -1028,7 +1025,7 @@ and potential applications.<br><br>
                                                                         title = "Budget spending on bike/ped projects.")),
                                                     sep = "")),
                                          HTML("This category represents spending on any <b>two-way miles of new 
-           bicycle or pedestrian facility.</b> The default assumption for these 
+           bicycle or pedestrian facility</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab). The default assumption for these 
            project types is that any new bicycle or pedestrian facility would 
            be two-way. For one-way facilities, please enter half the 
            budget amount."),
@@ -1054,7 +1051,9 @@ and potential applications.<br><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on transit fixed route service.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
+                                         HTML("This category represents spending on <b>new 
+                                         fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a></b>, 
+                                         expressed as a percentage (%) of the total budget (shown at the top of this tab). 
                Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."),
                                        ),
                                        open = TRUE
@@ -1079,7 +1078,8 @@ and potential applications.<br><br>
                                                                         title = "Budget spending on transit demand response service.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>new demand 
-                                         response service vehicles operated in maximum service (VOMS).</b>
+                                         response service vehicles operated in maximum service (VOMS)</b>,
+                                         expressed as a percentage (%) of the total budget (shown at the top of this tab).
                                          Demand response service vehicles include non-fixed route 
                                          services that are initiated by customers and require 
                                          advanced scheduling, such as vehicles provided by public
@@ -1108,9 +1108,11 @@ and potential applications.<br><br>
                                                     sep = "")),
                                          HTML("This category represents spending toward the <b>replacement 
                                          of any fossil-fueled 
-                                              vehicles with an electric vehicle</b>, with the assumption that 
-                                              any new vehicle is again replaced by the new technology type 
-                                              at the end of its life cycle. "),
+                                              vehicles with an electric vehicle</b>,
+                                              expressed as a percentage (%) of the total budget
+                                              (shown at the top of this tab). Any new vehicles are 
+                                              assumed to be replaced again by the 
+                                              new technology type at the end of its life cycle."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1134,7 +1136,9 @@ and potential applications.<br><br>
                                                                         title = "Budget spending on bus priority treatment.")),
                                                     sep = "")),
                                          HTML("This category represents spending on miles 
-                                              of <b>new bus priority treatment.</b> Bus priority 
+                                              of <b>new bus priority treatment</b>, 
+                                              expressed as a percentage (%) of the total 
+                                              budget (shown at the top of this tab). Bus priority 
                                               treatment refers to the improvement of 
                                               transit speed and reliability between 
                                               stops by changing the designation of street 
@@ -1165,7 +1169,7 @@ and potential applications.<br><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on rail projects.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>new rail vehicles operating in maximum service (VOMS).</b>"),
+                                         HTML("This category represents spending on <b>new rail vehicles operating in maximum service (VOMS)</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab)."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1189,7 +1193,7 @@ and potential applications.<br><br>
                                                                         title = "Budget spending on travel demand management.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>employment 
-                                              covered through the TDM Program Outreach.</b> TDM programs 
+                                              covered through the TDM Program Outreach</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab). TDM programs 
                                               are designed to shift travel demand and change traveler behavior, with the goal of reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. "),
                                        ),
                                        open = TRUE
@@ -1213,7 +1217,7 @@ and potential applications.<br><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on micromobility.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>e-bike subsidies</b>. 
+                                         HTML("This category represents spending on <b>e-bike subsidies</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab). 
                                               An e-bike subsidy reimburses part of the cost of an e-bike."),
                                        ),
                                        open = TRUE
@@ -1238,7 +1242,10 @@ and potential applications.<br><br>
                                                                         title = "Budget spending on traffic operations.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>improvements 
-                                              made to traffic operations at intersections</b>, such as new or retimed signals or new traffic-flow roundabouts."),
+                                              made to traffic operations at intersections</b>, 
+                                              expressed as a percentage (%) of the total budget 
+                                              (shown at the top of this tab).
+                                              Examples of such traffic operations include new or retimed signals or new traffic-flow roundabouts."), # Examples of such traffic operations include new or retimed signals or new traffic-flow roundabouts.”
                                        ),
                                        open = TRUE
                                      ),
@@ -1263,7 +1270,10 @@ and potential applications.<br><br>
                                                     sep = "")),
                                          HTML("This category represents spending toward <b>replacement 
                                               of any fossil fuel medium or heavy-duty 
-                                              vehicles with electric vehicles</b>, with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle."),
+                                              vehicles with electric vehicles</b>,expressed as a 
+                                              percentage (%) of the total budget (shown at the 
+                                              top of this tab). Any new vehicles are assumed to 
+                                              be replaced again by the new technology type at the end of its life cycle."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1286,7 +1296,7 @@ and potential applications.<br><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on Park-and-Ride projects.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>new addition or expansion of Park-and-Ride spaces.</b> A Park-and-Ride space allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
+                                         HTML("This category represents spending on <b>new addition or expansion of Park-and-Ride spaces</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab). A Park-and-Ride space allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1309,7 +1319,7 @@ and potential applications.<br><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on new or expanded EV charging ports.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>new or expanded EV charging ports</b>. EV charging ports supply electric power for recharging electric vehicles."),
+                                         HTML("This category represents spending on <b>new or expanded EV charging ports</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab). EV charging ports supply electric power for recharging electric vehicles."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1332,7 +1342,7 @@ and potential applications.<br><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on freight intermodal facilities.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>intermodal freight investments</b>."),
+                                         HTML("This category represents spending on <b>intermodal freight investments</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab)."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1355,7 +1365,7 @@ and potential applications.<br><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on roadway expansion.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>new lane-miles of roadways.</b>"),
+                                         HTML("This category represents spending on <b>new lane-miles of roadways,</b> expressed as a percentage (%) of the total budget (shown at the top of this tab)."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1380,7 +1390,7 @@ and potential applications.<br><br>
                             #                         sep = "")),
                             #              HTML("This category represents additional spending 
                             #                   toward more <b>compact and transit-oriented, walkable 
-                            #                   development</b>. Dollars in this category represent 
+                            #                   development</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab). Dollars in this category represent 
                             #                   incentives for development in walkable, transit-oriented 
                             #                   development (TOD) areas."),
                             #            ),
@@ -1407,7 +1417,7 @@ and potential applications.<br><br>
                             #                                             title = "Budget spending on roadway resurfacing.")),
                             #                         sep = "")),
                             #              HTML("This category includes spending to <b>reduce surface roughness 
-                            #                   and decrease rolling resistance on roadways.</b>"),
+                            #                   and decrease rolling resistance on roadways,</b> expressed as a percentage (%) of the total budget (shown at the top of this tab)."),
                             #            ),
                             #            open = TRUE
                             #          ),
@@ -2776,8 +2786,6 @@ server <- function(input, output, session) {
     updateNumericInput(
       inputId = "budget_total",
       label = HTML(paste0("Total Budget ($M) for ", start_year, " - ", end_year,":"),
-                          as.character(tags$i(class = "fa fa-info-circle",
-                                              title = "Millions of dollars in spending over the entire period.")),
                           sep = " ")
       )
       
