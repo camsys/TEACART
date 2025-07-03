@@ -42,13 +42,13 @@ gasoline_CO2_kg_per_gallon = Fuel_Factors_Baselines$value[Fuel_Factors_Baselines
 diesel_CO2_kg_per_gallon = Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type =="Diesel" & Fuel_Factors_Baselines$units == "fuel_carbon_content"] #9.4 #this is a hu input from Fuel Factors tab
 
 ff_weighted_temp <- Fuel_Factors_Weighted()
-NOx_LDV <- ff_weighted_temp$NOx_g_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
-PM25_LDV_exhaust <-ff_weighted_temp$PM25_exhaust_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
-PM25_LDV_tirebrakes <-ff_weighted_temp$PM25_tires_brakes_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
+NOx_LDV <- ff_weighted_temp$NOx_g_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
+PM25_LDV_exhaust <-ff_weighted_temp$PM25_exhaust_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
+PM25_LDV_tirebrakes <-ff_weighted_temp$PM25_tires_brakes_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
 
 ptco2_temp <- pollutant_t_CO2ratio()
-NOx_CO2_ratio <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Light Duty Vehicles"]
-PM25_CO2_ratio <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Light Duty Vehicles"]
+NOx_CO2_ratio <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Light-Duty Vehicles"]
+PM25_CO2_ratio <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Light-Duty Vehicles"]
 
 #functions ----
 
@@ -62,15 +62,15 @@ temp_output_roundabout <- expand(temp_output_roundabout, year, area_type = c("Ur
 #add percent truck traffic
 temp_output_signal$percent_truck_traffic <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"])
 
-temp_output_signal$light_duty_automobile_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])
-temp_output_signal$medium_heavy_duty_truck_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"])
+temp_output_signal$light_duty_automobile_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])
+temp_output_signal$medium_heavy_duty_truck_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium-/Heavy-Duty Vehicles"])
 
-temp_output_signal$ldv_delay_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])*gasoline_CO2_kg_per_gallon*1000*car_gallons_hour_delay
-temp_output_signal$mhdv_delay_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"])*diesel_CO2_kg_per_gallon*1000*truck_gallons_hour_delay
+temp_output_signal$ldv_delay_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])*gasoline_CO2_kg_per_gallon*1000*car_gallons_hour_delay
+temp_output_signal$mhdv_delay_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium-/Heavy-Duty Vehicles"])*diesel_CO2_kg_per_gallon*1000*truck_gallons_hour_delay
 temp_output_signal<-temp_output_signal %>%
   mutate(road_class_delay_emrate = ldv_delay_emrate*(1-percent_truck_traffic)+mhdv_delay_emrate*percent_truck_traffic)
 
-temp_output_signal$ldv_impf <- sapply(temp_output_signal$year, function(x) temp_em_df$base_impf [temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])
+temp_output_signal$ldv_impf <- sapply(temp_output_signal$year, function(x) temp_em_df$base_impf [temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])
 
 
 temp_output_signal$VMT_elasticity <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"])
@@ -175,13 +175,13 @@ output_cost_OPS <- reactive({
   diesel_CO2_kg_per_gallon = Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type =="Diesel" & Fuel_Factors_Baselines$units == "fuel_carbon_content"] #9.4 #this is a hu input from Fuel Factors tab
   
   ff_weighted_temp <- Fuel_Factors_Weighted()
-  NOx_LDV <- ff_weighted_temp$NOx_g_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
-  PM25_LDV_exhaust <-ff_weighted_temp$PM25_exhaust_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
-  PM25_LDV_tirebrakes <-ff_weighted_temp$PM25_tires_brakes_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
+  NOx_LDV <- ff_weighted_temp$NOx_g_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
+  PM25_LDV_exhaust <-ff_weighted_temp$PM25_exhaust_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
+  PM25_LDV_tirebrakes <-ff_weighted_temp$PM25_tires_brakes_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
   
   ptco2_temp <- pollutant_t_CO2ratio()
-  NOx_CO2_ratio <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Light Duty Vehicles"]
-  PM25_CO2_ratio <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Light Duty Vehicles"]
+  NOx_CO2_ratio <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Light-Duty Vehicles"]
+  PM25_CO2_ratio <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Light-Duty Vehicles"]
   
   #functions ----
   
@@ -195,15 +195,15 @@ output_cost_OPS <- reactive({
   #add percent truck traffic
   temp_output_signal$percent_truck_traffic <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"])
   
-  temp_output_signal$light_duty_automobile_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])
-  temp_output_signal$medium_heavy_duty_truck_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"])
+  temp_output_signal$light_duty_automobile_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])
+  temp_output_signal$medium_heavy_duty_truck_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium-/Heavy-Duty Vehicles"])
   
-  temp_output_signal$ldv_delay_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])*gasoline_CO2_kg_per_gallon*1000*car_gallons_hour_delay
-  temp_output_signal$mhdv_delay_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"])*diesel_CO2_kg_per_gallon*1000*truck_gallons_hour_delay
+  temp_output_signal$ldv_delay_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])*gasoline_CO2_kg_per_gallon*1000*car_gallons_hour_delay
+  temp_output_signal$mhdv_delay_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium-/Heavy-Duty Vehicles"])*diesel_CO2_kg_per_gallon*1000*truck_gallons_hour_delay
   temp_output_signal<-temp_output_signal %>%
     mutate(road_class_delay_emrate = ldv_delay_emrate*(1-percent_truck_traffic)+mhdv_delay_emrate*percent_truck_traffic)
   
-  temp_output_signal$ldv_impf <- sapply(temp_output_signal$year, function(x) temp_em_df$base_impf [temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])
+  temp_output_signal$ldv_impf <- sapply(temp_output_signal$year, function(x) temp_em_df$base_impf [temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])
   
   
   temp_output_signal$VMT_elasticity <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"])

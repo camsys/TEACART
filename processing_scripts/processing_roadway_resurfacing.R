@@ -2,16 +2,16 @@ output_roadway_resurf <- reactive({
   #browser()
   ff_weighted_temp <- Fuel_Factors_Weighted()
   
-  NOx_LDV <- ff_weighted_temp$NOx_g_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
-  PM25_LDV_exhaust <-ff_weighted_temp$PM25_exhaust_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
-  PM25_LDV_tirebrakes <-ff_weighted_temp$PM25_tires_brakes_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
+  NOx_LDV <- ff_weighted_temp$NOx_g_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
+  PM25_LDV_exhaust <-ff_weighted_temp$PM25_exhaust_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
+  PM25_LDV_tirebrakes <-ff_weighted_temp$PM25_tires_brakes_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
   
   
   ptco2_temp <- pollutant_t_CO2ratio()
-  NOx_CO2_ratio <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Light Duty Vehicles"]
-  NOx_CO2_ratio_heavy <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Medium/Heavy Duty Vehicles"]
-  PM25_CO2_ratio <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Light Duty Vehicles"]
-  PM25_CO2_ratio_heavy <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Medium/Heavy Duty Vehicles"]
+  NOx_CO2_ratio <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Light-Duty Vehicles"]
+  NOx_CO2_ratio_heavy <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Medium-/Heavy-Duty Vehicles"]
+  PM25_CO2_ratio <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Light-Duty Vehicles"]
+  PM25_CO2_ratio_heavy <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Medium-/Heavy-Duty Vehicles"]
   
   temp_em_df_sub <- e_emmissions_apportionment() %>% ungroup()
   
@@ -25,8 +25,8 @@ output_roadway_resurf <- reactive({
   ghg_per_m <- value_kg_per_gal*(TIST_Delta_Fuel_Costs/25/Gas_Price*1000)*1000/322.5
   cost_per_lane_mile <- rvs$Costs$value[rvs$Costs$table_no_ui == 15]
   emrate_by_tech <- CO2e_Category_Averages() |> 
-    mutate(veh_pivot = case_when(veh_supertype == "Light Duty Vehicles" ~ "light", 
-                                 veh_supertype == "Medium/Heavy Duty Vehicles" ~ "heavy", 
+    mutate(veh_pivot = case_when(veh_supertype == "Light-Duty Vehicles" ~ "light", 
+                                 veh_supertype == "Medium-/Heavy-Duty Vehicles" ~ "heavy", 
                                  TRUE ~ "oops")) |>
     pivot_wider(names_from = veh_pivot, values_from = CO2e_millions) |> group_by(year) |> 
     summarise(across(where(is.numeric), ~sum(.x, na.rm = T))) |>
@@ -73,16 +73,16 @@ cost_output_roadway_resurf <- reactive({
   #browser()
   ff_weighted_temp <- Fuel_Factors_Weighted()
   
-  NOx_LDV <- ff_weighted_temp$NOx_g_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
-  PM25_LDV_exhaust <-ff_weighted_temp$PM25_exhaust_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
-  PM25_LDV_tirebrakes <-ff_weighted_temp$PM25_tires_brakes_per_veh_mi[ff_weighted_temp$veh_type=="Light Duty Vehicles"]
+  NOx_LDV <- ff_weighted_temp$NOx_g_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
+  PM25_LDV_exhaust <-ff_weighted_temp$PM25_exhaust_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
+  PM25_LDV_tirebrakes <-ff_weighted_temp$PM25_tires_brakes_per_veh_mi[ff_weighted_temp$veh_type=="Light-Duty Vehicles"]
   
   
   ptco2_temp <- pollutant_t_CO2ratio()
-  NOx_CO2_ratio <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Light Duty Vehicles"]
-  NOx_CO2_ratio_heavy <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Medium/Heavy Duty Vehicles"]
-  PM25_CO2_ratio <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Light Duty Vehicles"]
-  PM25_CO2_ratio_heavy <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Medium/Heavy Duty Vehicles"]
+  NOx_CO2_ratio <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Light-Duty Vehicles"]
+  NOx_CO2_ratio_heavy <- ptco2_temp$NOx_CO2_ratio[ptco2_temp$veh_supertype == "Medium-/Heavy-Duty Vehicles"]
+  PM25_CO2_ratio <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Light-Duty Vehicles"]
+  PM25_CO2_ratio_heavy <- ptco2_temp$PM25_CO2_ratio[ptco2_temp$veh_supertype == "Medium-/Heavy-Duty Vehicles"]
   
   temp_em_df_sub <- e_emmissions_apportionment() %>% ungroup()
   
@@ -96,8 +96,8 @@ cost_output_roadway_resurf <- reactive({
   ghg_per_m <- value_kg_per_gal*(TIST_Delta_Fuel_Costs/25/Gas_Price*1000)*1000/322.5
   cost_per_lane_mile <- rvs$Costs$value[rvs$Costs$table_no_ui == 15]
   emrate_by_tech <- CO2e_Category_Averages() |> 
-    mutate(veh_pivot = case_when(veh_supertype == "Light Duty Vehicles" ~ "light", 
-                                 veh_supertype == "Medium/Heavy Duty Vehicles" ~ "heavy", 
+    mutate(veh_pivot = case_when(veh_supertype == "Light-Duty Vehicles" ~ "light", 
+                                 veh_supertype == "Medium-/Heavy-Duty Vehicles" ~ "heavy", 
                                  TRUE ~ "oops")) |>
     pivot_wider(names_from = veh_pivot, values_from = CO2e_millions) |> group_by(year) |> 
     summarise(across(where(is.numeric), ~sum(.x, na.rm = T))) |>
