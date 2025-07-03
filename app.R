@@ -2812,8 +2812,8 @@ server <- function(input, output, session) {
       data_reactive = temp_send,
       table_number = 1,
       non_editable_cols = c(0, 1, 2),
-      page_length = 19,
-      comma_rows = 0:19,
+      page_length = 21,
+      comma_rows = 0:21,
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
