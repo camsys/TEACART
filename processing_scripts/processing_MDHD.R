@@ -71,7 +71,7 @@ mdhd_emrates_all <- reactive({
   
   emrates_school_bus <-
     emrates %>% 
-    filter(veh_type == "Medium Duty Trucks", fuel_type %in% c("Diesel", "EV")) %>%
+    filter(veh_type == "Medium-Duty Trucks", fuel_type %in% c("Diesel", "EV")) %>%
     mutate(veh_type = "School Bus")
   
   bind_rows(emrates, emrates_school_bus)
@@ -79,7 +79,7 @@ mdhd_emrates_all <- reactive({
 
 mdhd_veh_replacement <- reactive({
   rvs$Assumptions %>% #strategy params
-    filter(table == "Medium and Heavy Duty Vehicle Replacement") %>% 
+    filter(table == "Medium- and Heavy-Duty Vehicle Replacement") %>% 
     select(veh_type, unit, value) %>% 
     pivot_wider(names_from = unit, values_from = value)
 })
@@ -90,7 +90,7 @@ output_MDHD <- reactive({
   
   capital_inputs_mdhd <-
     rvs$Projects %>% 
-    filter(table == "Medium and Heavy Duty Vehicle Replacement") %>% 
+    filter(table == "Medium- and Heavy-Duty Vehicle Replacement") %>% 
     select(year, veh_type, fuel_type, unit, value) %>%
     pivot_wider(names_from = unit, values_from = value) %>%
     get_horizon_years(my_rv = rvs)
@@ -140,8 +140,8 @@ cost_effectiveness_MDHD <- reactive({
   mdhd_fuel_factors <-
     Fuel_Factors_Weighted() %>%
     mutate(veh_type = if_else(veh_type == "Bus", "School Bus", veh_type)) %>%
-    filter((veh_type %in% c("Light Duty Trucks", "Medium Duty Trucks")) | 
-             (veh_type %in% c("Heavy Duty Trucks", "School Bus") & veh_subtype == "Diesel")) %>%
+    filter((veh_type %in% c("Light-Duty Trucks", "Medium-Duty Trucks")) | 
+             (veh_type %in% c("Heavy-Duty Trucks", "School Bus") & veh_subtype == "Diesel")) %>%
     select(-veh_subtype)
   
   emrates_mdhd %>%
