@@ -3977,7 +3977,7 @@ server <- function(input, output, session) {
     temp_costs <- temp_costs |> 
       filter(table_no_ui_revised != "-1") |> 
       group_by(table_no_ui_revised) |> 
-      summarise(cost_parameter = sum(value))
+      summarise(cost_parameter = sum(value)) |> ungroup()
     
     temp_join <- left_join(temp_budget,temp_costs) |> 
       mutate(cost_parameter = case_when(!is.na(land_use) ~ 1, 
@@ -3986,20 +3986,20 @@ server <- function(input, output, session) {
     #start <- input$horizon_year_1
     #total <- input$budget_total
     start <- input$budget_start_year
-    end <- start + input$budget_years_covered
+    end <- start + input$budget_years_covered 
     total <- input$budget_total*1000000
-    total_years <- sum(c(start:end))
+    total_years <- input$budget_years_covered + 1
     horizon_year_1_cnt <- sum(c(start:end) < input$horizon_year_1)
     horizon_year_2_cnt <- sum(c(start:end) < input$horizon_year_2) - horizon_year_1_cnt
     horizon_year_3_cnt <- sum(c(start:end) < input$horizon_year_3) - horizon_year_2_cnt - horizon_year_1_cnt
-    
+    #heck <- temp_join |> mutate(check = (total*value)/cost_parameter)
     foo <- temp_join |> 
-      mutate(horizon_year_1_budget = total*value*(horizon_year_1_cnt/total_years),
+      dplyr::mutate(horizon_year_1_budget = total*value*(horizon_year_1_cnt/total_years),
              horizon_year_2_budget = total*value*(horizon_year_2_cnt/total_years),
              horizon_year_3_budget = total*value*(horizon_year_3_cnt/total_years),
              horizon_year_1 = horizon_year_1_budget/cost_parameter,
              horizon_year_2 = horizon_year_2_budget/cost_parameter,
-             horizon_year_3 = horizon_year_3_budget/cost_parameter) |> select(-c(table_no_ui,value,table_no_ui_revised)) |> #View()
+             horizon_year_3 = horizon_year_3_budget/cost_parameter) |> select(-c(table_no_ui,value,table_no_ui_revised)) |> 
       pivot_longer(cols = c(horizon_year_1, horizon_year_2, horizon_year_3), names_to = "year", values_to = "value") |> 
       #mutate(value = value_new) |> 
       select(any_of(names(rvs$Projects))) 
@@ -4048,7 +4048,7 @@ server <- function(input, output, session) {
 
     temp_projects <- temp_projects |> group_by_all() |> ungroup(c(year,value)) |> summarise(value = sum(value)) |> select(-table_no_ui)
     foo <- left_join(temp_join, temp_projects) |> 
-      mutate(value = value*cost_parameter/total) |> 
+      mutate(value = 100*(value*cost_parameter/total)) |>#View()
       select(-cost_parameter)
     foo[foo == "NA"] <- NA
     foo[is.na(foo$value),"value"]<-0
@@ -4075,7 +4075,7 @@ server <- function(input, output, session) {
         category == "Micromobility"~"Micromobility",
         category == "Traffic Operations"~"Traffic Operations",
         category == "Medium- and Heavy-Duty Vehicle Replacement"~ "Medium- and Heavy-Duty Vehicle Replacement",
-        category == "Park and Ride"~"Park-and-Ride",
+        category == "Park-and-Ride"~"Park-and-Ride",
         category == "EV Charging Infrastructure" ~ "Charging Infrastructure and EV Incentives",
         category == "Freight Intermodal Facilities" ~ "Freight Intermodal Facilities",
         category == "Roadway expansion" ~ "Roadway Expansion",
@@ -5066,7 +5066,7 @@ server <- function(input, output, session) {
                       "Transit Service Expansion",
                       "Micromobility",
                       "Travel Demand Management",
-                      "Park and Ride",
+                      "Park-and-Ride",
                       "Transit Electrification",
                       "MD/HD Truck Replacement",
                       "Electric Vehicle Charging Infraucture",

@@ -170,7 +170,7 @@ render_custom_datatable <- function(#input_reactives,
             )
           )
         )
-      )  |> formatCurrency("Value",digits = 0, currency = "%", before = F)
+      )  |> formatCurrency("Value",digits = 2, currency = "%", before = F)
       
     } else {  
 
