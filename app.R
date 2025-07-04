@@ -5889,6 +5889,7 @@ server <- function(input, output, session) {
   
   output$traffic_ops_costs_outputs_tbl <- renderDT({   
     print("RENDERING: OPS Costs Outputs")
+    #browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,]%>% 
         left_join(data.frame(cap_proj_type = c("New roundabouts","New or retimed signal"),
@@ -5915,6 +5916,7 @@ server <- function(input, output, session) {
   })
   
   output$mhdev_costs_outputs_tbl <- renderDT({   
+    #browser()
     print("RENDERING: MHDEV Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==9,] %>% rename('veh_subtype' = 'fuel_type'),

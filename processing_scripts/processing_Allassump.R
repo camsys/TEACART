@@ -33,7 +33,7 @@ filter_columns <- function(df, selected_columns, strategy_name) {
 }
 
 scenario_sum <- reactive({
-
+#browser()
 selected_columns <- c("year", "total_newtrips",'total_change_mtnox','total_change_pm25','total_change_VMT','total_change_MTCO2')
 
 bikeped <- filter_columns(output_bikped(),selected_columns,"Bicycle and Pedestrian")
