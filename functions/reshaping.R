@@ -80,15 +80,16 @@ reshaping_budget <- function(user_data,
     y_names = c('var1','var2','var3')
     x_names = c(col1,col2,col3)#,'unit','category')
   } else{ # all other table can be proper joined by 2 common fields.
-    y_names = c()#c('unit','category')
-    x_names = c()#c('unit','category')
+    y_names = c('unit')#c('unit','category')
+    x_names = c('unit')#c('unit','category')
   }
-  # if ("unit" %in% names(rvs)){
-  #   modified_data <- modified_data  %>%
-  #     left_join(references, by = c("unit" = "description")) %>%
-  #     mutate(unit = field) %>%
-  #     select(-field) 
-  # }
+  #browser()
+  if ("unit" %in% x_names){
+    modified_data <- modified_data  %>%
+      left_join(references, by = setNames("description",y_names[x_names == 'unit'])) #%>%
+    modified_data[,y_names[x_names == 'unit']] <-  modified_data[,"field"]
+    modified_data <- modified_data |> select(-field)
+  }
   modified_data <- modified_data %>% 
     select_if(~any(!is.na(.))) %>%
     mutate(value = as.numeric(value))

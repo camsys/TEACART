@@ -450,12 +450,12 @@ EmRate_by_Tech <- reactive({ #this is emission rate for all vehicles types
     select(veh_type, value) %>%
     rename(apportionment = value) %>%
     mutate(apportionment = as.numeric(apportionment)) %>% left_join(
-    rbind(expand(data.frame(),veh_type = c("Passenger Cars", "Light Duty Trucks"), veh_subtype = c("SI PHEV 10","SI PHEV 40")),
-          expand(data.frame(),veh_type = c("Medium Duty Trucks", "Heavy Duty Trucks"), veh_subtype = c("Gasoline PHEV", "Diesel PHEV")))) %>%
+    rbind(expand(data.frame(),veh_type = c("Passenger Cars", "Light-Duty Trucks"), veh_subtype = c("SI PHEV 10","SI PHEV 40")),
+          expand(data.frame(),veh_type = c("Medium-Duty Trucks", "Heavy-Duty Trucks"), veh_subtype = c("Gasoline PHEV", "Diesel PHEV")))) %>%
     rbind(
       rbind(
-        expand(data.frame(),veh_type = c("Passenger Cars", "Light Duty Trucks"), veh_subtype = c("EV100","EV200","EV300"), apportionment = 1),
-        expand(data.frame(),veh_type = c("Medium Duty Trucks", "Heavy Duty Trucks"), veh_subtype = c("EV"), apportionment = 1)))
+        expand(data.frame(),veh_type = c("Passenger Cars", "Light-Duty Trucks"), veh_subtype = c("EV100","EV200","EV300"), apportionment = 1),
+        expand(data.frame(),veh_type = c("Medium-Duty Trucks", "Heavy-Duty Trucks"), veh_subtype = c("EV"), apportionment = 1)))
   
   eemrate <- electricity_emrate()
   
@@ -473,9 +473,9 @@ EmRate_by_Tech <- reactive({ #this is emission rate for all vehicles types
   #most of these factors are in the fuel factors sheet
   ##SL NOTE:: Something is slightly off wit heavy trucks maybe medium as well less than a .1% difference 
   EmRate_by_Tech <- EmRate_by_Tech %>%
-    #use gasoline factor for light duty EtOH
-    mutate(fuel_N20_CO2eq_per_mile = ifelse(veh_type == 'Light Duty Trucks' & veh_subtype == 'EtOH',
-                                            unique(EmRate_by_Tech$fuel_N20_CO2eq_per_mile[EmRate_by_Tech$veh_type == 'Light Duty Trucks' &
+    #use gasoline factor for light-duty EtOH
+    mutate(fuel_N20_CO2eq_per_mile = ifelse(veh_type == 'Light-Duty Trucks' & veh_subtype == 'EtOH',
+                                            unique(EmRate_by_Tech$fuel_N20_CO2eq_per_mile[EmRate_by_Tech$veh_type == 'Light-Duty Trucks' &
                                                                                             EmRate_by_Tech$veh_subtype == 'Gasoline ICE']),
                                             fuel_N20_CO2eq_per_mile)) %>%
     mutate(fuel_emission_rate = (1/mpg_gasoline_eq) * (1000*fuel_carbon_content * fuel_conversion) + fuel_CH4_CO2e_per_mile+fuel_N20_CO2eq_per_mile) %>%
@@ -521,15 +521,15 @@ CO2e_Category_Averages <- reactive({
     summarise(CO2e_millions = sum(CO2e_millions, na.rm = T))
   mhdv_conventional_impf<-mhdv_conventional_impf$CO2e_millions[mhdv_conventional_impf$year == 2021]
   
-  ldv_2022 <- all_cats_temp$CO2e_millions[all_cats_temp$year == 2022 & all_cats_temp$veh_supertype == "Light Duty Vehicles"]
-  mhdv_2022 <- all_cats_temp$CO2e_millions[all_cats_temp$year == 2022 & all_cats_temp$veh_supertype == "Medium/Heavy Duty Vehicles"]
+  ldv_2022 <- all_cats_temp$CO2e_millions[all_cats_temp$year == 2022 & all_cats_temp$veh_supertype == "Light-Duty Vehicles"]
+  mhdv_2022 <- all_cats_temp$CO2e_millions[all_cats_temp$year == 2022 & all_cats_temp$veh_supertype == "Medium-/Heavy-Duty Vehicles"]
   
   
   
   all_cats_temp <- all_cats_temp %>% 
-    mutate(base_impf = ifelse(veh_supertype == "Light Duty Vehicles", CO2e_millions/ldv_2022,
+    mutate(base_impf = ifelse(veh_supertype == "Light-Duty Vehicles", CO2e_millions/ldv_2022,
                               CO2e_millions/mhdv_2022)) %>%
-    mutate(delay_impf = ifelse(veh_supertype == "Light Duty Vehicles", CO2e_millions/ldv_gas_impf,
+    mutate(delay_impf = ifelse(veh_supertype == "Light-Duty Vehicles", CO2e_millions/ldv_gas_impf,
                                CO2e_millions/mhdv_conventional_impf))
   
   return(all_cats_temp)
@@ -542,9 +542,9 @@ PHEV_Em_Apportionment <- reactive({
   temp_em_rate <- EmRate_by_Tech()
   temp_em_rate <- temp_em_rate %>%
     filter(paste0(veh_type, "-", veh_subtype) %in% c("Passenger Cars-SI PHEV 10",
-                                                     "Light Duty Trucks-SI PHEV 10",
-                                                     "Medium Duty Trucks-Gasoline PHEV",
-                                                     "Heavy Duty Trucks-Gasoline PHEV")) %>%
+                                                     "Light-Duty Trucks-SI PHEV 10",
+                                                     "Medium-Duty Trucks-Gasoline PHEV",
+                                                     "Heavy-Duty Trucks-Gasoline PHEV")) %>%
     select(year, veh_type, apportionment, fuel_emission_rate, electricity_emission_rate) %>%
     mutate(fuel_em_apportioned = fuel_emission_rate*(1-apportionment),
            e_em_apportioned = electricity_emission_rate*apportionment,
@@ -556,16 +556,16 @@ PHEV_Em_Apportionment <- reactive({
 #This is the Local Pollutant to CO2 Ratios ex-rows 109 - 115
 pollutant_t_CO2ratio <- reactive({
   temp_cat_avg <- CO2e_Category_Averages()
-  ldv_2021_co2e <- temp_cat_avg$CO2e_millions[temp_cat_avg$veh_supertype == "Light Duty Vehicles" & temp_cat_avg$year == 2021]
-  mhd_2021_co2e <- temp_cat_avg$CO2e_millions[temp_cat_avg$veh_supertype == "Medium/Heavy Duty Vehicles" & temp_cat_avg$year == 2021]
+  ldv_2021_co2e <- temp_cat_avg$CO2e_millions[temp_cat_avg$veh_supertype == "Light-Duty Vehicles" & temp_cat_avg$year == 2021]
+  mhd_2021_co2e <- temp_cat_avg$CO2e_millions[temp_cat_avg$veh_supertype == "Medium-/Heavy-Duty Vehicles" & temp_cat_avg$year == 2021]
   
   temp_ff <- Fuel_Factors_Weighted()
-  temp_ff<-temp_ff[temp_ff$veh_type %in% c("Light Duty Vehicles", "Medium/Heavy Duty Vehicles"),]
+  temp_ff<-temp_ff[temp_ff$veh_type %in% c("Light-Duty Vehicles", "Medium-/Heavy-Duty Vehicles"),]
   
   temp_ff<-temp_ff %>% 
     rename(veh_supertype = veh_type) %>%
-    mutate(NOx_CO2_ratio = ifelse(veh_supertype == "Light Duty Vehicles", NOx_g_per_veh_mi/ldv_2021_co2e,NOx_g_per_veh_mi/mhd_2021_co2e),
-           PM25_CO2_ratio = ifelse(veh_supertype == "Light Duty Vehicles", PM25_exhaust_per_veh_mi/ldv_2021_co2e,PM25_exhaust_per_veh_mi/mhd_2021_co2e)) %>%
+    mutate(NOx_CO2_ratio = ifelse(veh_supertype == "Light-Duty Vehicles", NOx_g_per_veh_mi/ldv_2021_co2e,NOx_g_per_veh_mi/mhd_2021_co2e),
+           PM25_CO2_ratio = ifelse(veh_supertype == "Light-Duty Vehicles", PM25_exhaust_per_veh_mi/ldv_2021_co2e,PM25_exhaust_per_veh_mi/mhd_2021_co2e)) %>%
     select(veh_supertype, NOx_CO2_ratio, PM25_CO2_ratio)
   return(temp_ff)
 })
@@ -631,7 +631,7 @@ e_emmissions_apportionment <- reactive({
     ungroup() %>% group_by(veh_supertype,year) %>%
     mutate(electricity_per_em = electricity_per_em_temp/sum(electricity_per_em_temp)) %>%
     filter(fuel_type == "Electricity") %>%
-    filter(veh_supertype == "Light Duty Vehicles") %>%
+    filter(veh_supertype == "Light-Duty Vehicles") %>%
     ungroup() %>%
     select(year, electricity_per_em)
   return(temp_e)
@@ -798,26 +798,26 @@ public_transit_emissions <- reactive({ #not sure where we need this so I'm leavi
                                                                      Fuel_Factors_Baselines$units == "fuel_carbon_content"] 
   
   input_HeavyDutyTruck_Diesel_CH4_gCO2e_per_mile <- Fuel_Factors$GWP_CH4_g_per_mi[Fuel_Factors$fuel_type == "Diesel" &
-                                                                         Fuel_Factors$veh_type == "Heavy Duty Trucks"]
+                                                                         Fuel_Factors$veh_type == "Heavy-Duty Trucks"]
   input_HeavyDutryTruck_Diesel_NOX_gCO2e_per_mile <- Fuel_Factors$GWP_N20_g_per_mi[Fuel_Factors$fuel_type == "Diesel" &
-                                                                                     Fuel_Factors$veh_type == "Heavy Duty Trucks"] 
+                                                                                     Fuel_Factors$veh_type == "Heavy-Duty Trucks"] 
   
   input_CNG_per_Gasoline_eq <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "CNG" &
                                                              Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"] 
   input_CNG_CO2_kg_per_gallon <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "CNG" &
                                                                    Fuel_Factors_Baselines$units == "fuel_carbon_content"] 
   input_HeavyDutyTruck_CNG_CH4_gCO2e_per_mile <- Fuel_Factors$GWP_CH4_g_per_mi[Fuel_Factors$fuel_type == "CNG" &
-                                                                                    Fuel_Factors$veh_type == "Heavy Duty Trucks"]
+                                                                                    Fuel_Factors$veh_type == "Heavy-Duty Trucks"]
   input_HeavyDutryTruck_CNG_NOX_gCO2e_per_mile <- Fuel_Factors$GWP_N20_g_per_mi[Fuel_Factors$fuel_type == "CNG" &
-                                                                                     Fuel_Factors$veh_type == "Heavy Duty Trucks"] 
+                                                                                     Fuel_Factors$veh_type == "Heavy-Duty Trucks"] 
   input_Electricity_per_Gasoline_eq <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "electricity" &
                                                                  Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"] 
   input_Gasoline_CO2_kg_per_gallon <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Gasoline" &
                                                                    Fuel_Factors_Baselines$units == "fuel_carbon_content"] 
   input_LightDutyTruck_Gasoline_CH4_gCO2e_per_mile <- Fuel_Factors$GWP_CH4_g_per_mi[Fuel_Factors$fuel_type == "Gasoline" &
-                                                                                    Fuel_Factors$veh_type == "Light Duty Trucks"]
+                                                                                    Fuel_Factors$veh_type == "Light-Duty Trucks"]
   input_LightDutryTruck_Gasoline_NOX_gCO2e_per_mile <- Fuel_Factors$GWP_N20_g_per_mi[Fuel_Factors$fuel_type == "Gasoline" &
-                                                                                     Fuel_Factors$veh_type == "Light Duty Trucks"] 
+                                                                                     Fuel_Factors$veh_type == "Light-Duty Trucks"] 
   
   input_up_Gasoline <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Gasoline" &
                                                       Fuel_Factors_Baselines$units == "upstream_life_cycle_factor"] 
@@ -896,7 +896,7 @@ Fuel_Factors_Weighted <- reactive({
     
   temp_super<-Fuel_Factors_Weighted_raw %>% 
     left_join(temp) %>% filter(!is.na(veh_supertype)) %>% group_by(veh_supertype) %>% 
-    filter(!(veh_subtype == 'Gasoline' & veh_type == 'Heavy Duty Trucks')) %>%
+    filter(!(veh_subtype == 'Gasoline' & veh_type == 'Heavy-Duty Trucks')) %>%
     summarise(across(where(is.numeric), function(x) sum(x*veh_type_per_vmt_supertype))) %>%
     ungroup() %>% select(-veh_type_per_vmt_supertype) %>% rename(veh_type = veh_supertype) %>% mutate(veh_subtype = "All")
   
@@ -912,7 +912,7 @@ Fuel_Factors_by_supertype <- reactive({
 construction_and_maintenance <- reactive({
  de <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 6 & rvs$Advanced$unit=="direct_emissions"] %>% as.numeric()
  ue <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 6 & rvs$Advanced$unit=="upstream_emissions"] %>% as.numeric()
- join<-CO2e_Category_Averages() %>% filter(veh_supertype == "Medium/Heavy Duty Vehicles") %>% select(year,base_impf)
+ join<-CO2e_Category_Averages() %>% filter(veh_supertype == "Medium-/Heavy-Duty Vehicles") %>% select(year,base_impf)
  
  c_m <- data.frame(year = 2021:2050, 
                    de_c = as.numeric(de), 
@@ -1090,7 +1090,7 @@ VMT_Type_Tech_Base <- reactive({ #this is VMT
     VMT_Type_Tech_Basetemp <- tech_frac_temp %>% 
       left_join(VMT_VehType, by = c('year','veh_type')) %>%
       mutate(veh_supertype = case_match(veh_type, !!!veh_types_mapping)) %>%
-      mutate(mmt_by_subtype = ifelse(veh_supertype == "Light Duty Vehicles", 
+      mutate(mmt_by_subtype = ifelse(veh_supertype == "Light-Duty Vehicles", 
                                      nhs_vals$LDV_pct_on_NHS[1]*state_vmt_AEO * tech_frac_forecast,
                                      nhs_vals$TRK_pct_on_NHS[1]*state_vmt_AEO * tech_frac_forecast)) 
   } else {
@@ -1117,16 +1117,16 @@ VMT_Forecast <- reactive({
 ### category breakouts needed for EVSE -------
 VMT_Type_Tech_MDHD <- reactive({
   VMT_Type_Tech_Base() %>%
-    filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks")) %>% 
+    filter(veh_type %in% c("Medium-Duty Trucks", "Heavy-Duty Trucks")) %>% 
     summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
               .by = year) %>%
-    mutate(veh_category = "Medium/Heavy Duty Vehicles")
+    mutate(veh_category = "Medium-/Heavy-Duty Vehicles")
 })
 
 VMT_Type_Tech_Conventional_LDV <- reactive({
   VMT_Type_Tech_Base() %>%
     filter((veh_type == "Passenger Cars" & veh_subtype == "Gasoline ICE") |
-             (veh_type == "Light Duty Trucks" & veh_subtype == "Gasoline ICE")) %>%
+             (veh_type == "Light-Duty Trucks" & veh_subtype == "Gasoline ICE")) %>%
     summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
               .by = year) %>%
     mutate(veh_category = "Conventional LDV")
@@ -1134,9 +1134,9 @@ VMT_Type_Tech_Conventional_LDV <- reactive({
 
 VMT_Type_Tech_Conventional_MDHD <- reactive({
   VMT_Type_Tech_Base() %>%
-    filter((veh_type == "Medium Duty Trucks" & veh_subtype == "Diesel ICE") |
-             (veh_type == "Medium Duty Trucks" & veh_subtype == "Gasoline ICE") | 
-             (veh_type == "Heavy Duty Trucks" & veh_subtype == "Diesel ICE")) %>%
+    filter((veh_type == "Medium-Duty Trucks" & veh_subtype == "Diesel ICE") |
+             (veh_type == "Medium-Duty Trucks" & veh_subtype == "Gasoline ICE") | 
+             (veh_type == "Heavy-Duty Trucks" & veh_subtype == "Diesel ICE")) %>%
     summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
               .by = year) %>%
     mutate(veh_category = "Conventional MDHD")
@@ -1152,7 +1152,7 @@ VMT_Type_Tech_Electric_LDV <- reactive({
 
 VMT_Type_Tech_Electric_MDHD <- reactive({
   VMT_Type_Tech_Base() %>%
-    filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks") & veh_subtype == "EV") %>% 
+    filter(veh_type %in% c("Medium-Duty Trucks", "Heavy-Duty Trucks") & veh_subtype == "EV") %>% 
     summarize(veh_type, veh_subtype, mmt_by_subtype, state_pct_of_category = mmt_by_subtype / sum(mmt_by_subtype), 
               .by = year) %>%
     mutate(veh_category = "Electric MDHD")
@@ -1162,7 +1162,7 @@ VMT_Type_Tech_Electric_MDHD <- reactive({
 
 EmRate_Conventional_LDV <- reactive({
   EmRate_by_Tech() %>% 
-    filter(veh_subtype == "Gasoline ICE", veh_type %in% c("Passenger Cars", "Light Duty Trucks")) %>%
+    filter(veh_subtype == "Gasoline ICE", veh_type %in% c("Passenger Cars", "Light-Duty Trucks")) %>%
     select(veh_type, veh_subtype, year, emission_rate) %>%
     left_join(VMT_Type_Tech_Conventional_LDV(), by = join_by(veh_type, veh_subtype, year), relationship = "one-to-one") %>%
     summarize("emrate_category_avg" = weighted.mean(emission_rate, state_pct_of_category), .by = c("veh_category", "year"))
@@ -1170,9 +1170,9 @@ EmRate_Conventional_LDV <- reactive({
 
 EmRate_Conventional_MDHD <- reactive({
   EmRate_by_Tech() %>% 
-    filter((veh_type == "Medium Duty Trucks" & veh_subtype == "Diesel ICE") |
-             (veh_type == "Medium Duty Trucks" & veh_subtype == "Gasoline ICE") | 
-             (veh_type == "Heavy Duty Trucks" & veh_subtype == "Diesel ICE")) %>%
+    filter((veh_type == "Medium-Duty Trucks" & veh_subtype == "Diesel ICE") |
+             (veh_type == "Medium-Duty Trucks" & veh_subtype == "Gasoline ICE") | 
+             (veh_type == "Heavy-Duty Trucks" & veh_subtype == "Diesel ICE")) %>%
     select(veh_type, veh_subtype, year, emission_rate) %>%
     left_join(VMT_Type_Tech_Conventional_MDHD(), by = join_by(veh_type, veh_subtype, year), relationship = "one-to-one") %>%
     summarize("emrate_category_avg" = weighted.mean(emission_rate, state_pct_of_category), .by = c("veh_category", "year"))
@@ -1190,7 +1190,7 @@ EmRate_Electric_LDV <- reactive({ ### excel doesn't grab all electric vehicles -
 # electric mdhd # has problem
 EmRate_Electric_MDHD <- reactive({
   EmRate_by_Tech() %>% 
-    filter(veh_type %in% c("Medium Duty Trucks", "Heavy Duty Trucks") & veh_subtype == "EV") %>%
+    filter(veh_type %in% c("Medium-Duty Trucks", "Heavy-Duty Trucks") & veh_subtype == "EV") %>%
     select(veh_type, veh_subtype, year, emission_rate) %>%
     left_join(VMT_Type_Tech_Electric_MDHD(), by = join_by(veh_type, veh_subtype, year), relationship = "one-to-one") %>%
     summarize("emrate_category_avg" = weighted.mean(emission_rate, state_pct_of_category), .by = c("veh_category", "year"))
@@ -1207,8 +1207,7 @@ scenario_summary_results <- reactive({    #req('')
   dt <- baseline_ghg_forecast()
   ft <- VMT_Forecast()
   
-  dt_emissions_base <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-    #filter(veh_supertype %in% c("Light Duty Vehicles","Medium/Heavy Duty Trucks")) %>%
+  dt_emissions_base <- dt %>% ungroup() %>%
     summarise(across(where(is.numeric),~sum(.x,na.rm = T))) %>%
     pivot_longer(cols = everything(), names_to = "year") %>%
     mutate(Scenario = "Baseline")

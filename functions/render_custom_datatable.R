@@ -99,6 +99,10 @@ render_custom_datatable <- function(#input_reactives,
     } 
     
     if(is_budget_table){
+      if(table_number %in% c(7,8,9)){
+        #browser()
+        select_list <- c("description", "category")
+        } else {select_list <- c("description","category","unit")}
       reshaped_table <- data_reactive  %>%
         filter(table_no_ui == table_number) %>% 
         conditionally_transform() %>% 
@@ -106,7 +110,7 @@ render_custom_datatable <- function(#input_reactives,
         select(where(select_fun)) %>% #NOTE: This will delete columns with NAs so if you send it empty data watch out
         left_join(references, by = c("unit" = "field")) %>%
         mutate(unit = description) %>%
-        select(-description,-category,-unit) %>% #NOTE: this is where we remove the category and unit field easy to add back
+        select(-(any_of(select_list))) %>% #NOTE: this is where we remove the category and unit field easy to add back
         #mutate(unit = map_chr(unit, ~ references_vector[.x] %||% .x)) %>%
         #mutate(value = value/100)|>
         rename(any_of(references_vector))

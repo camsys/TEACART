@@ -772,7 +772,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
-                                         HTML("This category represents <b>replacement of any fossil fuel medium or heavy-duty vehicles with electric vehicles</b>, 
+                                         HTML("This category represents <b>replacement of any fossil fuel medium- or heavy-duty vehicles with electric vehicles</b>, 
                    with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle."),
                                        ),
                                        open = TRUE
@@ -1269,10 +1269,10 @@ and potential applications.<br><br>
                                        accordion_panel(
                                          HTML(paste('Budget 10 | Medium- and Heavy-Duty Vehicle Replacement ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
-                                                                        title = "Budget spending on medium and heavy-duty vehicle replacement.")),
+                                                                        title = "Budget spending on medium- and heavy-duty vehicle replacement.")),
                                                     sep = "")),
                                          HTML("This category represents spending toward <b>replacement 
-                                              of any fossil fuel medium or heavy-duty 
+                                              of any fossil fuel medium- or heavy-duty 
                                               vehicles with electric vehicles</b>, expressed as a 
                                               percentage (%) of the total budget (shown at the 
                                               top of this tab). Any new vehicles are assumed to 
@@ -1925,7 +1925,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Assumptions 6 | Medium & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
+                                         "Assumptions 6 | Medium- & Heavy-Duty Vehicle (MHDV) Replacement Parameters",
                                          HTML("
                                   <p>
                                   This category represents the <b>miles driven per replaced medium- and heavy-duty vehicle per year</b>.
@@ -3142,7 +3142,7 @@ server <- function(input, output, session) {
   # observe edits to the transit_el_projs_tbl
   observeEvent(input$transit_el_projs_tbl_cell_edit, {
     req(rvs$Projects)
-    # check dup
+    #browser()
     rvs$Projects[rvs$Projects$table_no_ui == 4,] <- reshaping_projects2(input$transit_el_projs_tbl_cell_edit,
                                                                         rvs$Projects,
                                                                         tbl_no = 4,
@@ -3558,7 +3558,7 @@ server <- function(input, output, session) {
   
   output$tdm_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    #browser()
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 7,
@@ -3566,7 +3566,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(),#c(0:1),
+      non_editable_cols = c(0),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -3584,7 +3584,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(),#c(0:1),
+      non_editable_cols = c(0),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -3602,13 +3602,14 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0),#c(0:2),
+      non_editable_cols = c(0:2),#c(0:2),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = integer(0),
-      decimal_rows = integer(0),
-      pivot_col = c("road_class"))
+      decimal_rows = integer(0)#,
+      #pivot_col = c("road_class")
+      )
   })
   
   output$mdhd_budget_tbl <- renderDT({
@@ -3794,7 +3795,7 @@ server <- function(input, output, session) {
   })
   
   # observe edits to the transit_el_projs_tbl
-  observeEvent(input$transit_el_budget_tbl_cell_edit, {
+  observeEvent(input$transit_elec_budget_tbl_cell_edit, {
     req(rvs$Budget)
     # check dup
     rvs$Budget[rvs$Budget$table_no_ui == 4,] <- reshaping_budget(input$transit_el_budget_tbl_cell_edit,
@@ -3830,7 +3831,7 @@ server <- function(input, output, session) {
     rvs$Budget[rvs$Budget$table_no_ui == 7,] <- reshaping_budget(input$tdm_budget_tbl_cell_edit,
                                                                         rvs$Budget,
                                                                         tbl_no = 7,
-                                                                        col1 = NA)
+                                                                        col1 = 'unit')
     
   })
   
@@ -3849,13 +3850,14 @@ server <- function(input, output, session) {
   
   # observe edits to the traffic_ops_projs_tbl table
   observeEvent(input$traffic_ops_budget_tbl_cell_edit, {
-    
+    #browser()
     rvs$Budget[rvs$Budget$table_no_ui == 9,] <- reshaping_budget(input$traffic_ops_budget_tbl_cell_edit,
                                                                         rvs$Budget,
                                                                         tbl_no = 9,
                                                                         col1 = 'area_type',
                                                                         col2 = 'road_class',
-                                                                        col3 = 'unit')
+                                                                        col3 = 'unit'
+                                                                 )
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -5887,6 +5889,7 @@ server <- function(input, output, session) {
   
   output$traffic_ops_costs_outputs_tbl <- renderDT({   
     print("RENDERING: OPS Costs Outputs")
+    #browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,]%>% 
         left_join(data.frame(cap_proj_type = c("New roundabouts","New or retimed signal"),
@@ -5913,6 +5916,7 @@ server <- function(input, output, session) {
   })
   
   output$mhdev_costs_outputs_tbl <- renderDT({   
+    #browser()
     print("RENDERING: MHDEV Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==9,] %>% rename('veh_subtype' = 'fuel_type'),

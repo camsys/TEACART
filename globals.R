@@ -10,10 +10,10 @@ library(readxl)
 ### HELPER FUNCTIONS -----------------------------------------
 
 # Define the mapping from column1 values to groups
-veh_types_mapping <- c("Passenger Cars" ~ "Light Duty Vehicles", 
-                       "Light Duty Trucks" ~ "Light Duty Vehicles", 
-                       "Medium Duty Trucks" ~ "Medium/Heavy Duty Vehicles", 
-                       "Heavy Duty Trucks" ~ "Medium/Heavy Duty Vehicles")
+veh_types_mapping <- c("Passenger Cars" ~ "Light-Duty Vehicles", 
+                       "Light-Duty Trucks" ~ "Light-Duty Vehicles", 
+                       "Medium-Duty Trucks" ~ "Medium-/Heavy-Duty Vehicles", 
+                       "Heavy-Duty Trucks" ~ "Medium-/Heavy-Duty Vehicles")
 
 ev_forecast_mapping <- c("AEO Baseline" ~ "AEO_Tech_Frac",
                          "ACC" ~ "ACC_Tech_Frac",
@@ -148,7 +148,7 @@ State_Populations <-
 
 #Processing VMT Info----
 
-##This is the percentage of LDV VMT and Heavy Duty Vehicles that occur on the NHS for each state: 2021-2050
+##This is the percentage of LDV VMT and Heavy-Duty Vehicles that occur on the NHS for each state: 2021-2050
 NHS_VMT <- read_excel("data/1.Raw_Data.xlsx", sheet = "NHS_VMT", range = "A4:R57") %>%
     select(state, LDV_pct_on_NHS, TRK_pct_on_NHS)
 
@@ -206,7 +206,7 @@ Fuel_Factors_Baselines <- read_excel("data/1.Raw_Data.xlsx", sheet = "Fuel_Facto
 Fuel_Factors_Revision <- read_excel("data/1.Raw_Data.xlsx", sheet = "Fuel_Factors_Revision") # SL ADDED NEED TO WORK TO COMBINE THESE TWO
 Fuel_Factors_Weighted_raw <- read_excel("data/1.Raw_Data.xlsx", sheet = "Fuel_Factors_Weighted")
 
-#I realized this was misatributing the weighting to heavy duty trucks instead of medium duty see the excel tool
+#I realized this was misatributing the weighting to heavy-duty trucks instead of medium-duty see the excel tool
 # Fuel_Factors_Weighted_raw <-
   # Fuel_Factors %>% # Different veh types will need different weighting strategies, will likely need to make reactive
   # group_by(veh_type) %>%
@@ -290,7 +290,7 @@ TechFrac <- Stock_Type_Tech_BASE %>% left_join(EV_Forecast, by = c("veh_type", "
   group_by(year, veh_type) %>%
   mutate(ACC_Tech_Fractemp = percEVstock_ACC*per_ev_nonev*is_ev_type) %>%
   mutate(ACC_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACC_Tech_Fractemp)), ACC_Tech_Fractemp)) %>%
-  mutate(ACC_Tech_Frac = ifelse(veh_type %in% c("Medium Duty Truck","Heavy Duty Truck"), AEO_Tech_Frac, ACC_Tech_Frac)) %>%
+  mutate(ACC_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), AEO_Tech_Frac, ACC_Tech_Frac)) %>%
   select(-ACC_Tech_Fractemp) %>%
   ungroup() %>%
   #ACCII Version
@@ -298,16 +298,16 @@ TechFrac <- Stock_Type_Tech_BASE %>% left_join(EV_Forecast, by = c("veh_type", "
   group_by(year, veh_type) %>%
   mutate(ACCII_Tech_Fractemp = percEVstock_ACCII*per_ev_nonev*is_ev_type) %>%
   mutate(ACCII_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCII_Tech_Fractemp)), ACCII_Tech_Fractemp)) %>%
-  mutate(ACCII_Tech_Frac = ifelse(veh_type %in% c("Medium Duty Truck","Heavy Duty Truck"), AEO_Tech_Frac, ACCII_Tech_Frac)) %>%
+  mutate(ACCII_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), AEO_Tech_Frac, ACCII_Tech_Frac)) %>%
   select(-ACCII_Tech_Fractemp) %>%
   ungroup() %>%
   #ACC + ACT
   group_by(year, veh_type) %>%
   mutate(ACCACT_Tech_Fractemp = percEVstock_ACCACT*per_ev_nonev*is_ev_type) %>%
   mutate(ACCACT_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCACT_Tech_Fractemp)), ACCACT_Tech_Fractemp)) %>%
-  mutate(ACCACT_Tech_Frac = ifelse(veh_type %in% c("Medium Duty Truck","Heavy Duty Truck"), ACCACT_Tech_Frac, ACC_Tech_Frac)) %>%
+  mutate(ACCACT_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), ACCACT_Tech_Frac, ACC_Tech_Frac)) %>%
   select(-ACCACT_Tech_Fractemp) %>%
   ungroup() %>%
   #ACCII + ACT
-  mutate(ACCIIACT_Tech_Frac = ifelse(veh_type %in% c("Passenger Car","Light Duty Truck"), ACCII_Tech_Frac, ACCACT_Tech_Frac))
+  mutate(ACCIIACT_Tech_Frac = ifelse(veh_type %in% c("Passenger Car","Light-Duty Truck"), ACCII_Tech_Frac, ACCACT_Tech_Frac))
 
