@@ -61,6 +61,9 @@ ui <- function(request) {
             pointer-events: none;
             background-color: #f9f9f9;
             }
+              td.first-column {
+    background-color: #d2d8e7 !important;
+  }
             .accordion-button.collapsed {
                 background-color: #e3ebd5;
             }
@@ -1010,7 +1013,7 @@ and potential applications.<br><br>
                               DT::dataTableOutput("funding_summary_tbl"),
                               p(),
                               p(),
-                              
+
                             ),
 
                             
@@ -1774,7 +1777,14 @@ and potential applications.<br><br>
                   
                   # assumptions tab ui ------------------------------------------------------
                   nav_panel(title = "Assumptions",
-                            fluidRow(HTML("<p>This section provides information on the <b>input assumptions</b> for the categories shown below. These inputs affect the GHG impact and effectiveness of each strategy category. Please click on the different fields to overwrite the default values with any custom values provided by the user.")
+                            fluidRow(HTML("<p>This section provides information on 
+                                          the <b>input assumptions</b> for the 
+                                          categories shown below. These inputs 
+                                          affect the GHG impact and effectiveness of 
+                                          each strategy category. Please click on the 
+                                          different fields to overwrite the default 
+                                          values with any custom values provided by the user.<br>
+                                          <br>")
                                      
                             ),
                             
@@ -4099,7 +4109,6 @@ server <- function(input, output, session) {
     })
   
   output$funding_summary_tbl <- renderDataTable({
-    #browser()
     formatted_funding <- rvs$Funding %>%
       select(-funding_name) %>%
       rename(any_of(references_vector))
@@ -4114,19 +4123,34 @@ server <- function(input, output, session) {
         paging = FALSE,
         dom = "t"
       ),
-      rownames = TRUE,
+      rownames = FALSE,
       callback = JS("
-                  table.on('draw', function(){
-                  table.columns([0,1,2,3]).nodes().flatten().to$().addClass('no-click');
-                  });
-                  "),
+table.on('draw', function(){
+  // Disable clicking in first four columns
+  table.columns([0,1,2,3]).nodes().flatten().to$().addClass('no-click');
+
+  // Add a custom class to first column for styling
+  table.columns([0]).nodes().flatten().to$().addClass('first-column');
+
+  // Bold the last row
+  var api = table;
+  var rows = api.rows({ page: 'current' }).nodes();
+  var lastRowIndex = api.rows().data().length - 1;
+
+  rows.each(function(row, i){
+    if (i === lastRowIndex) {
+      $(row).find('td').css('font-weight', 'bold');
+    }
+  });
+});
+    "),
       editable = list(
         target = 'all',
-        disable = list(columns = 0:3)
+        disable = list(columns = 0:4)
       ),
       selection = "none"
     ) %>%
-      formatCurrency("% Allocated", digits = 1, currency = "%", before = F) %>%
+      formatCurrency("% Allocated", digits = 1, currency = "%", before = FALSE) %>%
       formatCurrency("Million $", digits = 1) %>%
       formatStyle(
         "Million $",
