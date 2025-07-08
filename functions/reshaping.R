@@ -56,7 +56,7 @@ reshaping_budget <- function(user_data,
                              col1,
                              col2 = NA,
                              col3 = NA){
-  #browser()
+  #if(tbl_no == 4){browser()}
   no_row =  nrow(user_data)/length(unique(user_data$col))
   modified_data <- data.frame(matrix(nrow = no_row))
   for (i in 1:length(unique(user_data$col))) {

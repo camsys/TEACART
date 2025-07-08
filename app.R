@@ -3798,7 +3798,8 @@ server <- function(input, output, session) {
   observeEvent(input$transit_elec_budget_tbl_cell_edit, {
     req(rvs$Budget)
     # check dup
-    rvs$Budget[rvs$Budget$table_no_ui == 4,] <- reshaping_budget(input$transit_el_budget_tbl_cell_edit,
+    #browser()
+    rvs$Budget[rvs$Budget$table_no_ui == 4,] <- reshaping_budget(input$transit_elec_budget_tbl_cell_edit,
                                                                         rvs$Budget,
                                                                         tbl_no = 4,
                                                                         col1 = 'area_type',
