@@ -3552,7 +3552,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(),#c(0:1),
+      non_editable_cols = c(0),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
