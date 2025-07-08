@@ -61,6 +61,9 @@ ui <- function(request) {
             pointer-events: none;
             background-color: #f9f9f9;
             }
+              td.first-column {
+    background-color: #d2d8e7 !important;
+  }
             .accordion-button.collapsed {
                 background-color: #e3ebd5;
             }
@@ -1010,7 +1013,7 @@ and potential applications.<br><br>
                               DT::dataTableOutput("funding_summary_tbl"),
                               p(),
                               p(),
-                              
+
                             ),
 
                             
@@ -1774,7 +1777,14 @@ and potential applications.<br><br>
                   
                   # assumptions tab ui ------------------------------------------------------
                   nav_panel(title = "Assumptions",
-                            fluidRow(HTML("<p>This section provides information on the <b>input assumptions</b> for the categories shown below. These inputs affect the GHG impact and effectiveness of each strategy category. Please click on the different fields to overwrite the default values with any custom values provided by the user.")
+                            fluidRow(HTML("<p>This section provides information on 
+                                          the <b>input assumptions</b> for the 
+                                          categories shown below. These inputs 
+                                          affect the GHG impact and effectiveness of 
+                                          each strategy category. Please click on the 
+                                          different fields to overwrite the default 
+                                          values with any custom values provided by the user.<br>
+                                          <br>")
                                      
                             ),
                             
@@ -2214,7 +2224,9 @@ and potential applications.<br><br>
                             HTML("This tab provides a projection 
                                  of baseline emissions for the time 
                                  horizons selected in the Baseline 
-                                 tab."),
+                                 tab.<br>
+                                 <br>"),
+                            p(),
                             h3("Transportation GHG Forecast"),
                             fluidRow(width = 12,
                                      column(width = 6,
@@ -2328,21 +2340,24 @@ and potential applications.<br><br>
                               p("All results are reported in terms of annual change per $M investment."),
                               fluidRow( class = 'cost-table search',
                                         h3("Bicycle & Pedestrian"),
-                                        DT::dataTableOutput("bikeped_costs_outputs_tbl")
-                                        # AH to remove the search box here
+                                        DT::dataTableOutput("bikeped_costs_outputs_tbl"),
+                                        p(""),
+                                        
                               )
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Transit: Increased Fixed Route Service"),
-                                      DT::dataTableOutput("transit_fixed_costs_outputs_tbl")
+                                      DT::dataTableOutput("transit_fixed_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Transit: Increased Demand Response Service"),
-                                      DT::dataTableOutput("transit_dr_costs_outputs_tbl")
+                                      DT::dataTableOutput("transit_dr_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
@@ -2354,55 +2369,64 @@ and potential applications.<br><br>
                                       p(""),
                                       p(""),
                                       h3("Transit: Fleet Electrification"),
-                                      DT::dataTableOutput("transit_zeb_costs_outputs_tbl")
+                                      DT::dataTableOutput("transit_zeb_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Public Transportation: Rail"),
-                                      DT::dataTableOutput("pub_trans_rail_costs_outputs_tbl")
+                                      DT::dataTableOutput("pub_trans_rail_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Travel Demand Management"),
-                                      DT::dataTableOutput("tdm_costs_outputs_tbl")
+                                      DT::dataTableOutput("tdm_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Micromobility"),
-                                      DT::dataTableOutput("micro_costs_outputs_tbl")
+                                      DT::dataTableOutput("micro_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Traffic Operations: Intersections"),
-                                      DT::dataTableOutput("traffic_ops_costs_outputs_tbl")
+                                      DT::dataTableOutput("traffic_ops_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Medium- and Heavy-Duty Vehicle Replacement (Electrification)"),
-                                      DT::dataTableOutput("mhdev_costs_outputs_tbl")
+                                      DT::dataTableOutput("mhdev_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Park & Ride"),
-                                      DT::dataTableOutput("pnr_costs_outputs_tbl")
+                                      DT::dataTableOutput("pnr_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("EV Charging Infrastructure"),
-                                      DT::dataTableOutput("evsi_costs_outputs_tbl")
+                                      DT::dataTableOutput("evsi_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Roadway Expansion"),
-                                      DT::dataTableOutput("roadway_expand_costs_outputs_tbl")
+                                      DT::dataTableOutput("roadway_expand_costs_outputs_tbl"),
+                                      p("")
                             ),
                             # fluidRow( class = 'cost-table',
                             #           p(""),
@@ -4100,7 +4124,6 @@ server <- function(input, output, session) {
     })
   
   output$funding_summary_tbl <- renderDataTable({
-    #browser()
     formatted_funding <- rvs$Funding %>%
       select(-funding_name) %>%
       rename(any_of(references_vector))
@@ -4110,24 +4133,43 @@ server <- function(input, output, session) {
       class = "compact",
       options = list(
         columnDefs = list(
-          list(orderable = FALSE, targets = "_all")
+          list(orderable = FALSE, targets = "_all"),
+          list(width = '60px', targets = 0) # making first column narrow
         ),
         paging = FALSE,
         dom = "t"
       ),
-      rownames = TRUE,
+      rownames = FALSE,
       callback = JS("
-                  table.on('draw', function(){
-                  table.columns([0,1,2,3]).nodes().flatten().to$().addClass('no-click');
-                  });
-                  "),
+table.on('draw', function(){
+  // Disable clicking in first four columns
+  table.columns([0,1,2,3]).nodes().flatten().to$().addClass('no-click');
+  
+  //Adding a max width for the first column because columndefs is not making the change
+  table.columns(0).nodes().flatten().to$().css('width', '60px');
+
+  // Add a custom class to first column for styling
+  table.columns([0]).nodes().flatten().to$().addClass('first-column');
+
+  // Bold the last row
+  var api = table;
+  var rows = api.rows({ page: 'current' }).nodes();
+  var lastRowIndex = api.rows().data().length - 1;
+
+  rows.each(function(row, i){
+    if (i === lastRowIndex) {
+      $(row).find('td').css('font-weight', 'bold');
+    }
+  });
+});
+    "),
       editable = list(
         target = 'all',
-        disable = list(columns = 0:3)
+        disable = list(columns = 0:4)
       ),
       selection = "none"
     ) %>%
-      formatCurrency("% Allocated", digits = 1, currency = "%", before = F) %>%
+      formatCurrency("% Allocated", digits = 1, currency = "%", before = FALSE) %>%
       formatCurrency("Million $", digits = 1) %>%
       formatStyle(
         "Million $",
@@ -5673,7 +5715,7 @@ server <- function(input, output, session) {
                  selection = "none",
                  options = list(
                    pageLength = 50,
-                   searching = TRUE,
+                   searching = FALSE,
                    paging = FALSE,
                    info = FALSE)) 
     if(input$cost_view == "detail"){
@@ -6358,12 +6400,17 @@ server <- function(input, output, session) {
             hovertemplate = paste0('%{text} %{x}:<br>', 
                                    'Emissions: %{y:.4s}<extra></extra>')
     ) |>
-      layout(#xaxis = list(title = "Year", standoff = 5),
-             yaxis = list(title = "Total Change"),
-             
-             margin = list(b = 10),
-             barmode = "relative",
-             legend = list(orientation = 'h')) |> 
+      layout(
+        xaxis = list(title = "Year"),
+        yaxis = list(title = "Total Change"),
+        margin = list(b = 80),
+        barmode = "relative",
+        legend = list(
+          orientation = 'h',
+          x = 0.5,
+          xanchor = 'center',
+          y = -0.3,
+          yanchor = 'top')) |> 
       config(displaylogo = FALSE, 
              modeBarButtonsToRemove = c("toImage","zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d", "toggleSpikelines", "hoverCompareCartesian", "hoverClosestGeo", "hoverClosest3d", "hoverClosestGeo", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "hoverClosestCartesian"))
     
