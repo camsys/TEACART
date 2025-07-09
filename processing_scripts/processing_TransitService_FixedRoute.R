@@ -216,7 +216,7 @@ observeEvent(input$state_input, {
 #   left_join(.,Strategy_Parameters[Strategy_Parameters$subcat == 'Average Trip Length (mi)', c('parameters','selected_value')], by = c('typefull' = 'parameters')) %>%
 #   rename(trip_len = selected_value) %>%
 #   ## calculate the trip for increased fixed route service. 
-#   mutate(total_newtrips = add_vrm*pax_mi_fact/trip_len/365) %>% #end of calculate the new trips
+#   mutate(total_change_newtrips = add_vrm*pax_mi_fact/trip_len/365) %>% #end of calculate the new trips
 #   #  calcualte teh total change NOx %>%
 #   mutate(total_NOx_change = 0,
 #          total_PM25_change = 0) %>% # placeholders

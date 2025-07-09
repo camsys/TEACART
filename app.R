@@ -2297,7 +2297,7 @@ and potential applications.<br><br>
                                                'VMT (miles)' = 'total_change_VMT',
                                                'MT NOx' = 'total_change_mtnox',
                                                'MT PM2.5' = 'total_change_pm25',
-                                               'Daily Active Trips' = 'total_newtrips')
+                                               'Daily Active Trips' = 'total_change_newtrips')
                               ),
                               selectizeInput(inputId = "strategy_scen_select",
                                              label = "Scenario",
@@ -5478,7 +5478,7 @@ server <- function(input, output, session) {
   # BASELINE GHG FORECAST -------------------------------------------------
   
   output$baseline_outputs <- renderDT({
-    #browser()
+    # browser()
     req(baseline_ghg_forecast())
     
     dt <- baseline_ghg_forecast()
@@ -5487,7 +5487,7 @@ server <- function(input, output, session) {
       filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
       summarise(across(where(is.numeric),sum))  %>%
       mutate(veh_supertype = "Total (OnRoad)")
-    
+      
     dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
       #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
       summarise(across(where(is.numeric),sum))
@@ -5655,6 +5655,7 @@ server <- function(input, output, session) {
   
   output$bikeped_costs_outputs_tbl <- renderDT({
     print("RENDERING: Cost Output Table BikePed Costs Outputs")
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==1,],
       output_table = cost_output_bikeped(),
@@ -6122,7 +6123,7 @@ server <- function(input, output, session) {
   # server scenarios outputs ------------------------------------------------
   output$emission_change_tbl <- renderDataTable({
     results <- scenario_summary_results()
-    #browser()
+    # browser()
     comma_rows = c(0:4,7:11,14:19)
     percent_rows = c(5,6,12,13)
     currency_rows = NULL
@@ -6282,7 +6283,7 @@ server <- function(input, output, session) {
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-    #browser() #not done
+    # browser() #not done
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     

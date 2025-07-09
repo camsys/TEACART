@@ -35,7 +35,7 @@ output_micro <- reactive({
              total_change_MTCO2 = total_change_VMT * CO2e_millions/1000000,
              total_change_mtnox = total_change_VMT* base_impf *fuel_factorNox/1000000,
              total_change_pm25 = (total_change_VMT * fuel_factorPMe * base_impf + total_change_VMT * fuel_factorPMtb)/1000000,
-             total_newtrips = weekly_trip  / 7 * value
+             total_change_newtrips = weekly_trip  / 7 * value
       )  # end of Micro strategy
     
     return(micro_output)

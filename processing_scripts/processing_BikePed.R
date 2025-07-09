@@ -62,7 +62,7 @@ output_bikped <- reactive({
   bike_ped_output <- Bicycle_and_Pedestrian_base %>% merge(.,captial_project_input_bkped, by = c('facility_type','area_type'), all = TRUE) %>% 
     mutate(total_change_VMT = annual_displaced_auto_miles * value,
            total_change_MTCO2 = total_change_VMT * CO2e_millions/1000000,
-           total_newtrips = value * (daily_new_bicyclists + daily_new_walkers),
+           total_change_newtrips = value * (daily_new_bicyclists + daily_new_walkers),
            total_change_mtnox = total_change_VMT * fuel_factorNox *base_impf /1000000,   # need replace fuel_factorNox
            total_change_pm25 = (total_change_VMT*fuel_factorPMe * base_impf  + total_change_VMT * fuel_factorPMtb)/1000000  #need replace fuel_factorPMtb
     ) # end of bike and ped strategy
@@ -192,7 +192,7 @@ cost_output_bikeped <- reactive({
 # Bicycle_and_Pedestrian_base <- Bicycle_and_Pedestrian_base %>% merge(.,captial_project_input_bkped, by.x = 'per_new_facility_mile', by.y = "facility_type", all = TRUE) %>%
 #   mutate(total_vmt_change = annual_displaced_auto_miles * facilitiesmile,
 #          total_CO2_change = total_vmt_change * emrate/1000000,
-#          total_newtrips = facilitiesmile * (daily_new_bicyclists + daily_new_walkers),
+#          total_change_newtrips = facilitiesmile * (daily_new_bicyclists + daily_new_walkers),
 #          total_NOx_change = total_vmt_change * fuel_factorNox *emrate_by_tech/1000000,
 #          total_PM25_change = (total_vmt_change*fuel_factorPMe * emrate_by_tech + total_vmt_change * fuel_factorPMtb)/1000000
 #   ) # end of bike and ped strategy

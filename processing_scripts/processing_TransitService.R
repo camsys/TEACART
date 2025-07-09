@@ -210,7 +210,7 @@ output_TransitService <- reactive({
     left_join(select(Assumptions_transitservice6,value,transit_mode,area_type), by = c('transit_mode','area_type')) %>%
     rename(trip_len = value) %>%
     ## calculate the trip for increased fixed route service.
-    mutate(total_newtrips = add_vrm*pax_mi_fact/trip_len/365) %>% #end of calculate the new trips
+    mutate(total_change_newtrips = add_vrm*pax_mi_fact/trip_len/365) %>% #end of calculate the new trips
     #  calcualte teh total change NOx %>%
     mutate(total_change_mtnox = 0,
            total_change_pm25 = 0) %>% # placeholders
