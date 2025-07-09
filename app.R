@@ -61,6 +61,9 @@ ui <- function(request) {
             pointer-events: none;
             background-color: #f9f9f9;
             }
+              td.first-column {
+    background-color: #d2d8e7 !important;
+  }
             .accordion-button.collapsed {
                 background-color: #e3ebd5;
             }
@@ -552,8 +555,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         'Projects 1 | Bicycle and
-           Pedestrian Lane Miles of New Infrastructure ',
+                                         'Projects 1 | Bicycle & Pedestrian Lane Miles of New Infrastructure ',
                                          HTML("This category represents implementation of any <b>two-way miles of new 
            bicycle or pedestrian facility.</b> The default assumption for these 
            project types is that any new bicycle or pedestrian facility would 
@@ -630,7 +632,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 4 | Fleet Electrification",
+                                         "Projects 4 | Transit: Fleet Electrification",
                                          HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
                         with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
                                        ),
@@ -704,7 +706,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 7 | Travel Demand Management / TDM",
+                                         "Projects 7 | Travel Demand Management (TDM)",
                                          HTML("This category represents the <b>number of employees covered through the TDM Program Outreach</b>. 
                    TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
                    reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",),
@@ -750,7 +752,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 9 | Traffic Operations",
+                                         "Projects 9 | Traffic Operations - Intersection Improvements ",
                                          HTML("This category represents any <b>improvements made to traffic operations at intersections</b>, such as new or retimed signals or new traffic-flow roundabouts."),
                                        ),
                                        open = TRUE
@@ -794,7 +796,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 11 | Park-and-Ride Projects",
+                                         "Projects 11 | Park-and-Ride",
                                          HTML("This category represents any <b>new addition or expansion of Park-and-Ride spaces</b>. A Park-and-Ride space 
                    allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
                                        ),
@@ -818,13 +820,13 @@ and potential applications.<br><br>
                                        accordion_panel(
                                          "Projects 12 | Charging Infrastructure and EV Incentives ",
                                          HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
-                   EV charging ports supply electric power for recharging electric vehicles."),
+                   EV charging ports supply electric power for recharging electric vehicles. EV incentives offset the cost of EVs for purchasers."),
                                        ),
                                        open = TRUE
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_evsi_projs_tbl", "Reset Projects 13", class = "btn-custom")
+                                     actionButton("reset_evsi_projs_tbl", "Reset Projects 12", class = "btn-custom")
                               ),
                               
                             ),
@@ -881,12 +883,34 @@ and potential applications.<br><br>
                             fluidRow(
                               DT::dataTableOutput("expansion_projs_tbl")
                             ),
+                            
+                            #Roadway Surfacing
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 15 | Roadway Resurfacing",
+                                         HTML("This category indicates lane miles resurfaced to <b>reduce surface roughness and decrease rolling resistance</b> on roadways."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_road_resurf_projs_tbl", "Reset Projects 15", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("road_resurf_projs_tbl")
+                            ),
+                            
+                            
                             #Transit Cuts
                             fluidRow(
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 15 | Transit Service Cuts",
+                                         "Projects 17 | Transit Service Cuts",
                                          HTML("This category represents <b>cuts to transit service</b> from current service levels, resulting from funding cuts.</b>"),
                                          # bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                                          #                            title = "Cumulative View",
@@ -900,7 +924,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_transit_cuts_projs_tbl", "Reset Projects 14", class = "btn-custom")
+                                     actionButton("reset_transit_cuts_projs_tbl", "Reset Projects 17", class = "btn-custom")
                               ),
                               
                             ),
@@ -912,7 +936,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 16 | Land Use",
+                                         "Projects 18 | Land Use",
                                          HTML("This category represents spending and 
                                          rezoned acres in support of <b>walkable, 
                                               transit-oriented development (TOD) areas</b>, using land use strategies such as placing destinations closer together and in environments more conducive to transit and non-motorized travel."),
@@ -921,7 +945,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_land_use_projs_tbl", "Reset Projects 16", class = "btn-custom")
+                                     actionButton("reset_land_use_projs_tbl", "Reset Projects 18", class = "btn-custom")
                               ),
                               
                             ),
@@ -929,25 +953,7 @@ and potential applications.<br><br>
                               DT::dataTableOutput("land_use_projs_tbl")
                             ),
                             
-                            #Roadway Surfacing
-                            fluidRow(
-                              column(10,
-                                     accordion(
-                                       accordion_panel(
-                                         "Projects 17 | Roadway Resurfacing",
-                                         HTML("This category indicates lane miles resurfaced to <b>reduce surface roughness and decrease rolling resistance</b> on roadways."),
-                                       ),
-                                       open = TRUE
-                                     ),
-                              ),
-                              column(2,
-                                     actionButton("reset_road_resurf_projs_tbl", "Reset Projects 17", class = "btn-custom")
-                              ),
-                              
-                            ),
-                            fluidRow(
-                              DT::dataTableOutput("road_resurf_projs_tbl")
-                            ),
+
                             
                   ),
                   
@@ -1010,7 +1016,7 @@ and potential applications.<br><br>
                               DT::dataTableOutput("funding_summary_tbl"),
                               p(),
                               p(),
-                              
+
                             ),
 
                             
@@ -1022,7 +1028,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 1 | Bicycle and
+                                         HTML(paste('Budget 1 | Bicycle &
            Pedestrian Lane Miles of New Infrastructure ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on bike/ped projects.")),
@@ -1134,7 +1140,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 5 | Bus Priority Treatment ',
+                                         HTML(paste('Budget 5 | Public Transportation: Bus Priority Treatment ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on bus priority treatment.")),
                                                     sep = "")),
@@ -1191,7 +1197,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 7 | Travel Demand Management ',
+                                         HTML(paste('Budget 7 | Travel Demand Management (TDM) ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on travel demand management.")),
                                                     sep = "")),
@@ -1240,7 +1246,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 9 | Traffic Operations ',
+                                         HTML(paste('Budget 9 | Traffic Operations - Intersection Improvements ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on traffic operations.")),
                                                     sep = "")),
@@ -1267,7 +1273,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 10 | Medium- and Heavy-Duty Vehicle Replacement ',
+                                         HTML(paste('Budget 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on medium- and heavy-duty vehicle replacement.")),
                                                     sep = "")),
@@ -1628,7 +1634,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Costs 10 | Medium- and Heavy-Duty Vehicle Replacement Costs",
+                                         "Costs 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement Costs",
                                          HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium- and heavy-duty vehicles replaced with new electric vehicles."),
                                          
                                        ),
@@ -1650,7 +1656,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Costs 11 | Park & Ride Costs",
+                                         "Costs 11 | Park-and-Ride Costs",
                                          HTML("This category represents the <b>cost per space</b> for any new addition or expansion of Park-and-Ride spaces."),
                                          
                                        ),
@@ -1672,7 +1678,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Costs 12 | EV Charging Infrastructure Costs",
+                                         "Costs 12 | Charging Infrastructure Costs ",
                                          HTML("This category represents the <b>hardware cost per port</b> and <b>installation cost per port</b> for any new addition or expansion of EV charging ports."),
                                        ),
                                        open = TRUE
@@ -1727,34 +1733,13 @@ and potential applications.<br><br>
                               DT::dataTableOutput("roadway_expand_costs_tbl")
                             ),
                             
-                            
-                            # fuel price costs
-                            
-                            fluidRow(
-                              column(10,
-                                     accordion(
-                                       accordion_panel(
-                                         "Costs 15 | Fuel Price",
-                                         HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."), #AHFLAG
-                                       ),
-                                       open = TRUE
-                                     ),
-                              ),
-                              column(2,
-                                     actionButton("reset_fuel_costs_tbl", "Reset Costs 15", class = "btn-custom")
-                              ),
-                            ),
-                            fluidRow(
-                              DT::dataTableOutput("fuel_costs_tbl")
-                            ),
-                            
                             #roadway resurfacing 
                             
                             fluidRow(
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Costs 16 | Roadway Resurfacing",
+                                         "Costs 15 | Roadway Resurfacing",
                                          HTML("This category represents the <b>cost per lane-mile</b> of improving roadway surfaces, based on 20xx data."), #AHFLAG
                                        ),
                                        open = TRUE
@@ -1768,13 +1753,40 @@ and potential applications.<br><br>
                               DT::dataTableOutput("roadwayresurf_costs_tbl")
                             ),
                             
+                            # fuel price costs
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 16 | Fuel Price",
+                                         HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."), #AHFLAG
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_fuel_costs_tbl", "Reset Costs 16", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("fuel_costs_tbl")
+                            ),
+                            
                             
                             
                   ),
                   
                   # assumptions tab ui ------------------------------------------------------
                   nav_panel(title = "Assumptions",
-                            fluidRow(HTML("<p>This section provides information on the <b>input assumptions</b> for the categories shown below. These inputs affect the GHG impact and effectiveness of each strategy category. Please click on the different fields to overwrite the default values with any custom values provided by the user.")
+                            fluidRow(HTML("<p>This section provides information on 
+                                          the <b>input assumptions</b> for the 
+                                          categories shown below. These inputs 
+                                          affect the GHG impact and effectiveness of 
+                                          each strategy category. Please click on the 
+                                          different fields to overwrite the default 
+                                          values with any custom values provided by the user.<br>
+                                          <br>")
                                      
                             ),
                             
@@ -1783,7 +1795,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Assumptions 1 | Bicycle and Pedestrian Parameters",
+                                         "Assumptions 1 | Bicycle & Pedestrian Parameters",
                                          HTML("<p>
                                   This category includes the following data types:<br>
                                   <p>
@@ -2214,7 +2226,9 @@ and potential applications.<br><br>
                             HTML("This tab provides a projection 
                                  of baseline emissions for the time 
                                  horizons selected in the Baseline 
-                                 tab."),
+                                 tab.<br>
+                                 <br>"),
+                            p(),
                             h3("Transportation GHG Forecast"),
                             fluidRow(width = 12,
                                      column(width = 6,
@@ -2328,21 +2342,24 @@ and potential applications.<br><br>
                               p("All results are reported in terms of annual change per $M investment."),
                               fluidRow( class = 'cost-table search',
                                         h3("Bicycle & Pedestrian"),
-                                        DT::dataTableOutput("bikeped_costs_outputs_tbl")
-                                        # AH to remove the search box here
+                                        DT::dataTableOutput("bikeped_costs_outputs_tbl"),
+                                        p(""),
+                                        
                               )
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Transit: Increased Fixed Route Service"),
-                                      DT::dataTableOutput("transit_fixed_costs_outputs_tbl")
+                                      DT::dataTableOutput("transit_fixed_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Transit: Increased Demand Response Service"),
-                                      DT::dataTableOutput("transit_dr_costs_outputs_tbl")
+                                      DT::dataTableOutput("transit_dr_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
@@ -2354,55 +2371,64 @@ and potential applications.<br><br>
                                       p(""),
                                       p(""),
                                       h3("Transit: Fleet Electrification"),
-                                      DT::dataTableOutput("transit_zeb_costs_outputs_tbl")
+                                      DT::dataTableOutput("transit_zeb_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Public Transportation: Rail"),
-                                      DT::dataTableOutput("pub_trans_rail_costs_outputs_tbl")
+                                      DT::dataTableOutput("pub_trans_rail_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Travel Demand Management"),
-                                      DT::dataTableOutput("tdm_costs_outputs_tbl")
+                                      DT::dataTableOutput("tdm_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Micromobility"),
-                                      DT::dataTableOutput("micro_costs_outputs_tbl")
+                                      DT::dataTableOutput("micro_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Traffic Operations: Intersections"),
-                                      DT::dataTableOutput("traffic_ops_costs_outputs_tbl")
+                                      DT::dataTableOutput("traffic_ops_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Medium- and Heavy-Duty Vehicle Replacement (Electrification)"),
-                                      DT::dataTableOutput("mhdev_costs_outputs_tbl")
+                                      DT::dataTableOutput("mhdev_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Park & Ride"),
-                                      DT::dataTableOutput("pnr_costs_outputs_tbl")
+                                      DT::dataTableOutput("pnr_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("EV Charging Infrastructure"),
-                                      DT::dataTableOutput("evsi_costs_outputs_tbl")
+                                      DT::dataTableOutput("evsi_costs_outputs_tbl"),
+                                      p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
                                       h3("Roadway Expansion"),
-                                      DT::dataTableOutput("roadway_expand_costs_outputs_tbl")
+                                      DT::dataTableOutput("roadway_expand_costs_outputs_tbl"),
+                                      p("")
                             ),
                             # fluidRow( class = 'cost-table',
                             #           p(""),
@@ -3528,7 +3554,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(),#c(0:1),
+      non_editable_cols = c(0),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -3640,7 +3666,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(),#c(0:1),
+      non_editable_cols = c(0),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -3676,7 +3702,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(),#c(0:1),
+      non_editable_cols = c(0),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -3798,7 +3824,8 @@ server <- function(input, output, session) {
   observeEvent(input$transit_elec_budget_tbl_cell_edit, {
     req(rvs$Budget)
     # check dup
-    rvs$Budget[rvs$Budget$table_no_ui == 4,] <- reshaping_budget(input$transit_el_budget_tbl_cell_edit,
+    #browser()
+    rvs$Budget[rvs$Budget$table_no_ui == 4,] <- reshaping_budget(input$transit_elec_budget_tbl_cell_edit,
                                                                         rvs$Budget,
                                                                         tbl_no = 4,
                                                                         col1 = 'area_type',
@@ -4093,8 +4120,10 @@ server <- function(input, output, session) {
 
     
     temp <- left_join(tempf, tempb, by = c("funding_summary" = "category"))
-    temp[,3] <- temp[,4]*input$budget_total
-      
+    #browser()
+    #temp[,"perc_allocated"] <- temp[,"perc_allocated"]/100
+    temp[,length(temp) - 1] <- temp[,"perc_allocated"]/100*input$budget_total
+    #browser()
     rvs$Funding <- temp
     })
   
@@ -4109,24 +4138,43 @@ server <- function(input, output, session) {
       class = "compact",
       options = list(
         columnDefs = list(
-          list(orderable = FALSE, targets = "_all")
+          list(orderable = FALSE, targets = "_all"),
+          list(width = '60px', targets = 0) # making first column narrow
         ),
         paging = FALSE,
         dom = "t"
       ),
-      rownames = TRUE,
+      rownames = FALSE,
       callback = JS("
-                  table.on('draw', function(){
-                  table.columns([0,1,2,3]).nodes().flatten().to$().addClass('no-click');
-                  });
-                  "),
+table.on('draw', function(){
+  // Disable clicking in first four columns
+  table.columns([0,1,2,3]).nodes().flatten().to$().addClass('no-click');
+  
+  //Adding a max width for the first column because columndefs is not making the change
+  table.columns(0).nodes().flatten().to$().css('width', '60px');
+
+  // Add a custom class to first column for styling
+  table.columns([0]).nodes().flatten().to$().addClass('first-column');
+
+  // Bold the last row
+  var api = table;
+  var rows = api.rows({ page: 'current' }).nodes();
+  var lastRowIndex = api.rows().data().length - 1;
+
+  rows.each(function(row, i){
+    if (i === lastRowIndex) {
+      $(row).find('td').css('font-weight', 'bold');
+    }
+  });
+});
+    "),
       editable = list(
         target = 'all',
-        disable = list(columns = 0:3)
+        disable = list(columns = 0:4)
       ),
       selection = "none"
     ) %>%
-      formatCurrency("% Allocated", digits = 1, currency = "%", before = F) %>%
+      formatCurrency("% Allocated", digits = 1, currency = "%", before = FALSE) %>%
       formatCurrency("Million $", digits = 1) %>%
       formatStyle(
         "Million $",
@@ -5673,7 +5721,7 @@ server <- function(input, output, session) {
                  selection = "none",
                  options = list(
                    pageLength = 50,
-                   searching = TRUE,
+                   searching = FALSE,
                    paging = FALSE,
                    info = FALSE)) 
     if(input$cost_view == "detail"){
@@ -6358,12 +6406,17 @@ server <- function(input, output, session) {
             hovertemplate = paste0('%{text} %{x}:<br>', 
                                    'Emissions: %{y:.4s}<extra></extra>')
     ) |>
-      layout(#xaxis = list(title = "Year", standoff = 5),
-             yaxis = list(title = "Total Change"),
-             
-             margin = list(b = 10),
-             barmode = "relative",
-             legend = list(orientation = 'h')) |> 
+      layout(
+        xaxis = list(title = "Year"),
+        yaxis = list(title = "Total Change"),
+        margin = list(b = 80),
+        barmode = "relative",
+        legend = list(
+          orientation = 'h',
+          x = 0.5,
+          xanchor = 'center',
+          y = -0.3,
+          yanchor = 'top')) |> 
       config(displaylogo = FALSE, 
              modeBarButtonsToRemove = c("toImage","zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d", "toggleSpikelines", "hoverCompareCartesian", "hoverClosestGeo", "hoverClosest3d", "hoverClosestGeo", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "hoverClosestCartesian"))
     

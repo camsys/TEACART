@@ -80,15 +80,9 @@ This report was automatically generated using the TEA-CART tool.
 
 ## 1.Introduction
 
-The Transportation Evaluation and Carbon Reduction Tool (TEA-CART) is a comprehensive and dynamic tool aimed at assisting states with selecting and prioritizing transportation capital program investments to effectively support greenhouse gas (GHG) reduction. The tool is designed to accept inputs typically available during the programming process. It provides key outputs including:
+Georgetown Climate Center’s (GCC) Transportation Evaluation and Carbon Reduction Tool (TEA-CART) offers planning-level analysis to estimate the GHG performance of transportation capital program investments. The functionality of the tool has been informed by transportation agency officials. It is designed to serve as a resource for state Departments of Transportation (DOT) and Metropolitan Planning Organization (MPO) practitioners conducting long-term planning, project prioritization, and performance management.
 
--   A baseline inventory and forecast of GHG emissions.
-
--   GHG impacts of a capital program or a hypothetical set of capital projects.
-
--   Information on cost-effectiveness of various project types.
-
-TEA-CART is a planning-level tool. It is designed to accept relatively simple inputs, typically available at the long-range planning or programming stage, characterizing the number, size, context, and type of transportation projects that could reduce GHG emissions. As such, TEA-CART relies on data that is typical for projects of a given type. In practice, individual projects may results in a wide range of GHG effects. For more detailed, project-specific evaluation, users may want to refer to project-specific tools such as the Federal Highway Administration Congestion Mitigation and Air Quality Program (CMAQ) Emissions Calculator Toolkit.
+The primary purpose of TEA-CART is to help practitioners account for the environmental performance of proposed projects, so they can set meaningful targets for greenhouse gas or vehicle-miles traveled reduction and develop capital plans that prioritize transportation projects that will help achieve those goals. TEA-CART was developed by Cambridge Systematics under contract with the Georgetown Climate Center, which facilitated extensive input from state and federal officials.
 
 This report was generated using the following baseline inputs:\
 
@@ -449,7 +443,7 @@ writeLines("")
 
 ## 3. Budget Summary
 
-Add descrptive text here talk about what this budget section is about
+This section provides an overview of budget spending by category.
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
