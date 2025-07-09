@@ -4085,9 +4085,12 @@ server <- function(input, output, session) {
 
     #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
     #browser()
+
+    
     rvs$Budget <- foo
   })
 # FUNDING: Render ---------------------------------------------------------
+  #warning_count_funding <- 0 
   observe({
     #browser()
     tempf<-rvs$Funding |> select(-perc_allocated)
@@ -4124,6 +4127,11 @@ server <- function(input, output, session) {
     #temp[,"perc_allocated"] <- temp[,"perc_allocated"]/100
     temp[,length(temp) - 1] <- temp[,"perc_allocated"]/100*input$budget_total
     #browser()
+    if(sum(temp$perc_allocated[temp$funding_name == "total_funding"],na.rm = T) > 100 & warning_count_funding== 0){
+      #warning_count_funding <<- warning_count_funding + 1
+      warning = HTML("You have programmed more than 100% of your total budget.")
+      showNotification(HTML(warning), type = "warning")
+    }# else {warning_count_funding <<- 0}
     rvs$Funding <- temp
     })
   
