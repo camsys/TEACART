@@ -555,8 +555,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         'Projects 1 | Bicycle and
-           Pedestrian Lane Miles of New Infrastructure ',
+                                         'Projects 1 | Bicycle & Pedestrian Lane Miles of New Infrastructure ',
                                          HTML("This category represents implementation of any <b>two-way miles of new 
            bicycle or pedestrian facility.</b> The default assumption for these 
            project types is that any new bicycle or pedestrian facility would 
@@ -633,7 +632,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 4 | Fleet Electrification",
+                                         "Projects 4 | Transit: Fleet Electrification",
                                          HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
                         with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
                                        ),
@@ -707,7 +706,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 7 | Travel Demand Management / TDM",
+                                         "Projects 7 | Travel Demand Management (TDM)",
                                          HTML("This category represents the <b>number of employees covered through the TDM Program Outreach</b>. 
                    TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
                    reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",),
@@ -753,7 +752,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 9 | Traffic Operations",
+                                         "Projects 9 | Traffic Operations - Intersection Improvements ",
                                          HTML("This category represents any <b>improvements made to traffic operations at intersections</b>, such as new or retimed signals or new traffic-flow roundabouts."),
                                        ),
                                        open = TRUE
@@ -797,7 +796,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 11 | Park-and-Ride Projects",
+                                         "Projects 11 | Park-and-Ride",
                                          HTML("This category represents any <b>new addition or expansion of Park-and-Ride spaces</b>. A Park-and-Ride space 
                    allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
                                        ),
@@ -821,13 +820,13 @@ and potential applications.<br><br>
                                        accordion_panel(
                                          "Projects 12 | Charging Infrastructure and EV Incentives ",
                                          HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
-                   EV charging ports supply electric power for recharging electric vehicles."),
+                   EV charging ports supply electric power for recharging electric vehicles. EV incentives offset the cost of EVs for purchasers."),
                                        ),
                                        open = TRUE
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_evsi_projs_tbl", "Reset Projects 13", class = "btn-custom")
+                                     actionButton("reset_evsi_projs_tbl", "Reset Projects 12", class = "btn-custom")
                               ),
                               
                             ),
@@ -884,12 +883,34 @@ and potential applications.<br><br>
                             fluidRow(
                               DT::dataTableOutput("expansion_projs_tbl")
                             ),
+                            
+                            #Roadway Surfacing
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 15 | Roadway Resurfacing",
+                                         HTML("This category indicates lane miles resurfaced to <b>reduce surface roughness and decrease rolling resistance</b> on roadways."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_road_resurf_projs_tbl", "Reset Projects 15", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("road_resurf_projs_tbl")
+                            ),
+                            
+                            
                             #Transit Cuts
                             fluidRow(
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 15 | Transit Service Cuts",
+                                         "Projects 17 | Transit Service Cuts",
                                          HTML("This category represents <b>cuts to transit service</b> from current service levels, resulting from funding cuts.</b>"),
                                          # bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
                                          #                            title = "Cumulative View",
@@ -903,7 +924,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_transit_cuts_projs_tbl", "Reset Projects 14", class = "btn-custom")
+                                     actionButton("reset_transit_cuts_projs_tbl", "Reset Projects 17", class = "btn-custom")
                               ),
                               
                             ),
@@ -915,7 +936,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Projects 16 | Land Use",
+                                         "Projects 18 | Land Use",
                                          HTML("This category represents spending and 
                                          rezoned acres in support of <b>walkable, 
                                               transit-oriented development (TOD) areas</b>, using land use strategies such as placing destinations closer together and in environments more conducive to transit and non-motorized travel."),
@@ -924,7 +945,7 @@ and potential applications.<br><br>
                                      ),
                               ),
                               column(2,
-                                     actionButton("reset_land_use_projs_tbl", "Reset Projects 16", class = "btn-custom")
+                                     actionButton("reset_land_use_projs_tbl", "Reset Projects 18", class = "btn-custom")
                               ),
                               
                             ),
@@ -932,25 +953,7 @@ and potential applications.<br><br>
                               DT::dataTableOutput("land_use_projs_tbl")
                             ),
                             
-                            #Roadway Surfacing
-                            fluidRow(
-                              column(10,
-                                     accordion(
-                                       accordion_panel(
-                                         "Projects 17 | Roadway Resurfacing",
-                                         HTML("This category indicates lane miles resurfaced to <b>reduce surface roughness and decrease rolling resistance</b> on roadways."),
-                                       ),
-                                       open = TRUE
-                                     ),
-                              ),
-                              column(2,
-                                     actionButton("reset_road_resurf_projs_tbl", "Reset Projects 17", class = "btn-custom")
-                              ),
-                              
-                            ),
-                            fluidRow(
-                              DT::dataTableOutput("road_resurf_projs_tbl")
-                            ),
+
                             
                   ),
                   
@@ -1025,7 +1028,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 1 | Bicycle and
+                                         HTML(paste('Budget 1 | Bicycle &
            Pedestrian Lane Miles of New Infrastructure ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on bike/ped projects.")),
@@ -1137,7 +1140,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 5 | Bus Priority Treatment ',
+                                         HTML(paste('Budget 5 | Public Transportation: Bus Priority Treatment ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on bus priority treatment.")),
                                                     sep = "")),
@@ -1194,7 +1197,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 7 | Travel Demand Management ',
+                                         HTML(paste('Budget 7 | Travel Demand Management (TDM) ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on travel demand management.")),
                                                     sep = "")),
@@ -1243,7 +1246,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 9 | Traffic Operations ',
+                                         HTML(paste('Budget 9 | Traffic Operations - Intersection Improvements ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on traffic operations.")),
                                                     sep = "")),
@@ -1270,7 +1273,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         HTML(paste('Budget 10 | Medium- and Heavy-Duty Vehicle Replacement ',
+                                         HTML(paste('Budget 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement ',
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on medium- and heavy-duty vehicle replacement.")),
                                                     sep = "")),
@@ -1631,7 +1634,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Costs 10 | Medium- and Heavy-Duty Vehicle Replacement Costs",
+                                         "Costs 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement Costs",
                                          HTML("This category represents the <b>capital cost per vehicle, operating cost per mile</b>, and <b>fuel cost per vehicle revenue miles (VRM)</b> for all medium- and heavy-duty vehicles replaced with new electric vehicles."),
                                          
                                        ),
@@ -1653,7 +1656,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Costs 11 | Park & Ride Costs",
+                                         "Costs 11 | Park-and-Ride Costs",
                                          HTML("This category represents the <b>cost per space</b> for any new addition or expansion of Park-and-Ride spaces."),
                                          
                                        ),
@@ -1675,7 +1678,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Costs 12 | EV Charging Infrastructure Costs",
+                                         "Costs 12 | Charging Infrastructure Costs ",
                                          HTML("This category represents the <b>hardware cost per port</b> and <b>installation cost per port</b> for any new addition or expansion of EV charging ports."),
                                        ),
                                        open = TRUE
@@ -1730,34 +1733,13 @@ and potential applications.<br><br>
                               DT::dataTableOutput("roadway_expand_costs_tbl")
                             ),
                             
-                            
-                            # fuel price costs
-                            
-                            fluidRow(
-                              column(10,
-                                     accordion(
-                                       accordion_panel(
-                                         "Costs 15 | Fuel Price",
-                                         HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."), #AHFLAG
-                                       ),
-                                       open = TRUE
-                                     ),
-                              ),
-                              column(2,
-                                     actionButton("reset_fuel_costs_tbl", "Reset Costs 15", class = "btn-custom")
-                              ),
-                            ),
-                            fluidRow(
-                              DT::dataTableOutput("fuel_costs_tbl")
-                            ),
-                            
                             #roadway resurfacing 
                             
                             fluidRow(
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Costs 16 | Roadway Resurfacing",
+                                         "Costs 15 | Roadway Resurfacing",
                                          HTML("This category represents the <b>cost per lane-mile</b> of improving roadway surfaces, based on 20xx data."), #AHFLAG
                                        ),
                                        open = TRUE
@@ -1769,6 +1751,26 @@ and potential applications.<br><br>
                             ),
                             fluidRow(
                               DT::dataTableOutput("roadwayresurf_costs_tbl")
+                            ),
+                            
+                            # fuel price costs
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 16 | Fuel Price",
+                                         HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."), #AHFLAG
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_fuel_costs_tbl", "Reset Costs 16", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("fuel_costs_tbl")
                             ),
                             
                             
@@ -1793,7 +1795,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Assumptions 1 | Bicycle and Pedestrian Parameters",
+                                         "Assumptions 1 | Bicycle & Pedestrian Parameters",
                                          HTML("<p>
                                   This category includes the following data types:<br>
                                   <p>
