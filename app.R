@@ -3666,7 +3666,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(),#c(0:1),
+      non_editable_cols = c(0),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -3702,7 +3702,7 @@ server <- function(input, output, session) {
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(),#c(0:1),
+      non_editable_cols = c(0),#c(0:1),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
@@ -4120,12 +4120,15 @@ server <- function(input, output, session) {
 
     
     temp <- left_join(tempf, tempb, by = c("funding_summary" = "category"))
-    temp[,3] <- temp[,4]*input$budget_total
-      
+    #browser()
+    #temp[,"perc_allocated"] <- temp[,"perc_allocated"]/100
+    temp[,length(temp) - 1] <- temp[,"perc_allocated"]/100*input$budget_total
+    #browser()
     rvs$Funding <- temp
     })
   
   output$funding_summary_tbl <- renderDataTable({
+    #browser()
     formatted_funding <- rvs$Funding %>%
       select(-funding_name) %>%
       rename(any_of(references_vector))
