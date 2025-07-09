@@ -3997,6 +3997,20 @@ server <- function(input, output, session) {
   #BUDGET - PROJECT IO --------------------------------------------------
   observeEvent(input$fill_projects_bttn,{
     #browser()
+    if(!isTruthy(input$budget_start_year)|!isTruthy(input$budget_years_covered)|!isTruthy(input$budget_total)){
+      warning <- "Input(s) in the budget tab have been set to a value that is not usable by the tool:"
+      warning_add_1 <- ifelse(!isTruthy(input$budget_start_year), " Budget start year,","")
+      warning_add_2 <- ifelse(!isTruthy(input$budget_years_covered), " Budget years covered,","")
+      warning_add_3 <- ifelse(!isTruthy(input$budget_total), " Budget total,","")
+      
+      warning <- paste0(warning, warning_add_1, warning_add_2, warning_add_3)  
+      warning <- warning |> trimws() |>  str_sub(start = 1, end = nchar(warning) -1)
+      showNotification(HTML(warning), type = "error")
+    }
+    req(input$budget_start_year)
+    req(input$budget_years_covered)
+    req(input$budget_total)
+    
     temp_budget <- rvs$Budget |> 
       mutate(value = value/100)
     temp_budget$table_no_ui_revised = as.character(temp_budget$table_no_ui_revised)
@@ -4046,6 +4060,15 @@ server <- function(input, output, session) {
 
   observeEvent(input$fill_budget_bttn,{
     #browser()
+    if(!isTruthy(input$budget_total)){
+      warning <- "Input(s) in the budget tab have been set to a value that is not usable by the tool: Budget total is inccorect"
+      
+      #warning <- paste0(warning, warning_add_1, warning_add_2, warning_add_3)  |> str_sub(end = -1)
+      showNotification(HTML(warning), type = "error")
+    }
+    req(input$budget_start_year)
+    req(input$budget_years_covered)
+    req(input$budget_total)
     temp_budget <- rvs$Budget |> 
       mutate(value = value/100)
     temp_budget$table_no_ui_revised = as.character(temp_budget$table_no_ui_revised)
@@ -4092,6 +4115,7 @@ server <- function(input, output, session) {
 # FUNDING: Render ---------------------------------------------------------
   #warning_count_funding <- 0 
   observe({
+    req(input$budget_total)
     #browser()
     tempf<-rvs$Funding |> select(-perc_allocated)
     total <- rvs$Budget$value |> sum(na.rm = T)
@@ -4127,7 +4151,7 @@ server <- function(input, output, session) {
     #temp[,"perc_allocated"] <- temp[,"perc_allocated"]/100
     temp[,length(temp) - 1] <- temp[,"perc_allocated"]/100*input$budget_total
     #browser()
-    if(sum(temp$perc_allocated[temp$funding_name == "total_funding"],na.rm = T) > 100 & warning_count_funding== 0){
+    if(sum(temp$perc_allocated[temp$funding_name == "total_funding"],na.rm = T) > 100){
       #warning_count_funding <<- warning_count_funding + 1
       warning = HTML("You have programmed more than 100% of your total budget.")
       showNotification(HTML(warning), type = "warning")
