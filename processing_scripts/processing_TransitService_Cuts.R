@@ -92,7 +92,8 @@ output_transitservice_cuts <- reactive({
                             year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%
     group_by(area_type, fuel_type, transit_mode) %>%
     arrange(year) %>%
-    mutate(value = case_when(year > rvs$Baseline$horizon_year_1 ~ cumsum(value)/100, #NOTE: the inputs should be percentages not fractions
+    mutate(value = case_when(year > rvs$Baseline$horizon_year_1 ~ cumsum(value)/100
+                             , #NOTE: the inputs should be percentages not fractions shouldn't divide by 100 here. 
                              TRUE ~ value/100)) %>%
     ungroup() %>%
     select_if(~ any(!is.na(.))) %>%
@@ -148,7 +149,7 @@ output_transitservice_cuts <- reactive({
     summarise(
       total_change_MTCO2 = sum(total_change_MTCO2,na.rm = TRUE),
       total_change_VMT = sum(dVMT,na.rm = TRUE),
-      total_chage_newtrips =sum(total_new_trips,na.rm = TRUE),
+      total_change_newtrips =sum(total_new_trips,na.rm = TRUE),
       total_change_electricity = 0,
       total_change_direct = 0,
       total_change_upstream = 0,

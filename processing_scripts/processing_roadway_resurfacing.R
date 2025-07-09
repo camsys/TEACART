@@ -32,7 +32,7 @@ output_roadway_resurf <- reactive({
     summarise(across(where(is.numeric), ~sum(.x, na.rm = T))) |>
     mutate(weighted_avg = light*(1-percent_truck_traffic)+heavy*percent_truck_traffic) |> 
     mutate(d2014 = weighted_avg/em_rate_weight) |> 
-    mutate(ghg_per_lane_mile = d2014*ghg_per_m*cost_per_lane_mile)
+    mutate(ghg_per_lane_mile = d2014*ghg_per_m*cost_per_lane_mile/1000000)
   
   resurf <- rvs$Projects[rvs$Projects$table_no_ui == 17,] %>%
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
@@ -40,14 +40,17 @@ output_roadway_resurf <- reactive({
                             year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%
     group_by(area_type, fuel_type, transit_mode) %>%
     arrange(year) %>%
-    mutate(value = case_when(year > rvs$Baseline$horizon_year_1 ~ cumsum(value)/100, #NOTE: the inputs should be percentages not fractions
-                             TRUE ~ value/100)) %>%
+    mutate(value = case_when(year > rvs$Baseline$horizon_year_1 ~ cumsum(value)#/100  ## Qi note: this entry is mile not percent, shouldn't divide by 100
+                             , #NOTE: the inputs should be percentages not fractions
+                             TRUE ~ value
+                             #/100
+                             )) %>%
     ungroup() %>%
     select_if(~ any(!is.na(.))) %>% left_join(emrate_by_tech) |>
     left_join(temp_em_df_sub) |> 
     mutate(total_change_MTCO2 = value*ghg_per_lane_mile) |> 
     mutate(total_change_VMT = 0,
-           total_chage_newtrips = 0,
+           total_change_newtrips = 0,
            total_change_electricity = total_change_MTCO2*electricity_per_em,
            total_change_direct = total_change_MTCO2-total_change_electricity) |> 
     mutate(total_change_mtnox = total_change_direct*percent_truck_traffic*NOx_CO2_ratio_heavy+total_change_direct*(1-percent_truck_traffic)*NOx_CO2_ratio,
@@ -58,7 +61,7 @@ output_roadway_resurf <- reactive({
     summarise(
       total_change_MTCO2 = sum(total_change_MTCO2,na.rm = TRUE),
       total_change_VMT =0,
-      total_chage_newtrips = sum(total_chage_newtrips,na.rm = TRUE),
+      total_change_newtrips = sum(total_change_newtrips,na.rm = TRUE),
       total_change_electricity = sum(total_change_electricity),
       total_change_direct = sum(total_change_direct),
       total_change_upstream = 0,

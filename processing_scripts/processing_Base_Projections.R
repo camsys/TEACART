@@ -1201,7 +1201,7 @@ EmRate_Electric_MDHD <- reactive({
 # Outputs ---------------------------------------------------------------------
 scenario_summary_results <- reactive({    #req('')
   #req(reactive_scenario())
-  #browser()
+  # browser()
   base_year <- rvs$Baseline$base_year
   
   dt <- baseline_ghg_forecast()
@@ -1234,7 +1234,7 @@ scenario_summary_results <- reactive({    #req('')
   scen_select <-   reactive_scenario() 
  # scen_select |> mutate(`Grouped Projects` = ifelse(`Grouped Projects` == "Park-and-Ride"),"Park and Ride", `Grouped Projects`))
   strategy_temp <- scenario_sum() %>% left_join(scen_select, by = c("Strategy" = "Grouped Projects")) %>% 
-    select('year', Strategy,Scenario1, Scenario2, total_newtrips, total_change_mtnox, total_change_pm25, total_change_VMT, total_change_MTCO2)
+    select('year', Strategy,Scenario1, Scenario2, total_change_newtrips, total_change_mtnox, total_change_pm25, total_change_VMT, total_change_MTCO2)
   
   scen_co2 <- strategy_temp %>% mutate(year = as.character(year)) %>% 
     group_by(year) %>%
@@ -1273,8 +1273,8 @@ scenario_summary_results <- reactive({    #req('')
   
   scen_NewTrips <- strategy_temp %>%
     group_by(year) %>%
-    summarise(Scenario1 = sum(total_newtrips*Scenario1,na.rm=T),
-              Scenario2 = sum(total_newtrips*Scenario2,na.rm=T)) %>%
+    summarise(Scenario1 = sum(total_change_newtrips*Scenario1,na.rm=T),
+              Scenario2 = sum(total_change_newtrips*Scenario2,na.rm=T)) %>%
     pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")%>% 
     pivot_wider(names_from= year, values_from = value)  %>% 
     mutate(table_title = "New Daily Active Trips")

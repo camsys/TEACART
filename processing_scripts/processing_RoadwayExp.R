@@ -119,7 +119,7 @@ temp_output_fin<-temp_output%>%
   summarise(
     total_change_MTCO2 = sum(total_change_MTCO2,na.rm = TRUE),
     total_change_VMT = sum(total_change_VMT,na.rm = TRUE),
-    total_chage_newtrips =0,
+    total_change_newtrips =0,
     total_change_electricity = sum(total_change_electricity,na.rm = TRUE),
     total_change_direct = sum(total_change_direct,na.rm = TRUE),
     total_change_upstream = 0,

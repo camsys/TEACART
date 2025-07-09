@@ -24,7 +24,7 @@ filter_columns <- function(df, selected_columns, strategy_name) {
     mutate(Strategy = strategy_name) %>%
     group_by(year, Strategy) %>%
     summarise(
-      total_newtrips = sum(total_newtrips, na.rm = T),
+      total_change_newtrips = sum(total_change_newtrips, na.rm = T),
       total_change_mtnox = sum(total_change_mtnox, na.rm = T),
       total_change_pm25 = sum(total_change_pm25, na.rm = T),
       total_change_VMT = sum(total_change_VMT, na.rm = T),
@@ -34,7 +34,7 @@ filter_columns <- function(df, selected_columns, strategy_name) {
 
 scenario_sum <- reactive({
 #browser()
-selected_columns <- c("year", "total_newtrips",'total_change_mtnox','total_change_pm25','total_change_VMT','total_change_MTCO2')
+selected_columns <- c("year", "total_change_newtrips",'total_change_mtnox','total_change_pm25','total_change_VMT','total_change_MTCO2')
 
 bikeped <- filter_columns(output_bikped(),selected_columns,"Bicycle and Pedestrian")
 MDHD <- filter_columns(output_MDHD(),selected_columns,"MD/HD Truck Replacement")  
