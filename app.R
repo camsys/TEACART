@@ -2705,12 +2705,114 @@ server <- function(input, output, session) {
   
   observeEvent(input$user_inputs_upload, {
     if(isTruthy(input$user_inputs_upload)){
+
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
+      #everything below is used in error checking
+      user_inputs_raw <- read_user_inputs_excel("data/2.User_Inputs.xlsx")
+      
+      check1 <- ifelse(is.character(user_inputs$Baseline$state),""," state input,")
+      check2 <- ifelse(is.numeric(user_inputs$Baseline$base_year),""," base year input,")
+      check3 <- ifelse(is.numeric(user_inputs$Baseline$horizon_year_1),""," horizon year 1 input,")
+      check4 <- ifelse(is.numeric(user_inputs$Baseline$horizon_year_2),""," horizon year 2 input,")
+      check5 <- ifelse(is.numeric(user_inputs$Baseline$horizon_year_3),""," horizon year 3 input,")
+      check6 <- ifelse(is.character(user_inputs$Baseline$trans_system_scope),""," transportation system scope input,")
+      check7 <- ifelse(is.character(user_inputs$Baseline$include_electricity),""," include electricity input,")
+      check8 <- ifelse(is.character(user_inputs$Baseline$include_upstream_fuels),""," include upstream fuels input,")
+      check9 <- ifelse(is.character(user_inputs$Baseline$vmt_forecast),""," VMT forecast input,")
+      check10 <- ifelse(is.character(user_inputs$Baseline$veh_elec_baseline),""," electricity baseline input,")
+      check11 <- ifelse(is.numeric(user_inputs$Baseline$elec_grid_emissions_net_zero),""," net zero year input,")
+      check12 <- ifelse(is.character(user_inputs$Baseline$land_use_factor),""," land use factor input,")
+      check13 <- ifelse(is.character(user_inputs$Baseline$include_rail),""," rail emissions input,")
+      check14 <- ifelse(is.numeric(user_inputs$Baseline$budget_start_year),""," budget start year input,")
+      check15 <- ifelse(is.numeric(user_inputs$Baseline$budget_years_covered),""," budget years covered input,")
+      check16 <- ifelse(is.numeric(user_inputs$Baseline$budget_total),""," budget total input,")
+      input_checks <- paste0(check1, check2, check3, check4, check5, check6, check7, check8, check9, check10, check11, check12, check13, check14, check15, check16, check16)
+      
+      if(input_checks == ""){warning <- ""} else {
+        input_check <- input_checks |> str_sub(start = 0, end = nchar(input_check) - 1)
+        warning <- paste0("There was a problem with a user input:",input_check, "<br> Please check that the values for this input(s) are one of the allowable values and has the correct type e.g. 1 is saved as a number and not text<br>.")
+        }
+      
+      #first we check that the non-editable parts are the same
+      check17 <- all_equal(user_inputs$Costs[,names(user_inputs$Costs) != 'value'],user_inputs_raw$Costs[,names(user_inputs_raw$Costs) != 'value'],ignore_row_order = T)
+      if(isTRUE(check17)){
+        check17 <- ""
+        #if they are the same we check if the value is the correct type
+        if(!is.numeric(user_inputs$Costs$value)){check17<-"Cost input values are non-numeric<br>"} 
+      } else {
+        check17 <- paste0("Issue with Cost table: ",check17,"<br>")
+      }
+      
+      #first we check that the non-editable parts are the same
+      check18 <- all_equal(user_inputs$Budget[,names(user_inputs$Budget) != 'value'],user_inputs_raw$Budget[,names(user_inputs_raw$Budget) != 'value'],ignore_row_order = T)
+      if(isTRUE(check18)){
+        check18 <- ""
+        #if they are the same we check if the value is the correct type
+        if(!is.numeric(user_inputs$Budget$value)){check18<-"Budget input values are non-numeric<br>"} 
+        } else {
+          check18 <- paste0("Issue with Budget table: ",check18,"<br>")
+        }
+      
+      check19 <- all_equal(user_inputs$Funding[,1:3],user_inputs_raw$Funding[,1:3],ignore_row_order = T)
+      if(isTRUE(check19)){
+        check19 <- ""
+        #if they are the same we check if the value is the correct type
+        if(!is.numeric(user_inputs$Funding[,4][[1]])|!is.numeric(user_inputs$Funding[,5][[1]])){check19<-"Funding input values are non-numeric<br>"} 
+      } else {
+        check19 <- paste0("Issue with Funding table: ",check19,"<br>")
+      }
+      
+      check20 <- all_equal(user_inputs$Assumptions[,names(user_inputs$Assumptions) != 'value'],user_inputs_raw$Assumptions[,names(user_inputs_raw$Assumptions) != 'value'],ignore_row_order = T)
+      if(isTRUE(check20)){
+        check20 <- ""
+        #if they are the same we check if the value is the correct type
+        if(!is.numeric(user_inputs$Assumptions$value)){check20<-"Assumptions table input values are non-numeric<br>"} 
+      } else {
+        check20 <- paste0("Issue with Assumptions table: ",check20,"<br>")
+      }
+      
+      check21 <- all_equal(user_inputs$Advanced[,names(user_inputs$Advanced) != 'value'],user_inputs_raw$Advanced[,names(user_inputs_raw$Advanced) != 'value'],ignore_row_order = T)
+      if(isTRUE(check21)){
+        check21 <- ""
+        #if they are the same we check if the value is the correct type
+        #if(!is.numeric(user_inputs$Advanced$value)){check21<-"Advanced table input values are non-numeric<br>"} 
+      } else {
+        check21 <- paste0("Issue with Advanced table: ",check21,"<br>")
+      }
+      
+      check22 <- all_equal(user_inputs$Projects[,names(user_inputs$Projects) != 'value'],user_inputs_raw$Projects[,names(user_inputs_raw$Projects) != 'value'],ignore_row_order = T)
+      if(isTRUE(check22)){
+        check22 <- ""
+        #if they are the same we check if the value is the correct type
+        if(!is.numeric(user_inputs$Projects$value)){check22<-"Projects table input values are non-numeric<br>"} 
+      } else {
+        check22 <- paste0("Issue with Projects table: ",check22,"<br>")
+      }
+      check23 <- all_equal(user_inputs$Scenarios[,!(names(user_inputs$Scenarios) %in% c("Scenario1","Scenario2"))],user_inputs_raw$Scenarios[,!(names(user_inputs_raw$Scenarios) %in% c("Scenario1","Scenario2"))],ignore_row_order = T)
+      if(isTRUE(check23)){
+        check23 <- ""
+        #if they are the same we check if the value is the correct type
+        if(!is.logical(user_inputs$Scenarios$Scenario1)|!is.logical(user_inputs$Scenarios$Scenario2)){check23<-"Scenarios table input values are non-boolean (TRUE or FALSE)"} 
+      } else {
+        check23 <- paste0("Issue with Scenarios table: ",check23)
+      }
+      
+      #browser()
+      warning <- paste0(warning,check17,check18,check19,check20,check21,check22, check23)
+      if(warning != "") {
+        showNotification(HTML(warning), type = 'error')
+        user_inputs <- read_user_inputs_excel("data/2.User_Inputs.xlsx")
+        }
+      
+
     } else{
+      #print('huh')
       user_inputs <- read_user_inputs_excel("data/2.User_Inputs.xlsx")
     }
     
-    
+
+
+
     for(name in names(user_inputs)) {
       rvs[[name]] <- user_inputs[[name]]
     }
@@ -4007,6 +4109,7 @@ server <- function(input, output, session) {
       warning <- warning |> trimws() |>  str_sub(start = 1, end = nchar(warning) -1)
       showNotification(HTML(warning), type = "error")
     }
+    
     req(input$budget_start_year)
     req(input$budget_years_covered)
     req(input$budget_total)
