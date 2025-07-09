@@ -3986,7 +3986,7 @@ server <- function(input, output, session) {
     rvs$Budget[rvs$Budget$table_no_ui == 17,] <- reshaping_budget(input$resurfacing_budget_tbl_cell_edit,
                                                                          rvs$Budget,
                                                                          tbl_no = 17,
-                                                                  col1 = NA)
+                                                                  col1 = 'unit')
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
