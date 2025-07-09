@@ -2449,7 +2449,7 @@ and potential applications.<br><br>
                             #           DT::dataTableOutput("roadway_resurf_cuts_costs_outputs_tbl")
                             # )
                   ),
-                )),
+
       
       # fluidRow(
       #   column(10,
@@ -2476,6 +2476,420 @@ and potential applications.<br><br>
       # ),
       
       
+                  # cumulative projects ui -------------------------------------
+nav_panel(title = "Cumulative Project Totals",
+          fluidRow(
+            HTML("<p>These tables represent the cumulative project totals based on user inputs in the project tab.
+                                   "
+            ),),
+          
+          # bike ped
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       'Cumulative Projects 1 | Bicycle & Pedestrian Lane Miles of New Infrastructure ',
+                       HTML("This category represents implementation of any <b>two-way miles of new 
+           bicycle or pedestrian facility."),
+                     ),
+                     id = "acc1",
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_bikeped_projscumu_tbl", "Reset Projects 1", class = "btn-custom"),
+            # ),
+          ),
+          fluidRow(
+            DT::dataTableOutput("bikeped_projscumu_tbl")
+            
+          ),
+          
+          
+          
+          # transit fixed route
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 2 | Transit: Increased Fixed Route Service",
+                       HTML("This category represents additions of <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
+               Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
+                       ),
+                       
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_transit_fixed_projscumu_tbl", "Reset Projects 2", class = "btn-custom")
+            # ),
+          ),
+          fluidRow(
+            DT::dataTableOutput("transit_fixed_projscumu_tbl")
+          ),
+          
+          
+          # transit DR
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 3 | Transit: Increased Demand Response Service",
+                       HTML("This category represents addition of any <b>new demand response service vehicles operated in maximum service (VOMS).</b> 
+              Demand response service vehicles include non-fixed route services that are initiated by customers and require advanced scheduling, 
+                        such as vehicles provided by public entities, nonprofits, and private providers."
+                       ),
+                       
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_transit_dr_projscumu_tbl", "Reset Projects 3", class = "btn-custom")
+            # ),
+            # 
+          ),
+          fluidRow(
+            DT::dataTableOutput("transit_dr_projscumu_tbl")
+          ),
+          
+          # fleet electrification
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 4 | Transit: Fleet Electrification",
+                       HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
+                        with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_transit_el_projscumu_tbl", "Reset Projects 4", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("transit_el_projscumu_tbl")
+          ),
+          
+          # bus priority
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 5 | Public Transportation: Bus Priority Treatment",
+                       HTML("This category represents addition of miles of <b>new bus priority treatment</b>. Bus priority treatment refers 
+                        to the improvement of transit speed and reliability between stops by changing the designation of street space. 
+                        Some examples include a bus-only lane, which assigns exclusive street space to buses, and a bus approach lane, 
+                        which assigns exclusive street spaces to buses as they approach an intersection."),
+                       
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_transit_bus_projscumu_tbl", "Reset Projects 5", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("transit_bus_projscumu_tbl")
+          ),
+          
+          # public transportation - rail
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 6 | Public Transportation: Rail",
+                       HTML("This category represents addition of any 
+                                              <b>new rail vehicles operating in maximum 
+                                              service (VOMS)</b>, including service on 
+                                              light rail or streetcar lines, heavy 
+                                              rail, and commuter rail.",),
+                       
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_public_rail_projscumu_tbl", "Reset Projects 6", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("public_rail_projscumu_tbl")
+          ),
+          
+          
+          # TDM
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 7 | Travel Demand Management (TDM)",
+                       HTML("This category represents the <b>number of employees covered through the TDM Program Outreach</b>. 
+                   TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
+                   reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",),
+                       
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_tdm_projscumu_tbl", "Reset Projects 7", class = "btn-custom")
+            # ),
+            # 
+          ),
+          fluidRow(
+            DT::dataTableOutput("tdm_projscumu_tbl")
+          ),
+          
+          # Micromobility
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 8 | Micromobility",
+                       HTML("This category represents the <b>number of e-bikes funded</b> through the implementation of <b> e-bike subsidies</b>. 
+                   An e-bike subsidy reimburses part of the cost of an e-bike."),
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_micro_projscumu_tbl", "Reset Projects 8", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("micro_projscumu_tbl")
+          ),
+          
+          # traffic ops
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Projects 9 | Traffic Operations - Intersection Improvements ",
+                       HTML("This category represents any <b>improvements made to traffic operations at intersections</b>, such as new or retimed signals or new traffic-flow roundabouts."),
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_traffic_ops_projscumu_tbl", "Reset Projects 9", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("traffic_ops_projscumu_tbl")
+          ),
+          
+          # MHDEV
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
+                       HTML("This category represents <b>replacement of any fossil fuel medium- or heavy-duty vehicles with electric vehicles</b>, 
+                   with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle."),
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_mhdev_projscumu_tbl", "Reset Projects 10", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("mhdev_projscumu_tbl")
+          ),
+          
+          
+          # Park & Ride
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 11 | Park-and-Ride",
+                       HTML("This category represents any <b>new addition or expansion of Park-and-Ride spaces</b>. A Park-and-Ride space 
+                   allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_pnr_projscumu_tbl", "Reset Projects 11", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("pnr_projscumu_tbl")
+          ),
+          
+          # EVSI
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 12 | Charging Infrastructure and EV Incentives ",
+                       HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
+                   EV charging ports supply electric power for recharging electric vehicles. EV incentives offset the cost of EVs for purchasers."),
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_evsi_projscumu_tbl", "Reset Projects 12", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("evsi_projscumu_tbl")
+          ),
+          
+          # freight intermodal facilities
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 13 | Freight Intermodal Facilities",
+                       HTML("This category represents the assumed 
+                                         annual growth rate 
+                                              of freight rail, the energy intensity as 
+                                              measured in British Thermal Units (BTU) 
+                                              per ton-mile, and the change in annual 
+                                              VMT or ton-miles per unit of investment."),
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_freight_projscumu_tbl", "Reset Projects 13", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("freight_projscumu_tbl")
+          ),
+          
+          
+          # Roadway expansion
+          
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 14 | Roadway Expansion",
+                       HTML("This category represents addition of any <b>new lane-miles of roadways,</b> 
+                                              based  on the facility type of the roadway 
+                                              and the area type of the facility."),
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_expansion_projscumu_tbl", "Reset Projects 14", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("expansion_projscumu_tbl")
+          ),
+          
+          #Roadway Surfacing
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 15 | Roadway Resurfacing",
+                       HTML("This category indicates lane miles resurfaced to <b>reduce surface roughness and decrease rolling resistance</b> on roadways."),
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_road_resurf_projscumu_tbl", "Reset Projects 15", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("road_resurf_projscumu_tbl")
+          ),
+          
+          
+          #Transit Cuts
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 17 | Transit Service Cuts",
+                       HTML("This category represents <b>cuts to transit service</b> from current service levels, resulting from funding cuts.</b>"),
+                       # bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                       #                            title = "Cumulative View",
+                       #                            placement = "bottom",
+                       #                            options = list(container = "body"),
+                       #                            DTOutput(outputId = "cumul_transit_cuts_projscumu_tbl")
+                       # ))
+                       # FLAG this is the only place the cumulative calculation still exists
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_transit_cuts_projscumu_tbl", "Reset Projects 17", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("transit_cuts_projscumu_tbl")
+          ),
+          #Land Use
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 18 | Land Use",
+                       HTML("This category represents spending and 
+                                         rezoned acres in support of <b>walkable, 
+                                              transit-oriented development (TOD) areas</b>, using land use strategies such as placing destinations closer together and in environments more conducive to transit and non-motorized travel."),
+                     ),
+                     open = TRUE
+                   ),
+            ),
+            # column(2,
+            #        actionButton("reset_land_use_projscumu_tbl", "Reset Projects 18", class = "btn-custom")
+            # ),
+            
+          ),
+          fluidRow(
+            DT::dataTableOutput("land_use_projscumu_tbl")
+          ),
+
+          
+          
+),
+                )),
+
+
       # sources tab ui ----------------------------------------------------------
       
       
@@ -3567,6 +3981,309 @@ server <- function(input, output, session) {
   })  
   
   
+  
+  # Project Cumulative Tables: Render ------------------------------------------
+  observe({
+    temp <- rvs$Projects
+    temp <- temp |> pivot_wider(names_from = year, values_from = value)
+    temp$horizon_year_2 <- temp$horizon_year_2 + temp$horizon_year_1
+    temp$horizon_year_3 <- temp$horizon_year_3 + temp$horizon_year_2
+    temp <- temp |> pivot_longer(cols = c("horizon_year_1","horizon_year_2","horizon_year_3"), names_to = "year",values_to = "value")
+    rvs$Projectscumu <- temp
+  })
+  
+  output$bikeped_projscumu_tbl <- renderDT({
+    req(rvs)
+    temp_send <- rvs$Projectscumu[rvs$Projectscumu$table_no_ui == 1,]
+    # browser()
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 1,
+      non_editable_cols = c(0:5),
+      page_length = 21,
+      comma_rows = 0:21,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  })
+  
+  output$transit_fixed_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 2,
+      non_editable_cols = c(0:5),
+      page_length = 10,
+      comma_rows = 0:6,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  output$transit_dr_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 3,
+      non_editable_cols =c(0:5),
+      page_length = 10,
+      comma_rows = 0:6,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  output$transit_el_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 4,
+      non_editable_cols = c(0:5),
+      page_length = 10,
+      comma_rows = 0:8,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  output$transit_bus_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 5,
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = integer(1),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  output$public_rail_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 6,
+      non_editable_cols = c(0:5),
+      page_length = 8,
+      comma_rows = 0:3,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  output$tdm_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 7,
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = 0,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  output$micro_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 8,
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = 0,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  output$traffic_ops_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 9,
+      non_editable_cols = c(0,1,2,3,4,5),
+      page_length = 10,
+      comma_rows = 0:3,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  output$mhdev_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 10,
+      non_editable_cols = c(0:5),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  output$pnr_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 11,
+      non_editable_cols = c(0:3),
+      page_length = 1,
+      comma_rows = 0,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  
+  output$evsi_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 12,
+      non_editable_cols = c(0,1,2,3,4,5),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  
+  output$freight_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 13,
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  
+  output$expansion_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 14,
+      non_editable_cols = c(0:5),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  
+  output$transit_cuts_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    #browser()
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 15,
+      non_editable_cols = c(0:5),
+      page_length = 10,
+      comma_rows = 0:7,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  output$land_use_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 16,
+      non_editable_cols =c(0:4),
+      page_length = 10,
+      comma_rows = 0:15,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
+  
+  output$road_resurf_projscumu_tbl <- renderDT({
+    
+    req(rvs$Projectscumu)
+    temp_send <- rvs$Projectscumu
+    
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 17,
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = 0:2,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    
+  })
+  
   # BUDGET: Render ---------------------------------------------------
   
   
@@ -3910,7 +4627,7 @@ server <- function(input, output, session) {
                                                                  col3 = 'transit_mode')
   })
   
-  # observe edits to the transit_dr_projs_tbl_cell_edit
+  # observe edits to the transit_dr_projscumu_tbl_cell_edit
   observeEvent(input$transit_dr_budget_tbl_cell_edit, {
     req(rvs$Budget)
     
