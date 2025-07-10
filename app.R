@@ -3119,6 +3119,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$user_inputs_upload, {
     if(isTruthy(input$user_inputs_upload)){
+      # browser()
 
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
       #everything below is used in error checking
@@ -3166,7 +3167,6 @@ server <- function(input, output, session) {
         } else {
           check18 <- paste0("Issue with Budget table: ",check18,"<br>")
         }
-      
       check19 <- all_equal(user_inputs$Funding[,1:3],user_inputs_raw$Funding[,1:3],ignore_row_order = T)
       if(isTRUE(check19)){
         check19 <- ""
@@ -3219,8 +3219,7 @@ server <- function(input, output, session) {
         }
       
 
-    } else{
-      #print('huh')
+    } else{      #print('huh')
       user_inputs <- read_user_inputs_excel("data/2.User_Inputs.xlsx")
     }
     
@@ -5452,7 +5451,7 @@ table.on('draw', function(){
   
   output$bikeped_costs_tbl <- renderDT({
     req(rvs$Costs)
-    
+  
     render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 1,
@@ -5469,7 +5468,7 @@ table.on('draw', function(){
   
   output$transit_fixed_costs_tbl <- renderDT({
     req(rvs$Costs)
-    
+    # browser()
     render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 2,
@@ -6586,7 +6585,7 @@ table.on('draw', function(){
   
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
-    
+     # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
       output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
@@ -7301,6 +7300,16 @@ table.on('draw', function(){
   
   ## download PDF report
   
+  ## capture if user ever triggered the budget button
+  
+  user_visited_budget <- reactiveVal(FALSE)
+  
+  observeEvent(input$INPUTS_TABS , {
+    if (input$INPUTS_TABS  == "Budget") {
+      user_visited_budget(TRUE)
+    }
+  })
+    
   output$pdf_report <- downloadHandler(
     
     filename = function(){
@@ -7313,6 +7322,13 @@ table.on('draw', function(){
       req(baseline_ghg_forecast())
       
       dt <- baseline_ghg_forecast()
+      
+      if (user_visited_budget()) {
+        
+        include_budget <- 1
+      } else {
+        include_budget <- 0
+      }
       
       dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
         filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
@@ -7376,11 +7392,6 @@ table.on('draw', function(){
         return(updated_list)
       }
       
-      observe({
-        req(all_costs())
-        print(str(all_costs()))
-      })
-      
       cost_data <- all_costs() %>%
         lapply(., replace_underscores) %>%
         lapply(., replace_na_with_string) %>%
@@ -7422,7 +7433,8 @@ table.on('draw', function(){
                               funding_yr = input$funding_start_year,
                               funding_dur = input$funding_years,
                               funding_bgt = input$total_budget,
-                              rail = input$include_rail
+                              rail = input$include_rail,
+                              include_bgt = include_budget
                             ),
                             output_format = "pdf_document",
                             output_options = list(

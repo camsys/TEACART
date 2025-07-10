@@ -68,6 +68,7 @@ all_costs <- reactive({
    #val2_scalar = ,
    style = 'summary'
  ) 
+
  
  transit_fixed <- cost_function(
    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
@@ -188,13 +189,13 @@ all_costs <- reactive({
    #   col_sel = c(),
    #   proj_life = NA,
    #   style ='summary')
-   roadway_resurf<- cost_function(
-     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==15,],
-     output_table = cost_output_roadway_resurf(),
-     col_sel = c(),
-     proj_life = NA,
-     style ='summary')
-   
+   # roadway_resurf<- cost_function(
+   #   ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==15,],
+   #   output_table = cost_output_roadway_resurf(),
+   #   col_sel = c(),
+   #   proj_life = NA,
+   #   style ='summary')
+   # 
    all_costs <- list(bikeped = bikeped,
                      transit_fixed = transit_fixed,
                      transit_dr = transit_dr,
@@ -208,9 +209,10 @@ all_costs <- reactive({
                      pnr=pnr,
                      evsi=evsi,
                      roadway=roadway,
-                     intermodal=intermodal,
+                     intermodal=intermodal#,
                      #transit_cuts = transit_cuts,
                      #land_use = land_use,
-                     roadway_resurf = roadway_resurf)
+                     # roadway_resurf = roadway_resurf
+                     )
    return(all_costs)
        })

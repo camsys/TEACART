@@ -29,6 +29,8 @@ params:
  funding_dur: NULL
  funding_bgt: NULL
  rail: NULL
+ include_bgt: NULL
+ 
 document:
   top-margin: "0.5in"
 ---
@@ -441,18 +443,24 @@ writeLines("")
 
 ```
 
-## 3. Budget Summary
 
-This section provides an overview of budget spending by category.
 
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
 #| warning: false
 #| message: false
 
+## 3. Budget Summary
 
+
+
+ 
 ## these are the parameters user defined for the budget
-
+if (params$include_bgt == 1){
+   print(tagList(
+      cat("###", "3. Budget Summary", "\n\n",
+          "This section provides an overview of budget spending by category.")))
+  
 print(tagList( cat( paste0(
   "  \n\n  ",
   'Funding Start Year: ',params$funding_yr,  "  \n\n  ",
@@ -471,7 +479,7 @@ print(tagList(
 
 kable(budget_tbl, digits = 1) %>%
     kable_styling(position = "left", full_width = FALSE) %>%
-  row_spec(nrow(budget_tbl), bold = TRUE, background = "#f0f0f0")
+  row_spec(nrow(budget_tbl), bold = TRUE, background = "#f0f0f0")}
 
 
 ```
