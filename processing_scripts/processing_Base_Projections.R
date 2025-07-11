@@ -845,6 +845,7 @@ public_transit_emissions <- reactive({ #not sure where we need this so I'm leavi
       dr_revmiles = DR,
       mb_revmiles = MB)
   
+  #browser()
   
   #NOTE FOR BEN: Issue here where the excel sheet is referencing the on-road vehcile economy for Bus: Diesel instead of COmmuter BUs: Diesel in public transit tab
   Public_Transit <- Public_Transit %>%
@@ -861,7 +862,7 @@ public_transit_emissions <- reactive({ #not sure where we need this so I'm leavi
            CB_cng_emintensity =  (1/CB_cng_mpgge)*input_CNG_per_Gasoline_eq*input_CNG_CO2_kg_per_gallon*1000 + input_HeavyDutyTruck_CNG_CH4_gCO2e_per_mile + input_HeavyDutryTruck_CNG_NOX_gCO2e_per_mile,
            CB_electric_emintensity =  (1/CB_electric_mpgge)*input_Electricity_per_Gasoline_eq*electricity_carbon_content
            ) %>% 
-    filter(year >= 2021) %>%
+   # filter(year >= 2021) %>%
     mutate(
       MB_Emissions_Direct = (MB_diesel_emintensity*input_MB_app_diesel+MB_cng_emintensity*input_MB_app_CNG)*mb_revmiles/1000000,
       MB_Emissions_Electricity = (MB_electric_emintensity*input_MB_app_Electric)*mb_revmiles/1000000,
