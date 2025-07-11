@@ -221,7 +221,9 @@ observeEvent(input$state_input, {
 
 
   #Costs
-  #print("per VRM fuel costs start")
+  print("per VRM fuel costs start")
+  #browser()
+  
   rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
                     #rvs$Costs$area_type == "Urban" &
                     rvs$Costs$fuel_type == "Diesel" &
@@ -244,7 +246,7 @@ observeEvent(input$state_input, {
                                rvs$Assumptions$transit_mode == "Bus" &
                                rvs$Assumptions$table_no_ui == 2]) *
     (Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" & Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"])*
-    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Diesel" & rvs$Costs$unit == "dollars_per_gallon"])
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Diesel" & rvs$Costs$unit == "dollars_per_gallon"]) 
   #print("VRM 2")
   rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
                     #rvs$Costs$area_type == "Urban" &
@@ -704,6 +706,7 @@ passenger_rail_fuel_factors <- reactive({
 })
 
 passenger_rail_emissions <- reactive({
+  
   temp<-passenger_rail_miles() %>% 
     left_join(passenger_rail_fuel_factors()) %>%
     mutate(
@@ -938,13 +941,23 @@ baseline_ghg_forecast <- reactive({
   #Em_OnRoad_Base_up()
   #public_transit_emissions()
   #passenger_rail_emissions()
- 
+  #this is for removing public transit emissions from MD/HD vehicle emissions
+  public_transit_subtract <- public_transit_emissions()%>%
+    filter(year %in% c(rvs$Baseline$base_year, 
+                       rvs$Baseline$horizon_year_1,
+                       rvs$Baseline$horizon_year_2,
+                       rvs$Baseline$horizon_year_3)) %>%
+    mutate(veh_supertype = "Public Transit") %>%
+    mutate(subtract = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% #View()
+    select(year, subtract)
+ #browser()
   temp<- Em_OnRoad_Base_up() %>%
     filter(year %in% c(rvs$Baseline$base_year, 
                        rvs$Baseline$horizon_year_1,
                        rvs$Baseline$horizon_year_2,
                        rvs$Baseline$horizon_year_3)) %>%
-    mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% 
+    left_join(public_transit_subtract) |> 
+    mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream - subtract) %>% 
     select(veh_supertype,year, Emissions) %>% #View()
     
     rbind(
@@ -990,7 +1003,7 @@ baseline_ghg_forecast <- reactive({
         mutate(veh_supertype = "Construction and Maintenance") %>%
         mutate(Emissions = MT_CO2e_direct + use_up*MT_CO2e_upstream) %>% 
         select(veh_supertype,year, Emissions)
-    ) %>%
+    ) %>% 
     pivot_wider(names_from= year, values_from = Emissions)
  
   
@@ -1005,14 +1018,15 @@ baseline_ghg_forecast_all_years <- reactive({
   if(use_e %in% c("TRUE","1","Yes","YES")){use_e <- 1} else {use_e <- 0}
   if(use_up %in% c("TRUE","1","Yes","YES")){use_up <- 1} else {use_up <- 0}
   if(use_rr %in% c("TRUE","1","Yes","YES")){use_rr <- 1} else {use_rr <- 0}
-  
+  #this is for removing public transit emissions from MD/HD vehicle emissions
+  public_transit_subtract <- public_transit_emissions()%>%
+    mutate(veh_supertype = "Public Transit") %>%
+    mutate(subtract = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% #View()
+    select(year, subtract)
   
   temp<- Em_OnRoad_Base_up() %>%
-    #filter(year %in% c(2021, 
-    #                   rvs$Baseline$horizon_year_1,
-    #                   rvs$Baseline$horizon_year_2,
-    #                   rvs$Baseline$horizon_year_3)) %>%
-    mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% 
+    left_join(public_transit_subtract) |> 
+    mutate(Emissions = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream - subtract) %>% 
     select(veh_supertype,year, Emissions) %>%
     
     rbind(

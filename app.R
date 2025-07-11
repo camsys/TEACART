@@ -5293,43 +5293,7 @@ table.on('draw', function(){
                                                                           tbl_no = 9)
   })
   
-  # end of reshaping assumptions
-  
-  
-  observeEvent(input$transit_assmps_edit, {
-    print("does this signal? 06082025")
-    transit_assmps <<- editData(transit_assmps, input$transit_assmps_edit, 'transit_assmps_tbl')
-  })
-  
-  observeEvent(input$tdm_assmps_edit, {
-    tdm_assmps <<- editData(tdm_assmps, input$tdm_assmps_edit, 'tdm_assmps_tbl')
-  })
-  
-  observeEvent(input$micro_assmps_edit, {
-    micro_assmps <<- editData(micro_assmps, input$micro_assmps_edit, 'micro_assmps_tbl')
-  })
-  
-  observeEvent(input$traffic_ops_assmps_edit, {
-    traffic_ops_assmps <<- editData(traffic_ops_assmps, input$traffic_ops_assmps_edit, 'traffic_ops_assmps_tbl')
-  })
-  
-  observeEvent(input$mhdv_assmps_edit, {
-    mhdv_assmps <<- editData(mhdv_assmps, input$mhdv_assmps_edit, 'mhdv_assmps_tbl')
-  })
-  
-  observeEvent(input$pnr_assmps_edit, {
-    pnr_assmps <<- editData(pnr_assmps, input$pnr_assmps_edit, 'pnr_assmps_tbl')
-  })
-  
-  observeEvent(input$evsi_assmps_edit, {
-    evsi_assmps <<- editData(evsi_assmps, input$evsi_assmps_edit, 'evsi_assmps_tbl')
-  })
-  
-  observeEvent(input$landuse_assmps_edit, {
-    landuse_assmps <<- editData(landuse_assmps, input$landuse_assmps_edit, 'landuse_assmps_tbl')
-  })
-  
-  
+
 
 # observe reset button on budget ------------------------------------------
 
@@ -5411,38 +5375,47 @@ table.on('draw', function(){
   
   observeEvent(input$reset_bikeped_assmps_tbl, {
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 1,] <- initial_assumptions[initial_assumptions$table_no_ui == 1, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_transit_assmps_tbl, {
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 2,] <- initial_assumptions[initial_assumptions$table_no_ui == 2, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_tdm_assmps_tbl, {
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 3,] <- initial_assumptions[initial_assumptions$table_no_ui == 3, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_micro_assmps_tbl, {
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 4,] <- initial_assumptions[initial_assumptions$table_no_ui == 4, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_traffic_ops_assmps_tbl, {
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 5,] <- initial_assumptions[initial_assumptions$table_no_ui == 5, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_mhdv_assmps_tbl, {
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 6,] <- initial_assumptions[initial_assumptions$table_no_ui == 6, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_pnr_assmps_tbl, {
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 7,] <- initial_assumptions[initial_assumptions$table_no_ui == 7, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_evsi_assmps_tbl, {
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 8,] <- initial_assumptions[initial_assumptions$table_no_ui == 8, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_landuse_assmps_tbl, {
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 9,] <- initial_assumptions[initial_assumptions$table_no_ui == 9, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   
@@ -5468,7 +5441,6 @@ table.on('draw', function(){
   
   output$transit_fixed_costs_tbl <- renderDT({
     req(rvs$Costs)
-    # browser()
     render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 2,
@@ -5719,7 +5691,7 @@ table.on('draw', function(){
   ## observe change to transit_fixed_costs
   observeEvent(input$transit_fixed_costs_tbl_cell_edit, {
     req(rvs$Costs)
-    
+    print('the reshape for table 2 is running')
     rvs$Costs[rvs$Costs$table_no_ui == 2,] <- reshaping_cost(input$transit_fixed_costs_tbl_cell_edit,
                                                              rvs$Costs,
                                                              num_col = 3, # how many numeric columns 
@@ -5904,58 +5876,82 @@ table.on('draw', function(){
   
   observeEvent(input$reset_bikeped_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 1,] <- initial_costs[initial_costs$table_no_ui == 1, ]
-  })  
+    #browser()
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+    })  
   
   observeEvent(input$reset_transit_fixed_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 2,] <- initial_costs[initial_costs$table_no_ui == 2, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+    
   })  
   
   observeEvent(input$reset_transit_dr_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 3,] <- initial_costs[initial_costs$table_no_ui == 3, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+    
   })  
   
   observeEvent(input$reset_pub_trans_priority_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 4,] <- initial_costs[initial_costs$table_no_ui == 4, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+    
   })  
   
   observeEvent(input$reset_tdm_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 5,] <- initial_costs[initial_costs$table_no_ui == 5, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+    
   })  
   
   observeEvent(input$reset_pub_trans_rail_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 6,] <- initial_costs[initial_costs$table_no_ui == 6, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+    
   })  
   
   observeEvent(input$reset_micro_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 7,] <- initial_costs[initial_costs$table_no_ui == 7, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+    
   })  
   
   observeEvent(input$reset_traffic_ops_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 8,] <- initial_costs[initial_costs$table_no_ui == 8, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+    
   })  
   
   observeEvent(input$reset_mhdev_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 9,] <- initial_costs[initial_costs$table_no_ui == 9, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+    
   })  
   
   observeEvent(input$reset_pnr_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 10,] <- initial_costs[initial_costs$table_no_ui == 10, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+    
   })  
   
   observeEvent(input$reset_evsi_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 11,] <- initial_costs[initial_costs$table_no_ui == 11, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_roadway_expand_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 12,] <- initial_costs[initial_costs$table_no_ui == 12, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_fuel_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 13,] <- initial_costs[initial_costs$table_no_ui == 13, ]
-  })  
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+    })  
   
   observeEvent(input$reset_intermodal_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 14,] <- initial_costs[initial_costs$table_no_ui == 14, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
 
@@ -6345,30 +6341,37 @@ table.on('draw', function(){
   
   observeEvent(input$reset_ev_forecast_sheet_tbl, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 1,] <- initial_advanced[initial_advanced$table_no_ui == 1, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_vmt_forecast_sheet_tbl, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 2,] <- initial_advanced[initial_advanced$table_no_ui == 2, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$onroad_fuel_tech_frac_sheet, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 3,] <- initial_advanced[initial_advanced$table_no_ui == 3, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_pass_rail_sheet_tbl, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 4,] <- initial_advanced[initial_advanced$table_no_ui == 4, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_freight_rail_sheet_tbl, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 5,] <- initial_advanced[initial_advanced$table_no_ui == 5, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_construction_sheet_tbl, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 6,] <- initial_advanced[initial_advanced$table_no_ui == 6, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_fuel_apportionment_sheet_tbl, {
     rvs$Advanced[rvs$Advanced$table_no_ui == 7,] <- initial_advanced[initial_advanced$table_no_ui == 7, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   # Outputs Tab --------------------------------------------------------

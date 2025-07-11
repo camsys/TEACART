@@ -67,7 +67,7 @@ render_custom_datatable <- function(#input_reactives,
 
     #lapply(input_reactives, req)
     req(data_reactive)
-    # browser()
+    
     if(is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table_number,]) != 1 & table_number != 13){ 
   #  for Costs tab, no need to join the references
     reshaped_table <- data_reactive  %>%
