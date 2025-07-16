@@ -1179,7 +1179,7 @@ EmRate_Conventional_MDHD <- reactive({
 })
 
 EmRate_Electric_LDV <- reactive({ ### excel doesn't grab all electric vehicles - but I think it should be this way?
-  EmRate_by_Tech() %>% 
+  a<- EmRate_by_Tech() %>% 
     filter(veh_subtype %in% c("EV100", "EV200", "EV300")) %>%
     select(veh_type, veh_subtype, year, emission_rate) %>%
     left_join(VMT_Type_Tech_Electric_LDV(), by = join_by(veh_type, veh_subtype, year), relationship = "one-to-one") %>%

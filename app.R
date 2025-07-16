@@ -3119,7 +3119,6 @@ server <- function(input, output, session) {
   
   observeEvent(input$user_inputs_upload, {
     if(isTruthy(input$user_inputs_upload)){
-      # browser()
 
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
       #everything below is used in error checking
@@ -6585,7 +6584,7 @@ table.on('draw', function(){
   
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
-     # browser()
+    
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
       output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
@@ -6616,6 +6615,7 @@ table.on('draw', function(){
   
   output$transit_dr_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed DR Costs Outputs")
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==3,],
       output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Demand Response Service (VOMS)"),
@@ -6642,6 +6642,7 @@ table.on('draw', function(){
   
   output$pub_trans_priority_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Transit Priority Costs Outputs")
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==4,],
       output_table = cost_output_transitservice() %>% filter(table == "Bus Priority"),
@@ -6712,6 +6713,7 @@ table.on('draw', function(){
   
   output$pub_trans_rail_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Public Transit Rail Costs Outputs")
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,],
       output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Rail (VOMS)"),
@@ -6789,7 +6791,7 @@ table.on('draw', function(){
   
   output$traffic_ops_costs_outputs_tbl <- renderDT({   
     print("RENDERING: OPS Costs Outputs")
-    #browser()
+    browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,]%>% 
         left_join(data.frame(cap_proj_type = c("New roundabouts","New or retimed signal"),
@@ -6816,7 +6818,7 @@ table.on('draw', function(){
   })
   
   output$mhdev_costs_outputs_tbl <- renderDT({   
-    #browser()
+    
     print("RENDERING: MHDEV Costs Outputs")
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==9,] %>% rename('veh_subtype' = 'fuel_type'),
