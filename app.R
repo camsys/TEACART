@@ -732,7 +732,7 @@ and potential applications.<br><br>
                                        accordion_panel(
                                          "Projects 8 | Micromobility",
                                          HTML("This category represents the <b>number of e-bikes funded</b> through the implementation of <b> e-bike subsidies</b>. 
-                   An e-bike subsidy reimburses part of the cost of an e-bike."),
+                   An e-bike subsidy reimburses part of the cost of an e-bike. All dollar values should be in <b>current year dollars.</b>"),
                                        ),
                                        open = TRUE
                                      ),
@@ -820,7 +820,7 @@ and potential applications.<br><br>
                                        accordion_panel(
                                          "Projects 12 | Charging Infrastructure and EV Incentives ",
                                          HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
-                   EV charging ports supply electric power for recharging electric vehicles. EV incentives offset the cost of EVs for purchasers."),
+                   EV charging ports supply electric power for recharging electric vehicles. EV incentives offset the cost of EVs for purchasers. All dollar values should be in <b>current year dollars.</b>"),
                                        ),
                                        open = TRUE
                                      ),
@@ -846,7 +846,7 @@ and potential applications.<br><br>
                                               of freight rail, the energy intensity as 
                                               measured in British Thermal Units (BTU) 
                                               per ton-mile, and the change in annual 
-                                              VMT or ton-miles per unit of investment."),
+                                              VMT or ton-miles per unit of investment. All dollar values should be in <b>current year dollars.</b>"),
                                        ),
                                        open = TRUE
                                      ),
@@ -912,7 +912,7 @@ and potential applications.<br><br>
                                          "Projects 16 | Land Use",
                                          HTML("This category represents spending and 
                                          rezoned acres in support of <b>walkable, 
-                                              transit-oriented development (TOD) areas</b>, using land use strategies such as placing destinations closer together and in environments more conducive to transit and non-motorized travel."),
+                                              transit-oriented development (TOD) areas</b>, using land use strategies such as placing destinations closer together and in environments more conducive to transit and non-motorized travel. All dollar values should be in <b>current year dollars.</b>"),
                                        ),
                                        open = TRUE
                                      ),
@@ -1466,7 +1466,10 @@ and potential applications.<br><br>
                                           Costs related to transit electrification 
                                           can be found in <i>Costs 2</i> (with other transit vehicle costs). 
                                           Costs related to land use and transit service cuts  
-                                          cannot be updated by the user.")),
+                                          cannot be updated by the user.<br>
+                                          <br>
+                                          All dollar values are be in <b>2024 dollars.</b><br>
+                                          <br>")),
                             
                             # bike ped costs
                             fluidRow(
