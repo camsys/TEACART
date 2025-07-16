@@ -1761,8 +1761,28 @@ and potential applications.<br><br>
                                      actionButton("reset_roadwayresurf_costs_tbl", "Reset Costs 15", class = "btn-custom")
                               ),
                             ),
+                            
+                            #land use
                             fluidRow(
-                              DT::dataTableOutput("roadwayresurf_costs_tbl")
+                              DT::dataTableOutput("landuse_costs_tbl")
+                            ),
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Costs 16 | Land Use",
+                                         HTML("This category represents the land use incentive portion of the land use projects. Rezoning projects have no established cost and are not included as part of the cost effectiveness outputs. This category specifically represents the <b>cost per shifted household</b>."), #AHFLAG
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_landuse_costs_tbl", "Reset Costs 16", class = "btn-custom")
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("landuse_costs_tbl")
                             ),
                             
                             # fuel price costs
@@ -5701,6 +5721,21 @@ table.on('draw', function(){
       decimal_rows = integer(0))
   })
   
+  output$landuse_costs_tbl <- renderDT({
+    req(rvs$Costs)
+    
+    render_custom_datatable(
+      data_reactive = rvs$Costs,
+      table_number = 16,
+      is_year_table = FALSE,
+      is_cost_table = TRUE,
+      non_editable_cols = c(0:0),
+      page_length = 10,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = c(0:10),
+      decimal_rows = integer(0))
+  })
   
   ## COST: make editable -----------------------------------------------------------
   
@@ -5902,6 +5937,28 @@ table.on('draw', function(){
     rvs$Costs[rvs$Costs$table_no_ui == 14,] <- reshaping_cost(input$intermodal_costs_tbl_cell_edit,
                                                               rvs$Costs,
                                                               tbl_no = 14,
+                                                              num_col = 1,
+                                                              col_list = c('unit'))
+  }) # end of reshaping
+  
+  ## observe change to intermodal_costs
+  observeEvent(input$roadwayresurf_costs_tbl_cell_edit, {
+    req(rvs$Costs)
+    
+    rvs$Costs[rvs$Costs$table_no_ui == 15,] <- reshaping_cost(input$roadwayresurf_costs_tbl_cell_edit,
+                                                              rvs$Costs,
+                                                              tbl_no = 15,
+                                                              num_col = 1,
+                                                              col_list = c('unit'))
+  }) # end of reshaping
+  
+  ## observe change to intermodal_costs
+  observeEvent(input$landuse_costs_tbl_cell_edit, {
+    req(rvs$Costs)
+    
+    rvs$Costs[rvs$Costs$table_no_ui == 15,] <- reshaping_cost(input$landuse_costs_tbl_cell_edit,
+                                                              rvs$Costs,
+                                                              tbl_no = 15,
                                                               num_col = 1,
                                                               col_list = c('unit'))
   }) # end of reshaping
