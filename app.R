@@ -271,13 +271,11 @@ and potential applications.<br><br>
       # about page --------------------------------------------------------------
       
       nav_panel(title = "About",
-                p(),
                 #    h2("Transportation Evaluation and Carbon Reduction Tool (TEA-CART)"),
                 
                 h2("About"),
-                p(),
                 HTML(
-                  "Georgetown Climate Center’s (GCC) Transportation Evaluation 
+                  "<p>Georgetown Climate Center’s (GCC) Transportation Evaluation 
                   and Carbon Reduction Tool (TEA-CART) offers planning-level 
                   analysis to estimate the GHG performance of transportation 
                   capital program investments. The functionality of the tool 
@@ -285,9 +283,8 @@ and potential applications.<br><br>
                   designed to serve as a resource for state Departments of 
                   Transportation (DOT) and Metropolitan Planning Organization 
                   (MPO) practitioners conducting long-term planning, project 
-                  prioritization, and performance management. <br>
-                  <p>
-                  The primary purpose of TEA-CART is to help practitioners 
+                  prioritization, and performance management. </p>
+                  <p>The primary purpose of TEA-CART is to help practitioners 
                   account for the environmental performance of proposed 
                   projects, so they can set meaningful targets for greenhouse 
                   gas or vehicle-miles traveled reduction and develop capital 
@@ -295,9 +292,8 @@ and potential applications.<br><br>
                   help achieve those goals. TEA-CART was developed by 
                   Cambridge Systematics under contract with the Georgetown 
                   Climate Center, which facilitated extensive input from 
-                  state and federal officials.<br>
-                  <p>
-                  <b>Tool Functionality:</b> TEA-CART is easy to use, accepting 
+                  state and federal officials.</p>
+                  <p><b>Tool Functionality:</b> TEA-CART is easy to use, accepting 
                   simple inputs to evaluate the GHG performance of surface 
                   transportation capital projects during the planning or 
                   programming stage. TEA-CART is also highly customizable. 
@@ -306,30 +302,30 @@ and potential applications.<br><br>
                   state. Most assumptions can be substituted with user-provided 
                   data, when available, so it can also be used by local or 
                   regional governments (e.g., Metropolitan Planning 
-                  Organizations). <br>
-                  <p>
-                  <b>Inputs:</b> Inputs to the tool typically include those 
+                  Organizations). </p>
+                  <p><b>Inputs:</b> Inputs to the tool typically include those 
                   available during the state or MPO transportation capital 
-                  program planning process. For example: <br>
-                  <ul><li>New lane-miles of infrastructure,
-                  <li>Number of new electric vehicle chargers,
-                  <li>Number of gas-power buses replaced by electric vehicles, 
-                  <li>Dollars invested in electric bike incentives, or
-                  <li>Dollars invested in roadway resurfacing.
-                  </ul>
-                  <p>
-                  The tool is designed to be updated in real-time, so that 
+                  program planning process. For example:</p>
+                  <ul><li>New lane-miles of infrastructure,</li>
+                  <li>Number of new electric vehicle chargers,</li>
+                  <li>Number of gas-power buses replaced by electric vehicles,</li>
+                  <li>Dollars invested in electric bike incentives, or</li>
+                  <li>Dollars invested in roadway resurfacing.</li>
+                  </ul>"
+                ),
+                DTOutput("UI_tables"),
+                HTML("
+                  <p>The tool is designed to be updated in real-time, so that 
                   results can be seen as soon as new project information is 
-                  provided by the user. <br>
-                  <br>
-                  <b>Outputs:</b> The tool generates valuable, customizable outputs, 
-                  including:<pr>
-                  <ul><li>A baseline inventory and forecast of GHG emissions,
+                  provided by the user. </p>
+                  <p><b>Outputs:</b> The tool generates valuable, customizable outputs, 
+                  including:</p>
+                  <ul><li>A baseline inventory and forecast of GHG emissions,</li>
                   <li>Estimated GHG emissions and related impacts of a capital 
                   program -- or a hypothetical set of capital projects -- 
-                  across user-selected horizon years, and
+                  across user-selected horizon years, and</li>
                   <li>Information on the cost-effectiveness of various project 
-                  types.
+                  types.</li>
                   </ul>
                   "
                 )
@@ -546,6 +542,7 @@ and potential applications.<br><br>
                                    <p>
                                    ii) Project inputs from one year are automatically coded to “carry over” into future years (i.e., miles of new bike lane constructed in 2010 are “carried over” into future years and continue to operate past their construction year).<br>
                                    <p>
+                                   Note that there is no corresponding <i>Costs 4</i>, <i>Costs 16</i>, or <i>Costs 17</i> in the Costs tab. Costs related to transit electrification can be found in <i>Costs 2</i> with other transit vehicle costs. Parameters related to <i>Projects 4</i> and <i>Projects 17</i> cannot be updated by the user.
                                    "
                               ),),
                             
@@ -904,6 +901,27 @@ and potential applications.<br><br>
                               DT::dataTableOutput("road_resurf_projs_tbl")
                             ),
                             
+                            #Land Use
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 16 | Land Use",
+                                         HTML("This category represents spending and 
+                                         rezoned acres in support of <b>walkable, 
+                                              transit-oriented development (TOD) areas</b>, using land use strategies such as placing destinations closer together and in environments more conducive to transit and non-motorized travel."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_land_use_projs_tbl", "Reset Projects 16", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("land_use_projs_tbl")
+                            ),
                             
                             #Transit Cuts
                             fluidRow(
@@ -931,27 +949,7 @@ and potential applications.<br><br>
                             fluidRow(
                               DT::dataTableOutput("transit_cuts_projs_tbl")
                             ),
-                            #Land Use
-                            fluidRow(
-                              column(10,
-                                     accordion(
-                                       accordion_panel(
-                                         "Projects 18 | Land Use",
-                                         HTML("This category represents spending and 
-                                         rezoned acres in support of <b>walkable, 
-                                              transit-oriented development (TOD) areas</b>, using land use strategies such as placing destinations closer together and in environments more conducive to transit and non-motorized travel."),
-                                       ),
-                                       open = TRUE
-                                     ),
-                              ),
-                              column(2,
-                                     actionButton("reset_land_use_projs_tbl", "Reset Projects 18", class = "btn-custom")
-                              ),
-                              
-                            ),
-                            fluidRow(
-                              DT::dataTableOutput("land_use_projs_tbl")
-                            ),
+                            
                             
 
                             
@@ -971,7 +969,9 @@ and potential applications.<br><br>
                         over the years of spending by the corresponding 
                         horizon year.<br>
                         ii) Spending estimates are assumed to be averages 
-                        based on historical data.<br>")
+                        based on historical data.<br>
+                        <br>
+                        Note that there is no corresponding <i>Costs 4</i>, <i>Costs 16</i>, or <i>Costs 17</i> in the Costs tab. Costs related to transit electrification can be found in <i>Costs 2</i> with other transit vehicle costs. Parameters related to <i>Budget 4</i> cannot be updated by the user.")
                                      
                             ),
                             fluidRow(class = "budget-buttons",
@@ -1457,7 +1457,13 @@ and potential applications.<br><br>
                               shown below. Please click on the different fields 
                               to overwrite the default values with any custom 
                               values provided by the user.<br>
-                                          <br>")),
+                                          <br>
+                                          Note that there is no <i>Costs 4</i>, 
+                                          <i>Costs 16</i>, or <i>Costs 17</i>. 
+                                          Costs related to transit electrification 
+                                          can be found in <i>Costs 2</i> (with other transit vehicle costs). 
+                                          Costs related to land use and transit service cuts  
+                                          cannot be updated by the user.")),
                             
                             # bike ped costs
                             fluidRow(
@@ -1759,7 +1765,7 @@ and potential applications.<br><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Costs 16 | Fuel Price",
+                                         "Costs 18 | Fuel Price",
                                          HTML("This category represents the <b>cost per unit of fuel</b>, based on 2022 data."), #AHFLAG
                                        ),
                                        open = TRUE
@@ -3280,6 +3286,23 @@ server <- function(input, output, session) {
                                   file = file))
     }
   )
+  
+
+# UI tables ---------------------------------------------------------------
+
+UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
+  
+  output$UI_tables <- renderDT({
+    datatable(
+      UI_tables,
+      options = list(
+        dom = 't',
+        paging = FALSE,
+        rownames = FALSE
+      )
+    )
+  })
+  
   
   # server sources ---------------------------------------------------
   
