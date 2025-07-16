@@ -512,6 +512,11 @@ div.dataTables_wrapper div.dataTables_info {
   .tab-pane[data-value=About], .tab-pane[data-value=TEA-CART], .tab-pane[data-value=How-to] {
     padding: 0 1.5rem;
   }
+.about-datatable table.dataTable {
+  border-collapse: collapse;
+  width: 100% !important;
+  margin-bottom: 2.5em;
+}
   /* Make the sidebar sticky */
   .bslib-sidebar-layout > .sidebar {
     position: fixed;
