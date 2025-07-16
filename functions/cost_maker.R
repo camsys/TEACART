@@ -87,13 +87,34 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
       summarise(value = sum(value)) %>%
       pivot_wider(names_from = cost_type, values_from = value) %>%
       mutate(annual_cost = cap/proj_life + var)
-  } else {
+  }  else if (unique(ini_cost_table$table_no_ui) == 9) {  ## this is unique for mdhd
+    cost_table = ini_cost_table %>% 
+      group_by_at(cols) %>%
+      summarise(value = sum(value)) %>%
+      pivot_wider(names_from = cost_type, values_from = value) %>%
+      mutate(annual_cost = cap/proj_life)
+   
+     elec_val <- cost_table %>% ungroup() %>%
+      filter(veh_subtype == "Electric") %>%
+      dplyr::select(veh_type, electric_value = annual_cost, -'veh_subtype')
+    
+     cost_table <- cost_table %>%
+       left_join(elec_val, by = "veh_type") %>%
+       mutate(
+         annual_cost = ifelse(
+           veh_type != "Electric",
+           electric_value - annual_cost,
+           annual_cost
+         )
+       ) %>% select(-'electric_value')
+  }else {
     cost_table = ini_cost_table %>% 
       group_by_at(cols) %>%
       summarise(value = sum(value)) %>%
       pivot_wider(names_from = cost_type, values_from = value) %>%
       mutate(annual_cost = cap/proj_life)
   }
+  
   
   #This function is applied to each row to estimate the summary value based on supplied high, medium, low values
   #The high medium low values are the same for each project type
@@ -111,7 +132,8 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
     
   #this is a particulary splat on edit - the units are for a single truck in the cost table and else where we use a more general plural ... 
   if("veh_type" %in% names(cost_table)){
-    cost_table$veh_type[cost_table$veh_type %in% c('Heavy-Duty Truck', 'Light-Duty Truck', 'Medium-Duty Truck')] <- paste0(cost_table$veh_type[cost_table$veh_type %in% c('Heavy-Duty Truck', 'Light-Duty Truck', 'Medium-Duty Truck')],'s')}
+    cost_table$veh_type[cost_table$veh_type %in% c('Heavy-Duty Truck', 'Light-Duty Truck', 'Medium-Duty Truck')] <- paste0(cost_table$veh_type[cost_table$veh_type %in% c('Heavy-Duty Truck', 'Light-Duty Truck', 'Medium-Duty Truck')],'s')
+    }
   temp_table <- left_join(output_table, cost_table) %>%
     filter(!is.na(annual_cost)) %>%
     mutate(gGHG_per_1m = ifelse(total_change_gGHG == 0, NA, -1*total_change_gGHG/annual_cost),

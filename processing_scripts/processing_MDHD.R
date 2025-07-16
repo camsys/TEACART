@@ -65,6 +65,8 @@ mdhd_emrates_all <- reactive({
   emrates <-
     EmRate_by_Tech() %>%
     filter(veh_subtype %in% c("Gasoline ICE", "Diesel ICE", "EV200", "EV"), veh_type != "Passenger Cars") %>%
+    filter(!(veh_type == 'Light-Duty Trucks' & veh_subtype == "Diesel ICE") ) %>%  ## Qi: there isn't diesel light duty truck in the excel tool.
+    filter(!(veh_type == 'Heavy-Duty Trucks' & veh_subtype == "Gasoline ICE") ) %>%## Qi: there isn't gasoline light duty truck in the excel tool. 
     filter(year %in% c(rvs$Baseline$horizon_year_1, rvs$Baseline$horizon_year_2, rvs$Baseline$horizon_year_3)) %>%
     mutate(fuel_type = if_else(veh_subtype == "EV200", "EV", str_remove(veh_subtype, " ICE"))) %>%
     select(veh_type, fuel_type, year, emission_rate)
