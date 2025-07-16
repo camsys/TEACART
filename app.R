@@ -313,7 +313,10 @@ and potential applications.<br><br>
                   <li>Dollars invested in roadway resurfacing.</li>
                   </ul>"
                 ),
-                DTOutput("UI_tables"),
+                div(class = "about-datatable",
+                    style = "width: 100%; overflow-x: auto;",
+                    DTOutput("UI_tables")
+                ),
                 HTML("
                   <p>The tool is designed to be updated in real-time, so that 
                   results can be seen as soon as new project information is 
@@ -3295,10 +3298,16 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   output$UI_tables <- renderDT({
     datatable(
       UI_tables,
+      rownames = FALSE,
       options = list(
         dom = 't',
         paging = FALSE,
-        rownames = FALSE
+        columnDefs = list(
+          list(
+          targets = 2:4,
+          className = "dt-center"
+          )
+        )
       )
     )
   })
