@@ -106,7 +106,7 @@ cost_effectiveness_freight <- reactive({
     mutate(
                 total_change_gnox = total_change_VMT * Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["NOx_g_per_veh_mi"]], 
                 total_change_gpm25 = total_change_VMT *  ( Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["PM25_exhaust_per_veh_mi"]] +
-                  truck_vmt_affected * Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["PM25_tires_brakes_per_veh_mi"]] ),
+                                                             total_change_VMT * Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["PM25_tires_brakes_per_veh_mi"]] ),
                 total_change_newtrips = 0)
   return(ret)
 
