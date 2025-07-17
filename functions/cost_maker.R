@@ -50,7 +50,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
     output_table <- output_table %>% rename("cap_proj_type" = "facility_type")
     type_name = "facility_type"
   }
-  
+  if("table" %in% col_sel){browser()}
   #IF Else is for indicating transit or other tables
   #This function basically calcualtes the cost parameters page by getting the annualized cost with is usually capital cost/project life + variable cost
   if('annual_cost' %in% names(ini_cost_table)){
@@ -87,7 +87,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
       summarise(value = sum(value)) %>%
       pivot_wider(names_from = cost_type, values_from = value) %>%
       mutate(annual_cost = cap/proj_life + var)
-  }  else if (unique(ini_cost_table$table_no_ui) == 9) {  ## this is unique for mdhd
+  }  else if (unique(ini_cost_table$table_no_ui) == 10) {  ## this is unique for mdhd
     cost_table = ini_cost_table %>% 
       group_by_at(cols) %>%
       summarise(value = sum(value)) %>%

@@ -1761,12 +1761,11 @@ and potential applications.<br><br>
                                      actionButton("reset_roadwayresurf_costs_tbl", "Reset Costs 15", class = "btn-custom")
                               ),
                             ),
-                            
-                            #land use
                             fluidRow(
-                              DT::dataTableOutput("landuse_costs_tbl")
+                              DT::dataTableOutput("roadwayresurf_costs_tbl")
                             ),
                             
+                            #land use
                             fluidRow(
                               column(10,
                                      accordion(
@@ -2457,58 +2456,33 @@ and potential applications.<br><br>
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
+                                      h3("Freight Intermodal Facilities"),
+                                      p(""),
+                                      DT::dataTableOutput("intermodal_costs_outputs_tbl")
+                            ),
+                            fluidRow( class = 'cost-table',
+                                      p(""),
                                       p(""),
                                       h3("Roadway Expansion"),
                                       DT::dataTableOutput("roadway_expand_costs_outputs_tbl"),
                                       p("")
                             ),
-                            # fluidRow( class = 'cost-table',
-                            #           p(""),
-                            #           h3("Transit Service Cuts"),
-                            #           p(""),
-                            #           DT::dataTableOutput("transitservice_cuts_costs_outputs_tbl")
-                            # ),
-                            # fluidRow( class = 'cost-table',
-                            #           p(""),
-                            #           h3("Land Use"),
-                            #           p(""),
-                            #           DT::dataTableOutput("land_use_cuts_costs_outputs_tbl")
-                            # ),
-                            # fluidRow( class = 'cost-table',
-                            #           p(""),
-                            #           h3("Roadway Resurfacing"),
-                            #           p(""),
-                            #           DT::dataTableOutput("roadway_resurf_cuts_costs_outputs_tbl")
-                            # )
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Roadway Resurfacing"),
+                                      p(""),
+                                      DT::dataTableOutput("roadwayresurf_cuts_costs_outputs_tbl")
+                            ),
+                            fluidRow( class = 'cost-table',
+                                      p(""),
+                                      h3("Land Use"),
+                                      p(""),
+                                      DT::dataTableOutput("landuse_costs_outputs_tbl")
+                            ),
+
                   ),
 
-      
-      # fluidRow(
-      #   column(10,
-      #          accordion(
-      #            accordion_panel(
-      #              "Title",
-      #              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-      #              sed do eiusmod tempor incididunt ut labore et dolore magna 
-      #              aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
-      #              ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-      #              Duis aute irure dolor in reprehenderit in voluptate velit 
-      #              esse cillum dolore eu fugiat nulla pariatur. Excepteur 
-      #              sint occaecat cupidatat non proident, sunt in culpa qui 
-      #              officia deserunt mollit anim id est laborum.",
-      # 
-      #            ),
-      #            open = TRUE
-      #          ),
-      #   ),
-      #   column(2,
-      #          actionButton("reset_", "Reset ", class = "btn-custom")
-      #   ),
-      # 
-      # ),
-      
-      
-                  # cumulative projects ui -------------------------------------
+# cumulative projects ui -------------------------------------
 nav_panel(title = "Cumulative Project Totals",
           fluidRow(
             HTML("<p>These tables represent the cumulative project totals based on user inputs in the project tab.
@@ -3352,31 +3326,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
                   rownames = FALSE)
   })
   
-  # Project table inputs ------------------------------------------------------
-  
-  # SLFLAG - are you using this? I think everything in this section has been replaced
-  
-  projects_names <- c("bikeped_projs",
-                      "transit_fixed_projs",
-                      "transit_dr_projs",
-                      "transit_el_projs",
-                      "transit_bus_projs",
-                      "public_rail_projs",
-                      "tdm_projs",
-                      "micro_projs",
-                      "traffic_ops_projs",
-                      "mhdev_projs",
-                      "pnr_projs",
-                      "evsi_projs",
-                      "freight_projs",
-                      "expansion_projs",
-                      "transit_cuts_projs",
-                      "road_resurf_projs",
-                      "land_use")
-  
-  read_static_tables("data/projects.xlsx", projects_names)
-  
-  
+
 
 # Budget Inputs: Render ---------------------------------------------------
 
@@ -3646,7 +3596,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     #browser()
     render_custom_datatable(
       data_reactive = temp_send,
-      table_number = 15,
+      table_number = 17,#slchanged
       non_editable_cols = c(0, 1, 2),
       page_length = 10,
       comma_rows = 0:7,
@@ -3681,7 +3631,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     render_custom_datatable(
       data_reactive = temp_send,
-      table_number = 17,
+      table_number = 15,#slchanged
       non_editable_cols = c(0),
       page_length = 10,
       comma_rows = 0:2,
@@ -3917,9 +3867,9 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   
   observeEvent(input$transit_cuts_projs_tbl_cell_edit, {
     #browser()
-    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- reshaping_projects2(input$transit_cuts_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 17,] <- reshaping_projects2(input$transit_cuts_projs_tbl_cell_edit, #slchanged
                                                                          rvs$Projects,
-                                                                         tbl_no = 15,
+                                                                         tbl_no = 17,
                                                                          col1 ='area_type',
                                                                          col2 = 'transit_mode',
                                                                          col3 = 'unit',
@@ -3947,9 +3897,9 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   })
   observeEvent(input$road_resurf_projs_tbl_cell_edit, {
     
-    rvs$Projects[rvs$Projects$table_no_ui == 17,] <- reshaping_projects2(input$road_resurf_projs_tbl_cell_edit,
+    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- reshaping_projects2(input$road_resurf_projs_tbl_cell_edit, #slchanged
                                                                          rvs$Projects,
-                                                                         tbl_no = 17,
+                                                                         tbl_no = 15,
                                                                          horizon_year_1 = input$horizon_year_1,
                                                                          horizon_year_2 = input$horizon_year_2,
                                                                          horizon_year_3 = input$horizon_year_3)
@@ -4017,12 +3967,8 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     rvs$Projects[rvs$Projects$table_no_ui == 14,] <- initial_projects[initial_projects$table_no_ui == 14, ]
   })  
   
-  observeEvent(input$reset_custom_projs_tbl, {
-    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
-  })  
-  
   observeEvent(input$reset_transit_cuts_projs_tbl, {
-    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 17,] <- initial_projects[initial_projects$table_no_ui == 17, ] #slchanged
   })  
   
   observeEvent(input$reset_road_resurf_projs_tbl, {
@@ -4030,7 +3976,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   })
   
   observeEvent(input$reset_land_use_projs_tbl, {
-    rvs$Projects[rvs$Projects$table_no_ui == 17,] <- initial_projects[initial_projects$table_no_ui == 17, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ] #slchanged
   })  
   
   
@@ -4292,7 +4238,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     #browser()
     render_custom_datatable(
       data_reactive = temp_send,
-      table_number = 15,
+      table_number = 17, #slchanged
       non_editable_cols = c(0:5),
       page_length = 10,
       comma_rows = 0:7,
@@ -4327,7 +4273,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     render_custom_datatable(
       data_reactive = temp_send,
-      table_number = 17,
+      table_number = 15, #slchanged
       non_editable_cols = c(0:3),
       page_length = 10,
       comma_rows = 0:2,
@@ -4605,7 +4551,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     render_custom_datatable(
       data_reactive = rvs$Budget,
-      table_number = 15,
+      table_number = 16, #slchanged
       is_year_table = FALSE,
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
@@ -4623,7 +4569,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     render_custom_datatable(
       data_reactive = rvs$Budget,
-      table_number = 16,
+      table_number = 17, #slchanged
       is_year_table = FALSE,
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
@@ -4641,7 +4587,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     render_custom_datatable(
       data_reactive = rvs$Budget,
-      table_number = 17,
+      table_number = 15, #slchanged
       is_year_table = FALSE,
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
@@ -4832,9 +4778,9 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   
   observeEvent(input$transit_cuts_budget_tbl_cell_edit, {
     
-    rvs$Budget[rvs$Budget$table_no_ui == 16,] <- reshaping_budget(input$transit_cuts_budget_tbl_cell_edit,
+    rvs$Budget[rvs$Budget$table_no_ui == 17,] <- reshaping_budget(input$transit_cuts_budget_tbl_cell_edit, #slchanged
                                                                          rvs$Budget,
-                                                                         tbl_no = 16,
+                                                                         tbl_no = 17,
                                                                          col1 = 'area_type',
                                                                   col2 ='transit_mode')
     
@@ -4844,9 +4790,9 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   })
   observeEvent(input$land_use_budget_tbl_cell_edit, {
     
-    rvs$Budget[rvs$Budget$table_no_ui == 15,] <- reshaping_budget(input$land_use_budget_tbl_cell_edit,
+    rvs$Budget[rvs$Budget$table_no_ui == 16,] <- reshaping_budget(input$land_use_budget_tbl_cell_edit, #slchanged
                                                                          rvs$Budget,
-                                                                         tbl_no = 15,
+                                                                         tbl_no = 16,
                                                                          col1 = 'land_use')
     
     
@@ -4855,9 +4801,9 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   })
   observeEvent(input$resurfacing_budget_tbl_cell_edit, {
     #browser()
-    rvs$Budget[rvs$Budget$table_no_ui == 17,] <- reshaping_budget(input$resurfacing_budget_tbl_cell_edit,
+    rvs$Budget[rvs$Budget$table_no_ui == 15,] <- reshaping_budget(input$resurfacing_budget_tbl_cell_edit, #slchanged
                                                                          rvs$Budget,
-                                                                         tbl_no = 17,
+                                                                         tbl_no = 15,
                                                                   col1 = 'unit')
     
     
@@ -5153,7 +5099,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Assumptions,
-      table_number = 3,
+      table_number = 7, #slchanged
       is_year_table = FALSE,
       non_editable_cols = c(0, 1),
       page_length = 10,
@@ -5168,7 +5114,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Assumptions,
-      table_number = 4,
+      table_number = 8, #slchanged
       is_year_table = FALSE,
       non_editable_cols = c(0, 1),
       page_length = 10,
@@ -5183,7 +5129,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Assumptions,
-      table_number = 5,
+      table_number = 9, #slchanged
       is_year_table = FALSE,
       non_editable_cols = c(0, 1),
       page_length = 16,
@@ -5198,7 +5144,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Assumptions,
-      table_number = 6,
+      table_number = 10, #slchanged
       is_year_table = FALSE,
       non_editable_cols = c(0, 1),
       page_length = 10,
@@ -5213,7 +5159,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Assumptions,
-      table_number = 7,
+      table_number = 11, #slchanged
       is_year_table = FALSE,
       non_editable_cols = c(0),
       page_length = 10,
@@ -5228,7 +5174,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Assumptions,
-      table_number = 8,
+      table_number = 12, #slchanged
       is_year_table = FALSE,
       non_editable_cols = c(0, 1),
       page_length = 10,
@@ -5243,7 +5189,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Assumptions,
-      table_number = 9,
+      table_number = 16, #slchanged
       is_year_table = FALSE,
       non_editable_cols = c(0, 1),
       page_length = 10,
@@ -5288,63 +5234,63 @@ table.on('draw', function(){
   observeEvent(input$tdm_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
     
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 3,] <- reshaping_assmp(input$tdm_assmps_tbl_cell_edit,
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 7,] <- reshaping_assmp(input$tdm_assmps_tbl_cell_edit, #slchanged
                                                                           rvs$Assumptions,
-                                                                          tbl_no = 3)
+                                                                          tbl_no = 7)
   })
   
   #observe edits to micro_assmps
   observeEvent(input$micro_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
     
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 4,] <- reshaping_assmp(input$micro_assmps_tbl_cell_edit,
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 8,] <- reshaping_assmp(input$micro_assmps_tbl_cell_edit, #slchanged
                                                                           rvs$Assumptions,
-                                                                          tbl_no = 4)
+                                                                          tbl_no = 8)
   })
   
   #observe edits to traffic_ops_assmps
   observeEvent(input$traffic_ops_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
     
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 5,] <- reshaping_assmp(input$traffic_ops_assmps_tbl_cell_edit,
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 9,] <- reshaping_assmp(input$traffic_ops_assmps_tbl_cell_edit, #slchanged
                                                                           rvs$Assumptions,
-                                                                          tbl_no = 5)
+                                                                          tbl_no = 9)
   })
   
   #observe edits to mhdv_assmps
   observeEvent(input$mhdv_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
     
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 6,] <- reshaping_assmp(input$mhdv_assmps_tbl_cell_edit,
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 10,] <- reshaping_assmp(input$mhdv_assmps_tbl_cell_edit, #slchanged
                                                                           rvs$Assumptions,
-                                                                          tbl_no = 6)
+                                                                          tbl_no = 10)
   })
   
   #observe edits to pnr_assmps
   observeEvent(input$pnr_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
     
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 7,] <- reshaping_assmp(input$pnr_assmps_tbl_cell_edit,
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 11,] <- reshaping_assmp(input$pnr_assmps_tbl_cell_edit, #slchanged
                                                                           rvs$Assumptions,
-                                                                          tbl_no = 7)
+                                                                          tbl_no = 11)
   })
   
   #observe edits to evsi_assmps
   observeEvent(input$evsi_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
     
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 8,] <- reshaping_assmp(input$evsi_assmps_tbl_cell_edit,
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 12,] <- reshaping_assmp(input$evsi_assmps_tbl_cell_edit, #slchanged
                                                                           rvs$Assumptions,
-                                                                          tbl_no = 8)
+                                                                          tbl_no = 12)
   })
   
   #observe edits to landuse_assmps
   observeEvent(input$landuse_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
     
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 9,] <- reshaping_assmp(input$landuse_assmps_tbl_cell_edit,
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 16,] <- reshaping_assmp(input$landuse_assmps_tbl_cell_edit,#slchanged
                                                                           rvs$Assumptions,
-                                                                          tbl_no = 9)
+                                                                          tbl_no = 16)
   })
   
 
@@ -5411,15 +5357,15 @@ table.on('draw', function(){
   })
   
   observeEvent(input$reset_land_use_budget_tbl, {
-    rvs$Budget[rvs$Budget$table_no_ui == 15,] <- initial_budget[initial_budget$table_no_ui == 15, ]
+    rvs$Budget[rvs$Budget$table_no_ui == 16,] <- initial_budget[initial_budget$table_no_ui == 16, ] #slchanged
   })
   
   observeEvent(input$reset_transit_cuts_budget_tbl, {
-    rvs$Budget[rvs$Budget$table_no_ui == 16,] <- initial_budget[initial_budget$table_no_ui == 16, ]
+    rvs$Budget[rvs$Budget$table_no_ui == 17,] <- initial_budget[initial_budget$table_no_ui == 17, ] #slchanged
   })
   
   observeEvent(input$reset_resurfacing_budget_tbl, {
-    rvs$Budget[rvs$Budget$table_no_ui == 17,] <- initial_budget[initial_budget$table_no_ui == 17, ]
+    rvs$Budget[rvs$Budget$table_no_ui == 15,] <- initial_budget[initial_budget$table_no_ui == 15, ] #slchanged
   })
   
 
@@ -5438,37 +5384,37 @@ table.on('draw', function(){
   })  
   
   observeEvent(input$reset_tdm_assmps_tbl, {
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 3,] <- initial_assumptions[initial_assumptions$table_no_ui == 3, ]
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 7,] <- initial_assumptions[initial_assumptions$table_no_ui == 7, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_micro_assmps_tbl, {
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 4,] <- initial_assumptions[initial_assumptions$table_no_ui == 4, ]
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 8,] <- initial_assumptions[initial_assumptions$table_no_ui == 8, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_traffic_ops_assmps_tbl, {
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 5,] <- initial_assumptions[initial_assumptions$table_no_ui == 5, ]
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 9,] <- initial_assumptions[initial_assumptions$table_no_ui == 9, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_mhdv_assmps_tbl, {
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 6,] <- initial_assumptions[initial_assumptions$table_no_ui == 6, ]
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 10,] <- initial_assumptions[initial_assumptions$table_no_ui == 10, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_pnr_assmps_tbl, {
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 7,] <- initial_assumptions[initial_assumptions$table_no_ui == 7, ]
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 11,] <- initial_assumptions[initial_assumptions$table_no_ui == 11, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_evsi_assmps_tbl, {
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 8,] <- initial_assumptions[initial_assumptions$table_no_ui == 8, ]
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 12,] <- initial_assumptions[initial_assumptions$table_no_ui == 12, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_landuse_assmps_tbl, {
-    rvs$Assumptions[rvs$Assumptions$table_no_ui == 9,] <- initial_assumptions[initial_assumptions$table_no_ui == 9, ]
+    rvs$Assumptions[rvs$Assumptions$table_no_ui == 16,] <- initial_assumptions[initial_assumptions$table_no_ui == 16, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
@@ -5529,7 +5475,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Costs,
-      table_number = 4,
+      table_number = 5, #slchange
       is_year_table = FALSE,
       is_cost_table = TRUE,
       non_editable_cols = c(0:0),
@@ -5545,7 +5491,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Costs,
-      table_number = 5,
+      table_number = 6, #slchange
       is_year_table = FALSE,
       is_cost_table = TRUE,
       non_editable_cols = c(0:1),
@@ -5561,7 +5507,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Costs,
-      table_number = 6,
+      table_number = 7, #slchange
       is_year_table = FALSE,
       is_cost_table = TRUE,
       non_editable_cols = c(0:0),
@@ -5577,7 +5523,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Costs,
-      table_number = 7,
+      table_number = 8, #slchange
       is_year_table = FALSE,
       is_cost_table = TRUE,
       non_editable_cols = c(0:0),
@@ -5593,7 +5539,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Costs,
-      table_number = 8,
+      table_number = 9, #slchange
       is_year_table = FALSE,
       is_cost_table = TRUE,
       non_editable_cols = c(0:2),
@@ -5609,7 +5555,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Costs,
-      table_number = 9,
+      table_number = 10, #slchange
       is_year_table = FALSE,
       is_cost_table = TRUE,
       non_editable_cols = c(0:1),
@@ -5620,16 +5566,13 @@ table.on('draw', function(){
       decimal_rows = integer(0))
   })
   
-  # output$pnr_costs_tbl <- create_table(pnr_costs,
-  #                                      list(target = 'row',
-  #                                           disable = list(columns = c(0,1)),
-  #                                           autoWidth = TRUE))
+
   output$pnr_costs_tbl <- renderDT({
     req(rvs$Costs)
     
     render_custom_datatable(
       data_reactive = rvs$Costs,
-      table_number = 10,
+      table_number = 11, #slchange
       is_year_table = FALSE,
       is_cost_table = TRUE,
       non_editable_cols = c(0:0),
@@ -5645,7 +5588,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Costs,
-      table_number = 11,
+      table_number = 12, #slchange
       is_year_table = FALSE,
       is_cost_table = TRUE,
       non_editable_cols = c(0:0),
@@ -5661,7 +5604,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Costs,
-      table_number = 12,
+      table_number = 14, #slchange
       is_year_table = FALSE,
       is_cost_table = TRUE,
       non_editable_cols = c(0:1),
@@ -5677,7 +5620,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Costs,
-      table_number = 13,
+      table_number = 18, #slchange
       is_year_table = FALSE,
       is_cost_table = TRUE,
       non_editable_cols = c(0:0),
@@ -5709,7 +5652,7 @@ table.on('draw', function(){
     
     render_custom_datatable(
       data_reactive = rvs$Costs,
-      table_number = 14,
+      table_number = 13, #slchange
       is_year_table = FALSE,
       is_cost_table = TRUE,
       non_editable_cols = c(0:0),
@@ -5794,9 +5737,9 @@ table.on('draw', function(){
   observeEvent(input$pub_trans_priority_costs_tbl_cell_edit, {
     req(rvs$Costs)  
     
-    rvs$Costs[rvs$Costs$table_no_ui == 4,] <- reshaping_cost(input$pub_trans_priority_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 5,] <- reshaping_cost(input$pub_trans_priority_costs_tbl_cell_edit, #slchanged
                                                              rvs$Costs,
-                                                             tbl_no = 4,
+                                                             tbl_no = 5,
                                                              num_col = 1,
                                                              col_list = c('unit')
     )
@@ -5807,9 +5750,9 @@ table.on('draw', function(){
   observeEvent(input$pub_trans_rail_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 5,] <- reshaping_cost(input$pub_trans_rail_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 6,] <- reshaping_cost(input$pub_trans_rail_costs_tbl_cell_edit, #slchanged
                                                              rvs$Costs,
-                                                             tbl_no = 5,
+                                                             tbl_no = 6,
                                                              num_col = 3, # how many numeric columns,
                                                              unit1 = 'per_veh_cap_cost',
                                                              unit2 = 'per_VRM_fuel_cost',
@@ -5825,9 +5768,9 @@ table.on('draw', function(){
   observeEvent(input$tdm_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 6,] <- reshaping_cost(input$tdm_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 7,] <- reshaping_cost(input$tdm_costs_tbl_cell_edit, #slchanged
                                                              rvs$Costs,
-                                                             tbl_no = 6,
+                                                             tbl_no = 7,
                                                              num_col = 1,
                                                              col_list = c('unit'))
   })
@@ -5836,9 +5779,9 @@ table.on('draw', function(){
   observeEvent(input$micro_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 7,] <- reshaping_cost(input$micro_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 8,] <- reshaping_cost(input$micro_costs_tbl_cell_edit, #slchanged
                                                              rvs$Costs,
-                                                             tbl_no = 7,
+                                                             tbl_no = 8,
                                                              num_col = 1,
                                                              col_list = c('unit'))
   })
@@ -5847,9 +5790,9 @@ table.on('draw', function(){
   observeEvent(input$traffic_ops_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 8,] <- reshaping_cost(input$traffic_ops_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 9,] <- reshaping_cost(input$traffic_ops_costs_tbl_cell_edit, #slchanged
                                                              rvs$Costs,
-                                                             tbl_no = 8,
+                                                             tbl_no = 9,
                                                              num_col = 2, # how many numeric columns,
                                                              unit1 = 'annual_maintenance_cost',
                                                              unit2 = 'cost_per_improvement',
@@ -5864,9 +5807,9 @@ table.on('draw', function(){
   observeEvent(input$mhdev_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 9,] <- reshaping_cost(input$mhdev_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 10,] <- reshaping_cost(input$mhdev_costs_tbl_cell_edit, #slchanged
                                                              rvs$Costs,
-                                                             tbl_no = 9,
+                                                             tbl_no = 10,
                                                              num_col = 3, # how many numeric columns,
                                                              unit1 = 'per_VRM_fuel_cost',
                                                              unit2 = 'per_mile_onm_cost',
@@ -5881,9 +5824,9 @@ table.on('draw', function(){
   observeEvent(input$pnr_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 10,] <- reshaping_cost(input$pnr_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 11,] <- reshaping_cost(input$pnr_costs_tbl_cell_edit, #slchanged
                                                               rvs$Costs,
-                                                              tbl_no = 10,
+                                                              tbl_no = 11,
                                                               num_col = 1,
                                                               col_list = c('unit'))
   })
@@ -5892,9 +5835,9 @@ table.on('draw', function(){
   observeEvent(input$evsi_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 11,] <- reshaping_cost(input$evsi_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 12,] <- reshaping_cost(input$evsi_costs_tbl_cell_edit, #slchanged
                                                               rvs$Costs,
-                                                              tbl_no = 11,
+                                                              tbl_no = 12,
                                                               num_col = 2, # how many numeric columns,
                                                               unit1 = 'per_unit_hardware_cost',
                                                               unit2 = 'per_unit_installation_cost',
@@ -5906,9 +5849,9 @@ table.on('draw', function(){
   observeEvent(input$roadway_expand_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 12,] <- reshaping_cost(input$roadway_expand_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 13,] <- reshaping_cost(input$roadway_expand_costs_tbl_cell_edit, #slchanged
                                                               rvs$Costs,
-                                                              tbl_no = 12,
+                                                              tbl_no = 13,
                                                               num_col = 2, # how many numeric columns,
                                                               unit1 = 'per_ln_mile_cap_cost',
                                                               unit2 = 'per_ln_mile_cost',
@@ -5921,9 +5864,9 @@ table.on('draw', function(){
   observeEvent(input$fuel_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 13,] <- reshaping_cost(input$fuel_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 18,] <- reshaping_cost(input$fuel_costs_tbl_cell_edit, #slchanged
                                                               rvs$Costs,
-                                                              tbl_no = 13,
+                                                              tbl_no = 18,
                                                               num_col = 1, # how many numeric columns,
                                                               col_list = c('fuel_type'))
   })
@@ -5933,14 +5876,14 @@ table.on('draw', function(){
   observeEvent(input$intermodal_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 14,] <- reshaping_cost(input$intermodal_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 13,] <- reshaping_cost(input$intermodal_costs_tbl_cell_edit, #slchanged
                                                               rvs$Costs,
-                                                              tbl_no = 14,
+                                                              tbl_no = 13,
                                                               num_col = 1,
                                                               col_list = c('unit'))
   }) # end of reshaping
   
-  ## observe change to intermodal_costs
+  ## observe change to resurf
   observeEvent(input$roadwayresurf_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
@@ -5951,13 +5894,13 @@ table.on('draw', function(){
                                                               col_list = c('unit'))
   }) # end of reshaping
   
-  ## observe change to intermodal_costs
+  ## observe change to land use
   observeEvent(input$landuse_costs_tbl_cell_edit, {
     req(rvs$Costs)
     
-    rvs$Costs[rvs$Costs$table_no_ui == 15,] <- reshaping_cost(input$landuse_costs_tbl_cell_edit,
+    rvs$Costs[rvs$Costs$table_no_ui == 16,] <- reshaping_cost(input$landuse_costs_tbl_cell_edit,
                                                               rvs$Costs,
-                                                              tbl_no = 15,
+                                                              tbl_no = 16,
                                                               num_col = 1,
                                                               col_list = c('unit'))
   }) # end of reshaping
@@ -5984,67 +5927,75 @@ table.on('draw', function(){
   })  
   
   observeEvent(input$reset_pub_trans_priority_costs_tbl, {
-    rvs$Costs[rvs$Costs$table_no_ui == 4,] <- initial_costs[initial_costs$table_no_ui == 4, ]
+    rvs$Costs[rvs$Costs$table_no_ui == 5,] <- initial_costs[initial_costs$table_no_ui == 5, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
     
   })  
   
   observeEvent(input$reset_tdm_costs_tbl, {
-    rvs$Costs[rvs$Costs$table_no_ui == 5,] <- initial_costs[initial_costs$table_no_ui == 5, ]
+    rvs$Costs[rvs$Costs$table_no_ui == 6,] <- initial_costs[initial_costs$table_no_ui == 6, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
     
   })  
   
   observeEvent(input$reset_pub_trans_rail_costs_tbl, {
-    rvs$Costs[rvs$Costs$table_no_ui == 6,] <- initial_costs[initial_costs$table_no_ui == 6, ]
+    rvs$Costs[rvs$Costs$table_no_ui == 7,] <- initial_costs[initial_costs$table_no_ui == 7, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
     
   })  
   
   observeEvent(input$reset_micro_costs_tbl, {
-    rvs$Costs[rvs$Costs$table_no_ui == 7,] <- initial_costs[initial_costs$table_no_ui == 7, ]
+    rvs$Costs[rvs$Costs$table_no_ui == 8,] <- initial_costs[initial_costs$table_no_ui == 8, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
     
   })  
   
   observeEvent(input$reset_traffic_ops_costs_tbl, {
-    rvs$Costs[rvs$Costs$table_no_ui == 8,] <- initial_costs[initial_costs$table_no_ui == 8, ]
+    rvs$Costs[rvs$Costs$table_no_ui == 9,] <- initial_costs[initial_costs$table_no_ui == 9, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
     
   })  
   
   observeEvent(input$reset_mhdev_costs_tbl, {
-    rvs$Costs[rvs$Costs$table_no_ui == 9,] <- initial_costs[initial_costs$table_no_ui == 9, ]
+    rvs$Costs[rvs$Costs$table_no_ui == 10,] <- initial_costs[initial_costs$table_no_ui == 10, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
     
   })  
   
   observeEvent(input$reset_pnr_costs_tbl, {
-    rvs$Costs[rvs$Costs$table_no_ui == 10,] <- initial_costs[initial_costs$table_no_ui == 10, ]
+    rvs$Costs[rvs$Costs$table_no_ui == 11,] <- initial_costs[initial_costs$table_no_ui == 11, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
     
   })  
   
   observeEvent(input$reset_evsi_costs_tbl, {
-    rvs$Costs[rvs$Costs$table_no_ui == 11,] <- initial_costs[initial_costs$table_no_ui == 11, ]
+    rvs$Costs[rvs$Costs$table_no_ui == 12,] <- initial_costs[initial_costs$table_no_ui == 12, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_roadway_expand_costs_tbl, {
-    rvs$Costs[rvs$Costs$table_no_ui == 12,] <- initial_costs[initial_costs$table_no_ui == 12, ]
+    rvs$Costs[rvs$Costs$table_no_ui == 14,] <- initial_costs[initial_costs$table_no_ui == 14, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
   
   observeEvent(input$reset_fuel_costs_tbl, {
-    rvs$Costs[rvs$Costs$table_no_ui == 13,] <- initial_costs[initial_costs$table_no_ui == 13, ]
+    rvs$Costs[rvs$Costs$table_no_ui == 18,] <- initial_costs[initial_costs$table_no_ui == 18, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
     })  
   
   observeEvent(input$reset_intermodal_costs_tbl, {
-    rvs$Costs[rvs$Costs$table_no_ui == 14,] <- initial_costs[initial_costs$table_no_ui == 14, ]
+    rvs$Costs[rvs$Costs$table_no_ui == 13,] <- initial_costs[initial_costs$table_no_ui == 13, ] #slchanged
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+  })
+  
+  observeEvent(input$reset_roadwayresurf_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 15,] <- initial_costs[initial_costs$table_no_ui == 15, ]
+    updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
+  })    
+  observeEvent(input$reset_landuse_costs_tbl, {
+    rvs$Costs[rvs$Costs$table_no_ui == 16,] <- initial_costs[initial_costs$table_no_ui == 16, ]
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
-  
 
 
   # SCENARIOS: inputs -------------------------------------------------
@@ -6739,12 +6690,10 @@ table.on('draw', function(){
     print("RENDERING: Transit Priority Costs Outputs")
     # browser()
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==4,],
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,], #slchanged
       output_table = cost_output_transitservice() %>% filter(table == "Bus Priority"),
       col_sel = c(),
       proj_life = 5, 
-      #var1_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
-      #var2_scalar = rvs$Assumptions$value[rvs$Assumptions$table_no_ui==2& rvs$Assumptions$area_type == 'All'& rvs$Assumptions$transit_mode =='Light Rail / Streetcar'&rvs$Assumptions$unit =='rev_mi_per_veh'],
       style = input$cost_view) %>% 
       rename(any_of(references_vector)) %>%
       mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) # to show NA in table
@@ -6810,7 +6759,7 @@ table.on('draw', function(){
     print("RENDERING: Public Transit Rail Costs Outputs")
     # browser()
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,],
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==6,], #slchanged
       output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Rail (VOMS)"),
       col_sel = c('fuel_type','transit_mode'),
       proj_life = 30,
@@ -6837,7 +6786,7 @@ table.on('draw', function(){
   output$tdm_costs_outputs_tbl <- renderDT({   
     print("RENDERING: TDM Costs Outputs")
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==6,],
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui== 7,], #slchanged
       output_table = cost_output_TDM(),
       col_sel = c(),
       proj_life = 1,
@@ -6863,7 +6812,7 @@ table.on('draw', function(){
   output$micro_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Micro Costs Outputs")
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==7,],
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui== 8,], #slchanged
       output_table = cost_output_micro(),
       col_sel = c(),
       proj_life = 6,
@@ -6886,9 +6835,9 @@ table.on('draw', function(){
   
   output$traffic_ops_costs_outputs_tbl <- renderDT({   
     print("RENDERING: OPS Costs Outputs")
-    browser()
+    #browser()
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,]%>% 
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==9,]%>% #slchanged
         left_join(data.frame(cap_proj_type = c("New roundabouts","New or retimed signal"),
                              proj_life = c(30,5))),
       output_table = output_cost_OPS(),
@@ -6896,8 +6845,8 @@ table.on('draw', function(){
       proj_life = NA,
       style = input$cost_view)%>% 
       rename(any_of(references_vector)) %>%
-      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) %>% # to show NA in table
-      mutate(year = as.character(year)) %>% rename(Year = year)
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) #%>% # to show NA in table
+      #mutate(year = as.character(year)) %>% rename(Year = year)
     
     x<-datatable(temp,
                  rownames = FALSE,
@@ -6916,7 +6865,7 @@ table.on('draw', function(){
     
     print("RENDERING: MHDEV Costs Outputs")
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==9,] %>% rename('veh_subtype' = 'fuel_type'),
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==10,] %>% rename('veh_subtype' = 'fuel_type'),#slchanged
       output_table = cost_effectiveness_MDHD(),
       col_sel = c('veh_type','veh_subtype'),
       proj_life = 12,
@@ -6940,7 +6889,7 @@ table.on('draw', function(){
   output$pnr_costs_outputs_tbl <- renderDT({   
     print("RENDERING: PNR Costs Outputs")
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==10,],
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==11,],#slchanged
       output_table = cost_output_pnr(),
       col_sel = c(),
       proj_life = 30,
@@ -6964,7 +6913,7 @@ table.on('draw', function(){
   output$evsi_costs_outputs_tbl <- renderDT({  
     print("RENDERING: EVSI Costs Outputs")
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==11,],
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==12,],#slchanged
       output_table = cost_effectiveness_EVSE(),
       col_sel = c('charge_port_detail'), #Change to port detail?
       proj_life = 10,
@@ -6988,7 +6937,7 @@ table.on('draw', function(){
   output$roadway_expand_costs_outputs_tbl <- renderDT({  
     print("RENDERING: Roadway Exp Costs Outputs")
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==12,],
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==14,], #slchanged
       output_table = cost_output_RoadwayExp(),
       col_sel = c('road_class','area_type'),
       proj_life = 30,#needs to project lifes actually :(
@@ -7009,13 +6958,40 @@ table.on('draw', function(){
     return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
   })
   
+  output$roadwayresurf_cuts_costs_outputs_tbl <- renderDT({
+    print("RENDERING: Roadway Resurfacing Costs Outputs")
+    #browser()
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==15,],
+      output_table = cost_output_roadway_resurf(),
+      col_sel = c(),
+      proj_life = 12,
+      style = input$cost_view)
+    temp <- temp%>%
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) #%>% # to show NA in table
+      #mutate(year = as.character(year)) %>% rename(Year = year)
+
+    x<-datatable(temp,
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE))
+    if(input$cost_view == "detail"){
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
+  
   #Fuel Price Table
   
   output$intermodal_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Service Cuts Costs Outputs")
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==14,],
-      output_table = output_cost_OPS(),
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==18,], #slchanged
+      output_table = cost_effectiveness_freight(),
       col_sel = c(),
       proj_life = 30,
       style = input$cost_view)%>% 
@@ -7036,85 +7012,32 @@ table.on('draw', function(){
     return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
   })
   
-  # output$transitservice_cuts_costs_outputs_tbl <- renderDT({
-  #   print("RENDERING: Transit Service Costs Outputs")
-  #   browser()
-  #   temp <- cost_function(
-  #     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
-  #     output_table = cost_output_transitservice_cuts(),
-  #     col_sel = c('area_type','transit_mode','unit'),
-  #     proj_life = 12,
-  #     scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
-  #     style = input$cost_view)%>% 
-  #     rename(any_of(references_vector)) %>%
-  #     mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) %>% # to show NA in table
-  #     mutate(year = as.character(year)) %>% rename(Year = year)
-  #   
-  #   x<-datatable(temp,
-  #                rownames = FALSE,
-  #                selection = "none",
-  #                options = list(
-  #                  pageLength = 50,
-  #                  searching = FALSE,
-  #                  paging = FALSE,
-  #                  info = FALSE)) 
-  #   if(input$cost_view == "detail"){
-  #     x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
-  #   return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
-  # })
-  # 
-  # output$land_use_cuts_costs_outputs_tbl <- renderDT({
-  #   print("RENDERING: Land Use Costs Outputs")
-  #   browser()
-  #   temp <- cost_function(
-  #     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==16,],
-  #     output_table = cost_output_land_use(),
-  #     col_sel = c(),
-  #     proj_life = 12,
-  #     style = input$cost_view)%>% 
-  #     rename(any_of(references_vector)) %>%
-  #     mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) %>% # to show NA in table
-  #     mutate(year = as.character(year)) %>% rename(Year = year)
-  #   
-  #   x<-datatable(temp,
-  #                rownames = FALSE,
-  #                selection = "none",
-  #                options = list(
-  #                  pageLength = 50,
-  #                  searching = FALSE,
-  #                  paging = FALSE,
-  #                  info = FALSE)) 
-  #   if(input$cost_view == "detail"){
-  #     x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
-  #   return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
-  # })
-  # 
-  # output$roadway_resurf_cuts_costs_outputs_tbl <- renderDT({
-  #   print("RENDERING: Roadway Resurfacing Costs Outputs")
-  #   browser()
-  #   temp <- cost_function(
-  #     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==17,],
-  #     output_table = cost_output_roadway_resurf(),
-  #     col_sel = c(),
-  #     proj_life = 12,
-  #     style = input$cost_view)%>% 
-  #     rename(any_of(references_vector)) %>%
-  #     mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) %>% # to show NA in table
-  #     mutate(year = as.character(year)) %>% rename(Year = year)
-  #   
-  #   x<-datatable(temp,
-  #                rownames = FALSE,
-  #                selection = "none",
-  #                options = list(
-  #                  pageLength = 50,
-  #                  searching = FALSE,
-  #                  paging = FALSE,
-  #                  info = FALSE)) 
-  #   if(input$cost_view == "detail"){
-  #     x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
-  #   return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
-  # })
-  
+ 
+  output$landuse_costs_outputs_tbl <- renderDT({
+    print("RENDERING: Land Use Costs Outputs")
+    #browser()
+    temp <- cost_function(
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==16,],
+      output_table = cost_output_land_use(),
+      col_sel = c(),
+      proj_life = 12,
+      style = input$cost_view)%>%
+      rename(any_of(references_vector)) %>%
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) #%>% # to show NA in table
+      #mutate(year = as.character(year)) %>% rename(Year = year)
+
+    x<-datatable(temp,
+                 rownames = FALSE,
+                 selection = "none",
+                 options = list(
+                   pageLength = 50,
+                   searching = FALSE,
+                   paging = FALSE,
+                   info = FALSE))
+    if(input$cost_view == "detail"){
+      x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
+  })
   
   # server scenarios outputs ------------------------------------------------
   output$emission_change_tbl <- renderDataTable({

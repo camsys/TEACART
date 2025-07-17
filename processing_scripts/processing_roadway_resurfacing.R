@@ -15,7 +15,7 @@ output_roadway_resurf <- reactive({
   
   temp_em_df_sub <- e_emmissions_apportionment() %>% ungroup()
   
-  percent_truck_traffic <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$unit == "truck_traffic_pct" & rvs$Assumptions$road_class == "Freeway"]
+  percent_truck_traffic <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$unit == "truck_traffic_pct" & rvs$Assumptions$road_class == "Freeway"] #slchanged
   
   TIST_Delta_Fuel_Costs <- -0.795
   Gas_Price <- 3.18
@@ -89,7 +89,7 @@ cost_output_roadway_resurf <- reactive({
   
   temp_em_df_sub <- e_emmissions_apportionment() %>% ungroup()
   
-  percent_truck_traffic <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$unit == "truck_traffic_pct" & rvs$Assumptions$road_class == "Freeway"]
+  percent_truck_traffic <- rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$unit == "truck_traffic_pct" & rvs$Assumptions$road_class == "Freeway"] #slchanged
   
   TIST_Delta_Fuel_Costs <- -0.795
   Gas_Price <- 3.18

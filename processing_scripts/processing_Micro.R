@@ -17,7 +17,7 @@ output_micro <- reactive({
           TRUE ~ value)) %>%
       left_join(select(emrate_by_tech_ldv,year,CO2e_millions,base_impf), by = 'year') 
     
-    Assumptions_micro <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 4,]  # table 4 is micro in Assumptions
+    Assumptions_micro <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 8,]  # table 8 is micro in Assumptions #slchanged
     
     
     # get values from Fuel_Factors_Weighted()
@@ -45,7 +45,7 @@ output_micro <- reactive({
 cost_output_micro <- reactive({
   
   emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light-Duty Vehicles')
-  Assumptions_micro <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 4,]  # table 4 is micro in Assumptions
+  Assumptions_micro <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 8,]  # table 8 is micro in Assumptions #slchanged
   
   # get the desired vars
   bike_per_week <- Assumptions_micro$value[Assumptions_micro$unit == 'bike_trips_per_week']

@@ -19,7 +19,7 @@ output_pnr <- reactive({
         TRUE ~ value)) %>%
     left_join(select(emrate_by_tech_ldv,year,CO2e_millions,base_impf), by = 'year') 
   
-  Assumptions_pnr <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 3 |rvs$Assumptions$table_no_ui == 7,]  # table 7 is pnr in Assumptions, but also need entries from TDM.
+  Assumptions_pnr <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 7 |rvs$Assumptions$table_no_ui == 11,]  # table 7 is pnr in Assumptions, but also need entries from TDM. #slchanged
   
   # get values from Fuel_Factors_Weighted()
   fuel_factorNox <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light-Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
@@ -44,7 +44,7 @@ output_pnr <- reactive({
 cost_output_pnr <- reactive({
   
   emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light-Duty Vehicles')
-  Assumptions_pnr <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 3 |rvs$Assumptions$table_no_ui == 7,]  # table 7 is pnr in Assumptions, but also need entries from TDM.
+  Assumptions_pnr <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 7 |rvs$Assumptions$table_no_ui == 11,]  # table 7 is pnr in Assumptions, but also need entries from TDM. #slchanged
   
   # get the desired vars
   annualization <- Assumptions_pnr$value[Assumptions_pnr$unit == 'annualization_factor']

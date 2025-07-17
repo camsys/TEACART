@@ -60,7 +60,7 @@ temp_output_roundabout <- data.frame(year = c(rvs$Baseline$horizon_year_1, rvs$B
 temp_output_roundabout <- expand(temp_output_roundabout, year, area_type = c("Urban", "Rural"), road_class = c("Principal Arterial"))
 
 #add percent truck traffic
-temp_output_signal$percent_truck_traffic <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"])
+temp_output_signal$percent_truck_traffic <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"])#slchanged
 
 temp_output_signal$light_duty_automobile_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])
 temp_output_signal$medium_heavy_duty_truck_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium-/Heavy-Duty Vehicles"])
@@ -73,16 +73,16 @@ temp_output_signal<-temp_output_signal %>%
 temp_output_signal$ldv_impf <- sapply(temp_output_signal$year, function(x) temp_em_df$base_impf [temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])
 
 
-temp_output_signal$VMT_elasticity <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"])
-temp_output_signal$traveltime_elasticity <- sapply(temp_output_signal$area_type, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x & rvs$Assumptions$unit == "VMT_elasticity_trav_time"])
-
+temp_output_signal$VMT_elasticity <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"]) #slchanged
+temp_output_signal$traveltime_elasticity <- sapply(temp_output_signal$area_type, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == x & rvs$Assumptions$unit == "VMT_elasticity_trav_time"]) #slchanged
+ 
 #need to change user input to principal arterial
-tspeed_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "travel_speed_mph"]}
+tspeed_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "travel_speed_mph"]} #slchanged
 temp_output_signal$tspeed = apply(temp_output_signal, 1, tspeed_fun, c1 = "area_type", c2 = "road_class")
 temp_output_signal <- temp_output_signal %>% mutate(new_speed = tspeed/(1+corridor_travel_time_change))
 temp_output_signal <- temp_output_signal %>% mutate(change_speed_per_veh = -(sample_corridor_length/tspeed)+(sample_corridor_length/new_speed))
 
-AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "avg_AADT"]}
+AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "avg_AADT"]} #slchanged
 temp_output_signal$AADT = apply(temp_output_signal, 1, AADT_fun, c1 = "area_type", c2 = "road_class")
 temp_output_roundabout$AADT = apply(temp_output_roundabout, 1, AADT_fun, c1 = "area_type", c2 = "road_class")
 
@@ -193,7 +193,7 @@ output_cost_OPS <- reactive({
   temp_output_roundabout <- data.frame(year = c(rvs$Baseline$horizon_year_1,rvs$Baseline$horizon_year_1),area_type = c("Urban", "Rural"), road_class = c("Principal Arterial","Principal Arterial"))
   
   #add percent truck traffic
-  temp_output_signal$percent_truck_traffic <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"])
+  temp_output_signal$percent_truck_traffic <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"]) #slchanged
   
   temp_output_signal$light_duty_automobile_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])
   temp_output_signal$medium_heavy_duty_truck_emrate <- sapply(temp_output_signal$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium-/Heavy-Duty Vehicles"])
@@ -206,16 +206,16 @@ output_cost_OPS <- reactive({
   temp_output_signal$ldv_impf <- sapply(temp_output_signal$year, function(x) temp_em_df$base_impf [temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])
   
   
-  temp_output_signal$VMT_elasticity <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"])
-  temp_output_signal$traveltime_elasticity <- sapply(temp_output_signal$area_type, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x & rvs$Assumptions$unit == "VMT_elasticity_trav_time"])
+  temp_output_signal$VMT_elasticity <- sapply(temp_output_signal$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"]) #slchanged
+  temp_output_signal$traveltime_elasticity <- sapply(temp_output_signal$area_type, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == x & rvs$Assumptions$unit == "VMT_elasticity_trav_time"]) #slchanged
   
   #need to change user input to principal arterial
-  tspeed_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "travel_speed_mph"]}
+  tspeed_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "travel_speed_mph"]} #slchanged
   temp_output_signal$tspeed = apply(temp_output_signal, 1, tspeed_fun, c1 = "area_type", c2 = "road_class")
   temp_output_signal <- temp_output_signal %>% mutate(new_speed = tspeed/(1+corridor_travel_time_change))
   temp_output_signal <- temp_output_signal %>% mutate(change_speed_per_veh = -(sample_corridor_length/tspeed)+(sample_corridor_length/new_speed))
   
-  AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "avg_AADT"]}
+  AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "avg_AADT"]} #slchanged
   temp_output_signal$AADT = apply(temp_output_signal, 1, AADT_fun, c1 = "area_type", c2 = "road_class")
   temp_output_roundabout$AADT = apply(temp_output_roundabout, 1, AADT_fun, c1 = "area_type", c2 = "road_class")
   
@@ -254,7 +254,8 @@ output_cost_OPS <- reactive({
   fin_output <- rbind(temp_output_roundabout, temp_output_signal)  %>%
     ungroup() %>%
     group_by(year) %>% 
-    mutate(total_change_newtrips = -1*total_change_VMT/365)
+    mutate(total_change_newtrips = -1*total_change_VMT/365) |> 
+    select(-year)
   
   return(fin_output)
 })

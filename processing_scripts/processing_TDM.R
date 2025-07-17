@@ -21,7 +21,7 @@
         TRUE ~ value)) %>%
     left_join(select(emrate_by_tech_ldv,year,CO2e_millions,base_impf), by = 'year') 
   
-  Assumptions_tdm <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 3,]  # table 3 is TDM in Assumptions
+  Assumptions_tdm <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 7,] # table 7 is TDM in Assumptions#slchanged
   
   # get values from Fuel_Factors_Weighted()
   fuel_factorNox <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Light-Duty Vehicles'& Fuel_Factors_Weighted()$veh_subtype == 'All']
@@ -45,7 +45,7 @@
  cost_output_TDM <- reactive({
    
    emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light-Duty Vehicles')
-  Assumptions_tdm <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 3,]  # table 3 is TDM in Assumptions
+  Assumptions_tdm <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 7,]  # table 7 is TDM in Assumptions#slchanged
    
    # get the desired vars
    co2emrate <- emrate_by_tech_ldv$CO2e_millions[emrate_by_tech_ldv$year== rvs$Baseline$horizon_year_1]
