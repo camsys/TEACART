@@ -3356,25 +3356,25 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   
   # SLFLAG - are you using this? I think everything in this section has been replaced
   
-  projects_names <- c("bikeped_projs",
-                      "transit_fixed_projs",
-                      "transit_dr_projs",
-                      "transit_el_projs",
-                      "transit_bus_projs",
-                      "public_rail_projs",
-                      "tdm_projs",
-                      "micro_projs",
-                      "traffic_ops_projs",
-                      "mhdev_projs",
-                      "pnr_projs",
-                      "evsi_projs",
-                      "freight_projs",
-                      "expansion_projs",
-                      "transit_cuts_projs",
-                      "road_resurf_projs",
-                      "land_use")
-  
-  read_static_tables("data/projects.xlsx", projects_names)
+  # projects_names <- c("bikeped_projs",
+  #                     "transit_fixed_projs",
+  #                     "transit_dr_projs",
+  #                     "transit_el_projs",
+  #                     "transit_bus_projs",
+  #                     "public_rail_projs",
+  #                     "tdm_projs",
+  #                     "micro_projs",
+  #                     "traffic_ops_projs",
+  #                     "mhdev_projs",
+  #                     "pnr_projs",
+  #                     "evsi_projs",
+  #                     "freight_projs",
+  #                     "expansion_projs",
+  #                     "transit_cuts_projs",
+  #                     "road_resurf_projs",
+  #                     "land_use")
+  # 
+  # read_static_tables("data/projects.xlsx", projects_names)
   
   
 
@@ -5099,18 +5099,18 @@ table.on('draw', function(){
   
   # server assumptions ------------------------------------------------------
   
-  assumptions_names <- c("bikeped_assmps",
-                         "transit_assmps",
-                         "tdm_assmps",
-                         "micro_assmps",
-                         "traffic_ops_assmps",
-                         "mhdv_assmps",
-                         "pnr_assmps",
-                         "evsi_assmps",
-                         "landuse_assmpts")
-  
-  
-  read_static_tables("data/assumptions.xlsx", assumptions_names)
+  # assumptions_names <- c("bikeped_assmps",
+  #                        "transit_assmps",
+  #                        "tdm_assmps",
+  #                        "micro_assmps",
+  #                        "traffic_ops_assmps",
+  #                        "mhdv_assmps",
+  #                        "pnr_assmps",
+  #                        "evsi_assmps",
+  #                        "landuse_assmpts")
+  # 
+  # 
+  # read_static_tables("data/assumptions.xlsx", assumptions_names)
   
   
   ## create assumption tables -----------------------------------------------------------
