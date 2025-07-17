@@ -6141,16 +6141,16 @@ table.on('draw', function(){
   
   # ADVANCED: inputs ---------------------------------------------------------
   
-  advanced_names <- c("ev_forecast_sheet",
-                      "vmt_forecast_sheet",
-                      "onroad_fuel_tech_frac_sheet",
-                      "pass_rail_sheet",
-                      "freight_rail_sheet",
-                      "construction_sheet",
-                      "fuel_apportionment_sheet")
-  
-  read_static_tables("data/advanced.xlsx", advanced_names)
-  
+  # advanced_names <- c("ev_forecast_sheet",
+  #                     "vmt_forecast_sheet",
+  #                     "onroad_fuel_tech_frac_sheet",
+  #                     "pass_rail_sheet",
+  #                     "freight_rail_sheet",
+  #                     "construction_sheet",
+  #                     "fuel_apportionment_sheet")
+  # 
+  # read_static_tables("data/advanced.xlsx", advanced_names)
+  # 
   
   ## ADVANCED: create tables -----------------------------------------------------------
   
@@ -6626,23 +6626,23 @@ table.on('draw', function(){
   
   # COST Outputs ----------------------------------------------------
   
-  costs_outputs_names <- c("bikeped_costs_outputs",
-                           "transit_fixed_costs_outputs",
-                           "transit_dr_costs_outputs",
-                           "pub_trans_priority_costs_outputs",
-                           "transit_zeb_costs_outputs",
-                           "pub_trans_rail_costs_outputs",
-                           "tdm_costs_outputs",
-                           "micro_costs_outputs",
-                           "traffic_ops_costs_outputs",
-                           "mhdev_costs_outputs",
-                           "pnr_costs_outputs",
-                           "evsi_costs_outputs",
-                           "roadway_expand_costs_outputs",
-                           "intermodal_costs_outputs"
-                           )
-  
-  read_static_tables("data/costs_outputs.xlsx", costs_outputs_names)
+  # costs_outputs_names <- c("bikeped_costs_outputs",
+  #                          "transit_fixed_costs_outputs",
+  #                          "transit_dr_costs_outputs",
+  #                          "pub_trans_priority_costs_outputs",
+  #                          "transit_zeb_costs_outputs",
+  #                          "pub_trans_rail_costs_outputs",
+  #                          "tdm_costs_outputs",
+  #                          "micro_costs_outputs",
+  #                          "traffic_ops_costs_outputs",
+  #                          "mhdev_costs_outputs",
+  #                          "pnr_costs_outputs",
+  #                          "evsi_costs_outputs",
+  #                          "roadway_expand_costs_outputs",
+  #                          "intermodal_costs_outputs"
+  #                          )
+  # 
+  # read_static_tables("data/costs_outputs.xlsx", costs_outputs_names)
   
   ## COST Outputs: create tables -----------------------------------------------------------
   
@@ -7246,17 +7246,17 @@ table.on('draw', function(){
   
   
   # read dummy data
-  scenario_result <- readxl::read_excel("data/scenario_simplified.xlsx")
-  
-  observeEvent(input$scenario_indicator,{
-    dat_temp <- scenario_result |> 
-      filter( indicator== input$scenario_indicator, !is.na(mt_reduction)) |> 
-      select(-'value',-'pct_reduction') |> 
-      mutate(year = as.character(year)) |> 
-      pivot_wider(names_from = scenario,
-                  values_from = mt_reduction)
-    
-  })
+  # scenario_result <- readxl::read_excel("data/scenario_simplified.xlsx")
+  # 
+  # observeEvent(input$scenario_indicator,{
+  #   dat_temp <- scenario_result |> 
+  #     filter( indicator== input$scenario_indicator, !is.na(mt_reduction)) |> 
+  #     select(-'value',-'pct_reduction') |> 
+  #     mutate(year = as.character(year)) |> 
+  #     pivot_wider(names_from = scenario,
+  #                 values_from = mt_reduction)
+  #   
+  # })
   
   output$downloadscenario_result <- downloadHandler(
     filename = function(){
