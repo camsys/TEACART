@@ -106,7 +106,7 @@ cost_output_roadway_resurf <- reactive({
     summarise(across(where(is.numeric), ~sum(.x, na.rm = T))) |>
     mutate(weighted_avg = light*(1-percent_truck_traffic)+heavy*percent_truck_traffic) |> 
     mutate(d2014 = weighted_avg/em_rate_weight) |> 
-    mutate(ghg_per_lane_mile = d2014*ghg_per_m*cost_per_lane_mile) |> 
+    mutate(ghg_per_lane_mile = d2014*ghg_per_m*cost_per_lane_mile/1000000) |> 
     filter(year == rvs$Baseline$horizon_year_1)
   temp <- output_roadway_resurf() |>  filter(year == rvs$Baseline$horizon_year_1)
   
@@ -116,9 +116,9 @@ cost_output_roadway_resurf <- reactive({
     nox_factor = 0.001054894 #defaul maryland values in case there is no user inputs
     pm25_factor = 0.00002329709939
   }
-  
+  browser()
   resurf_fin <- data.frame(table = c("Roadway Resurfacing"),
-                              year =  input$horizon_year_1,
+                              #year =  input$horizon_year_1,
                               total_change_gGHG = emrate_by_tech[["ghg_per_lane_mile"]]*1000000,
                               total_change_VMT = 0,
                               total_change_newtrips = 0) |> 

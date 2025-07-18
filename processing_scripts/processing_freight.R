@@ -98,7 +98,7 @@ output_freight <- reactive({
 })
 
 cost_effectiveness_freight <- reactive({
-  #browser()
+  browser()
 
   ret <- data.frame(total_change_gGHG = (emrate_freight() %>% filter(year == input$horizon_year_1) %>% pull(emissions_avg)) * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_truck"), value)) + 
                   (emissions_avg_rail() * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_rail"), value))),
