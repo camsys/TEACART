@@ -6515,7 +6515,6 @@ table.on('draw', function(){
   })
   
   output$baseline_ghg_line <- renderPlotly({
-    
     df_lines <- baseline_ghg_forecast_all_years() %>% 
       filter(year >= 2021) %>%
       group_by(year) %>% summarise(Emissions = sum(Emissions))
@@ -7040,7 +7039,7 @@ table.on('draw', function(){
   # server scenarios outputs ------------------------------------------------
   output$emission_change_tbl <- renderDataTable({
     results <- scenario_summary_results()
-    # browser()
+    browser()
     comma_rows = c(0:4,7:11,14:19)
     percent_rows = c(5,6,12,13)
     currency_rows = NULL
