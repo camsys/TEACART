@@ -762,7 +762,8 @@ freight_rail_emissions <- reactive({ #not sure where we need this so I'm leaving
   
   for(yr in 2020:2050){
     fr_temp <- Freight_Rail_Data %>% filter(state == state_ch) %>% mutate(year= yr) %>%
-      mutate(FR_million_tonmiles = FR_million_tonmiles*(1+input_FR_GrowthRate)^(yr-2019))
+      mutate(FR_million_tonmiles = FR_million_tonmiles*(1+input_FR_GrowthRate)^(yr-2019)
+             )
     Freight_Rail <- rbind(Freight_Rail, fr_temp)
   }
   
