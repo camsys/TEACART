@@ -443,8 +443,6 @@ writeLines("")
 
 ```
 
-
-
 ```{r, results="asis",fig.align = 'left', fig.showtext=TRUE}
 #| echo: false
 #| warning: false

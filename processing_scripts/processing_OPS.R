@@ -223,6 +223,7 @@ output_cost_OPS <- reactive({
   temp_output_signal <- temp_output_signal %>% mutate(delay_reduction = AADT*change_speed_per_veh)
   temp_output_signal <- temp_output_signal %>% mutate(new_AADT = AADT+AADT*corridor_travel_time_change*traveltime_elasticity)
   #note for BEN the cost output refers to the wrong Daily total delay reduction (hours)
+  
   temp_output_signal <- temp_output_signal %>%
     mutate(total_change_VMT = (new_AADT-AADT)*(sample_corridor_length/signals_per_mile)*365,
            CO2e_from_delay = delay_reduction*road_class_delay_emrate*365,
@@ -231,7 +232,10 @@ output_cost_OPS <- reactive({
     #BEN: In the excel sheet there is a negative in front of the total_change_VMT? Also why isn't it time 365 when the delay emissions is in the g GHG calc
     #BEN: Why is the pm25 not applying to the ldv impf for both exaust and brake fuel factor in the excel 
     mutate(total_change_gnox = -1*total_change_VMT*NOx_LDV*ldv_impf + delay_reduction*road_class_delay_emrate*NOx_CO2_ratio,
-           total_change_gpm25 = -1*(total_change_VMT*ldv_impf*PM25_LDV_exhaust+total_change_VMT*PM25_LDV_tirebrakes) + CO2e_from_delay*PM25_CO2_ratio) %>%
+           # total_change_gpm25 = -1*(total_change_VMT*ldv_impf*PM25_LDV_exhaust+total_change_VMT*PM25_LDV_tirebrakes) + CO2e_from_delay*PM25_CO2_ratio,
+           total_change_gpm25 = delay_reduction*road_class_delay_emrate*PM25_CO2_ratio +   # Qi: this is the new equation 07172025
+             -1*total_change_VMT*PM25_LDV_exhaust*ldv_impf+
+             -1*total_change_VMT*PM25_LDV_tirebrakes) %>%
     
     mutate(total_daily_active = total_change_VMT/365) %>% 
     select(year, area_type, road_class, total_change_VMT, total_change_gGHG,total_change_gnox,total_change_gpm25) %>%
@@ -254,7 +258,7 @@ output_cost_OPS <- reactive({
   fin_output <- rbind(temp_output_roundabout, temp_output_signal)  %>%
     ungroup() %>%
     group_by(year) %>% 
-    mutate(total_change_newtrips = -1*total_change_VMT/365)
+    mutate(total_change_newtrips = 0)
   
   return(fin_output)
 })

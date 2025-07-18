@@ -5099,15 +5099,15 @@ table.on('draw', function(){
   
   # server assumptions ------------------------------------------------------
   
-  assumptions_names <- c("bikeped_assmps",
-                         "transit_assmps",
-                         "tdm_assmps",
-                         "micro_assmps",
-                         "traffic_ops_assmps",
-                         "mhdv_assmps",
-                         "pnr_assmps",
-                         "evsi_assmps",
-                         "landuse_assmpts")
+  # assumptions_names <- c("bikeped_assmps",
+  #                        "transit_assmps",
+  #                        "tdm_assmps",
+  #                        "micro_assmps",
+  #                        "traffic_ops_assmps",
+  #                        "mhdv_assmps",
+  #                        "pnr_assmps",
+  #                        "evsi_assmps",
+  #                        "landuse_assmpts")
   
   
   read_static_tables("data/assumptions.xlsx", assumptions_names)
@@ -6679,13 +6679,13 @@ table.on('draw', function(){
   
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
-    
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
       output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
       col_sel = c('area_type','fuel_type','transit_mode'),
       proj_life = 12,
-      scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
+      scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% 
+        rename("scalar_1" = "value"),
       style = input$cost_view
     ) %>% 
       rename(any_of(references_vector)) %>%
@@ -6808,7 +6808,6 @@ table.on('draw', function(){
   
   output$pub_trans_rail_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Public Transit Rail Costs Outputs")
-    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,],
       output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Rail (VOMS)"),
@@ -7246,29 +7245,29 @@ table.on('draw', function(){
   
   
   # read dummy data
-  scenario_result <- readxl::read_excel("data/scenario_simplified.xlsx")
-  
-  observeEvent(input$scenario_indicator,{
-    dat_temp <- scenario_result |> 
-      filter( indicator== input$scenario_indicator, !is.na(mt_reduction)) |> 
-      select(-'value',-'pct_reduction') |> 
-      mutate(year = as.character(year)) |> 
-      pivot_wider(names_from = scenario,
-                  values_from = mt_reduction)
-    
-  })
-  
-  output$downloadscenario_result <- downloadHandler(
-    filename = function(){
-      paste("scenario_results",
-            Sys.Date(),
-            ".csv",
-            sep="")},
-    content = function(file) {
-      tbl_out= scenario_result |> 
-        rename()
-      write.csv(tbl_out, file,row.names = F)
-    })
+  # scenario_result <- readxl::read_excel("data/scenario_simplified.xlsx")
+  # 
+  # observeEvent(input$scenario_indicator,{
+  #   dat_temp <- scenario_result |> 
+  #     filter( indicator== input$scenario_indicator, !is.na(mt_reduction)) |> 
+  #     select(-'value',-'pct_reduction') |> 
+  #     mutate(year = as.character(year)) |> 
+  #     pivot_wider(names_from = scenario,
+  #                 values_from = mt_reduction)
+  #   
+  # })
+  # 
+  # output$downloadscenario_result <- downloadHandler(
+  #   filename = function(){
+  #     paste("scenario_results",
+  #           Sys.Date(),
+  #           ".csv",
+  #           sep="")},
+  #   content = function(file) {
+  #     tbl_out= scenario_result |> 
+  #       rename()
+  #     write.csv(tbl_out, file,row.names = F)
+  #   })
   
   
   # server Strategy Summary outputs ------------------------------------------------
@@ -7397,16 +7396,23 @@ table.on('draw', function(){
   
   ## download PDF report
   
-  ## capture if user ever triggered the budget button
+  ## capture if user ever update the budget inputs
   
-  user_visited_budget <- reactiveVal(FALSE)
+  used_budget <- reactiveVal(FALSE)
   
-  observeEvent(input$INPUTS_TABS , {
-    if (input$INPUTS_TABS  == "Budget") {
-      user_visited_budget(TRUE)
-    }
+  # observeEvent(input$INPUTS_TABS , {
+  #   if (input$INPUTS_TABS  == "Budget") {
+  #     user_visited_budget(TRUE)
+  #   }
+  # })
+  
+  used_budget <- reactive({
+    input$budget_start_year != 2025 ||
+      input$budget_years_covered != 5 ||
+      input$budget_total != 100
   })
-    
+  
+  
   output$pdf_report <- downloadHandler(
     
     filename = function(){
@@ -7420,13 +7426,15 @@ table.on('draw', function(){
       
       dt <- baseline_ghg_forecast()
       
-      if (user_visited_budget()) {
+      browser()
+      
+      if (used_budget()) {
         
         include_budget <- 1
       } else {
         include_budget <- 0
       }
-      
+
       dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
         filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
         summarise(across(where(is.numeric),sum)) %>%

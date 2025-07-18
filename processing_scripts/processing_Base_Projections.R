@@ -475,7 +475,6 @@ EmRate_by_Tech <- reactive({ #this is emission rate for all vehicles types
   #fill NAs with zero. Caused by missing factors for certain vehicles. This could 
   #be skipped by using a better NA coding in the csv I think?
   EmRate_by_Tech[is.na(EmRate_by_Tech)]<-0
-  EmRate_by_Tech[EmRate_by_Tech == 'NA'] <-0
   
   #Calculate fuel emission rate, electircity emission rate, and combine based
   #on the apportionment for each vehicle type
@@ -1232,7 +1231,7 @@ EmRate_Electric_MDHD <- reactive({
 # Outputs ---------------------------------------------------------------------
 scenario_summary_results <- reactive({    #req('')
   #req(reactive_scenario())
-  # browser()
+  browser()
   base_year <- rvs$Baseline$base_year
   
   dt <- baseline_ghg_forecast()
