@@ -48,7 +48,7 @@ render_custom_datatable <- function(#input_reactives,
     } else if (is_budget_table == TRUE & is_advanced_table == FALSE & is_cost_table == FALSE & is_year_table == FALSE) {
       df %>% 
         select(-c(table_no_ui, table_no_ui_revised,table), -any_of(pivot_col))
-    } else if (is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table_number,]) != 1 & table_number != 13){
+    } else if (is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table_number,]) != 1 & table_number != 18){ #slchanged
       df %>% 
         select(-c(table_no_ui, table_no_ui_revised, 
                   cost_type, table, category)) %>%
@@ -68,7 +68,7 @@ render_custom_datatable <- function(#input_reactives,
     #lapply(input_reactives, req)
     req(data_reactive)
     
-    if(is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table_number,]) != 1 & table_number != 13){ 
+    if(is_cost_table == TRUE & nrow(data_reactive[data_reactive$table_no_ui == table_number,]) != 1 & table_number != 18){ #slchanged
   #  for Costs tab, no need to join the references
     reshaped_table <- data_reactive  %>%
       filter(table_no_ui == table_number) %>% 
@@ -100,7 +100,7 @@ render_custom_datatable <- function(#input_reactives,
     
     if(is_budget_table){
       #if(table_number %in% c(5)){browser()}
-      if(table_number %in% c(5, 7,8,9,11,13,15,17)){
+      if(table_number %in% c(5, 7,8,9,11,13,16,15)){
         #browser()
         select_list <- c("description", "category")
         } else {select_list <- c("description","category","unit")}

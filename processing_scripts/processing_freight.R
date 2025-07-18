@@ -62,10 +62,8 @@ emissions_avg_rail <- reactive({
     1000 * pull(filter(Fuel_Factors_Revision, str_detect(veh_subtype, "Diesel ICE")), fuel_carbon_content)[[1]]
 })
 
-# observeEvent(list(EmRate_by_Tech(), VMT_Forecast()), { ### uncomment this line and browser and comment below to test!
 output_freight <- reactive({
-  # req(EmRate_by_Tech(), VMT_Forecast(), Fuel_Factors_Weighted())
-  # browser()
+  #browser()
   
   capital_inputs <-
     rvs$Projects %>% 
@@ -85,9 +83,6 @@ output_freight <- reactive({
   
   ## table to return
   capital_inputs %>% 
-    #rowwise() %>%
-    #mutate(year = rvs$Baseline[[year]]) %>% ### Pulls horizon years
-    #ungroup() %>%
     left_join(emrate_freight(), by = join_by(year)) %>%
     mutate(truck_vmt_affected = intermodal_investment * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_truck"), value)),
            rail_ton_mi_affected = intermodal_investment * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_rail"), value)),
@@ -103,12 +98,16 @@ output_freight <- reactive({
 })
 
 cost_effectiveness_freight <- reactive({
-  tibble(
-    GHG = (emrate_freight() %>% filter(year == input$horizon_year_1) %>% pull(emissions_avg)) * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_truck"), value)) + 
-      (emissions_avg_rail() * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_rail"), value))),
-    VMT = as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_truck"), value)),
-    NOX = VMT * Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["NOx_g_per_veh_mi"]],
-    PM25 = VMT * (Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["PM25_exhaust_per_veh_mi"]] + 
-                    Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["PM25_tires_brakes_per_veh_mi"]])
-  )
+  #browser()
+
+  ret <- data.frame(total_change_gGHG = (emrate_freight() %>% filter(year == input$horizon_year_1) %>% pull(emissions_avg)) * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_truck"), value)) + 
+                  (emissions_avg_rail() * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_rail"), value))),
+                total_change_VMT =  as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_truck"), value))) |> 
+    mutate(
+                total_change_gnox = total_change_VMT * Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["NOx_g_per_veh_mi"]], 
+                total_change_gpm25 = total_change_VMT *  ( Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["PM25_exhaust_per_veh_mi"]] +
+                                                             total_change_VMT * Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["PM25_tires_brakes_per_veh_mi"]] ),
+                total_change_newtrips = 0)
+  return(ret)
+
 })

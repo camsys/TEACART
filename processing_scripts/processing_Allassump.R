@@ -89,7 +89,7 @@ all_costs <- reactive({
    )
  
  pub_trans_bus <- cost_function(
-   ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==4,],
+   ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,], #slchanged
    output_table = cost_output_transitservice() %>% filter(table == "Bus Priority"),
    col_sel = c(),
    proj_life = 5, 
@@ -105,7 +105,7 @@ all_costs <- reactive({
    )
  
    pub_trans_rail <- cost_function(
-     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,],
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==6,], #slchanged
      output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Rail (VOMS)"),
      col_sel = c('fuel_type','transit_mode'),
      proj_life = 30,
@@ -115,7 +115,7 @@ all_costs <- reactive({
      )
    
    tdm <- cost_function(
-     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==6,],
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==7,], #slchanged
      output_table = cost_output_TDM(),
      col_sel = c(),
      proj_life = 1,
@@ -123,7 +123,7 @@ all_costs <- reactive({
      )
    
    micro <- cost_function(
-     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==7,],
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,], #slchanged
      output_table = cost_output_micro(),
      col_sel = c(),
      proj_life = 6,
@@ -131,7 +131,7 @@ all_costs <- reactive({
      )
    
    traffic_ops <-cost_function(
-     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,]%>% 
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==9,]%>% #slchanged 
        left_join(data.frame(cap_proj_type = c("New roundabouts","New or retimed signal"),
                             proj_life = c(30,5))),
      output_table = output_cost_OPS(),
@@ -141,7 +141,7 @@ all_costs <- reactive({
      )
    
    mhdev<-cost_function(
-     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==9,] %>% rename('veh_subtype' = 'fuel_type'),
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==10,] %>% rename('veh_subtype' = 'fuel_type'), #slchanged
      output_table = cost_effectiveness_MDHD(),
      col_sel = c('veh_type','veh_subtype'),
      proj_life = 12,
@@ -149,7 +149,7 @@ all_costs <- reactive({
      )
    
    pnr<- cost_function(
-     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==10,],
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==11,], #slchanged
      output_table = cost_output_pnr(),
      col_sel = c(),
      proj_life = 30,
@@ -157,22 +157,22 @@ all_costs <- reactive({
      )
    
    evsi<-cost_function(
-     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==11,],
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==12,], #slchanged
      output_table = cost_effectiveness_EVSE(),
      col_sel = c('charge_port_detail'), #Change to port detail?
      proj_life = 10,
      style = 'summary'
      )
    roadway<- cost_function(
-     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==12,],
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==14,], #slchanged
      output_table = cost_output_RoadwayExp(),
      col_sel = c('road_class','area_type'),
      proj_life = 30,#needs to project lifes actually :(
      style = 'summary'
      )
    intermodal<- cost_function(
-     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==14,],
-     output_table = output_cost_OPS(),
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==13,], #slchanged
+     output_table = cost_effectiveness_freight(),
      col_sel = c(),
      proj_life = 30,
      style ='summary')
@@ -183,18 +183,19 @@ all_costs <- reactive({
    #   col_sel = c(),
    #   proj_life = 12,
    #   style ='summary')
-   # land_use<- cost_function(
-   #   ini_cost_table = NA,
-   #   output_table = cost_output_land_use(),
-   #   col_sel = c(),
-   #   proj_life = NA,
-   #   style ='summary')
-   # roadway_resurf<- cost_function(
-   #   ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==15,],
-   #   output_table = cost_output_roadway_resurf(),
-   #   col_sel = c(),
-   #   proj_life = NA,
-   #   style ='summary')
+
+   roadway_resurf<- cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==15,],
+     output_table = cost_output_roadway_resurf(),
+     col_sel = c(),
+     proj_life = NA,
+     style ='summary')
+   land_use<- cost_function(
+     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==16,],
+     output_table = cost_output_land_use(),
+     col_sel = c(),
+     proj_life = NA,
+     style ='summary')
    # 
    all_costs <- list(bikeped = bikeped,
                      transit_fixed = transit_fixed,
@@ -208,11 +209,10 @@ all_costs <- reactive({
                      mhdev=mhdev,
                      pnr=pnr,
                      evsi=evsi,
+                     intermodal=intermodal,
                      roadway=roadway,
-                     intermodal=intermodal#,
-                     #transit_cuts = transit_cuts,
-                     #land_use = land_use,
-                     # roadway_resurf = roadway_resurf
+                     roadway_resurf = roadway_resurf,
+                     land_use = land_use
                      )
    return(all_costs)
        })

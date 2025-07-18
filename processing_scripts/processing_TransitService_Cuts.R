@@ -86,7 +86,7 @@ output_transitservice_cuts <- reactive({
     rename(avg_trip_len = value)
   Assumptions_transitservice6$transit_mode[Assumptions_transitservice6$transit_mode == "Light Rail / Streetcar"] <- "Light Rail"
 
-  transit_cuts_user_inputs <- rvs$Projects[rvs$Projects$table_no_ui == 15,] %>%
+  transit_cuts_user_inputs <- rvs$Projects[rvs$Projects$table_no_ui == 17,] %>%
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                             year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
                             year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%

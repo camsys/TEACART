@@ -162,8 +162,7 @@ print(tagList(
 #| message: false
 #| 
 # load dummy data
-# path2 <- paste0(getwd(),'/data/dummy_output.xlsx')
-#path2 <- 'C:/Users/qsi/OneDrive - Cambridge Systematics/Desktop/TEA-CART/dummy_output.xlsx'
+
 
 #dummydata<- multiplesheets(path2)
 ghg_dat <- params$ghg_data

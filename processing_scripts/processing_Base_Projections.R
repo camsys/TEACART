@@ -6,18 +6,18 @@ observeEvent(input$state_input, {
   #print("UPDATING: Intermediate Values")
   #Fuel Costs
   #print("fuel costs start")
-  rvs$Costs$value[rvs$Costs$table_no_ui==13 &
+  rvs$Costs$value[rvs$Costs$table_no_ui==18 & #slchanged
                     rvs$Costs$fuel_type == "Gasoline" &
                     rvs$Costs$unit == "dollars_per_gallon"] <- State_Prices$gas_regular[State_Prices$state == input$state_input]
-  rvs$Costs$value[rvs$Costs$table_no_ui==13 &
+  rvs$Costs$value[rvs$Costs$table_no_ui==18 &#slchanged
                     rvs$Costs$fuel_type == "Diesel" &
                     rvs$Costs$unit == "dollars_per_gallon"] <- State_Prices$gas_diesel[State_Prices$state == input$state_input]
-  rvs$Costs$value[rvs$Costs$table_no_ui==13 &
+  rvs$Costs$value[rvs$Costs$table_no_ui==18 &#slchanged
                     rvs$Costs$fuel_type == "Electricity" &
                     rvs$Costs$unit == "dollars_per_kwh"] <- State_Prices$electricity_retail_avg[State_Prices$state == input$state_input]/100
   #Assumptions
   #print("average aadt start")
-  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Urban" &
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Urban" & #slchanged
                           rvs$Assumptions$road_class == "Principal Arterial" &
                           rvs$Assumptions$unit == "avg_AADT"] <-
     HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"]
@@ -28,22 +28,22 @@ observeEvent(input$state_input, {
     HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"]
   #print("vmt per lane mile")
   
-  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Rural" &
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Rural" & #slchanged
                           rvs$Assumptions$road_class == "Principal Arterial" &
                           rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
     HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"]
 
-  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Rural" &
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Rural" & #slchanged
                           rvs$Assumptions$road_class == "Freeway" &
                           rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
     HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Interstate" & HPMS$area_type == "Rural"]
 
-  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Urban" &
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Urban" & #slchanged
                           rvs$Assumptions$road_class == "Principal Arterial" &
                           rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
     HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"]
 
-  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Urban" &
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Urban" & #slchanged
                           rvs$Assumptions$road_class == "Freeway" &
                           rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
     HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Interstate" & HPMS$area_type == "Urban"]
@@ -234,7 +234,7 @@ observeEvent(input$state_input, {
                                rvs$Assumptions$transit_mode == "Bus" &
                                rvs$Assumptions$table_no_ui == 2]) *
     (Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" & Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"])*
-    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Diesel" & rvs$Costs$unit == "dollars_per_gallon"])*inflate_values(2020)
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 18 & rvs$Costs$fuel_type == "Diesel" & rvs$Costs$unit == "dollars_per_gallon"])*inflate_values(2020) #slchanged
 #print("VRM 1")
   rvs$Costs$value[rvs$Costs$table_no_ui == 0 &
                     #rvs$Costs$area_type == "Urban" &
@@ -246,7 +246,7 @@ observeEvent(input$state_input, {
                                rvs$Assumptions$transit_mode == "Bus" &
                                rvs$Assumptions$table_no_ui == 2]) *
     (Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" & Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"])*
-    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Diesel" & rvs$Costs$unit == "dollars_per_gallon"])*inflate_values(2020) 
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 18 & rvs$Costs$fuel_type == "Diesel" & rvs$Costs$unit == "dollars_per_gallon"])*inflate_values(2020) #slchanged
   #print("VRM 2")
   rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
                     #rvs$Costs$area_type == "Urban" &
@@ -257,7 +257,7 @@ observeEvent(input$state_input, {
                                rvs$Assumptions$fuel_type == "CNG" &
                                rvs$Assumptions$transit_mode == "Bus" &
                                rvs$Assumptions$table_no_ui == 2]) *
-    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "CNG" & rvs$Costs$unit == "dollars_per_gge"])*inflate_values(2020)
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 18 & rvs$Costs$fuel_type == "CNG" & rvs$Costs$unit == "dollars_per_gge"])*inflate_values(2020)#slchanged
   #print("VRM 3")
   rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
                     #rvs$Costs$area_type == "Urban" &
@@ -269,7 +269,7 @@ observeEvent(input$state_input, {
                                rvs$Assumptions$transit_mode == "Bus" &
                                rvs$Assumptions$table_no_ui == 2]) *
     (Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "electricity" & Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"])*
-    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Electricity" & rvs$Costs$unit == "dollars_per_kwh"])*inflate_values(2020)
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 18 & rvs$Costs$fuel_type == "Electricity" & rvs$Costs$unit == "dollars_per_kwh"])*inflate_values(2020)#slchanged
   #print("VRM 4")
   rvs$Costs$value[rvs$Costs$table_no_ui == 3 &
                     #rvs$Costs$area_type == "Urban" &
@@ -280,7 +280,7 @@ observeEvent(input$state_input, {
                                rvs$Assumptions$fuel_type == "Gasoline" &
                                rvs$Assumptions$transit_mode == "Demand Response" &
                                rvs$Assumptions$table_no_ui == 2]) *
-    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Gasoline" & rvs$Costs$unit == "dollars_per_gallon"])*inflate_values(2020)
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 18 & rvs$Costs$fuel_type == "Gasoline" & rvs$Costs$unit == "dollars_per_gallon"])*inflate_values(2020)#slchanged
   #print("VRM 5")
   rvs$Costs$value[rvs$Costs$table_no_ui == 3 &
                     #rvs$Costs$area_type == "Urban" &
@@ -291,7 +291,7 @@ observeEvent(input$state_input, {
                                rvs$Assumptions$fuel_type == "CNG" &
                                rvs$Assumptions$transit_mode == "Demand Response" &
                                rvs$Assumptions$table_no_ui == 2]) *
-    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "CNG" & rvs$Costs$unit == "dollars_per_gge"])*inflate_values(2020)
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 18 & rvs$Costs$fuel_type == "CNG" & rvs$Costs$unit == "dollars_per_gge"])*inflate_values(2020)#slchanged
   #print("VRM 6")
   rvs$Costs$value[rvs$Costs$table_no_ui == 3 &
                     #rvs$Costs$area_type == "Urban" &
@@ -303,12 +303,11 @@ observeEvent(input$state_input, {
                                rvs$Assumptions$transit_mode == "Demand Response" &
                                rvs$Assumptions$table_no_ui == 2]) *
     (Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "electricity" & Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent"])*
-    (rvs$Costs$value[rvs$Costs$table_no_ui == 13 & rvs$Costs$fuel_type == "Electricity" & rvs$Costs$unit == "dollars_per_kwh"])*inflate_values(2020)
+    (rvs$Costs$value[rvs$Costs$table_no_ui == 18 & rvs$Costs$fuel_type == "Electricity" & rvs$Costs$unit == "dollars_per_kwh"])*inflate_values(2020)#slchanged
   #print("VRM 7")
   per_VRM_fuel_cost_electric_lr <- Transit_Costs$total_cost_fuel_lube[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Light Rail"]/
     NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Light Rail"]
-  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
-                    #rvs$Costs$area_type == "Urban" &
+  rvs$Costs$value[rvs$Costs$table_no_ui == 6 & #slchanged
                     rvs$Costs$fuel_type == "Electric" &
                     rvs$Costs$transit_mode == "Light Rail / Streetcar" &
                     rvs$Costs$unit == "per_VRM_fuel_cost"] <-
@@ -316,7 +315,7 @@ observeEvent(input$state_input, {
   #print("VRM 8")
   per_VRM_fuel_cost_electric_hr <- Transit_Costs$total_cost_fuel_lube[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Heavy Rail"]/
     NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Heavy Rail"]
-  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
+  rvs$Costs$value[rvs$Costs$table_no_ui == 6 & #slchanged
                     #rvs$Costs$area_type == "Urban" &
                     rvs$Costs$fuel_type == "Electric" &
                     rvs$Costs$transit_mode == "Heavy Rail" &
@@ -325,7 +324,7 @@ observeEvent(input$state_input, {
   #print("VRM 9")
   per_VRM_fuel_cost_electric_cr <- Transit_Costs$total_cost_fuel_lube[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Commuter Rail"]/
     NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"]
-  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
+  rvs$Costs$value[rvs$Costs$table_no_ui == 6 & #slchanged
                     #rvs$Costs$area_type == "Urban" &
                     rvs$Costs$fuel_type %in% c("Electric","Diesel") &
                     rvs$Costs$transit_mode == "Commuter Rail" &
@@ -376,8 +375,7 @@ observeEvent(input$state_input, {
 
   per_VRM_onm_cost_electric_lr <- Transit_Costs$total_cost_om[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Light Rail"]/
     NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Light Rail"]
-  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
-                    #rvs$Costs$area_type == "Urban" &
+  rvs$Costs$value[rvs$Costs$table_no_ui == 6 &#slchanged
                     rvs$Costs$fuel_type == "Electric" &
                     rvs$Costs$transit_mode == "Light Rail / Streetcar" &
                     rvs$Costs$unit == "per_VRM_onm_cost"] <-
@@ -385,8 +383,7 @@ observeEvent(input$state_input, {
 
   per_VRM_onm_cost_electric_hr <- Transit_Costs$total_cost_om[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Heavy Rail"]/
     NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Heavy Rail"]
-  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
-                    #rvs$Costs$area_type == "Urban" &
+  rvs$Costs$value[rvs$Costs$table_no_ui == 6 & #slchanged
                     rvs$Costs$fuel_type == "Electric" &
                     rvs$Costs$transit_mode == "Heavy Rail" &
                     rvs$Costs$unit == "per_VRM_onm_cost"] <-
@@ -394,15 +391,14 @@ observeEvent(input$state_input, {
 
   per_VRM_onm_cost_electric_cr <- Transit_Costs$total_cost_om[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Commuter Rail"]/
     NTD_Service$total_vehicle_rev_miles[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"]
-  rvs$Costs$value[rvs$Costs$table_no_ui == 5 &
-                    #rvs$Costs$area_type == "Urban" &
+  rvs$Costs$value[rvs$Costs$table_no_ui == 6 & #slchanged
                     rvs$Costs$fuel_type %in% c("Electric","Diesel") &
                     rvs$Costs$transit_mode == "Commuter Rail" &
                     rvs$Costs$unit == "per_VRM_onm_cost"] <-
     ifelse(!isTruthy(per_VRM_onm_cost_electric_cr),11.008286292,per_VRM_onm_cost_electric_cr)*inflate_values(2019)
   #='Strategy Parameters'!G80*'Strategy Parameters'!G81
-  rvs$Costs$value[rvs$Costs$table_no_ui == 7 & rvs$Costs$unit == "e_bike_subsidies"] <-
-    rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 4 & rvs$Assumptions$element == "E-bike subsidies" & rvs$Assumptions$unit == "e_bike_cost"]*rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 4 & rvs$Assumptions$element == "E-bike subsidies" & rvs$Assumptions$unit == "subsidy_coverage_pct"]
+  rvs$Costs$value[rvs$Costs$table_no_ui == 8 & rvs$Costs$unit == "e_bike_subsidies"] <- #slchanged
+    rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 8 & rvs$Assumptions$element == "E-bike subsidies" & rvs$Assumptions$unit == "e_bike_cost"]*rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 8 & rvs$Assumptions$element == "E-bike subsidies" & rvs$Assumptions$unit == "subsidy_coverage_pct"] #slchanged
 })
 
 inflate_values <- function(yr){
@@ -1231,7 +1227,7 @@ EmRate_Electric_MDHD <- reactive({
 # Outputs ---------------------------------------------------------------------
 scenario_summary_results <- reactive({    #req('')
   #req(reactive_scenario())
-  browser()
+
   base_year <- rvs$Baseline$base_year
   
   dt <- baseline_ghg_forecast()

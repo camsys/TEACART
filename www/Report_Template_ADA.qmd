@@ -103,7 +103,7 @@ print(tagList(
 #| warning: false
 
 # load dummy data
-path2 <- 'data/dummy_output.xlsx'
+# path2 <- 'data/dummy_output.xlsx'
 #dummydata<- multiplesheets(path2)
 
 GHG_forecast <- readxl::read_excel(path2, sheet = 'GHG Forecast') %>%
@@ -194,32 +194,31 @@ print(tagList(cat("  \n\n  ")))
 #| warning: false
 
 # load dummy data
-path2 <- 'C:/Users/qsi/Documents/GitHub/TEA.CART/inst/app/www/static_files/scenario_simplified.xlsx'
+# path2 <- 'C:/Users/qsi/Documents/GitHub/TEA.CART/inst/app/www/static_files/scenario_simplified.xlsx'
 #dummydata<- multiplesheets(path2)
 
-scenarioresults <- readxl::read_excel(path2)
+#scenarioresults <- readxl::read_excel(path2)
 
-indicators <- unique(scenarioresults$indicator)
-
-for (i in indicators){
-  data_temp <- scenarioresults %>%
-    filter(indicator == i, !is.na(mt_reduction))%>%
-    mutate(year = as.character(year))
-  
-  print(ggplot(data_temp,
-               aes(fill = scenario,
-                   y = mt_reduction,
-                   x = year))+
-    geom_bar(position="dodge", stat="identity")+
-       scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) + 
-      ylab("Emission Change Amount") +
-      ggtitle(paste0(i,' Change')) + 
-            theme_classic())
-  print(tagList(cat("  \n\n  ")))
-      print(tagList(cat("  \\newpage  ")))
-      print(tagList(cat("  \n\n  ")))
-}
-```
+# indicators <- unique(scenarioresults$indicator)
+# 
+# for (i in indicators){
+#   data_temp <- scenarioresults %>%
+#     filter(indicator == i, !is.na(mt_reduction))%>%
+#     mutate(year = as.character(year))
+#   
+#   print(ggplot(data_temp,
+#                aes(fill = scenario,
+#                    y = mt_reduction,
+#                    x = year))+
+#     geom_bar(position="dodge", stat="identity")+
+#        scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) + 
+#       ylab("Emission Change Amount") +
+#       ggtitle(paste0(i,' Change')) + 
+#             theme_classic())
+#   print(tagList(cat("  \n\n  ")))
+#       print(tagList(cat("  \\newpage  ")))
+#       print(tagList(cat("  \n\n  ")))
+# }
 
 `r pagebreak()`
 

@@ -69,7 +69,7 @@ temp_output <- data.frame(year = c(rvs$Baseline$horizon_year_1, rvs$Baseline$hor
 temp_output <- expand(temp_output, year, area_type = c("Urban", "Rural"), road_class = c("Principal Arterial", "Freeway"))
 
 #add percent truck traffic
-temp_output$percent_truck_traffic <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"])
+temp_output$percent_truck_traffic <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"]) #slchanged
 
 temp_output$light_duty_automobile_emrate <- sapply(temp_output$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])
 temp_output$medium_heavy_duty_truck_emrate <- sapply(temp_output$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium-/Heavy-Duty Vehicles"])
@@ -82,13 +82,13 @@ temp_output<-temp_output %>%
 temp_output$ldv_impf <- sapply(temp_output$year, function(x) temp_em_df$base_impf [temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])
 
 
-temp_output$VMT_elasticity <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"])
-temp_output$traveltime_elasticity <- sapply(temp_output$area_type, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x & rvs$Assumptions$unit == "VMT_elasticity_trav_time"])
+temp_output$VMT_elasticity <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"]) #slchanged
+temp_output$traveltime_elasticity <- sapply(temp_output$area_type, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == x & rvs$Assumptions$unit == "VMT_elasticity_trav_time"]) #slchanged
 
 #need to change user input to principal arterial
-tspeed_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "travel_speed_mph"]}
+tspeed_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "travel_speed_mph"]} #slchanged
 temp_output$tspeed = apply(temp_output, 1, tspeed_fun, c1 = "area_type", c2 = "road_class")
-AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "VMT_per_lane_mile"]}
+AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "VMT_per_lane_mile"]} #slchanged
 temp_output$VMTperLaneMile = apply(temp_output, 1, AADT_fun, c1 = "area_type", c2 = "road_class")
 
 temp_output <- temp_output %>% left_join(existing_lanes_df) %>% 
@@ -174,7 +174,7 @@ cost_output_RoadwayExp <- reactive({
   temp_output <- expand(temp_output, year, area_type = c("Urban", "Rural"), road_class = c("Principal Arterial", "Freeway"))
   
   #add percent truck traffic
-  temp_output$percent_truck_traffic <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"])
+  temp_output$percent_truck_traffic <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$road_class == x  & rvs$Assumptions$unit == "truck_traffic_pct"]) #slchanged
   
   temp_output$light_duty_automobile_emrate <- sapply(temp_output$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Light-Duty Vehicles"])
   #temp_output$medium_heavy_duty_truck_emrate <- sapply(temp_output$year, function(x) temp_em_df$CO2e_millions[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium/Heavy Duty Vehicles"])
@@ -183,18 +183,10 @@ cost_output_RoadwayExp <- reactive({
   temp_output$mhdv_delay_emrate <- sapply(temp_output$year, function(x) temp_em_df$delay_impf[temp_em_df$year == x & temp_em_df$veh_supertype == "Medium-/Heavy-Duty Vehicles"])*diesel_CO2_kg_per_gallon*1000*truck_gallons_hour_delay
   temp_output<-temp_output %>%
     mutate(road_class_delay_emrate = ldv_delay_emrate*(1-percent_truck_traffic)+mhdv_delay_emrate*percent_truck_traffic)
-  
-  
-  #temp_output$ldv_impf <- sapply(temp_output$year, function(x) temp_em_df$base_impf [temp_em_df$year == x & temp_em_df$veh_supertype == "Light Duty Vehicles"])
-  
-  
-  temp_output$VMT_elasticity <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"])
-  #temp_output$traveltime_elasticity <- sapply(temp_output$area_type, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x & rvs$Assumptions$unit == "VMT_elasticity_trav_time"])
-  
-  #need to change user input to principal arterial
-  #tspeed_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "travel_speed_mph"]}
-  #temp_output$tspeed = apply(temp_output, 1, tspeed_fun, c1 = "area_type", c2 = "road_class")
-  AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "VMT_per_lane_mile"]}
+
+  temp_output$VMT_elasticity <- sapply(temp_output$road_class, function(x) rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$road_class == x & rvs$Assumptions$unit == "VMT_elasticity_lane_mi"]) #slchanged
+
+  AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "VMT_per_lane_mile"]} #slchanged
   temp_output$VMTperLaneMile = apply(temp_output, 1, AADT_fun, c1 = "area_type", c2 = "road_class")
   
   temp_output <- temp_output %>% left_join(existing_lanes_df) %>% 
