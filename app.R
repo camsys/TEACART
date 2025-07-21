@@ -6421,7 +6421,7 @@ table.on('draw', function(){
   # BASELINE GHG FORECAST -------------------------------------------------
   
   output$baseline_outputs <- renderDT({
-    # browser()
+     browser()
     req(baseline_ghg_forecast())
     
     dt <- baseline_ghg_forecast()
@@ -7203,7 +7203,7 @@ table.on('draw', function(){
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-    # browser() #not done
+    browser() #not done
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     
@@ -7236,7 +7236,7 @@ table.on('draw', function(){
       DT::datatable(
         escape = FALSE,
         rownames = FALSE,
-        options = list(dom = 't', pageLength = 14,
+        options = list(dom = 't', pageLength = 15,
                        initComplete = JS(
                          "function(settings, json) {",
                          "  var table = settings.oInstance.api();",
