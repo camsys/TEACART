@@ -22,7 +22,7 @@ observeEvent(input$state_input, {
                           rvs$Assumptions$unit == "avg_AADT"] <-
     HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"]
 
-  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 5 & rvs$Assumptions$area_type == "Rural" &
+  rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Rural" & #slchanged
                           rvs$Assumptions$road_class == "Principal Arterial" &
                           rvs$Assumptions$unit == "avg_AADT"] <-
     HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"]
@@ -399,7 +399,14 @@ observeEvent(input$state_input, {
   #='Strategy Parameters'!G80*'Strategy Parameters'!G81
   rvs$Costs$value[rvs$Costs$table_no_ui == 8 & rvs$Costs$unit == "e_bike_subsidies"] <- #slchanged
     rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 8 & rvs$Assumptions$element == "E-bike subsidies" & rvs$Assumptions$unit == "e_bike_cost"]*rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 8 & rvs$Assumptions$element == "E-bike subsidies" & rvs$Assumptions$unit == "subsidy_coverage_pct"] #slchanged
-})
+
+  #add it here
+  #freight rail growth rate
+  #Baseline Paramters - C39
+  
+  #EV Time Series as well
+  
+  })
 
 inflate_values <- function(yr){
   df = data.frame(year = c(2012:2023),

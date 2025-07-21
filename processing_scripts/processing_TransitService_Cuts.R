@@ -199,7 +199,7 @@ cost_output_transitservice_cuts <- reactive({
     select(-'category',-'table_no_ui', -contains("total_"), - 'VOMS', -'unit',-'year',-'merge_col')
   
   if(rvs$Baseline$land_use_factor == 1){lu_factor <- rvs$Assumptions[rvs$Assumptions$transit_category == "Land Use Multiplier" & !is.na(rvs$Assumptions$transit_category),"value"][[1]]} else {lu_factor =1}
-  
+  browser()
   output_transitservice_cost <- transitservice_base %>%
     mutate(allyear_emrate = ifelse(allyear_emrate != 0, allyear_emrate, onroad_elect_emrate)) %>%
     mutate(total_change_gGHG = avg_vrm * allyear_emrate + (avg_vrm * pax_mi_fact * mode_fact * -CO2e_millions),

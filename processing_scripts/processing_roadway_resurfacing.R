@@ -110,19 +110,23 @@ cost_output_roadway_resurf <- reactive({
     filter(year == rvs$Baseline$horizon_year_1)
   temp <- output_roadway_resurf() |>  filter(year == rvs$Baseline$horizon_year_1)
   
-  nox_factor = temp$total_change_mtnox/temp$total_change_direct
-  pm25_factor = temp$total_change_pm25/temp$total_change_direct
-  if(temp$total_change_direct == 0){
-    nox_factor = 0.001054894 #defaul maryland values in case there is no user inputs
-    pm25_factor = 0.00002329709939
-  }
-  browser()
+  # nox_factor = temp$total_change_mtnox/temp$total_change_direct
+  # pm25_factor = temp$total_change_pm25/temp$total_change_direct
+  # if(temp$total_change_direct == 0){
+  #   nox_factor = 0.001054894 #defaul maryland values in case there is no user inputs
+  #   pm25_factor = 0.00002329709939
+  # }
+  
+  #browser()
+  
   resurf_fin <- data.frame(table = c("Roadway Resurfacing"),
                               #year =  input$horizon_year_1,
                               total_change_gGHG = emrate_by_tech[["ghg_per_lane_mile"]]*1000000,
                               total_change_VMT = 0,
                               total_change_newtrips = 0) |> 
-    mutate(total_change_gnox = total_change_gGHG*nox_factor,
-           total_change_gpm25 = total_change_gGHG*pm25_factor)
+    mutate(#total_change_gnox = total_change_gGHG*nox_factor,
+           #total_change_gpm25 = total_change_gGHG*pm25_factor,
+      total_change_gnox = total_change_gGHG*percent_truck_traffic*NOx_CO2_ratio_heavy+total_change_gGHG*(1-percent_truck_traffic)*NOx_CO2_ratio,
+      total_change_gpm25 = total_change_gGHG*percent_truck_traffic*PM25_CO2_ratio_heavy+total_change_gGHG*(1-percent_truck_traffic)*PM25_CO2_ratio)
   return(resurf_fin)
 })

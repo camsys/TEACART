@@ -94,7 +94,7 @@ cost_output_land_use <- reactive({
   rezone_factor_vmt_mod <- 18*15*assumptions$value[assumptions$element == "VMT per household"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] +  
     100*2*assumptions$value[assumptions$element == "Work trip length"]*assumptions$value[assumptions$element == "Work annualization factor"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
   
-  browser()
+  #browser()
   land_use_base <- data.frame(table = c("Land Use (Smart Growth) Incentives"#, 
                                               #"Increased Residential Density",
                                               #"Increased Job Density",

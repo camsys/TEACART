@@ -6855,6 +6855,7 @@ table.on('draw', function(){
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>%DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
+    
     return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
   })
   
@@ -6933,6 +6934,7 @@ table.on('draw', function(){
   
   output$roadway_expand_costs_outputs_tbl <- renderDT({  
     print("RENDERING: Roadway Exp Costs Outputs")
+    #browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==14,], #slchanged
       output_table = cost_output_RoadwayExp(),
@@ -6962,7 +6964,7 @@ table.on('draw', function(){
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==15,],
       output_table = cost_output_roadway_resurf(),
       col_sel = c(),
-      proj_life = 12,
+      proj_life = 1,
       style = input$cost_view)
     temp <- temp%>%
       rename(any_of(references_vector)) %>%
@@ -6985,16 +6987,17 @@ table.on('draw', function(){
   #Fuel Price Table
   
   output$intermodal_costs_outputs_tbl <- renderDT({
-    print("RENDERING: Transit Service Cuts Costs Outputs")
+    print("RENDERING: Freight Intermodal cuts Costs Outputs")
+    #browser()
     temp <- cost_function(
-      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==18,], #slchanged
+      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==13,], #slchanged
       output_table = cost_effectiveness_freight(),
       col_sel = c(),
       proj_life = 30,
       style = input$cost_view)%>% 
       rename(any_of(references_vector)) %>%
-      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) %>% # to show NA in table
-      mutate(year = as.character(year)) %>% rename(Year = year)
+      mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) #%>% # to show NA in table
+      #mutate(year = as.character(year)) %>% rename(Year = year)
     
     x<-datatable(temp,
                  rownames = FALSE,
@@ -7017,7 +7020,7 @@ table.on('draw', function(){
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==16,],
       output_table = cost_output_land_use(),
       col_sel = c(),
-      proj_life = 12,
+      proj_life = 1,
       style = input$cost_view)%>%
       rename(any_of(references_vector)) %>%
       mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) #%>% # to show NA in table

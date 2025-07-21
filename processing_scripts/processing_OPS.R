@@ -254,11 +254,12 @@ output_cost_OPS <- reactive({
     mutate(total_change_VMT = total_change_gGHG*(vmt_base/ghg_base)) %>%
     select(year, area_type, road_class, total_change_VMT, total_change_gGHG,total_change_gnox,total_change_gpm25) %>%
     mutate(cap_proj_type = "New roundabouts")
+  #browser()
   
   fin_output <- rbind(temp_output_roundabout, temp_output_signal)  %>%
-    ungroup() %>%
-    group_by(year) %>% 
-    mutate(total_change_newtrips = 0)
+    ungroup() |>
+    mutate(total_change_newtrips = 0) |>
+    select(-year)
 
 
   return(fin_output)
