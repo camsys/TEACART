@@ -267,8 +267,8 @@ initial_advanced <- read_excel("data/2.User_Inputs.xlsx",
 
 #Additional Calculations ----
 
-# right now this only grabs "Vision 2022"
-Tech_Frac_Vision <-   #you should be calling the reactive version Tech_Frac_Vision()
+
+Tech_Frac_Vision <-   
   Stock_Type_Tech_BASE %>%
   group_by(veh_type, year) %>%
   mutate(aeo_tech_frac = stock_millions / sum(stock_millions)) %>% #renamed to tech_frac_forecast
