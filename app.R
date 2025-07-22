@@ -7042,7 +7042,7 @@ table.on('draw', function(){
   # server scenarios outputs ------------------------------------------------
   output$emission_change_tbl <- renderDataTable({
     results <- scenario_summary_results()
-    browser()
+    # browser()
     comma_rows = c(0:4,7:11,14:19)
     percent_rows = c(5,6,12,13)
     currency_rows = NULL
@@ -7203,7 +7203,7 @@ table.on('draw', function(){
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-    browser() #not done
+    # browser() #not done
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     
@@ -7351,7 +7351,7 @@ table.on('draw', function(){
       
       dt <- baseline_ghg_forecast()
       
-      browser()
+      # browser()
       
       if (used_budget()) {
         

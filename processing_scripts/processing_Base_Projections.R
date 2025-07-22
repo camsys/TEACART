@@ -756,7 +756,7 @@ freight_rail_emissions <- reactive({ #not sure where we need this so I'm leaving
   state_ch <- rvs$Baseline$state
   #browser()
   #Freight rail inputs
-  input_FR_GrowthRate <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 5 & rvs$Advanced$unit == "growth_rate"] %>% as.numeric()
+  # input_FR_GrowthRate <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 5 & rvs$Advanced$unit == "growth_rate"] %>% as.numeric()
   input_FR_BTU_per_tonmile <- rvs$Advanced$value[rvs$Advanced$table_no_ui == 5 & rvs$Advanced$unit == "energy_intensity"] %>% as.numeric()
   input_BTU_per_gallon_diesel <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "Diesel" &
                                                                    Fuel_Factors_Baselines$units == "fuel_conversion_BTU"]
@@ -769,7 +769,7 @@ freight_rail_emissions <- reactive({ #not sure where we need this so I'm leaving
   
   for(yr in 2020:2050){
     fr_temp <- Freight_Rail_Data %>% filter(state == state_ch) %>% mutate(year= yr) %>%
-      mutate(FR_million_tonmiles = FR_million_tonmiles*(1+input_FR_GrowthRate)^(yr-2019)
+      mutate(FR_million_tonmiles = FR_million_tonmiles*(1+growthrate)^(yr-2019)
              )
     Freight_Rail <- rbind(Freight_Rail, fr_temp)
   }
