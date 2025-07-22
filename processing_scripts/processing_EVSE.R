@@ -30,7 +30,7 @@ output_EVSE <- reactive({
     rvs$Projects %>%
     filter(category == "EV Charging Infrastructure") %>%
     select(year, charge_port_detail, unit, value) %>%
-    filter(unit != "$") |> 
+    filter(unit != "dollars") |> 
     pivot_wider(names_from = unit, values_from = value) %>%
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                             year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
@@ -45,8 +45,8 @@ output_EVSE <- reactive({
   
   incentive0 <- rvs$Projects %>%
     filter(category == "EV Charging Infrastructure") %>%
-    select(year, charge_port_detail, unit, value) %>%
-    filter(unit == "$") |> 
+    select(year, charge_port_detail, unit, value) %>% #View()
+    filter(unit == "dollars") |> 
     #pivot_wider(names_from = unit, values_from = value) %>%
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                             year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
@@ -100,13 +100,13 @@ output_EVSE <- reactive({
               light_vmt_affected = sum(unique(VMT_affected[veh_supertype == "Light-Duty Vehicles"]), na.rm = T)) 
     
     
-  
+  #browser()
   fin<-evse_by_year_supertype %>% 
     group_by(year) %>%
     summarize(total_change_direct = sum(displaced_conventional_emissions, na.rm = T),
               total_change_electricity = sum(added_electricity_emissions, na.rm = T),
               truck_vmt_affected = sum(unique(VMT_affected[veh_supertype == "Medium-/Heavy-Duty Vehicles"]), na.rm = T),
-              light_vmt_affected = sum(unique(VMT_affected[veh_supertype == "Light-Duty Vehicles"]), na.rm = T)) %>%
+              light_vmt_affected = sum(unique(VMT_affected[veh_supertype == "Light-Duty Vehicles"]), na.rm = T)) %>% #View()
     rbind(incentive)|> group_by(year) |> summarise(across(where(is.numeric), ~sum(.x, na.rm = F))) |> 
     mutate(total_change_MTCO2 = total_change_direct + total_change_electricity,
            total_change_mtnox = -(Fuel_Factors_by_supertype()[["Light-Duty Vehicles"]]$NOx_g_per_veh_mi*light_vmt_affected + 

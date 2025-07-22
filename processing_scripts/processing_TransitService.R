@@ -102,7 +102,7 @@ output_TransitService <- reactive({
     select(-table_no_ui,-unit,-category, -table)
   
 
-  Capital_Project_Inputs_transit <-  rvs$Projects[rvs$Projects$table_no_ui %in% c(2,3,4,6),] %>%
+  Capital_Project_Inputs_transit <-  rvs$Projects[rvs$Projects$table_no_ui %in% c(2,3,5,6),] %>%#, 4),] %>%
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                             year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
                             year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%

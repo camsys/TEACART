@@ -115,13 +115,13 @@ project_roundabout <- make_project_table_cumulative(rvs$Projects[rvs$Projects$un
   get_horizon_years(my_rv = rvs)
 
 #project_roundabout$value <- c(10,20,30,10,20,30)
-
+#browser()
 temp_output_roundabout <- temp_output_roundabout %>%
   left_join(project_roundabout) %>%
   mutate(total_change_MTCO2 = AADT*365*value*roundabout_effect/1000) %>%
   mutate(total_change_mtnox = total_change_MTCO2*NOx_CO2_ratio,
          total_change_pm25 =  total_change_MTCO2*PM25_CO2_ratio) %>%
-  mutate(total_change_VMT = 0) %>%
+  mutate(total_change_VMT = 0) %>% #View()
   select(year, area_type, road_class, total_change_VMT, total_change_MTCO2,total_change_mtnox,total_change_pm25)
 
 fin_output <- rbind(temp_output_roundabout, temp_output_signal)  %>%

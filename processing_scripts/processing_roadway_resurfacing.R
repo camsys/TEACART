@@ -34,7 +34,7 @@ output_roadway_resurf <- reactive({
     mutate(d2014 = weighted_avg/em_rate_weight) |> 
     mutate(ghg_per_lane_mile = d2014*ghg_per_m*cost_per_lane_mile/1000000)
   
-  resurf <- rvs$Projects[rvs$Projects$table_no_ui == 17,] %>%
+  resurf <- rvs$Projects[rvs$Projects$table_no_ui == 15,] %>% #slchanged
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                             year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
                             year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%
