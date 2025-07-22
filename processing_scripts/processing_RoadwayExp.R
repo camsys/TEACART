@@ -189,7 +189,8 @@ cost_output_RoadwayExp <- reactive({
   AADT_fun <- function(x, c1, c2){rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == x[c1] & rvs$Assumptions$road_class == x[c2] & rvs$Assumptions$unit == "VMT_per_lane_mile"]} #slchanged
   temp_output$VMTperLaneMile = apply(temp_output, 1, AADT_fun, c1 = "area_type", c2 = "road_class")
   
-  temp_output <- temp_output %>% left_join(existing_lanes_df) %>% 
+  #browser()
+  temp_fin <- temp_output %>% left_join(existing_lanes_df) %>% 
     mutate(minutes_delay_saved_perVMT = 0.2*(1-VMT_elasticity)/(1-0.67),
            total_change_VMT = VMTperLaneMile*300*VMT_elasticity,
            total_change_gGHG = (VMTperLaneMile*300*existing_lanes*.5)*(minutes_delay_saved_perVMT/60)*road_class_delay_emrate+VMTperLaneMile*300*VMT_elasticity*light_duty_automobile_emrate, #I think this eq is wrong in excel
@@ -199,6 +200,6 @@ cost_output_RoadwayExp <- reactive({
            unit = "new_lane") %>%
     select(year, area_type, road_class,total_change_gGHG, total_change_VMT, total_change_gnox, total_change_gpm25, total_change_newtrips)
   
-  return(temp_output)
+  return(temp_fin)
 })
 
