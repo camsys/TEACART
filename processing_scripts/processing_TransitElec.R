@@ -66,7 +66,7 @@ output_transitElec <- reactive({
       select_if(~ any(!is.na(.))) %>%
       #rename(replacement_vehicles = value) %>% 
       select(-table_no_ui,-unit,-category, -table)
-     browser()
+    # browser()
    
     transitelect_output <- Capital_Project_Inputs_transit_elec %>%
       left_join(Assumptions_transitelect,by = c('area_type','transit_mode')) %>%
@@ -97,7 +97,7 @@ output_transitElec <- reactive({
       #                              sum(.$affected_VRM[.$transit_mode == 'Demand Response' & .$year == rvs$Baseline$horizon_year_3])*unique(na.omit(.$onroad_elect_emrate[.$merge_col == 'Demand Response: Electric' & .$year == rvs$Baseline$horizon_year_3]))/1000000)) %>%
       mutate(total_change_mtnox = -affected_VRM *fuelfact_MHD_NOx/1000000,
              total_change_pm25 = -affected_VRM *fuelfact_MHD_PM25/1000000,
-             total_change_VMT = 0) #|> filter(year == 2025) |> View()
+             total_change_VMT = 0)# |> filter(year == 2025) |> View()
      # group_by(year) %>% 
      # dplyr::summarise(across(c(total_change_VMT, total_change_MTCO2, total_change_mtnox, total_change_pm25), ~sum(.x)))
    # browser()

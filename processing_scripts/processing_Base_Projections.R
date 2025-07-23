@@ -118,8 +118,8 @@ observeEvent(input$state_input, {
                           rvs$Assumptions$transit_mode == "Bus" &
                           rvs$Assumptions$unit == "avg_trip_miles"] <-
     ifelse(!isTruthy(NTD_Service$avg_trip_length[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Bus"]),
-           NTD_Service$avg_trip_length[NTD_Service$state == "United States" &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"],
-           NTD_Service$avg_trip_length[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"])
+           NTD_Service$avg_trip_length[NTD_Service$state == "United States" &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Bus"],
+           NTD_Service$avg_trip_length[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Bus"])
 
   rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Urban" &
                           rvs$Assumptions$transit_mode == "Demand Response" &
@@ -162,6 +162,7 @@ observeEvent(input$state_input, {
     ifelse(!isTruthy(NTD_Service$avg_trip_length[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"]),
            NTD_Service$avg_trip_length[NTD_Service$state == "United States" & NTD_Service$transit_mode == "Commuter Rail"],
            NTD_Service$avg_trip_length[NTD_Service$state == input$state_input & NTD_Service$transit_mode == "Commuter Rail"])
+  
   # Average Revenue Miles -------
   rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Urban" &
                           rvs$Assumptions$transit_mode == "Bus" &
@@ -174,8 +175,8 @@ observeEvent(input$state_input, {
                           rvs$Assumptions$transit_mode == "Bus" &
                           rvs$Assumptions$unit == "rev_mi_per_veh"] <-
     ifelse(!isTruthy(NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Bus"]),
-           NTD_Service$total_miles_per_veh[NTD_Service$state == "United States" &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"],
-           NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Urban" & NTD_Service$transit_mode == "Bus"])
+           NTD_Service$total_miles_per_veh[NTD_Service$state == "United States" &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Bus"],
+           NTD_Service$total_miles_per_veh[NTD_Service$state == input$state_input &  NTD_Service$area_type == "Rural" & NTD_Service$transit_mode == "Bus"])
 
   rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$area_type == "Urban" &
                           rvs$Assumptions$transit_mode == "Demand Response" &

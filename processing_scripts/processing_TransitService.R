@@ -1,14 +1,5 @@
 output_TransitService <- reactive({
 
-   # observeEvent(input$state_input,{
-  
-  # browser()
-  # req(EmRate_by_Tech())
-  # req(VMT_Type_Tech_Base())
-  # req(rvs)
-  # req(CO2e_Category_Averages())
-  # req(Fuel_Factors_Weighted())
-  
   # # functions
   getvmtdiff <- function(year){
 
@@ -76,17 +67,16 @@ output_TransitService <- reactive({
   #use CO2e_millions for emrate
   # use base_impf for emrate_by_Tech
   
-    rail_factors <- passenger_rail_fuel_factors() %>% distinct()
+  rail_factors <- passenger_rail_fuel_factors() %>% distinct()
   # replace prail with Electric_LR_CO2eq, this is exact same as Electric_HR_CO2eq
   # replace cmtrail with Electric_CR_CO2eq
   # for cmtrail_dis, use Diesel_CR_CO2eq
-
+  browser()
   # get assumptions input
-  Assumptions_transitservice <- rvs$Assumptions[rvs$Assumptions$transit_category == 'Revenue Mile Per Vehicle',] %>%
-    filter_all(any_vars(!is.na(.)))
+
   
   # get captial project tables: 
-  Capital_Project_Inputs_publicTrans <- rvs$Projects[rvs$Projects$table_no_ui == 5,] %>%
+  Inputs_busprior <- rvs$Projects[rvs$Projects$table_no_ui == 5,] %>%
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                             year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
                             year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%
@@ -98,11 +88,11 @@ output_TransitService <- reactive({
         TRUE ~ value)) %>%
     ungroup() %>%
     select_if(~ any(!is.na(.))) %>%
-    rename(bus_prioirty_mile = value) %>% 
+    #rename(bus_prioirty_mile = value) %>% 
     select(-table_no_ui,-unit,-category, -table)
   
 
-  Capital_Project_Inputs_transit <-  rvs$Projects[rvs$Projects$table_no_ui %in% c(2,3,5,6),] %>%#, 4),] %>%
+  Inputs_transit <-  rvs$Projects[rvs$Projects$table_no_ui %in% c(2,3,6),] %>%#, 4),] %>%
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                             year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
                             year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%
@@ -114,57 +104,61 @@ output_TransitService <- reactive({
         TRUE ~ value)) %>%
     ungroup() %>%
     select_if(~ any(!is.na(.))) %>%
-    rename(VOMS = value) %>% 
-    left_join(.,Capital_Project_Inputs_publicTrans, by = 'year') %>%
+    #rename(VOMS = value) %>% 
+    #left_join(.,Capital_Project_Inputs_publicTrans, by = 'year') %>%
     left_join(elect_emrate, by = as.character('year')) %>% # the variable to use: electricity_carbon_content
     left_join(select(rail_factors,year, Electric_LR_CO2eq,Electric_CR_CO2eq,Diesel_CR_CO2eq), by = 'year') %>%
     left_join(emrate_by_tech_ldv, by = 'year')
 
-  cate_list <- c("Transit: Increased Fixed Route Service (VOMS)", 
-                 "Transit: Increased Demand Response Service (VOMS)", 
-                 "Public Transportation: Rail (VOMS)" )
-  transit_service_base <- Capital_Project_Inputs_transit %>% filter(table == 'Fleet Electrification') %>%
-    mutate(avg_vrm = 0)
-  temp <- data.frame()
-  
-  for (i in cate_list) {
-    temp <- Capital_Project_Inputs_transit %>%
-      filter(table == i) %>%
-      left_join(select(Assumptions_transitservice, transit_mode,area_type,value), 
-                by = c('area_type', 'transit_mode')
-      ) %>% rename(avg_vrm = value)
-    
-    transit_service_base <- rbind(transit_service_base, temp)
-    
-  }
+  # cate_list <- c("Transit: Increased Fixed Route Service (VOMS)", 
+  #                "Transit: Increased Demand Response Service (VOMS)", 
+  #                "Public Transportation: Rail (VOMS)" )
+  # transit_service_base <- Capital_Project_Inputs_transit %>% filter(table == 'Fleet Electrification') %>%
+  #   mutate(avg_vrm = 0)
+  # temp <- data.frame()
+  # 
+  # for (i in cate_list) {
+  #   temp <- Capital_Project_Inputs_transit %>%
+  #     filter(table == i) %>%
+  #     left_join(select(Assumptions_transitservice, transit_mode,area_type,value), 
+  #               by = c('area_type', 'transit_mode')
+  #     ) %>% rename(avg_vrm = value)
+  #   
+  #   transit_service_base <- rbind(transit_service_base, temp)
+  #   
+  # }
+  Assumptions_transitservice <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_category == 'Revenue Mile Per Vehicle',] %>%
+    select(area_type,transit_mode,value)|>
+    rename(avg_vrm = value)
   
   Assumptions_transitservice2 <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_category == 'Average Passenger-Mile Per Vehicle',] %>%
-    select_if(~ any(!is.na(.))) %>%
-    select(-table_no_ui,-unit,-category, - table, - transit_category,-fuel_type) 
-    
+    select(area_type,transit_mode,value)|>
+    rename(avg_pax_mi_per_veh_mi = value)
+  
   
   Assumptions_transitservice3 <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_category == 'Prior drive mode share of new riders',] %>%
-    select_if(~ any(!is.na(.))) %>% # the Prior drive mode share of new riders rows
-  select(-table_no_ui,-unit,-category, - table, - transit_category,-fuel_type)
+    select(area_type,transit_mode,value)|>
+    rename(prior_auto_mode_share = value)
     
-  Assumptions_transitservice4 <- rvs$Assumptions[rvs$Assumptions$transit_category == 'Bus Priority Factors',] %>%
+  Assumptions_transitservice4 <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_category == 'Bus Priority Factors',] %>%
     filter_all(any_vars(!is.na(.)))
   
-  Assumptions_transitservice5 <- rvs$Assumptions[rvs$Assumptions$transit_category == 'On-Road Vehicle Fuel Economy',] %>%
-    filter_all(any_vars(!is.na(.)))
+  Assumptions_transitservice5 <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_category == 'On-Road Vehicle Fuel Economy',] %>%
+    select(transit_mode, fuel_type,value) |> 
+    rename(veh_fuel_economy = value)
   
-  Assumptions_transitservice6 <- rvs$Assumptions[rvs$Assumptions$transit_category == 'Average Trip Length',] %>%
-    filter_all(any_vars(!is.na(.)))
+  Assumptions_transitservice6 <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_category == 'Average Trip Length',] %>%
+    select(area_type,transit_mode,value) |> 
+    rename(avg_trip_miles = value)
   
-  
-  transitservice_output <- transit_service_base %>%
+  transitservice_output <- Inputs_transit %>%
     left_join(Assumptions_transitservice2,by = c('area_type','transit_mode')) %>%
-    rename(pax_mi_fact = value) %>%
+    #rename(pax_mi_fact = value) %>%
     left_join(Assumptions_transitservice3,by = c('area_type','transit_mode')) %>%
-    rename(mode_fact = value) %>% 
+    #rename(mode_fact = value) %>% 
     # start calculate vmt change
-    mutate(add_vrm = VOMS * avg_vrm,
-           total_change_VMT = add_vrm *  -pax_mi_fact * mode_fact) %>%
+    mutate(add_vrm = value * avg_vrm,
+           total_change_VMT = add_vrm *  -avg_pax_mi_per_veh_mi * prior_auto_mode_share) %>%
     # replace(is.na(.),0) %>%
     filter(if_any(everything(), ~!is.na(.))) %>%
     add_row(category = 'Total: Bus Priority Treatment VMT change',
@@ -181,10 +175,10 @@ output_TransitService <- reactive({
                                       merge_col == 'Bus: CNG' ~ 1/fuel_econ * fuelconv_cfCNGtoGas * fuelfact_cng * 1000 + fuelfact_cngCH4 + fuelfact_cngN20,
                                       merge_col == 'Demand Response: Gasoline' ~ 1/fuel_econ * fuelfact_gasblend * 1000 + fuelfact_gasCH4 + fuelfact_gasN20,
                                       merge_col == 'Demand Response: CNG' ~ 1/fuel_econ *fuelconv_cfCNGtoGas * fuelfact_cng * 1000 + fuelfact_cngCH4 + fuelfact_cngN20,
-                                      merge_col == 'Commuter Rail: Diesel' ~ Diesel_CR_CO2eq / pax_mi_fact),
+                                      merge_col == 'Commuter Rail: Diesel' ~ Diesel_CR_CO2eq / avg_pax_mi_per_veh_mi),
            onroad_elect_emrate = case_when(merge_col %in% c('Bus: Electric','Demand Response: Electric') ~ 1/fuel_econ *fuelconv_kwHtoga * electricity_carbon_content,
-                                           merge_col %in% c('Light Rail / Streetcar: Electric','Heavy Rail: Electric')~ Electric_LR_CO2eq /pax_mi_fact,
-                                           merge_col %in% c('Commuter Rail: Electric') ~ Electric_CR_CO2eq / pax_mi_fact)) %>% #end of adding columns from the On-Road Vehicle Emissions Rate (g CO2e per mile)
+                                           merge_col %in% c('Light Rail / Streetcar: Electric','Heavy Rail: Electric')~ Electric_LR_CO2eq /avg_pax_mi_per_veh_mi,
+                                           merge_col %in% c('Commuter Rail: Electric') ~ Electric_CR_CO2eq / avg_pax_mi_per_veh_mi)) %>% #end of adding columns from the On-Road Vehicle Emissions Rate (g CO2e per mile)
     mutate(total_change_MTCO2  =  case_when(merge_col %in% c('Bus: Diesel', 'Bus: CNG', 'Demand Response: Gasoline','Demand Response: CNG') ~
                                             total_change_VMT * CO2e_millions/1000000 + add_vrm * allyear_emrate/1000000,
                                           merge_col %in% c('Commuter Rail: Diesel') ~ add_vrm * allyear_emrate/1000000,
