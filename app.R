@@ -6686,7 +6686,7 @@ table.on('draw', function(){
   
   output$pub_trans_priority_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Transit Priority Costs Outputs")
-    # browser()
+    #browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,], #slchanged
       output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Bus Priority Treatment"),
