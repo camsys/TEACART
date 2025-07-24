@@ -16,7 +16,7 @@ sum_fun <- function(x,meas,val,high,med,low,prefix){
  #browser()
   me <- x[meas] %>% as.numeric()
   va <- x[val] %>% as.numeric()
-  
+
   if(me==0){
     return(NA)
   } else if(-1*me > 0 & va < 0){
@@ -32,7 +32,7 @@ sum_fun <- function(x,meas,val,high,med,low,prefix){
   } else if(-1*me/va <= low){
     return("Low")
   } else {return("ERROR")}
-  
+
 }
 
 cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltered by table number
@@ -127,7 +127,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
              VMT_per_1m = ifelse(total_change_VMT  == 0, NA, -1*total_change_VMT/(annual_cost/1000000)),
              nox_per_1m = ifelse(total_change_gnox  == 0, NA, -1*total_change_gnox/(annual_cost)),
              pm25_per_1m = ifelse(total_change_gpm25  == 0, NA, -1*total_change_gpm25/(annual_cost)),
-             newtrips_per_1m = ifelse(total_change_newtrips == 0, NA, -1*total_change_newtrips/(annual_cost/1000000)))
+             newtrips_per_1m = ifelse(total_change_newtrips == 0, NA, total_change_newtrips/(annual_cost/1000000)))
   } else {
     
   #this is a particulary splat on edit - the units are for a single truck in the cost table and else where we use a more general plural ... 
@@ -140,7 +140,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
            VMT_per_1m = ifelse(total_change_VMT  == 0, NA, -1*total_change_VMT/(annual_cost/1000000)),
            nox_per_1m = ifelse(total_change_gnox  == 0, NA, -1*total_change_gnox/(annual_cost)),
            pm25_per_1m = ifelse(total_change_gpm25  == 0, NA, -1*total_change_gpm25/(annual_cost)),
-           newtrips_per_1m = ifelse(total_change_newtrips == 0, NA, -1*total_change_newtrips/(annual_cost/1000000)))
+           newtrips_per_1m = ifelse(total_change_newtrips == 0, NA, total_change_newtrips/(annual_cost/1000000)))
   }
   
   #This is where the summary function is applied for each different column type
@@ -154,30 +154,30 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
   temp_table$VMT_sum <- apply(temp_table, 1, sum_fun,
                               meas = "total_change_VMT",
                               val = "annual_cost",
-                              high = 10000000*1000000, #this is accounting for the millions of dollar investment denominator 
-                              med = 5000000*1000000,
-                              low = 1000000*1000000,
+                              high = 10000000/1000000, #this is accounting for the millions of dollar investment denominator 
+                              med = 5000000/1000000,
+                              low = 1000000/1000000,
                               prefix = "VMT")
   temp_table$MTnox_sum <- apply(temp_table, 1, sum_fun,
-                              meas = "total_change_gnox",
-                              val = "annual_cost",
-                              high = 10,
-                              med = 5,
-                              low = 1,
-                              prefix = "NOx")
+                                meas = "total_change_gnox",
+                                val = "annual_cost",
+                                high = 10,
+                                med = 5,
+                                low = 1,
+                                prefix = "NOx")
   temp_table$MTpm25_sum <- apply(temp_table, 1, sum_fun,
-                               meas = "total_change_gpm25",
-                               val = "annual_cost",
-                               high = .1,
-                               med = 0.05,
-                               low = 0.01,
-                               prefix = "PM25")
+                                 meas = "total_change_gpm25",
+                                 val = "annual_cost",
+                                 high = .1,
+                                 med = 0.05,
+                                 low = 0.01,
+                                 prefix = "PM25")
   temp_table$newtrips_sum <- apply(temp_table, 1, sum_fun,
                                    meas = "total_change_newtrips",
                                    val = "annual_cost",
-                                   high = 10000*1000000, #this is accounting for the millions of dollar investment denominator 
-                                   med = 5000*1000000,
-                                   low = 1000*1000000,
+                                   high = 10000/1000000, #this is accounting for the millions of dollar investment denominator 
+                                   med = 5000/1000000,
+                                   low = 1000/1000000,
                                    prefix = "Daily Trips")
   
   if(style == "summary"){

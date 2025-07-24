@@ -62,7 +62,7 @@ cost_output_pnr <- reactive({
   
   output_pnr_cost <- data.frame(
     pnr_exp = 'expaned park and ride',
-    total_change_gGHG = annualization * avg_work_trip_miles * utilization_pct * co2emrate * 2,
+    total_change_gGHG = -annualization * avg_work_trip_miles * utilization_pct * co2emrate * 2,
     total_change_VMT = -annualization * avg_work_trip_miles * utilization_pct *2, # why *2 here? ask Ben
     total_change_gnox = -annualization * avg_work_trip_miles * utilization_pct *2 *  fuel_factorNox * emrate_nox,
     total_change_gpm25 =  -annualization * avg_work_trip_miles * utilization_pct *2 * fuel_factorPMe * emrate_nox + -annualization * avg_work_trip_miles * utilization_pct *2 * fuel_factorPMtb,

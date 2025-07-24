@@ -130,8 +130,8 @@ cost_effectiveness_EVSE <- reactive({
     left_join(Fuel_Factors_Weighted() %>% filter(veh_subtype == "All") %>% select(-veh_subtype) %>% rename(veh_supertype = veh_type)) %>%
     mutate(GHG = MT_per_vehtype*veh_sales_elasticity_wrt_ports*emrate_diff,
            VMT = 0,
-           NOX = MT_per_vehtype*veh_sales_elasticity_wrt_ports*NOx_g_per_veh_mi,
-           PM25 = MT_per_vehtype*veh_sales_elasticity_wrt_ports*PM25_exhaust_per_veh_mi,
+           NOX = -MT_per_vehtype*veh_sales_elasticity_wrt_ports*NOx_g_per_veh_mi,
+           PM25 = -MT_per_vehtype*veh_sales_elasticity_wrt_ports*PM25_exhaust_per_veh_mi,
            ACTIVE = 0) %>%
     rename(total_change_gGHG = GHG,
            total_change_VMT = VMT,

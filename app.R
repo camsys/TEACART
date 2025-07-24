@@ -6689,7 +6689,9 @@ table.on('draw', function(){
     #browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,], #slchanged
-      output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Bus Priority Treatment"),
+      output_table = cost_output_transitservice() %>% 
+        filter(table == "Public Transportation: Bus Priority Treatment") %>%
+        mutate(total_change_newtrips = -total_change_newtrips),  # the cost effectiveness for this project is slightly different 
       col_sel = c(),
       proj_life = 5, 
       style = input$cost_view) %>% 
