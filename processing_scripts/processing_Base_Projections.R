@@ -334,8 +334,15 @@ observeEvent(input$state_input, {
 
   #ONM Costs
   #print("average onm start")
-  #browser()
+  #browser()4.22929370727435
   per_VRM_onm_cost_bus_Diesel <- Transit_Costs$total_cost_om[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Bus"]/Transit_Costs$veh_rev_miles[Transit_Costs$state == input$state_input & Transit_Costs$transit_mode == "Bus"]
+  rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type %in% c("Diesel","CNG") &
+                    rvs$Costs$transit_mode == "Bus" &
+                    rvs$Costs$unit == "per_VRM_onm_cost"] <-
+    ifelse(!isTruthy(per_VRM_onm_cost_bus_Diesel),4.22929370727435,4.22929370727435)*inflate_values(2020)
+  
   rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
                     #rvs$Costs$area_type == "Urban" &
                     rvs$Costs$fuel_type %in% c("Diesel","CNG") &
@@ -370,7 +377,7 @@ observeEvent(input$state_input, {
   rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
                     #rvs$Costs$area_type == "Urban" &
                     rvs$Costs$fuel_type %in% c("Electric") &
-                    rvs$Costs$transit_mode == "Bus" &
+                    rvs$Costs$transit_mode == "Demand Response" &
                     rvs$Costs$unit == "per_VRM_onm_cost"] <-
     ifelse(!isTruthy(per_VRM_onm_cost_dr),2.3827171*.76,per_VRM_onm_cost_dr*.76)*inflate_values(2020)
 
