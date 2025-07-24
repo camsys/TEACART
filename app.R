@@ -7414,6 +7414,7 @@ table.on('draw', function(){
         }
       }
       
+      
       make_column_names_proper <- function(list_of_dfs) {
         updated_list <- lapply(list_of_dfs, function(df) {
           colnames(df) <- toTitleCase(colnames(df))
@@ -7429,7 +7430,12 @@ table.on('draw', function(){
         make_column_names_proper(.)
       
       Sys.sleep(1)
+      # browser()
       
+      # check # of columns
+      # for (name in names(cost_data)) {
+      #    cat(name, "has", ncol(cost_data[[name]]), "columns\n")}
+
       # Render the R Markdown file to PDF
       shiny::withProgress(
         message = paste0("Downloading", input$dataset, " Data"),
@@ -7462,7 +7468,7 @@ table.on('draw', function(){
                               funding_tbl = rvs$Funding,
                               funding_yr = input$funding_start_year,
                               funding_dur = input$funding_years,
-                              funding_bgt = input$total_budget,
+                              funding_bgt = rvs$Funding,
                               rail = input$include_rail,
                               include_bgt = include_budget
                             ),

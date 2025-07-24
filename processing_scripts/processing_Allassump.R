@@ -90,11 +90,12 @@ all_costs <- reactive({
  
  pub_trans_bus <- cost_function(
    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,], #slchanged
-   output_table = cost_output_transitservice() %>% filter(table == "Bus Priority"),
+   output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Bus Priority Treatment"),
    col_sel = c(),
    proj_life = 5, 
-   style =  'summary'
+   style = 'summary'
    )
+ 
  transit_zeb <- cost_function(
    ini_cost_table =  public_elec_replacement_cost_table(), #%>% filter(table %in% c("Transit: Increased Demand Response Service (VOMS)","Transit: Increased Fixed Route Service (VOMS)")),
    output_table = cost_output_transitselect(),
@@ -177,24 +178,20 @@ all_costs <- reactive({
      proj_life = 30,
      style ='summary')
    #browser()
-   # transit_cuts<- cost_function(
-   #   ini_cost_table =NA,
-   #   output_table = cost_output_transitservice_cuts(),
-   #   col_sel = c(),
-   #   proj_life = 12,
-   #   style ='summary')
 
    roadway_resurf<- cost_function(
      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==15,],
      output_table = cost_output_roadway_resurf(),
      col_sel = c(),
-     proj_life = NA,
+     proj_life = 1,
      style ='summary')
+   
+   
    land_use<- cost_function(
      ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==16,],
      output_table = cost_output_land_use(),
      col_sel = c(),
-     proj_life = NA,
+     proj_life = 1,
      style ='summary')
    # 
    all_costs <- list(bikeped = bikeped,
