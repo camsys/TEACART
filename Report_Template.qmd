@@ -356,9 +356,14 @@ fig_num <- fig_num +1
 cost_tbl <- params$cost_data 
 
 # not sure why for -loop doesn't work when knit. 
-tab_list <- c('bikeped',"transit_fixed",'transit_dr',"pub_trans_bus","transit_zeb", "pub_trans_rail","tdm","micro","traffic_ops","mhdev", "pnr","evsi","roadway","intermodal"
-              
+tab_list <- c('bikeped',"transit_fixed",
+              'transit_dr',"pub_trans_bus",
+              "transit_zeb", "pub_trans_rail",
+              "tdm","micro","traffic_ops",
+              "mhdev", "pnr","evsi","roadway",
+              "intermodal","roadway_resurf","land_use"
               )
+
 title_list <- c('Bicycle and Pedestrian',
                 'Transit: Increased Fixed Route Service',
                 'Transit: Increased Demand Response Service',
@@ -372,9 +377,10 @@ title_list <- c('Bicycle and Pedestrian',
                 'Park-and-Ride',
                 'EV Charging Infrastructure',
                 'Roadway Expansion',
-                'Freight - Intermodal Investment'
+                'Freight - Intermodal Investment',
+                'Roadway Resurfacing',
+                'Land Use'
                 )
-
 string_to_remove <- c('CO2','Daily Trips','NOx','PM25','VMT' )
 
 num = 1
@@ -383,14 +389,16 @@ for (var in tab_list){
         mutate_all(~ str_replace_all(., paste(string_to_remove, collapse = "|"), ""))
  
 if (ncol(df) == 5){
-    width <- "2.8cm"}
-    else if (ncol(df) == 7) {
+    width <- "2.8cm"
+    } else if (ncol(df) == 7) {
     width <- "2cm"
-} else if (ncol(df) == 8){
+    } else if (ncol(df) == 8){
     width <- "1.75cm"
-} else if (ncol(df) == 6){
+    } else if (ncol(df) == 6){
     width <- "2.33333cm"
-} 
+    } else if (ncol(df) == 9){
+    width <- "1.56cm"
+    } 
 
  print(tagList(
       cat("###", title_list[num], "\n\n")))
@@ -415,12 +423,34 @@ if (ncol(df) == 5){
     column_spec(1,width = "1cm") %>%
       column_spec(2,width = "3cm") %>%
    kableExtra::kable_styling(full_width = F,
-                             position = "l"))}
+                             position = "l"))
+ } else if (var %in% c("transit_fixed",'transit_dr')){
+    print(df %>%
+   #select(1,8:ncol(.)) %>%
+  rename_with(~str_remove(.,'Summary.')) %>%
+ mutate(across(everything(),
+   # 0:ncol(.),
+               ~ cell_spec(.,
+                      background = ifelse(.x == 'Low',"#FDE725",
+                           ifelse(.x == 'Medium',"#22A884",
+                             ifelse(.x == 'High','#2A788E',
+                                ifelse(.x == 'Very High','#9020ab',
+                                    ifelse(grepl("Increase",.x),'#7a7dc2',
+                                           ifelse(grepl("Decrease",.x),'#7AD151',
+                                          "#FFFFFF"))))))))) %>%
+    knitr::kable(booktabs = T, escape = F,linesep = "",align = "l", format = 'latex') %>%
+   column_spec(0:ncol(df),width = width) %>%
+    column_spec(1,width = "3cm") %>%
+      column_spec(2,width = "1cm") %>%
+   kableExtra::kable_styling(full_width = F,
+                             position = "l"))
+     
+   } 
  else{
     print(df %>%
    #select(1,8:ncol(.)) %>%
   rename_with(~str_remove(.,'Summary.')) %>%
- mutate(across(0:ncol(.),
+ mutate(across(everything(),
                ~ cell_spec(.,
                       background = ifelse(.x == 'Low',"#FDE725",
                            ifelse(.x == 'Medium',"#22A884",
@@ -433,7 +463,8 @@ if (ncol(df) == 5){
    column_spec(0:ncol(df),width = width) %>%
    kableExtra::kable_styling(full_width = F,
                              position = "l"))
-  }
+   }
+ 
 cat("\n\n\\pagebreak\n")
 writeLines("")
 
@@ -466,7 +497,9 @@ print(tagList( cat( paste0(
 
 ## generate the table for
 budget_tbl <- params$funding_tbl %>% select(-'funding_name') %>%
-  mutate(perc_allocated = percent(perc_allocated, accuracy = 1)) %>%
+  mutate(perc_allocated = percent(perc_allocated/100, accuracy = 1),
+         `Budget No.` = replace_na(as.character(`Budget No.`), "")
+) %>%
   rename('Funding Summary' = 'funding_summary',
          '% Allocated' = 'perc_allocated',
          'Million $' = '$million')
