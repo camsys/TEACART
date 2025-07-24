@@ -6723,7 +6723,7 @@ table.on('draw', function(){
       select(-c(var1,var2)) %>%
       mutate(annual_cost = cap/12 + var)
     
-    elec <- base %>%ungroup() %>% filter(fuel_type == "Electric") %>% select(-c(fuel_type, cap, var)) %>% rename(elec_cost = annual_cost)
+    elec <- base %>%ungroup() %>% filter(fuel_type == "Electric") %>% select(-c(fuel_type, cap, var, scalar_1)) %>% rename(elec_cost = annual_cost)
     
     fin <- left_join(base, elec) %>% filter(fuel_type != "Electric")%>% mutate(annual_cost = elec_cost - annual_cost) %>%
       select(area_type, transit_mode, fuel_type, annual_cost)
@@ -6732,9 +6732,10 @@ table.on('draw', function(){
   
   output$transit_zeb_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Transit Electric Bus Costs Outputs")
+    #browser()
     temp <- cost_function(
-      ini_cost_table =  public_elec_replacement_cost_table(), #%>% filter(table %in% c("Transit: Increased Demand Response Service (VOMS)","Transit: Increased Fixed Route Service (VOMS)")),
-      output_table = cost_output_transitselect(),
+      ini_cost_table =  public_elec_replacement_cost_table() |> arrange(area_type, transit_mode, fuel_type), #%>% filter(table %in% c("Transit: Increased Demand Response Service (VOMS)","Transit: Increased Fixed Route Service (VOMS)")),
+      output_table = cost_output_transitselect() |> arrange(area_type, transit_mode, fuel_type),
       col_sel = c('area_type','fuel_type','transit_mode'),
       proj_life = 12,
       #scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')],

@@ -106,7 +106,7 @@ output_transitElec <- reactive({
     })
 
 cost_output_transitselect <- reactive({
-  #browser()
+ # browser()
   fuel_factorCNGbus_PM25 <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
 
   fuel_factorCNGbus_NOX <-Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
@@ -139,6 +139,7 @@ cost_output_transitselect <- reactive({
     mutate(onroad_elect_emrate = 1/fuel_econ_elec *fuelconv_kwHtoga * electricity_carbon_content)
   
   output_transitelect_cost <- transitelect_base %>%
+    ungroup() |> 
     mutate(total_change_gGHG = -(avg_vrm * allyear_emrate - avg_vrm * onroad_elect_emrate),
            total_change_VMT = 0,
            total_change_gnox = case_when(fuel_type == 'Diesel'~ -avg_vrm * fuel_factordisbus_NOX,
