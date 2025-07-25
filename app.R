@@ -6631,6 +6631,7 @@ table.on('draw', function(){
   
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
+    #browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
       output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
@@ -6689,10 +6690,12 @@ table.on('draw', function(){
   
   output$pub_trans_priority_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Transit Priority Costs Outputs")
-    #browser()
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,], #slchanged
-      output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Bus Priority Treatment"),
+      output_table = cost_output_transitservice() %>% 
+        filter(table == "Public Transportation: Bus Priority Treatment") %>%
+        mutate(total_change_newtrips = -total_change_newtrips),  # the cost effectiveness for this project is slightly different 
       col_sel = c(),
       proj_life = 5, 
       style = input$cost_view) %>% 
@@ -6733,7 +6736,7 @@ table.on('draw', function(){
   
   output$transit_zeb_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Transit Electric Bus Costs Outputs")
-    #browser()
+    # browser()
     temp <- cost_function(
       ini_cost_table =  public_elec_replacement_cost_table() |> arrange(area_type, transit_mode, fuel_type), #%>% filter(table %in% c("Transit: Increased Demand Response Service (VOMS)","Transit: Increased Fixed Route Service (VOMS)")),
       output_table = cost_output_transitselect() |> arrange(area_type, transit_mode, fuel_type),
@@ -6812,6 +6815,7 @@ table.on('draw', function(){
   
   output$micro_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Micro Costs Outputs")
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui== 8,], #slchanged
       output_table = cost_output_micro(),
@@ -7207,7 +7211,7 @@ table.on('draw', function(){
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-    # browser() #not done
+     browser() #not done
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     

@@ -17,7 +17,8 @@ output_transitElec <- reactive({
     fuelfact_disCH4 <-  Fuel_Factors_Revision$fuel_CH4_CO2e_per_mile[Fuel_Factors_Revision$veh_subtype == 'Diesel ICE' & Fuel_Factors_Revision$veh_type == 'Medium-Duty Trucks']
     fuelfact_disN20 <-  Fuel_Factors_Revision$fuel_N20_CO2eq_per_mile[Fuel_Factors_Revision$veh_subtype == 'Diesel ICE' & Fuel_Factors_Revision$veh_type == 'Medium-Duty Trucks']
     fuelconv_cfCNGtoGas <- Fuel_Factors_Revision$fuel_conversion[Fuel_Factors_Revision$veh_subtype == 'CNG/LNG/LPG' & Fuel_Factors_Revision$veh_type == 'Passenger Cars']
-    fuelfact_cng <- Fuel_Factors_Revision$fuel_carbon_content[Fuel_Factors_Revision$veh_subtype == 'CNG/LNG/LPG' & Fuel_Factors_Revision$veh_type == 'Passenger Cars']
+    # fuelfact_cng <- Fuel_Factors_Revision$fuel_carbon_content[Fuel_Factors_Revision$veh_subtype == 'CNG/LNG/LPG' & Fuel_Factors_Revision$veh_type == 'Passenger Cars']
+    fuelfact_cng <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "CNG" & Fuel_Factors_Baselines$units == "fuel_carbon_content"]
     fuelfact_cngN20 <- Fuel_Factors_Revision$fuel_N20_CO2eq_per_mile[Fuel_Factors_Revision$veh_subtype == 'CNG' & Fuel_Factors_Revision$veh_type == 'Medium-Duty Trucks']
     fuelfact_gasblend <- Fuel_Factors_Revision$fuel_carbon_content[Fuel_Factors_Revision$veh_subtype == 'Gasoline ICE' & Fuel_Factors_Revision$veh_type == 'Passenger Cars']
     fuelfact_gasCH4 <- Fuel_Factors_Revision$fuel_CH4_CO2e_per_mile[Fuel_Factors_Revision$veh_subtype == 'SI HEV on Gas' & Fuel_Factors_Revision$veh_type == 'Light-Duty Trucks']
@@ -76,13 +77,14 @@ output_transitElec <- reactive({
       mutate(allyear_emrate = case_when(merge_col == 'Bus: Diesel' ~ 1/fuel_econ * fuelconv_ditoga * fuelfact_disblend*1000 + fuelfact_disCH4 +  fuelfact_disN20,
                                         merge_col == 'Bus: CNG' ~ 1/fuel_econ * fuelconv_cfCNGtoGas * fuelfact_cng * 1000 + fuelfact_cngCH4 + fuelfact_cngN20,
                                         merge_col == 'Demand Response: Gasoline' ~ 1/fuel_econ * fuelfact_gasblend * 1000 + fuelfact_gasCH4 + fuelfact_gasN20,
-                                        merge_col == 'Demand Response: CNG' ~ 1/fuel_econ *fuelconv_cfCNGtoGas * fuelfact_cng * 1000 + fuelfact_cngCH4 + fuelfact_cngN20),
-             onroad_elect_emrate = case_when(merge_col %in% c('Bus: Electric','Demand Response: Electric') ~ 1/fuel_econ *fuelconv_kwHtoga * electricity_carbon_content))%>%
+                                        merge_col == 'Demand Response: CNG' ~ 1/fuel_econ *fuelconv_cfCNGtoGas * fuelfact_cng * 1000 + fuelfact_cngCH4 + fuelfact_cngN20)) %>%
+             # onroad_elect_emrate = 1/fuel_econ *fuelconv_kwHtoga * electricity_carbon_content)
+          
       #mutate(onroad_all_rate = ifelse(!is.na(allyear_emrate), allyear_emrate,onroad_elect_emrate)) %>%
       left_join(Assumptions_transitelect3, by = c('transit_mode','area_type')) %>%
       #mutate(affected_VRM = ifelse(fuel_type != 'Electric', replacement_vehicles * avg_vrm,0),
       mutate(affected_VRM = value * avg_vrm,
-             total_change_MTCO2 = -affected_VRM * allyear_emrate/1000000) %>%
+             total_change_MTCO2 = -affected_VRM * allyear_emrate/1000000)# %>%
       # add_row(area_type = 'All',
       #         transit_mode = 'Bus',
       #         year = c(rvs$Baseline$horizon_year_1,rvs$Baseline$horizon_year_2,rvs$Baseline$horizon_year_3),
@@ -95,12 +97,49 @@ output_transitElec <- reactive({
       #         total_change_MTCO2 = c(sum(.$affected_VRM[.$transit_mode == 'Demand Response' & .$year == rvs$Baseline$horizon_year_1])*unique(na.omit(.$onroad_elect_emrate[.$merge_col == 'Demand Response: Electric' & .$year == rvs$Baseline$horizon_year_1]))/1000000,
       #                              sum(.$affected_VRM[.$transit_mode == 'Demand Response' & .$year == rvs$Baseline$horizon_year_2])*unique(na.omit(.$onroad_elect_emrate[.$merge_col == 'Demand Response: Electric' & .$year == rvs$Baseline$horizon_year_2]))/1000000,
       #                              sum(.$affected_VRM[.$transit_mode == 'Demand Response' & .$year == rvs$Baseline$horizon_year_3])*unique(na.omit(.$onroad_elect_emrate[.$merge_col == 'Demand Response: Electric' & .$year == rvs$Baseline$horizon_year_3]))/1000000)) %>%
+      # mutate(total_change_mtnox = -affected_VRM *fuelfact_MHD_NOx/1000000,
+      #        total_change_pm25 = -affected_VRM *fuelfact_MHD_PM25/1000000,
+      #        total_change_VMT = 0)# |> filter(year == 2025) |> View()
+      # 
+    
+    bus_row_df <- data.frame(
+      area_type = rep("All", 3),
+      transit_mode = rep("Bus", 3),
+      year = c(rvs$Baseline$horizon_year_1,
+               rvs$Baseline$horizon_year_2,
+               rvs$Baseline$horizon_year_3)) %>%
+      left_join(elect_emrate, by = 'year') %>%
+      mutate(
+      total_change_MTCO2 = as.numeric(input$scope_emissions)*
+        sum(transitelect_output$affected_VRM[transitelect_output$transit_mode == "Bus" & transitelect_output$year == rvs$Baseline$horizon_year_1]) *
+          (1/rvs$Assumptions[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_category == 'On-Road Vehicle Fuel Economy' &
+                               rvs$Assumptions$transit_mode == "Bus" & rvs$Assumptions$fuel_type == 'Electric',]$value) * 
+          Fuel_Factors_Baselines[Fuel_Factors_Baselines$fuel_type == 'electricity' & Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent" ,]$value *
+          electricity_carbon_content/1000000
+    )
+    
+    # Demand Response: All Area Types as data.frame
+    dr_row_df <- data.frame(
+      area_type = rep("All", 3),
+      transit_mode = rep("Demand Response", 3),
+      year = c(rvs$Baseline$horizon_year_1,
+               rvs$Baseline$horizon_year_2,
+               rvs$Baseline$horizon_year_3)) %>%
+      left_join(elect_emrate, by = 'year') %>%
+      mutate(
+        total_change_MTCO2 = as.numeric(input$scope_emissions)*
+          sum(transitelect_output$affected_VRM[transitelect_output$transit_mode == "Demand Response" & transitelect_output$year == rvs$Baseline$horizon_year_1]) *
+          (1/rvs$Assumptions[rvs$Assumptions$table_no_ui == 2 & rvs$Assumptions$transit_category == 'On-Road Vehicle Fuel Economy' &
+                               rvs$Assumptions$transit_mode == "Demand Response" & rvs$Assumptions$fuel_type == 'Electric',]$value) * 
+          Fuel_Factors_Baselines[Fuel_Factors_Baselines$fuel_type == 'electricity' & Fuel_Factors_Baselines$units == "fuel_conversion_gasoline_equivalent" ,]$value *
+          electricity_carbon_content/1000000
+      )
+    
+    transitelect_output <- bind_rows(transitelect_output,bus_row_df,dr_row_df) %>%
       mutate(total_change_mtnox = -affected_VRM *fuelfact_MHD_NOx/1000000,
              total_change_pm25 = -affected_VRM *fuelfact_MHD_PM25/1000000,
              total_change_VMT = 0)# |> filter(year == 2025) |> View()
-     # group_by(year) %>% 
-     # dplyr::summarise(across(c(total_change_VMT, total_change_MTCO2, total_change_mtnox, total_change_pm25), ~sum(.x)))
-   # browser()
+    
     return(transitelect_output)
     
     })
