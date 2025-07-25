@@ -264,7 +264,7 @@ and potential applications.<br><br>
 
       actionLink("sources_btn", "View Sources"),
       HTML("<br><br>"),
-      actionLink("guide_btn", "View User Guide")
+      actionLink("guide_btn", "View User Guide and Methodology Documentation")
 
 ),
       
@@ -313,10 +313,10 @@ and potential applications.<br><br>
                   <li>Dollars invested in roadway resurfacing.</li>
                   </ul>"
                 ),
-                div(class = "about-datatable",
-                    style = "width: 100%; overflow-x: auto;",
-                    DTOutput("UI_tables")
-                ),
+                # div(class = "about-datatable",
+                #     style = "width: 100%; overflow-x: auto;",
+                #     DTOutput("UI_tables")
+                # ),
                 HTML("
                   <p>The tool is designed to be updated in real-time, so that 
                   results can be seen as soon as new project information is 
@@ -350,7 +350,7 @@ and potential applications.<br><br>
                         saved file to continue your work.")),
                         tags$li(p("Data are entered in tables. To begin entering (or editing) data, 
                         double click anywhere in the table using your mouse. When you are done 
-                        entering data, press CTRL + ENTER on your keyboard (this 
+                        entering data, press <b>CTRL + ENTER</b> on your keyboard (this 
                         initiates the calculation). Data can only be entered for 
                         one table at a time.")),
                         tags$li(p("When you are ready to see the results of your analysis, proceed to 
@@ -370,7 +370,7 @@ and potential applications.<br><br>
                   tags$li(HTML("Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse.<br><p>")),
                   tags$img(src = '3.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
                   HTML("<br><br>"),
-                  tags$li(HTML("When you are done entering data, press CTRL + ENTER on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.<br><p>")),
+                  tags$li(HTML("When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.<br><p>")),
                   tags$img(src = '4.svg', style = "width: 90%; max-width: intrinsic; height: auto; display: block;"),
                   HTML("<br><br>"),
                   tags$li(HTML("In the Budget tab, data can be entered the same way. Double click values to begin entering.<br><p>")),
@@ -479,7 +479,7 @@ and potential applications.<br><br>
                                               ),
                                               tags$div(class = "half-card",
                                                        selectInput("vmt_forecast_input",
-                                                                   HTML("<span>VMT Forecast:</span> <br> <p>The vehicle miles traveled (VMT) forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab."),
+                                                                   HTML("<span>VMT Forecast:</span> <br> <p>The vehicle miles traveled (VMT) forecast used for baseline projections. A custom forecast can be entered in the Advanced tab under Inputs."),
                                                                    c("Default","Custom"),
                                                                    "Default")),           
                                      ),
@@ -492,7 +492,7 @@ and potential applications.<br><br>
                                                                    selected = "Yes")),
                                               tags$div(class = "half-card",
                                                        selectInput("ev_baseline_input",
-                                                                   HTML("<span>Vehicle Electrification Baseline:</span> <br> <p>The vehicle electrification forecast used for baseline projections. A custom forecast can be entered in the Advanced section of the Inputs tab."),
+                                                                   HTML("<span>Vehicle Electrification Baseline:</span> <br> <p>The vehicle electrification forecast used for baseline projections. A custom forecast can be entered in the Advanced tab under Inputs."),
                                                                    c("AEO Baseline",
                                                                      "ACC",
                                                                      "ACC II",
@@ -545,7 +545,7 @@ and potential applications.<br><br>
                                    <p>
                                    ii) Project inputs from one year are automatically coded to “carry over” into future years (i.e., miles of new bike lane constructed in 2010 are “carried over” into future years and continue to operate past their construction year).<br>
                                    <p>
-                                   Note that there is no corresponding <i>Costs 4</i>, <i>Costs 16</i>, or <i>Costs 17</i> in the Costs tab. Costs related to transit electrification can be found in <i>Costs 2</i> with other transit vehicle costs. Parameters related to <i>Projects 4</i> and <i>Projects 17</i> cannot be updated by the user.
+                                   
                                    "
                               ),),
                             
@@ -819,7 +819,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Projects 12 | Charging Infrastructure and EV Incentives ",
-                                         HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
+                                         HTML("This category represents any <b>new addition or expansion of EV charging ports and EV purchase incentives</b>. 
                    EV charging ports supply electric power for recharging electric vehicles. EV incentives offset the cost of EVs for purchasers. All dollar values should be in <b>current year dollars.</b>"),
                                        ),
                                        open = TRUE
@@ -974,7 +974,7 @@ and potential applications.<br><br>
                         ii) Spending estimates are assumed to be averages 
                         based on historical data.<br>
                         <br>
-                        Note that there is no corresponding <i>Costs 4</i>, <i>Costs 16</i>, or <i>Costs 17</i> in the Costs tab. Costs related to transit electrification can be found in <i>Costs 2</i> with other transit vehicle costs. Parameters related to <i>Budget 4</i> cannot be updated by the user.")
+                       ")
                                      
                             ),
                             fluidRow(class = "budget-buttons",
@@ -1332,7 +1332,7 @@ and potential applications.<br><br>
                                                                         title = "Budget spending on new or expanded EV charging ports.")),
                                                     sep = "")),
                                          HTML("This category represents spending on <b>new 
-                                              or expanded EV charging ports</b>, expressed 
+                                              or expanded EV charging ports and EV purchase incentives</b>, expressed 
                                               as a percentage (%) of the total budget (shown 
                                               at the top of this tab). EV charging ports 
                                               supply electric power for recharging 
@@ -1455,7 +1455,7 @@ and potential applications.<br><br>
                   
                   # costs tab ui ------------------------------------------------------------
                   nav_panel(title = "Costs",
-                            fluidRow(HTML("<p>This section provides information on 
+                            fluidRow(HTML("<p>This tab provides information on 
                               the <b>cost inputs</b> for the project categories 
                               shown below. Please click on the different fields 
                               to overwrite the default values with any custom 
@@ -1810,7 +1810,7 @@ and potential applications.<br><br>
                   
                   # assumptions tab ui ------------------------------------------------------
                   nav_panel(title = "Assumptions",
-                            fluidRow(HTML("<p>This section provides information on 
+                            fluidRow(HTML("<p>This tab provides information on 
                                           the <b>input assumptions</b> for the 
                                           categories shown below. These inputs 
                                           affect the GHG impact and effectiveness of 
@@ -2365,11 +2365,12 @@ and potential applications.<br><br>
                             HTML("This tab allows users to review the cost-effectiveness of each strategy as 
                                  measured by the change in annual output of the indicator (e.g. MT CO2e) per 
                                  $1 million of investment. All cost-effectiveness outputs are calculated based  
-                                 on values entered in the Inputs tab."),
+                                 on values entered in the Inputs tab.<br>"),
                             fluidRow(
                               radioButtons(inputId = "cost_view",
                                            "Level of detail:",
-                                           c("Detailed results" = "detail", "Summary results" = "summary")),
+                                           c("Detailed results" = "detail", "Summary results" = "summary"))),
+                            fluidRow(
                               p("All results are reported in terms of annual change per $M investment."),
                               fluidRow( class = 'cost-table search',
                                         h3("Bicycle & Pedestrian"),
@@ -6041,6 +6042,8 @@ table.on('draw', function(){
       #editable = list(target = c(2,3)),
       options = list(
         pageLength =15,
+        paging = FALSE, 
+        ordering = FALSE,
         columnDefs = list(
           list(className = 'dt-center', targets = c(3, 4)),
           list(render = JS(
@@ -7265,22 +7268,42 @@ table.on('draw', function(){
       scen_select <-   scen_filter %>% select(-'Scenario1') %>% 
         rename(scen = Scenario2)
     }
+    #browser()
+    colors <- data.frame(Strategy = c("Bicycle and Pedestrian", "Electric Vehicle Charging Infraucture", 
+                                      "Intermodal Freight Investment", "Land Use", 
+                                      "MD/HD Truck Replacement", "Micromobility", 
+                                      "Park-and-Ride", "Roadway Expansion",                    
+                                      "Roadway Resurfacing", "Traffic Operations",
+                                      "Transit Electrification", "Transit Service Cuts",             
+                                      "Transit Service Expansion", "Travel Demand Management" ), 
+                         colors = c("#E41A1C", "#377EB8", "#4DAF4A", "#FF7F00", 
+                                    "#FFFF33", "#A65628", "#F781BF", "#984EA3", 
+                                    "#66C2A5", "#8DA0CB", "#F2BFE0", 
+                                    "#A6D854", "#8C564B", "#BEAED4"))
     
     strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
       select('year', Strategy,input$strategy_indicator) %>%
       arrange(year, Strategy)
+    strategy_temp <- left_join(strategy_temp, colors)
     #browser()
-    plot_ly(strategy_temp, x = ~factor(year), y = ~get(input$strategy_indicator),
-            color = ~Strategy, 
-            text = ~Strategy,
+    p <- plot_ly()
+    for (i in unique(strategy_temp$Strategy)) {
+      #browser()
+      rows <- strategy_temp$Strategy == i
+    p<-add_trace(p,data = strategy_temp[rows,], 
+                 x = ~factor(year), 
+                 y = ~get(input$strategy_indicator),
+            #color = strategy_temp$Strategy,
+            name = strategy_temp$Strategy[rows],
             type = "bar",
             hoverinfo = 'text',
             textposition = 'none',
+            marker = list(color = strategy_temp$colors[rows][[1]]),
             hovertemplate = paste0('%{text} %{x}:<br>', 
                                    'Emissions: %{y:.4s}<extra></extra>')
     ) |>
       layout(
-        xaxis = list(title = "Year"),
+        xaxis =list(title = ""), #list(title = "Year"),
         yaxis = list(title = "Total Change"),
         margin = list(b = 80),
         barmode = "relative",
@@ -7292,8 +7315,11 @@ table.on('draw', function(){
           yanchor = 'top')) |> 
       config(displaylogo = FALSE, 
              modeBarButtonsToRemove = c("toImage","zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d", "toggleSpikelines", "hoverCompareCartesian", "hoverClosestGeo", "hoverClosest3d", "hoverClosestGeo", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "hoverClosestCartesian"))
+    }
     
-  })
+    return(p)
+  
+    })
   
   
   
