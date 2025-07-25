@@ -65,7 +65,7 @@ cost_output_micro <- reactive({
     total_change_gGHG = bike_per_week * avg_triplen * priauto_share * 52 * -co2emrate,
     total_change_VMT = -bike_per_week * avg_triplen * priauto_share * 52,
     total_change_gnox = -(bike_per_week * avg_triplen * priauto_share * 52) * fuel_factorNox * emrate_nox,
-    total_change_gpm25 = -(bike_per_week * avg_triplen * priauto_share * 52) * fuel_factorPMe * emrate_nox + (bike_per_week * avg_triplen * priauto_share * 52) * fuel_factorPMtb,
+    total_change_gpm25 = -(bike_per_week * avg_triplen * priauto_share * 52) * fuel_factorPMe * emrate_nox + (-bike_per_week * avg_triplen * priauto_share * 52) * fuel_factorPMtb,
     total_change_newtrips = bike_per_week / 7
   )
   
