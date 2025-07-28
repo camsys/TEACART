@@ -139,7 +139,7 @@ output_transitElec <- reactive({
       mutate(total_change_mtnox = -affected_VRM *fuelfact_MHD_NOx/1000000,
              total_change_pm25 = -affected_VRM *fuelfact_MHD_PM25/1000000,
              total_change_VMT = 0)# |> filter(year == 2025) |> View()
-    
+    #browser()
     return(transitelect_output)
     
     })
@@ -192,6 +192,6 @@ cost_output_transitselect <- reactive({
    # mutate(table_name = paste0(transit_mode,": ",fuel_type,": ", area_type)) %>%
     select(contains("total_"),transit_mode,fuel_type,area_type)
   
-  
+  #browser()
   return(output_transitelect_cost)
 })

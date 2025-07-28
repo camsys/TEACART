@@ -27,12 +27,17 @@ output_transitservice_cuts <- reactive({
   fuel_factordisbus_NOX <-Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
   fuel_factorCNGbus_NOX <-Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
   fuel_factorgas_medduty_NOX <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Medium-Duty Trucks'& Fuel_Factors_Weighted()$veh_subtype == 'Gasoline/Diesel']
-  fuel_factordisbus_PM25 <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
-  fuel_factorCNGbus_PM25 <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
+  fuel_factordisloc_NOX <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Locomotives'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
+  
+  fuel_factordisbus_PM25 <-  Fuel_Factors_Weighted_raw$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted_raw$veh_type == 'Bus'& Fuel_Factors_Weighted_raw$veh_subtype == 'Diesel']
+  fuel_factorCNGbus_PM25 <-Fuel_Factors_Weighted_raw$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted_raw$veh_type == 'Bus'& Fuel_Factors_Weighted_raw$veh_subtype == 'CNG']
   fuel_factorgas_medduty_PM25 <-Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Medium-Duty Trucks'& Fuel_Factors_Weighted()$veh_subtype == 'Gasoline/Diesel']
   fuel_factorCNGbus_PM25TB <- Fuel_Factors_Weighted()$PM25_tires_brakes_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
   fuel_factordisloc_PM25 <-Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Locomotives'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
   fuel_factordisloc_NOX <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Locomotives'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
+  
+
+  
   # get the electricity emission rate
   elect_emrate <- electricity_emrate() %>% group_by(year) %>%
     summarise(electricity_carbon_content =  unique(electricity_carbon_content))
@@ -164,14 +169,16 @@ output_transitservice_cuts <- reactive({
 #this output is exactly the same as transit service increase cost output
 cost_output_transitservice_cuts <- reactive({
   
-  # get the follow values from the Fuel_Factors_Revision,
   fuelconv_ditoga <- Fuel_Factors_Revision$fuel_conversion[Fuel_Factors_Revision$veh_subtype == 'Diesel ICE' & Fuel_Factors_Revision$veh_type == 'Medium-Duty Trucks']
   fuelfact_disblend <- Fuel_Factors_Revision$fuel_carbon_content[Fuel_Factors_Revision$veh_subtype == 'Diesel ICE' & Fuel_Factors_Revision$veh_type == 'Medium-Duty Trucks']
   fuelfact_disCH4 <-  Fuel_Factors_Revision$fuel_CH4_CO2e_per_mile[Fuel_Factors_Revision$veh_subtype == 'Diesel ICE' & Fuel_Factors_Revision$veh_type == 'Medium-Duty Trucks']
   fuelfact_disN20 <-  Fuel_Factors_Revision$fuel_N20_CO2eq_per_mile[Fuel_Factors_Revision$veh_subtype == 'Diesel ICE' & Fuel_Factors_Revision$veh_type == 'Medium-Duty Trucks']
   fuelconv_cfCNGtoGas <- Fuel_Factors_Revision$fuel_conversion[Fuel_Factors_Revision$veh_subtype == 'CNG/LNG/LPG' & Fuel_Factors_Revision$veh_type == 'Passenger Cars']
-  fuelfact_cng <- Fuel_Factors_Revision$fuel_carbon_content[Fuel_Factors_Revision$veh_subtype == 'CNG/LNG/LPG' & Fuel_Factors_Revision$veh_type == 'Passenger Cars']
+  # fuelfact_cng <- Fuel_Factors_Revision$fuel_carbon_content[Fuel_Factors_Revision$veh_subtype == 'CNG/LNG/LPG' & Fuel_Factors_Revision$veh_type == 'Passenger Cars']
+  fuelfact_cng <- Fuel_Factors_Baselines$value[Fuel_Factors_Baselines$fuel_type == "CNG" & Fuel_Factors_Baselines$units == "fuel_carbon_content"]
+  
   fuelfact_cngN20 <- Fuel_Factors_Revision$fuel_N20_CO2eq_per_mile[Fuel_Factors_Revision$veh_subtype == 'CNG' & Fuel_Factors_Revision$veh_type == 'Medium-Duty Trucks']
+  
   fuelfact_gasblend <- Fuel_Factors_Revision$fuel_carbon_content[Fuel_Factors_Revision$veh_subtype == 'Gasoline ICE' & Fuel_Factors_Revision$veh_type == 'Passenger Cars']
   fuelfact_gasCH4 <- Fuel_Factors_Revision$fuel_CH4_CO2e_per_mile[Fuel_Factors_Revision$veh_subtype == 'SI HEV on Gas' & Fuel_Factors_Revision$veh_type == 'Light-Duty Trucks']
   fuelfact_gasN20 <-Fuel_Factors_Revision$fuel_N20_CO2eq_per_mile[Fuel_Factors_Revision$veh_subtype == 'SI PHEV 40' & Fuel_Factors_Revision$veh_type == 'Light-Duty Trucks']
@@ -183,12 +190,13 @@ cost_output_transitservice_cuts <- reactive({
   fuel_factordisbus_NOX <-Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
   fuel_factorCNGbus_NOX <-Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
   fuel_factorgas_medduty_NOX <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Medium-Duty Trucks'& Fuel_Factors_Weighted()$veh_subtype == 'Gasoline/Diesel']
-  fuel_factordisbus_PM25 <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
-  fuel_factorCNGbus_PM25 <- Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
+  fuel_factordisloc_NOX <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Locomotives'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
+  
+  fuel_factordisbus_PM25 <- Fuel_Factors_Weighted_raw$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted_raw$veh_type == 'Bus'& Fuel_Factors_Weighted_raw$veh_subtype == 'Diesel']
+  fuel_factorCNGbus_PM25 <- Fuel_Factors_Weighted_raw$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted_raw$veh_type == 'Bus'& Fuel_Factors_Weighted_raw$veh_subtype == 'CNG']
   fuel_factorgas_medduty_PM25 <-Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Medium-Duty Trucks'& Fuel_Factors_Weighted()$veh_subtype == 'Gasoline/Diesel']
   fuel_factorCNGbus_PM25TB <- Fuel_Factors_Weighted()$PM25_tires_brakes_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Bus'& Fuel_Factors_Weighted()$veh_subtype == 'CNG']
   fuel_factordisloc_PM25 <-Fuel_Factors_Weighted()$PM25_exhaust_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Locomotives'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
-  fuel_factordisloc_NOX <- Fuel_Factors_Weighted()$NOx_g_per_veh_mi[Fuel_Factors_Weighted()$veh_type == 'Locomotives'& Fuel_Factors_Weighted()$veh_subtype == 'Diesel']
   # get the electricity emission rate
   elect_emrate <- electricity_emrate() %>% group_by(year) %>%
     summarise(electricity_carbon_content =  unique(electricity_carbon_content))
@@ -219,7 +227,7 @@ cost_output_transitservice_cuts <- reactive({
     filter(year == rvs$Baseline$horizon_year_1) |> 
     left_join(emrate_by_tech_ldv, by = 'year') |> 
     #rename(bus_prioirty_mile = value) %>% 
-    select(-table_no_ui,-unit,-category, -table)
+    select(-table_no_ui,-unit,-category)
   
   
   Inputs_transit <-  rvs$Projects[rvs$Projects$table_no_ui %in% c(2,3,6),] %>%#, 4),] %>%
@@ -261,7 +269,7 @@ cost_output_transitservice_cuts <- reactive({
   
   if(rvs$Baseline$land_use_factor == 1){lu_factor <- rvs$Assumptions[rvs$Assumptions$transit_category == "Land Use Multiplier" & !is.na(rvs$Assumptions$transit_category),"value"][[1]]} else {lu_factor =1}
   
-  
+  #browser()
   transitservice_output <- Inputs_transit %>%
     ungroup() |> 
     left_join(Assumptions_transitservice, by = c("area_type","transit_mode")) |>
@@ -307,16 +315,19 @@ cost_output_transitservice_cuts <- reactive({
            total_change_gpm25_auto = total_change_VMT_auto * (fuel_factorPMe*base_impf + fuel_factorPMtb),
            total_change_gpm25_transit = case_when(
              fuel_type == "Diesel" & category == 	"Public Transportation: Rail" ~ total_change_VMT_transit * fuel_factordisloc_PM25,
-             fuel_type == "Diesel" ~ total_change_VMT_transit * fuel_factordisbus_PM25,
-             fuel_type == "CNG" ~ total_change_VMT_transit * fuel_factorCNGbus_PM25,
-             fuel_type == "Gasoline" ~ total_change_VMT_transit * fuel_factorgas_medduty_PM25,
-             fuel_type == "Electric" ~ 0
+             fuel_type == "Diesel" ~ total_change_VMT_transit * (fuel_factordisbus_PM25+fuel_factorCNGbus_PM25TB),
+             fuel_type == "CNG" ~ total_change_VMT_transit * (fuel_factorCNGbus_PM25 + fuel_factorCNGbus_PM25TB),
+             fuel_type == "Gasoline" ~ total_change_VMT_transit * (fuel_factorgas_medduty_PM25+fuel_factorgas_PM25TB),
+             fuel_type == "Electric" ~ total_change_VMT_transit * fuel_factorMHD_PM25TB
            )
     ) %>%
-    mutate(total_change_gpm25_transit = ifelse(category!= "Public Transportation: Rail", total_change_gpm25_transit, total_change_gpm25_transit + total_change_VMT_transit * fuel_factorCNGbus_PM25TB)) |> 
-    mutate(total_change_VMT = total_change_VMT_transit + total_change_VMT_auto,
-           total_change_gnox = total_change_gnox_auto + total_change_gnox_transit,
-           total_change_gpm25 = total_change_gpm25_auto + total_change_gpm25_transit) |> 
+    # mutate(total_change_gpm25_transit = ifelse(category!= "Public Transportation: Rail", total_change_gpm25_transit, total_change_gpm25_transit + total_change_VMT_transit * fuel_factorCNGbus_PM25TB)) |> 
+    mutate(  total_change_VMT = ifelse(category == "Public Transportation: Rail", total_change_VMT_auto, 
+                                       total_change_VMT_transit + total_change_VMT_auto),
+             total_change_gnox = total_change_gnox_auto + total_change_gnox_transit,
+             total_change_gpm25 = ifelse(fuel_type == "Electric" & category == 	"Public Transportation: Rail",
+                                         total_change_gpm25_auto,
+                                         total_change_gpm25_auto + total_change_gpm25_transit))|> 
     group_by(table, transit_mode, area_type, fuel_type) |> 
     dplyr::summarise(across(c(total_change_gGHG, total_change_VMT, total_change_gnox, total_change_gpm25,total_change_newtrips), ~sum(.x))) |> 
     ungroup()
@@ -336,11 +347,12 @@ cost_output_transitservice_cuts <- reactive({
     mutate(total_change_gnox = total_change_VMT * fuel_factorNox * base_impf,
            total_change_gpm25 = total_change_VMT * (fuel_factorPMe * base_impf + fuel_factorPMtb),
            total_change_newtrips = total_change_VMT/prior_auto_mode_share/avg_trip_miles/365) |> 
+    mutate(transit_mode = "Bus",
+           area_type = "All",
+           fuel_type = "-") |> 
     group_by(table, transit_mode, area_type, fuel_type) |> 
     dplyr::summarise(across(c(total_change_gGHG, total_change_VMT, total_change_gnox, total_change_gpm25,total_change_newtrips), ~sum(.x)))
-  
+  #browser()
   output_transitservice_cost <- rbind(bus_priority_output,transitservice_output) 
-  
-  return(output_transitservice_cost)
 })
 

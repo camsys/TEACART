@@ -3,7 +3,7 @@
 observeEvent(input$state_input, {
   #browser()
   req(input$state_input)
-  #print("UPDATING: Intermediate Values")
+  print("UPDATING: Intermediate Values")
   #Fuel Costs
   #print("fuel costs start")
   rvs$Costs$value[rvs$Costs$table_no_ui==18 & #slchanged
@@ -341,7 +341,7 @@ observeEvent(input$state_input, {
                     rvs$Costs$fuel_type %in% c("Diesel","CNG") &
                     rvs$Costs$transit_mode == "Bus" &
                     rvs$Costs$unit == "per_VRM_onm_cost"] <-
-    ifelse(!isTruthy(per_VRM_onm_cost_bus_Diesel),4.22929370727435,4.22929370727435)*inflate_values(2020)
+    ifelse(!isTruthy(per_VRM_onm_cost_bus_Diesel),7.6801949,per_VRM_onm_cost_bus_Diesel)*inflate_values(2020)
   
   rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
                     #rvs$Costs$area_type == "Urban" &
@@ -413,6 +413,8 @@ observeEvent(input$state_input, {
   #Baseline Paramters - C39
   
   #EV Time Series as well
+  
+  
   
   })
 
