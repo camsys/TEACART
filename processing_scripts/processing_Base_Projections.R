@@ -20,33 +20,46 @@ observeEvent(input$state_input, {
   rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Urban" & #slchanged
                           rvs$Assumptions$road_class == "Principal Arterial" &
                           rvs$Assumptions$unit == "avg_AADT"] <-
-    HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"]
+        ifelse((HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"] == 0),
+               HPMS$AADT[HPMS$state == "United States" & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"],
+               HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"])
 
+    
   rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Rural" & #slchanged
                           rvs$Assumptions$road_class == "Principal Arterial" &
                           rvs$Assumptions$unit == "avg_AADT"] <-
-    HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"]
+    ifelse((HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"] == 0),
+           HPMS$AADT[HPMS$state == "United States" & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"],
+           HPMS$AADT[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"])
   #print("vmt per lane mile")
   
   rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Rural" & #slchanged
                           rvs$Assumptions$road_class == "Principal Arterial" &
                           rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
-    HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"]
+    ifelse((HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"] == 0),
+           HPMS$VMT_perln[HPMS$state == "United States" & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"],
+           HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Rural"])
 
   rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Rural" & #slchanged
                           rvs$Assumptions$road_class == "Freeway" &
                           rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
-    HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Interstate" & HPMS$area_type == "Rural"]
+    ifelse((HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Interstate" & HPMS$area_type == "Rural"] == 0),
+           HPMS$VMT_perln[HPMS$state == "United States" & HPMS$road_class == "Interstate" & HPMS$area_type == "Rural"],
+           HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Interstate" & HPMS$area_type == "Rural"])
 
   rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Urban" & #slchanged
                           rvs$Assumptions$road_class == "Principal Arterial" &
                           rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
-    HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"]
+    ifelse((HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"] == 0),
+           HPMS$VMT_perln[HPMS$state == "United States" & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"],
+           HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Other Principal Arterial" & HPMS$area_type == "Urban"])
 
   rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 9 & rvs$Assumptions$area_type == "Urban" & #slchanged
                           rvs$Assumptions$road_class == "Freeway" &
-                          rvs$Assumptions$unit == "VMT_per_lane_mile"] <-
-    HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Interstate" & HPMS$area_type == "Urban"]
+                          rvs$Assumptions$unit == "VMT_per_lane_mile"] <-    
+    ifelse((HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Interstate" & HPMS$area_type == "Urban"] == 0),
+           HPMS$VMT_perln[HPMS$state == "United States" & HPMS$road_class == "Interstate" & HPMS$area_type == "Urban"],
+           HPMS$VMT_perln[HPMS$state == input$state_input & HPMS$road_class == "Interstate" & HPMS$area_type == "Urban"])
 
   # Passenger Miles -------
   #browser()

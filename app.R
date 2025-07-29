@@ -203,7 +203,7 @@ ui <- function(request) {
                         HTML("<ol>
                             <li>Navigate to the <b>Inputs</b> tab.</li>
                             <li>Input your values in the <b>Baseline, Projects / Budget, Costs,</b> and <b>Assumptions</b> tabs.</li>
-                            <li>When you are done entering data, press CTRL <b>+</b> Enter on your keyboard to initiate the calculations.</li>
+                            <li>When you are done entering data, press <b>CTRL + Enter</b> on your keyboard to initiate the calculations.</li>
                             <li>Select the desired combination of strategies in the <b>Scenarios</b> tab.</li>
                             <li>Navigate to the <b>Outputs</b> tab to view your results.</li>
                             </ol>"),
@@ -219,7 +219,7 @@ ui <- function(request) {
                                   placement = "right"),
                         h4('Save My Work'),
                         downloadButton("user_inputs_download", "Download User Inputs"),
-                        HTML("<p>When you are done entering data, remember to press CTRL <b>+</b> Enter on your keyboard to initiate the calculations.</p>"),
+                        HTML("<p>When you are done entering data, remember to press <b>CTRL + Enter</b> on your keyboard to initiate the calculations.</p>"),
 
                         # nav_spacer(),
                         # nav_spacer(),
@@ -974,6 +974,7 @@ and potential applications.<br><br>
                         ii) Spending estimates are assumed to be averages 
                         based on historical data.<br>
                         <br>
+                        Outputs are not generated automatically. After filling out the budget <b> press the <i>Fill Project Tab with Budget Inputs</i> button below in order to generate outputs</b>. 
                        ")
                                      
                             ),
