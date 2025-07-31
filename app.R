@@ -7462,7 +7462,7 @@ table.on('draw', function(){
         make_column_names_proper(.)
       
       Sys.sleep(1)
-      # browser()
+      #browser()
       
       # check # of columns
       # for (name in names(cost_data)) {
