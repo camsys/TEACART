@@ -47,7 +47,7 @@
 
 ### REACTIVE -----
 emrate_freight <- reactive({
-  EmRate_by_Tech() %>% 
+  a <- EmRate_by_Tech() %>% 
     filter(veh_type %in% c("Medium-Duty Trucks", "Heavy-Duty Trucks"), str_detect(veh_subtype, "ICE")) %>%
     select(veh_type, veh_subtype, year, emission_rate) %>%
     left_join(VMT_Type_Tech_Conventional_MDHD(), by = join_by(veh_type, veh_subtype, year)) %>%
@@ -82,7 +82,7 @@ output_freight <- reactive({
     ungroup() 
   
   ## table to return
-  capital_inputs %>% 
+  freight_output <- capital_inputs %>% 
     left_join(emrate_freight(), by = join_by(year)) %>%
     mutate(truck_vmt_affected = intermodal_investment * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_truck"), value)),
            rail_ton_mi_affected = intermodal_investment * as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_rail"), value)),
@@ -95,7 +95,8 @@ output_freight <- reactive({
            total_change_mtnox = truck_vmt_affected * Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["NOx_g_per_veh_mi"]] / 1000000,
            total_change_pm25 = (truck_vmt_affected * Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["PM25_exhaust_per_veh_mi"]] +
                                   truck_vmt_affected * Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]][["PM25_tires_brakes_per_veh_mi"]]) / 1000000)
-})
+  return(freight_output)
+  })
 
 cost_effectiveness_freight <- reactive({
   #browser()

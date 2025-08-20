@@ -236,7 +236,7 @@ observeEvent(input$state_input, {
 
   #Costs
   print("per VRM fuel costs start")
-  #browser()
+   # browser() ## checking cost return 
   
   rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
                     #rvs$Costs$area_type == "Urban" &
@@ -385,6 +385,14 @@ observeEvent(input$state_input, {
                     rvs$Costs$transit_mode == "Demand Response" &
                     rvs$Costs$unit == "per_VRM_onm_cost"] <-
     ifelse(!isTruthy(per_VRM_onm_cost_dr),2.3827171,per_VRM_onm_cost_dr)*inflate_values(2020)
+  
+  # for electric
+   rvs$Costs$value[rvs$Costs$table_no_ui == 3 &
+                    #rvs$Costs$area_type == "Urban" &
+                    rvs$Costs$fuel_type == 'Electric' &
+                    rvs$Costs$transit_mode == "Demand Response" &
+                    rvs$Costs$unit == "per_VRM_onm_cost"] <-
+     ifelse(!isTruthy(per_VRM_onm_cost_dr),2.3827171,per_VRM_onm_cost_dr)*inflate_values(2020)*0.76 #qs made change *0.76
 
 
   rvs$Costs$value[rvs$Costs$table_no_ui == 2 &
@@ -421,10 +429,12 @@ observeEvent(input$state_input, {
   rvs$Costs$value[rvs$Costs$table_no_ui == 8 & rvs$Costs$unit == "e_bike_subsidies"] <- #slchanged
     rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 8 & rvs$Assumptions$element == "E-bike subsidies" & rvs$Assumptions$unit == "e_bike_cost"]*rvs$Assumptions$value[rvs$Assumptions$table_no_ui == 8 & rvs$Assumptions$element == "E-bike subsidies" & rvs$Assumptions$unit == "subsidy_coverage_pct"] #slchanged
 
+  # browser()
   #add it here
   #freight rail growth rate
   #Baseline Paramters - C39
-  
+  rvs$Advanced$value[rvs$Advanced$unit == 'growth_rate'] <- Freight_Rail_Data$growthrate[Freight_Rail_Data$state == input$state_input]
+   
   #EV Time Series as well
   
   

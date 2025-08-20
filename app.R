@@ -4849,34 +4849,116 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
                                         TRUE ~ cost_parameter)) #|> mutate(value = 1)
     #start <- input$horizon_year_1
     #total <- input$budget_total
+    # start <- input$budget_start_year
+    # end <- start + input$budget_years_covered 
+    # total <- input$budget_total*1000000
+    # total_years <- input$budget_years_covered #+ 1 ## QS: is this used somewhere else?
+    # 
+    # # horizon_year_1_cnt <- sum(c(start:end) < input$horizon_year_1)
+    # # horizon_year_2_cnt <- sum(c(start:end) < input$horizon_year_2) - horizon_year_1_cnt
+    # # horizon_year_3_cnt <- sum(c(start:end) < input$horizon_year_3) - horizon_year_2_cnt - horizon_year_1_cnt
+    # 
+    # #heck <- temp_join |> mutate(check = (total*value)/cost_parameter)
+    # foo <- temp_join |> 
+    #   dplyr::mutate(horizon_year_1_budget = total*value*(horizon_year_1_cnt/total_years),
+    #          horizon_year_2_budget = total*value*(horizon_year_2_cnt/total_years),
+    #          horizon_year_3_budget = total*value*(horizon_year_3_cnt/total_years),
+    #          horizon_year_1 = horizon_year_1_budget/cost_parameter,
+    #          horizon_year_2 = horizon_year_2_budget/cost_parameter,
+    #          horizon_year_3 = horizon_year_3_budget/cost_parameter) |> select(-c(table_no_ui,value,table_no_ui_revised)) |> 
+    #   pivot_longer(cols = c(horizon_year_1, horizon_year_2, horizon_year_3), names_to = "year", values_to = "value") |> 
+    #   #mutate(value = value_new) |> 
+    #   select(any_of(names(rvs$Projects))) 
+    # temp_projects <- rvs$Projects |> select(-value)
+    # 
+    # # browser()
+    # 
+    # # foo[is.na(foo)] <- "NA"  # Qi: comment out? 
+    # # temp_projects[is.na(temp_projects)] <- "NA"  # Qi: comment out? 
+    # foobar <- left_join(temp_projects, foo) 
+    # foobar[foobar == "NA"] <- NA
+    # foobar[is.na(foobar$value),"value"]<-0
+    # #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
+    # #browser()
+    # rvs$Projects <- foobar
+    
     start <- input$budget_start_year
-    end <- start + input$budget_years_covered 
+    end <- start + input$budget_years_covered -1
     total <- input$budget_total*1000000
-    total_years <- input$budget_years_covered + 1
-    horizon_year_1_cnt <- sum(c(start:end) < input$horizon_year_1)
-    horizon_year_2_cnt <- sum(c(start:end) < input$horizon_year_2) - horizon_year_1_cnt
-    horizon_year_3_cnt <- sum(c(start:end) < input$horizon_year_3) - horizon_year_2_cnt - horizon_year_1_cnt
-    #heck <- temp_join |> mutate(check = (total*value)/cost_parameter)
-    foo <- temp_join |> 
-      dplyr::mutate(horizon_year_1_budget = total*value*(horizon_year_1_cnt/total_years),
-             horizon_year_2_budget = total*value*(horizon_year_2_cnt/total_years),
-             horizon_year_3_budget = total*value*(horizon_year_3_cnt/total_years),
-             horizon_year_1 = horizon_year_1_budget/cost_parameter,
-             horizon_year_2 = horizon_year_2_budget/cost_parameter,
-             horizon_year_3 = horizon_year_3_budget/cost_parameter) |> select(-c(table_no_ui,value,table_no_ui_revised)) |> 
-      pivot_longer(cols = c(horizon_year_1, horizon_year_2, horizon_year_3), names_to = "year", values_to = "value") |> 
-      #mutate(value = value_new) |> 
-      select(any_of(names(rvs$Projects))) 
-    temp_projects <- rvs$Projects |> select(-value)
+    total_years <- input$budget_years_covered #+ 1 # qi commented out +1
+    
+    year1 <- input$horizon_year_1
+    year2 <- ifelse (input$horizon_year_2 <= 2040, input$horizon_year_2, 2040)
+    year3 <- ifelse (input$horizon_year_3 <= 2040, input$horizon_year_3, 2040)
 
-    foo[is.na(foo)] <- "NA"
-    temp_projects[is.na(temp_projects)] <- "NA"
-    foobar <- left_join(temp_projects, foo) 
+    foo <- temp_join |>
+      dplyr::mutate(horizon_year_1_cnt = 
+                      case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
+                                                "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
+                                                "Park-and-Ride") ~ ifelse(year1 - start < input$budget_years_covered, ifelse(year1 - start >0, year1 - start, 0),  input$budget_years_covered),
+                                category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
+                                                "Public Transportation: Rail", "Bus Priority Treatment",
+                                                "Travel Demand Management", "EV Charging Infrastructure",
+                                                "Transit Service Cuts", "Micromobility",
+                                                "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year1)  <= input$budget_years_covered, sum(c(start:end) <= year1),  input$budget_years_covered),
+                                TRUE ~ ifelse(year1 - (start+2) < input$budget_years_covered, ifelse(year1 - (start+2) >0, year1 - (start+2), 0),  input$budget_years_covered)
+                      ),
+                    horizon_year_2_cnt = 
+                      case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
+                                                "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
+                                                "Park-and-Ride") ~ ifelse(year2 - start < input$budget_years_covered, ifelse(year2 - start >0, year2 - start, 0),  input$budget_years_covered),
+                                category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
+                                                "Public Transportation: Rail", "Bus Priority Treatment",
+                                                "Travel Demand Management", "EV Charging Infrastructure",
+                                                "Transit Service Cuts", "Micromobility",
+                                                "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year2)  <= input$budget_years_covered, sum(c(start:end) <= year2),  input$budget_years_covered),
+                                TRUE ~ ifelse(year2 - (start+2) < input$budget_years_covered, ifelse(year2 - (start+2) >0, year2 - (start+2), 0),  input$budget_years_covered)
+                      ),
+                    horizon_year_3_cnt = 
+                      case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
+                                                "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
+                                                "Park-and-Ride") ~ ifelse(year3 - start < input$budget_years_covered, ifelse(year3 - start >0, year3 - start, 0),  input$budget_years_covered),
+                                category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
+                                                "Public Transportation: Rail", "Bus Priority Treatment",
+                                                "Travel Demand Management", "EV Charging Infrastructure",
+                                                "Transit Service Cuts", "Micromobility",
+                                                "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year3)  <= input$budget_years_covered, sum(c(start:end) <= year3),  input$budget_years_covered),
+                                TRUE ~ ifelse(year3 - (start+2) < input$budget_years_covered, ifelse(year3 - (start+2) >0, year3 - (start+2), 0),  input$budget_years_covered)
+                      )
+      ) |>
+      dplyr::mutate(horizon_year_1_budget = total*value*(horizon_year_1_cnt/total_years),
+                    horizon_year_2_budget = total*value*(horizon_year_2_cnt/total_years),
+                    horizon_year_3_budget = total*value*(horizon_year_3_cnt/total_years),
+                    horizon_year_1 = horizon_year_1_budget/cost_parameter,
+                    horizon_year_2 = horizon_year_2_budget/cost_parameter,
+                    horizon_year_3 = horizon_year_3_budget/cost_parameter) |> select(-c(table_no_ui,value,table_no_ui_revised)) |>
+      pivot_longer(cols = c(horizon_year_1, horizon_year_2, horizon_year_3), names_to = "year", values_to = "value") |>
+      #mutate(value = value_new) |>
+      select(any_of(names(rvs$Projects)))
+    temp_projects <- rvs$Projects |> select(-value)
+    
+    # browser()
+    
+    # foo[is.na(foo)] <- "NA"  # Qi: comment out?
+    # temp_projects[is.na(temp_projects)] <- "NA"  # Qi: comment out?
+    foobar <- left_join(temp_projects, foo)
     foobar[foobar == "NA"] <- NA
     foobar[is.na(foobar$value),"value"]<-0
     #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
     #browser()
-    rvs$Projects <- foobar
+    
+    ### at the step above, the projects value are cumulative values, however, under the project mode, the cumulative step is done afterward, so we need to de-cumulate the value. 
+    foobar_discum <- foobar %>% 
+      pivot_wider(names_from = year, values_from = value) %>%
+      mutate(horizon_year_1 = horizon_year_1, 
+             horizon_year_3 = horizon_year_3- horizon_year_2,
+             horizon_year_2 = horizon_year_2 - horizon_year_1) %>%
+      pivot_longer(cols = starts_with("horizon_year_"),
+                   names_to = "year", 
+                   values_to = 'value')
+    
+    
+    rvs$Projects <- foobar_discum
   })
 
   observeEvent(input$fill_budget_bttn,{
@@ -6632,7 +6714,7 @@ table.on('draw', function(){
   
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
-    #browser()
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
       output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
@@ -7049,6 +7131,151 @@ table.on('draw', function(){
   })
   
   # server scenarios outputs ------------------------------------------------
+  ## Qi adding a condition when user click on the Outputs, and all the scenario are 0s.- considering force the fill project with budget. 
+  ## testing: consider converting to a function in the future. 
+  observeEvent(input$OUTPUTS_TABS, {
+    # browser()
+    
+        if (input$OUTPUTS_TABS %in% c("Strategy Summary",
+                                  "Scenario Summary")) {
+
+      check_tbl <- scenario_sum()
+      # browser()
+      if (all(check_tbl[, 3:ncol(check_tbl)] == 0, na.rm = TRUE) &&
+          input$fill_projects_bttn == 0 && 
+          all(rvs$Projects$value == 0)) {
+        browser()
+        # Simulate a click on the budget button
+        req(input$budget_start_year)
+        req(input$budget_years_covered)
+        req(input$budget_total)
+
+        temp_budget <- rvs$Budget |>
+          mutate(value = value/100)
+        temp_budget$table_no_ui_revised = as.character(temp_budget$table_no_ui_revised)
+
+        temp_costs <- rvs$Costs
+        temp_costs$table_no_ui_revised = as.character(temp_costs$table_no_ui_revised)
+        temp_costs <- temp_costs |>
+          filter(table_no_ui_revised != "-1") |>
+          group_by(table_no_ui_revised) |>
+          summarise(cost_parameter = sum(value)) |> ungroup()
+
+        temp_join <- left_join(temp_budget,temp_costs) |>
+          mutate(cost_parameter = case_when(!is.na(land_use) ~ 1,
+                                            !is.na(land_use)&land_use == "Land Use Incentives"~1000000,
+                                            TRUE ~ cost_parameter)) #|> mutate(value = 1)
+        #start <- input$horizon_year_1
+        #total <- input$budget_total
+        start <- input$budget_start_year
+        end <- start + input$budget_years_covered -1
+        total <- input$budget_total*1000000
+        total_years <- input$budget_years_covered #+ 1 # qi commented out +1
+        
+        year1 <- input$horizon_year_1
+        year2 <- ifelse (input$horizon_year_2 <= 2040, input$horizon_year_2, 2040)
+        year3 <- ifelse (input$horizon_year_3 <= 2040, input$horizon_year_3, 2040)
+        
+        # horizon_year_1_cnt <- sum(c(start:end) < input$horizon_year_1)
+        # horizon_year_2_cnt <- sum(c(start:end) < input$horizon_year_2) - horizon_year_1_cnt
+        # horizon_year_3_cnt <- sum(c(start:end) < input$horizon_year_3) - horizon_year_2_cnt - horizon_year_1_cnt
+        #heck <- temp_join |> mutate(check = (total*value)/cost_parameter)
+        # qi testing
+        
+        
+        # ## when lag is 0 ?   #
+        # horizon_year_1_cnt <- ifelse(sum(c(start:end) <= year1)  <= input$budget_years_covered, sum(c(start:end) <= year1),  input$budget_years_covered)
+        # horizon_year_2_cnt <- ifelse(sum(c(start:end) <= year2)  <= input$budget_years_covered, sum(c(start:end) <= year2),  input$budget_years_covered)
+        # horizon_year_3_cnt <- ifelse(sum(c(start:end) <= year3)  <= input$budget_years_covered, sum(c(start:end) <= year3),  input$budget_years_covered)
+        # 
+        # # when lag is 1. 
+        # horizon_year_1_cnt <- ifelse(year1 - start < input$budget_years_covered, ifelse(year1 - start >0, year1 - start, 0),  input$budget_years_covered)
+        # horizon_year_2_cnt <- ifelse(year2 - start < input$budget_years_covered, ifelse(year2 - start >0, year2 - start, 0),  input$budget_years_covered)
+        # horizon_year_3_cnt <- ifelse(year3 - start < input$budget_years_covered, ifelse(year3 - start >0, year3 - start, 0),  input$budget_years_covered)
+        # 
+        # 
+        # #when lag == 3
+        # horizon_year_1_cnt <- ifelse(year1 - (start+2) < input$budget_years_covered, ifelse(year1 - (start+2) >0, year1 - (start+2), 0),  input$budget_years_covered)
+        # horizon_year_2_cnt <- ifelse(year2 - (start+2) < input$budget_years_covered, ifelse(year2 - (start+2) >0, year2 - (start+2), 0),  input$budget_years_covered)
+        # horizon_year_3_cnt <- ifelse(year3 - (start+2) < input$budget_years_covered, ifelse(year3 - (start+2) >0, year3 - (start+2), 0),  input$budget_years_covered)
+        # 
+
+
+
+        foo <- temp_join |>
+          dplyr::mutate(horizon_year_1_cnt = 
+                          case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
+                                                                   "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
+                                                                   "Park-and-Ride") ~ ifelse(year1 - start < input$budget_years_covered, ifelse(year1 - start >0, year1 - start, 0),  input$budget_years_covered),
+                                                       category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
+                                                                       "Public Transportation: Rail", "Bus Priority Treatment",
+                                                                       "Travel Demand Management", "EV Charging Infrastructure",
+                                                                       "Transit Service Cuts", "Micromobility",
+                                                                       "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year1)  <= input$budget_years_covered, sum(c(start:end) <= year1),  input$budget_years_covered),
+                                                       TRUE ~ ifelse(year1 - (start+2) < input$budget_years_covered, ifelse(year1 - (start+2) >0, year1 - (start+2), 0),  input$budget_years_covered)
+                                                       ),
+                        horizon_year_2_cnt = 
+                          case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
+                                                    "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
+                                                    "Park-and-Ride") ~ ifelse(year2 - start < input$budget_years_covered, ifelse(year2 - start >0, year2 - start, 0),  input$budget_years_covered),
+                                    category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
+                                                    "Public Transportation: Rail", "Bus Priority Treatment",
+                                                    "Travel Demand Management", "EV Charging Infrastructure",
+                                                    "Transit Service Cuts", "Micromobility",
+                                                    "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year2)  <= input$budget_years_covered, sum(c(start:end) <= year2),  input$budget_years_covered),
+                                    TRUE ~ ifelse(year2 - (start+2) < input$budget_years_covered, ifelse(year2 - (start+2) >0, year2 - (start+2), 0),  input$budget_years_covered)
+                          ),
+                        horizon_year_3_cnt = 
+                          case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
+                                                    "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
+                                                    "Park-and-Ride") ~ ifelse(year3 - start < input$budget_years_covered, ifelse(year3 - start >0, year3 - start, 0),  input$budget_years_covered),
+                                    category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
+                                                    "Public Transportation: Rail", "Bus Priority Treatment",
+                                                    "Travel Demand Management", "EV Charging Infrastructure",
+                                                    "Transit Service Cuts", "Micromobility",
+                                                    "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year3)  <= input$budget_years_covered, sum(c(start:end) <= year3),  input$budget_years_covered),
+                                    TRUE ~ ifelse(year3 - (start+2) < input$budget_years_covered, ifelse(year3 - (start+2) >0, year3 - (start+2), 0),  input$budget_years_covered)
+                          )
+                        ) |>
+        dplyr::mutate(horizon_year_1_budget = total*value*(horizon_year_1_cnt/total_years),
+                        horizon_year_2_budget = total*value*(horizon_year_2_cnt/total_years),
+                        horizon_year_3_budget = total*value*(horizon_year_3_cnt/total_years),
+                        horizon_year_1 = horizon_year_1_budget/cost_parameter,
+                        horizon_year_2 = horizon_year_2_budget/cost_parameter,
+                        horizon_year_3 = horizon_year_3_budget/cost_parameter) |> select(-c(table_no_ui,value,table_no_ui_revised)) |>
+          pivot_longer(cols = c(horizon_year_1, horizon_year_2, horizon_year_3), names_to = "year", values_to = "value") |>
+          #mutate(value = value_new) |>
+          select(any_of(names(rvs$Projects)))
+        temp_projects <- rvs$Projects |> select(-value)
+
+        # browser()
+
+        # foo[is.na(foo)] <- "NA"  # Qi: comment out?
+        # temp_projects[is.na(temp_projects)] <- "NA"  # Qi: comment out?
+        foobar <- left_join(temp_projects, foo)
+        foobar[foobar == "NA"] <- NA
+        foobar[is.na(foobar$value),"value"]<-0
+        #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
+        #browser()
+        
+        ### at the step above, the projects value are cumulative values, however, under the project mode, the cumulative step is done afterward, so we need to de-cumulate the value. 
+       foobar_discum <- foobar %>% 
+         pivot_wider(names_from = year, values_from = value) %>%
+         mutate(horizon_year_1 = horizon_year_1, 
+                horizon_year_3 = horizon_year_3- horizon_year_2,
+                horizon_year_2 = horizon_year_2 - horizon_year_1) %>%
+         pivot_longer(cols = starts_with("horizon_year_"),
+                      names_to = "year", 
+                      values_to = 'value')
+      
+        
+        rvs$Projects <- foobar_discum
+        
+      }
+    }
+  }#, ignoreInit = TRUE
+  )
+  
   output$emission_change_tbl <- renderDataTable({
     results <- scenario_summary_results()
     # browser()
@@ -7212,7 +7439,7 @@ table.on('draw', function(){
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-     #browser() #not done
+      # browser() #not done
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     

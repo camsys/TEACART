@@ -65,8 +65,8 @@ output_roadway_resurf <- reactive({
       total_change_electricity = sum(total_change_electricity),
       total_change_direct = sum(total_change_direct),
       total_change_upstream = 0,
-      total_change_mtnox = sum(total_change_mtnox,na.rm = TRUE)/1000000,
-      total_change_pm25 = sum(total_change_pm25,na.rm = TRUE)/1000000  
+      total_change_mtnox = sum(total_change_mtnox,na.rm = TRUE),
+      total_change_pm25 = sum(total_change_pm25,na.rm = TRUE)  
     )
   #browser()
   return(resurf_output)
