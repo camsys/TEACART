@@ -111,7 +111,7 @@ output_EVSE <- reactive({
     mutate(total_change_MTCO2 = total_change_direct + total_change_electricity,
            total_change_mtnox = -(Fuel_Factors_by_supertype()[["Light-Duty Vehicles"]]$NOx_g_per_veh_mi*light_vmt_affected + 
                                     Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]]$NOx_g_per_veh_mi * truck_vmt_affected) / 1000000,
-           total_change_pm25 = -(Fuel_Factors_by_supertype()[["Light-Duty Vehicles"]]$PM25_tires_brakes_per_veh_mi*light_vmt_affected +
+           total_change_pm25 = -(Fuel_Factors_by_supertype()[["Light-Duty Vehicles"]]$PM25_exhaust_per_veh_mi*light_vmt_affected +
                                    Fuel_Factors_by_supertype()[["Medium-/Heavy-Duty Vehicles"]]$PM25_exhaust_per_veh_mi * truck_vmt_affected) / 1000000)
   
   return(fin)

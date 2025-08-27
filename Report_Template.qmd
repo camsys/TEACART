@@ -301,6 +301,7 @@ print(tagList(cat("  \n\n  ")))
 
 # scenarioresults <- readxl::read_excel(path3)
 scenarioresults <- params$scen_data
+# scenarioresults <- params$scen_data
 
 # scenarioresults$indicator = gsub("CO2", "CO$_2$",scenarioresults$indicator )
 

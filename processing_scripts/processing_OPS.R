@@ -106,8 +106,6 @@ temp_output_signal <- temp_output_signal %>%
   mutate(total_change_mtnox = total_change_VMT*NOx_LDV*ldv_impf/1000000 + CO2e_from_delay*NOx_CO2_ratio,
          total_change_pm25 = (total_change_VMT*ldv_impf*PM25_LDV_exhaust+total_change_VMT*PM25_LDV_tirebrakes)/1000000 + CO2e_from_delay*PM25_CO2_ratio) %>%
   select(year, area_type, road_class, total_change_VMT, total_change_MTCO2,total_change_mtnox,total_change_pm25)
-  
-
 
 project_roundabout <- make_project_table_cumulative(rvs$Projects[rvs$Projects$unit == "new_roundabouts",],
                                                 table_no = 9, 

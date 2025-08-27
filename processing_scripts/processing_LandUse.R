@@ -86,7 +86,7 @@ cost_output_land_use <- reactive({
   assumptions <- rvs$Assumptions[rvs$Assumptions$table_no_ui == 16,] %>% #slchanged
     filter_all(any_vars(!is.na(.))) |> 
     select(element,unit, value)
-  land_use_factor_vmt <- -1000000/rvs$Costs$value[rvs$Costs$unit == "per_hh_shifted"]*assumptions$value[assumptions$element == "People per household"]*(assumptions$value[assumptions$element == "VMT per capita: Suburban (High VMT)"] - assumptions$value[assumptions$element == "VMT per capita: Urban (Low VMT)"])
+  land_use_factor_vmt <- assumptions$value[assumptions$element == "People per household"]*(assumptions$value[assumptions$element == "VMT per capita: Suburban (High VMT)"] - assumptions$value[assumptions$element == "VMT per capita: Urban (Low VMT)"])
  rezone_factor_vmt_residential <- 18*assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] *  assumptions$value[assumptions$element == "VMT per household"] 
   rezone_factor_vmt_job <- 2*assumptions$value[assumptions$element == "Elasticity of VMT w/r/t job density"] * assumptions$value[assumptions$element == "Work trip length"] * assumptions$value[assumptions$element == "Work annualization factor"] * assumptions$value[assumptions$element == "Employees per acre at 1.0 FAR"]
   rezone_factor_vmt_high <- 18*25*assumptions$value[assumptions$element == "VMT per household"] * assumptions$value[assumptions$element == "Elasticity of VMT w/r/t residential density"] +  
@@ -103,7 +103,7 @@ cost_output_land_use <- reactive({
                                         ),
                                     year =  input$horizon_year_1,
                               total_change_gGHG = 1,
-                              total_change_VMT = c(land_use_factor_vmt),#,rezone_factor_vmt_residential,rezone_factor_vmt_job,rezone_factor_vmt_high,rezone_factor_vmt_mod),
+                              total_change_VMT = -1*c(land_use_factor_vmt),#,rezone_factor_vmt_residential,rezone_factor_vmt_job,rezone_factor_vmt_high,rezone_factor_vmt_mod),
                               total_change_gnox = 1, 
                               total_change_gpm25 = 1,
                               total_change_newtrips = 0) |> 

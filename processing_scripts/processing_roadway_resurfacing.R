@@ -126,7 +126,7 @@ cost_output_roadway_resurf <- reactive({
                               total_change_newtrips = 0) |> 
     mutate(#total_change_gnox = total_change_gGHG*nox_factor,
            #total_change_gpm25 = total_change_gGHG*pm25_factor,
-      total_change_gnox = total_change_gGHG*percent_truck_traffic*NOx_CO2_ratio_heavy+total_change_gGHG*(1-percent_truck_traffic)*NOx_CO2_ratio,
-      total_change_gpm25 = total_change_gGHG*percent_truck_traffic*PM25_CO2_ratio_heavy+total_change_gGHG*(1-percent_truck_traffic)*PM25_CO2_ratio)
+      total_change_gnox = total_change_gGHG*NOx_CO2_ratio,
+      total_change_gpm25 = total_change_gGHG*PM25_CO2_ratio)
   return(resurf_fin)
 })

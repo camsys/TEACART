@@ -6714,7 +6714,7 @@ table.on('draw', function(){
   
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
-    # browser()
+      # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
       output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
@@ -6845,6 +6845,7 @@ table.on('draw', function(){
   
   output$pub_trans_rail_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Public Transit Rail Costs Outputs")
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==6,], #slchanged
       output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Rail (VOMS)"),
@@ -7050,7 +7051,7 @@ table.on('draw', function(){
   
   output$roadwayresurf_cuts_costs_outputs_tbl <- renderDT({
     print("RENDERING: Roadway Resurfacing Costs Outputs")
-    #browser()
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==15,],
       output_table = cost_output_roadway_resurf(),
@@ -7106,12 +7107,12 @@ table.on('draw', function(){
  
   output$landuse_costs_outputs_tbl <- renderDT({
     print("RENDERING: Land Use Costs Outputs")
-    #browser()
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==16,],
       output_table = cost_output_land_use(),
       col_sel = c(),
-      proj_life = 1,
+      proj_life = 10,
       style = input$cost_view)%>%
       rename(any_of(references_vector)) %>%
       mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) #%>% # to show NA in table
@@ -7134,8 +7135,7 @@ table.on('draw', function(){
   ## Qi adding a condition when user click on the Outputs, and all the scenario are 0s.- considering force the fill project with budget. 
   ## testing: consider converting to a function in the future. 
   observeEvent(input$OUTPUTS_TABS, {
-    # browser()
-    
+
         if (input$OUTPUTS_TABS %in% c("Strategy Summary",
                                   "Scenario Summary")) {
 
@@ -7144,7 +7144,7 @@ table.on('draw', function(){
       if (all(check_tbl[, 3:ncol(check_tbl)] == 0, na.rm = TRUE) &&
           input$fill_projects_bttn == 0 && 
           all(rvs$Projects$value == 0)) {
-        browser()
+        # browser()
         # Simulate a click on the budget button
         req(input$budget_start_year)
         req(input$budget_years_covered)
@@ -7176,32 +7176,6 @@ table.on('draw', function(){
         year2 <- ifelse (input$horizon_year_2 <= 2040, input$horizon_year_2, 2040)
         year3 <- ifelse (input$horizon_year_3 <= 2040, input$horizon_year_3, 2040)
         
-        # horizon_year_1_cnt <- sum(c(start:end) < input$horizon_year_1)
-        # horizon_year_2_cnt <- sum(c(start:end) < input$horizon_year_2) - horizon_year_1_cnt
-        # horizon_year_3_cnt <- sum(c(start:end) < input$horizon_year_3) - horizon_year_2_cnt - horizon_year_1_cnt
-        #heck <- temp_join |> mutate(check = (total*value)/cost_parameter)
-        # qi testing
-        
-        
-        # ## when lag is 0 ?   #
-        # horizon_year_1_cnt <- ifelse(sum(c(start:end) <= year1)  <= input$budget_years_covered, sum(c(start:end) <= year1),  input$budget_years_covered)
-        # horizon_year_2_cnt <- ifelse(sum(c(start:end) <= year2)  <= input$budget_years_covered, sum(c(start:end) <= year2),  input$budget_years_covered)
-        # horizon_year_3_cnt <- ifelse(sum(c(start:end) <= year3)  <= input$budget_years_covered, sum(c(start:end) <= year3),  input$budget_years_covered)
-        # 
-        # # when lag is 1. 
-        # horizon_year_1_cnt <- ifelse(year1 - start < input$budget_years_covered, ifelse(year1 - start >0, year1 - start, 0),  input$budget_years_covered)
-        # horizon_year_2_cnt <- ifelse(year2 - start < input$budget_years_covered, ifelse(year2 - start >0, year2 - start, 0),  input$budget_years_covered)
-        # horizon_year_3_cnt <- ifelse(year3 - start < input$budget_years_covered, ifelse(year3 - start >0, year3 - start, 0),  input$budget_years_covered)
-        # 
-        # 
-        # #when lag == 3
-        # horizon_year_1_cnt <- ifelse(year1 - (start+2) < input$budget_years_covered, ifelse(year1 - (start+2) >0, year1 - (start+2), 0),  input$budget_years_covered)
-        # horizon_year_2_cnt <- ifelse(year2 - (start+2) < input$budget_years_covered, ifelse(year2 - (start+2) >0, year2 - (start+2), 0),  input$budget_years_covered)
-        # horizon_year_3_cnt <- ifelse(year3 - (start+2) < input$budget_years_covered, ifelse(year3 - (start+2) >0, year3 - (start+2), 0),  input$budget_years_covered)
-        # 
-
-
-
         foo <- temp_join |>
           dplyr::mutate(horizon_year_1_cnt = 
                           case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
@@ -7248,16 +7222,12 @@ table.on('draw', function(){
           select(any_of(names(rvs$Projects)))
         temp_projects <- rvs$Projects |> select(-value)
 
-        # browser()
-
         # foo[is.na(foo)] <- "NA"  # Qi: comment out?
         # temp_projects[is.na(temp_projects)] <- "NA"  # Qi: comment out?
         foobar <- left_join(temp_projects, foo)
         foobar[foobar == "NA"] <- NA
         foobar[is.na(foobar$value),"value"]<-0
-        #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
-        #browser()
-        
+
         ### at the step above, the projects value are cumulative values, however, under the project mode, the cumulative step is done afterward, so we need to de-cumulate the value. 
        foobar_discum <- foobar %>% 
          pivot_wider(names_from = year, values_from = value) %>%
@@ -7439,7 +7409,7 @@ table.on('draw', function(){
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-      # browser() #not done
+       # browser() #not done
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     
@@ -7457,7 +7427,7 @@ table.on('draw', function(){
     # browser()
     total_row <- strategy_temp %>%
       pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
-      mutate(across(where(is.numeric), ~round(., 2))) %>%
+      mutate(across(where(is.numeric), ~round(., 3))) %>%
       summarise(Strategy = "Total", across(where(is.numeric), sum)) 
     
     
@@ -7689,7 +7659,7 @@ table.on('draw', function(){
         make_column_names_proper(.)
       
       Sys.sleep(1)
-      #browser()
+      # browser()
       
       # check # of columns
       # for (name in names(cost_data)) {

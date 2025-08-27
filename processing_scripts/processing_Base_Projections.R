@@ -523,7 +523,7 @@ EmRate_by_Tech <- reactive({ #this is emission rate for all vehicles types
                                                                                             EmRate_by_Tech$veh_subtype == 'Gasoline ICE']),
                                             fuel_N20_CO2eq_per_mile)) %>%
     mutate(fuel_emission_rate = (1/mpg_gasoline_eq) * (1000*fuel_carbon_content * fuel_conversion) + fuel_CH4_CO2e_per_mile+fuel_N20_CO2eq_per_mile) %>%
-    mutate(electricity_emission_rate = (1/mpg_gasoline_eq) * electricity_carbon_content * electricity_conversion) %>%
+    mutate(electricity_emission_rate =ifelse(input$scope_emissions != "0", (1/mpg_gasoline_eq) * electricity_carbon_content * electricity_conversion,0)) %>%
     mutate(emission_rate = (1-apportionment*uses_electiricity)*fuel_emission_rate+apportionment*uses_electiricity*electricity_emission_rate)
   
   return(EmRate_by_Tech)
