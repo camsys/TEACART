@@ -131,8 +131,8 @@ ui <- function(request) {
                           column(width = 12,
                                  tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                         href = "https://www.georgetownclimate.org/", target = "_blank"),
-                                 tags$p("Adapted from TEA-CART Excel Model Version 1.10"),
-                                 tags$p("Shiny App last updated July 11, 2025"),
+                                 tags$p("Adapted from TEA-CART Excel Model Version 1.14"),
+                                 tags$p("Shiny App last updated September 3, 2025"),
                                  tags$p("Prototype under development by Cambridge Systematics, Inc."),
                                  tags$p("under contract to Georgetown Climate Center"),
                                  tags$p("© Georgetown Climate Center")
