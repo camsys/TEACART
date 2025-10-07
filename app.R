@@ -225,7 +225,9 @@ ui <- function(request) {
                         # nav_spacer(),
                         # nav_spacer(),
                         downloadButton("pdf_report","Download Summary Report"),
-                        HTML("<p>More information can be found in the <b>How-to</b> tab.</p>")),
+                        HTML("<p>More information can be found in the <b>How-to</b> tab.</p>
+                             <p>
+                             For more detailed guidance, please refer to the <a href='https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf'>the User Guide and Methodology Documentation.</a>")),
       
       
       # welcome page ------------------------------------------------------------
@@ -989,7 +991,7 @@ and potential applications.<br><br>
                                                       sep = " ")
                                            ),
                                            value = 2026,
-                                           min = 2026,
+                                           min = 2020,
                                            max = 2050,
                                            step = 1
                               ),
@@ -1469,7 +1471,7 @@ and potential applications.<br><br>
                                           Costs related to land use and transit service cuts  
                                           cannot be updated by the user.<br>
                                           <br>
-                                          All dollar values are be in <b>2024 dollars.</b><br>
+                                          All dollar values are in <b>2024 dollars.</b><br>
                                           <br>")),
                             
                             # bike ped costs
@@ -2487,7 +2489,9 @@ and potential applications.<br><br>
 # cumulative projects ui -------------------------------------
 nav_panel(title = "Cumulative Project Totals",
           fluidRow(
-            HTML("<p>These tables represent the cumulative project totals based on user inputs in the project tab.
+            HTML("<p>These tables represent the cumulative project totals based on user inputs in the project tab.<br>
+            <p>
+            
                                    "
             ),),
           
