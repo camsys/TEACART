@@ -34,6 +34,7 @@ all_files <- c(list.files("functions", full.names = TRUE))
 
 data_list <- list()
 
+
 # reading in xlsx and R files only - note
 for (file in all_files) {
   if (grepl("\\.R$", file)) {
@@ -229,7 +230,7 @@ ui <- function(request) {
                              <p>
                              For more detailed guidance, please refer to the <a href='https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf'>the User Guide and Methodology Documentation.</a>")),
       
-      
+  
       # welcome page ------------------------------------------------------------
       nav_panel(title = "TEA-CART",
                 p(),
@@ -279,7 +280,7 @@ recommended for optimal experience.</b><br>
       
       nav_panel(title = "About",
                 #    h2("Transportation Evaluation and Carbon Reduction Tool (TEA-CART)"),
-                
+                p(),
                 h2("About"),
                 HTML(
                   "<p>Georgetown Climate Center’s (GCC) Transportation Evaluation 
@@ -7484,7 +7485,7 @@ table.on('draw', function(){
         rename(scen = Scenario2)
     }
     #browser()
-    colors <- data.frame(Strategy = c("Bicycle and Pedestrian", "Electric Vehicle Charging Infraucture", 
+    colors <- data.frame(Strategy = c("Bicycle and Pedestrian", "Electric Vehicle Charging Infrastructure", 
                                       "Intermodal Freight Investment", "Land Use", 
                                       "MD/HD Truck Replacement", "Micromobility", 
                                       "Park-and-Ride", "Roadway Expansion",                    
