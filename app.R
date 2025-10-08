@@ -132,7 +132,7 @@ ui <- function(request) {
                                  tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                         href = "https://www.georgetownclimate.org/", target = "_blank"),
                                  tags$p("Adapted from TEA-CART Excel Model Version 1.14"),
-                                 tags$p("Shiny App last updated September 3, 2025"),
+                                 tags$p("Shiny App last updated October 7, 2025"),
                                  tags$p("Prototype under development by Cambridge Systematics, Inc."),
                                  tags$p("under contract to Georgetown Climate Center"),
                                  tags$p("© Georgetown Climate Center")
@@ -261,7 +261,12 @@ agency officials who aim to achieve better climate and public health
 outcomes through transportation planning and investment decision making.<br>
 <p>
 Click on the “About” tab to learn more about the tool’s inputs, outputs, 
-and potential applications.<br><br>
+and potential applications.<br>
+<p>
+<b>This application has been tested for use in the Firefox and Chrome 
+browsers in a Windows (PC) environment. This is 
+recommended for optimal experience.</b><br>
+<br>
 "),
 
       actionLink("sources_btn", "View Sources"),
@@ -341,68 +346,72 @@ and potential applications.<br><br>
       
       # how-to page -------------------------------------------------------------
       nav_panel(title = "How-to",
-                p(),
-                h3("Guidance on using the tool"),
-                p("As you enter data, please keep the following in mind:"),
-                tags$ul(tags$li(p("This application does not require a login and is free to use.")),
-                        tags$li(p("In the left side panel, there is a button to Download 
-                        User Inputs. It is essential that you download data 
-                        the server after long periods of inactivity. If you need to leave the 
-                        application before completing the analysis, you can later upload the 
-                        saved file to continue your work.")),
-                        tags$li(p("Data are entered in tables. To begin entering (or editing) data, 
-                        double click anywhere in the table using your mouse. When you are done 
-                        entering data, press <b>CTRL + ENTER</b> on your keyboard (this 
-                        initiates the calculation). Data can only be entered for 
-                        one table at a time.")),
-                        tags$li(p("When you are ready to see the results of your analysis, proceed to 
-                        the Scenarios tab and select scenarios for analysis. Either choose 
-                        groups of projects (to support a comparison) or click the button 
-                        to select all projects for each scenario."))),
-                h3('Steps to use the tool'),
-                p(),
-                tags$ol(
-                  class = "spaced-images",
-                  tags$li(HTML("Use the navigation panel at the top to select <b>Inputs.</b><p>")),
-                  tags$img(src = '1.svg', style = "width: 90%; max-width: intrinsic; height: auto;"),
-                  HTML("<br><br>"),
-                  tags$li(HTML("Within <b>Inputs</b>, select <b>Baseline</b> to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.<br><p>")),
-                  tags$img(src = '2.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
-                  HTML("<br><br>"),
-                  tags$li(HTML("Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse.<br><p>")),
-                  tags$img(src = '3.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
-                  HTML("<br><br>"),
-                  tags$li(HTML("When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.<br><p>")),
-                  tags$img(src = '4.svg', style = "width: 90%; max-width: intrinsic; height: auto; display: block;"),
-                  HTML("<br><br>"),
-                  tags$li(HTML("In the Budget tab, data can be entered the same way. Double click values to begin entering.<br><p>")),
-                  tags$img(src = '5.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
-                  HTML("<br><br>"),
-                  tags$li(HTML("When entering Budget values, you must also update the <b>Projects</b> before beginning the calculation. Or, fill <b>Budget</b> values by updating from Projects.<br><p>")),
-                  tags$img(src = '6.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
-                  HTML("<br><br>"),
-                  tags$li(HTML("Regularly download the data that you have entered. You can download it by clicking the <b>Download User Inputs</b> button on the sidebar.<br><p>")),
-                  tags$img(src = '7.svg', style = "width: 20%; max-width: intrinsic; height: auto; display: block;"),
-                  HTML("<br><br>"),
-                  tags$li(HTML("If desired, within <b>Costs</b>, enter custom unit costs for the project type. Note that default values have already been provided.<br><p>")),
-                  tags$img(src = '8.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
-                  HTML("<br><br>"),
-                  tags$li(HTML("Further <b>Assumptions</b> for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, please refer to the user guide.<br><p>")),
-                  tags$img(src = '9.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
-                  HTML("<br><br>"),
-                  tags$li(HTML("Click the boxes to choose which groups of projects to include in the Scenario analysis.<br><p>")),
-                  tags$img(src = '10.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
-                  HTML("<br><br>"),
-                  tags$li(HTML("It is possible to use a custom forecast on the <b>Advanced</b> tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. Refer to the user guide for more information.<br><p>")),
-                  HTML("<br><br>"),
-                  tags$li(HTML("To see the results of the data that have been entered, refer to the <b>Outputs</b> tab.<br><p>")),
-                  tags$img(src = '11.svg', style = "width: 90%; max-width: 100%; height: auto; display: block;"),
-                  HTML("<br><br>"),
-#                  tags$li(HTML("Review the individual tabs within the <b>Outputs</b> for results. The <b>Baseline GHG Forecast</b> tab shows the forecast under a business-as-usual scenario. <b>Scenario Summary</b> shows results by scenario, including total emissions and changes relative to the baseline. <b>Strategy Summary</b> shows the change in CO2e, VMT, NOx, PM2.5, and Daily Active Trips relative to the baseline. <b>Cost-Effectiveness</b> shows the change in annual output per indicator per $1 million of investment.<br><p>")),
-#                  tags$img(src = 'about_step_11.png'),
-                  tags$li(HTML("Click <b>Download Summary Report</b> to get a pdf document with all of this information.<br><p>")),
-                  tags$img(src = '12.svg', style = "width: 20%; max-width: 100%; height: auto; display: block;"),
-                )
+                HTML('
+  <h3>Guidance on using the tool</h3>
+  <p>As you enter data, please keep the following in mind:</p>
+  <ul>
+    <li>This application does not require a login and is free to use.</li>
+    <li>In the left side panel, there is a button to <b>Download User Inputs.</b> It is essential that you download data after long periods of inactivity. If you need to leave the application before completing the analysis, you can later upload the saved file to continue your work.</li>
+    <li>Data are entered in tables. To begin entering (or editing) data, double click anywhere in the table using your mouse. When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.</li>
+    <li>When you are ready to see the results of your analysis, proceed to the <b>Scenarios</b> tab and select scenarios for analysis. Either choose groups of projects (to support a comparison) or click the button to select all projects for each scenario.</li>
+  </ul>
+  <p>
+  To learn more about how to use the tool and how it works, please View <a href="https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf">the User Guide and Methodology Documentation.</a><br>
+  <br>
+
+  <h3>Steps to use the tool</h3>
+  <ol class="spaced-images">
+    <li>Use the navigation panel at the top to select <b>Inputs</b>.</li>
+    <img src="1.svg" style="width:90%; max-width:intrinsic; height:auto;">
+    <br><br>
+
+    <li>Within <b>Inputs</b>, select <b>Baseline</b> to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.</li>
+    <img src="2.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <br><br>
+
+    <li>Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse.</li>
+    <img src="3.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <br><br>
+
+    <li>When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.</li>
+    <img src="4.svg" style="width:90%; max-width:intrinsic; height:auto; display:block;">
+    <br><br>
+
+    <li>In the <b>Budget</b> tab, data can be entered the same way. Double click values to begin entering.</li>
+    <img src="5.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <br><br>
+
+    <li>When entering <b>Budget</b> values, you must also update the <b>Projects</b> before beginning the calculation. Or, fill <b>Budget</b> values by updating from Projects.</li>
+    <img src="6.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <br><br>
+
+    <li>Regularly download the data that you have entered. You can download it by clicking the <b>Download User Inputs</b> button on the sidebar.</li>
+    <img src="7.svg" style="width:20%; max-width:intrinsic; height:auto; display:block;">
+    <br><br>
+
+    <li>If desired, within <b>Costs</b>, enter custom unit costs for the project type. Note that default values have already been provided.</li>
+    <img src="8.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <br><br>
+
+    <li>Further <b>Assumptions</b> for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, please refer to the user guide.</li>
+    <img src="9.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <br><br>
+
+    <li>Click the boxes to choose which groups of projects to include in the Scenario analysis.</li>
+    <img src="10.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <br><br>
+
+    <li>It is possible to use a custom forecast on the <b>Advanced</b> tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. Refer to the user guide for more information.</li>
+    <br><br>
+
+    <li>To see the results of the data that have been entered, refer to the <b>Outputs</b> tab.</li>
+    <img src="11.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <br><br>
+
+    <li>Click <b>Download Summary Report</b> to get a PDF document with all of this information.</li>
+    <img src="12.svg" style="width:20%; max-width:100%; height:auto; display:block;">
+  </ol>
+')
       ),
       
       # inputs page -------------------------------------------------------------
@@ -848,7 +857,7 @@ and potential applications.<br><br>
                                               of freight rail, the energy intensity as 
                                               measured in British Thermal Units (BTU) 
                                               per ton-mile, and the change in annual 
-                                              VMT or ton-miles per unit of investment. All dollar values should be in <b>current year dollars.</b>"),
+                                              VMT or ton-miles per unit of investment. All dollar values should be in <b>millions</b> of <b>current year dollars.</b>"),
                                        ),
                                        open = TRUE
                                      ),
@@ -2098,7 +2107,7 @@ and potential applications.<br><br>
                                      accordion(
                                        accordion_panel(
                                          "Advanced 1 | Custom Forecast: Electric Vehicles (EVs)",
-                                         HTML("This is represented by the percentage of on-road vehicles (stock) that are EVs.")
+                                         HTML("This represents the percentage of on-road vehicles (stock) that are EVs.")
                                        ),
                                        open = TRUE
                                      ),
@@ -2263,7 +2272,7 @@ and potential applications.<br><br>
                                  tab.<br>
                                  <br>"),
                             p(),
-                            h3("Transportation GHG Forecast"),
+                            h3("Baseline Transportation GHG Forecast"),
                             fluidRow(width = 12,
                                      column(width = 6,
                                             plotlyOutput("baseline_ghg_line", width = "auto", height = "auto")
@@ -2307,7 +2316,7 @@ and potential applications.<br><br>
                                                'MT CO2e' = 'Emissions (MT CO2e)',
                                                'VMT' = 'VMT (millions)',
                                                'MT NOx' = 'NOx Reduction (MT)',
-                                               'MT PM2.5' = 'PM2.5 Reduction (MT',
+                                               'MT PM2.5' = 'PM2.5 Reduction (MT)',
                                                'Daily Active Trips' = 'New Daily Active Trips')
                               )),
                             fluidRow(
@@ -2374,7 +2383,7 @@ and potential applications.<br><br>
                                            "Level of detail:",
                                            c("Detailed results" = "detail", "Summary results" = "summary"))),
                             fluidRow(
-                              p("All results are reported in terms of annual change per $M investment."),
+                              p("All results are reported in terms of annual reduction per $M investment."),
                               fluidRow( class = 'cost-table search',
                                         h3("Bicycle & Pedestrian"),
                                         DT::dataTableOutput("bikeped_costs_outputs_tbl"),
@@ -3552,9 +3561,9 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       non_editable_cols = c(0,1),
       page_length = 10,
       comma_rows = 0:4,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      percent_rows = as.integer(0),
+      currency_rows = as.integer(5), # reminder to us to subtract 1 because JS uses 0-based row indexes
+      decimal_rows = as.integer(0))
     
   })
   
@@ -6095,7 +6104,7 @@ table.on('draw', function(){
                       "Park-and-Ride",
                       "Transit Electrification",
                       "MD/HD Truck Replacement",
-                      "Electric Vehicle Charging Infraucture",
+                      "Electric Vehicle Charging Infrastructure",
                       "Intermodal Freight Investment",
                       "Traffic Operations",
                       "Roadway Expansion",
@@ -6528,7 +6537,7 @@ table.on('draw', function(){
     growth <- dt_all[[1,1]]
     dt_pers <- dt_all %>% 
       mutate(across(where(is.numeric), ~(.x - growth)/growth, .names = "{.col}")) %>%
-      mutate(veh_supertype = "Total (All Transportation)")
+      mutate(veh_supertype = "Total (All Transportation - % Change)")
     
     dt_all <- dt_all %>% 
       mutate(veh_supertype = "Total (All Transportation)")
