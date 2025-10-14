@@ -250,10 +250,10 @@ ui <- function(request) {
 and the number of vehicle-miles traveled?<br>
 <p>
 …compare the air emissions outcomes of one potential portfolio of 
-investments with another?  For example, which would do more to improve 
-air quality in your community: spending $1 million on electric buses and 
-charging infrastructure? or investing those same funds in expanding light 
-rail and transit oriented development?</i> <br>
+investments with another?  For example, which would do more to reduce 
+emissions from transportation in your community: spending $1 million on electric
+buses and charging infrastructure, or investing those same funds in expanding 
+light rail and transit oriented development?</i> <br>
 <p>
 TEA-CART can help answer these and other questions in ways that are 
 accessible for a variety of users. Anyone can use this tool, but we 
@@ -272,7 +272,12 @@ recommended for optimal experience.</b><br>
 
       actionLink("sources_btn", "View Sources"),
       HTML("<br><br>"),
-      actionLink("guide_btn", "View User Guide and Methodology Documentation")
+      actionLink("guide_btn", "View User Guide and Methodology Documentation"),
+      p(),
+      HTML("<i>To report a problem in the tool, please send an email to 
+           <u>climate@georgetown.edu</u> with “TEA-CART Help” in the subject line.</i>
+           <br><br>
+           ")
 
 ),
       
@@ -297,10 +302,11 @@ recommended for optimal experience.</b><br>
                   projects, so they can set meaningful targets for greenhouse 
                   gas or vehicle-miles traveled reduction and develop capital 
                   plans that prioritize transportation projects that will 
-                  help achieve those goals. TEA-CART was developed by 
-                  Cambridge Systematics under contract with the Georgetown 
-                  Climate Center, which facilitated extensive input from 
-                  state and federal officials.</p>
+                  help achieve those goals. This tool also estimates how 
+                  transportation projects could affect NOx and PM2.5 emissions.
+                  TEA-CART was developed by Cambridge Systematics under contract 
+                  with the Georgetown Climate Center, which facilitated extensive 
+                  input from state and federal officials.</p>
                   <p><b>Tool Functionality:</b> TEA-CART is easy to use, accepting 
                   simple inputs to evaluate the GHG performance of surface 
                   transportation capital projects during the planning or 
@@ -316,7 +322,7 @@ recommended for optimal experience.</b><br>
                   program planning process. For example:</p>
                   <ul><li>New lane-miles of infrastructure,</li>
                   <li>Number of new electric vehicle chargers,</li>
-                  <li>Number of gas-power buses replaced by electric vehicles,</li>
+                  <li>Number of diesel-powered buses replaced by electric vehicles,</li>
                   <li>Dollars invested in electric bike incentives, or</li>
                   <li>Dollars invested in roadway resurfacing.</li>
                   </ul>"
@@ -339,71 +345,90 @@ recommended for optimal experience.</b><br>
                   types.</li>
                   </ul>
                   "
-                )
-                
+                ),
+                HTML("<i>To report a problem in the tool, please send an email to 
+                    <u>climate@georgetown.edu</u> with “TEA-CART Help” in the subject 
+                    line.</i>
+                    <br><br>")
                 
       ),
       
       
       # how-to page -------------------------------------------------------------
       nav_panel(title = "How-to",
+                p(),
+                h2("Guidance on using the tool"),
                 HTML('
-  <h3>Guidance on using the tool</h3>
   <p>As you enter data, please keep the following in mind:</p>
   <ul>
     <li>This application does not require a login and is free to use.</li>
-    <li>In the left side panel, there is a button to <b>Download User Inputs.</b> It is essential that you download data after long periods of inactivity. If you need to leave the application before completing the analysis, you can later upload the saved file to continue your work.</li>
+    <li>In the left side panel, there is a button to <b>Download User Inputs</b>. It is essential that you download data after long periods of inactivity. If you need to leave the application before completing the analysis, you can later upload the saved file to continue your work.</li>
     <li>Data are entered in tables. To begin entering (or editing) data, double click anywhere in the table using your mouse. When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.</li>
     <li>When you are ready to see the results of your analysis, proceed to the <b>Scenarios</b> tab and select scenarios for analysis. Either choose groups of projects (to support a comparison) or click the button to select all projects for each scenario.</li>
   </ul>
   <p>
-  To learn more about how to use the tool and how it works, please View <a href="https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf">the User Guide and Methodology Documentation.</a><br>
-  <br>
+  To learn more about how to use the tool and how it works, please see the <a href="https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf">User Guide and Methodology Documentation.</a><br>
+  <p>
+  <i>To report a problem in the tool, please send an email to climate@georgetown.edu 
+  with “TEA-CART Help” in the subject line.</i>
+  <p>
 
-  <h3>Steps to use the tool</h3>
+  <h2>Steps to use the tool</h2>
   <ol class="spaced-images">
     <li>Use the navigation panel at the top to select <b>Inputs</b>.</li>
+    <br>
     <img src="1.svg" style="width:90%; max-width:intrinsic; height:auto;">
-    <br><br>
+    <br><br><br>
 
-    <li>Within <b>Inputs</b>, select <b>Baseline</b> to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.</li>
+    <li>Within <b>Inputs</b>, select <b>Baseline</b> to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.
+    Advanced users may choose to edit the downloaded data file directly, as an alternative method for generating user inputs to upload.</li>
+    <br>
     <img src="2.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
-    <li>Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse.</li>
+    <li>Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse. Alternatively, if you would like to provide budget-level inputs, skip to <i>step 5</i> below.</li>
+    <br>
     <img src="3.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
-    <li>When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.</li>
+    <li>When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (note, your cursor must be in a cell, inside the table, when you do this). Data can only be entered for one table at a time.</li>
+    <br>
     <img src="4.svg" style="width:90%; max-width:intrinsic; height:auto; display:block;">
     <br><br>
 
-    <li>In the <b>Budget</b> tab, data can be entered the same way. Double click values to begin entering.</li>
+    <li>In the <b>Budget</b> tab, data can be entered in the same way as in the <b>Projects</b> tab. If you already entered data in the <b>Projects</b> tab, go to <i>step 7</i> below. If, instead, you would like 
+    to provide budget-level inputs, double click with your mouse in the Budget tables to begin entering values. Once you are done, press <b>CTRL + ENTER</b> on your keyboard to initiate the calculation. As a reminder, data can only be entered one table at a time.</li>
+    <br>
     <img src="5.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
     <li>When entering <b>Budget</b> values, you must also update the <b>Projects</b> before beginning the calculation. Or, fill <b>Budget</b> values by updating from Projects.</li>
+    <br>
     <img src="6.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
     <li>Regularly download the data that you have entered. You can download it by clicking the <b>Download User Inputs</b> button on the sidebar.</li>
+    <br>
     <img src="7.svg" style="width:20%; max-width:intrinsic; height:auto; display:block;">
     <br><br>
 
     <li>If desired, within <b>Costs</b>, enter custom unit costs for the project type. Note that default values have already been provided.</li>
+    <br>
     <img src="8.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
     <li>Further <b>Assumptions</b> for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, please refer to the user guide.</li>
+    <br>
     <img src="9.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
-    <li>Click the boxes to choose which groups of projects to include in the Scenario analysis.</li>
+    <li>In the <b>Scenarios</b> tab, click the boxes to choose which groups of projects to include in the scenario analysis.</li>
+    <br>
     <img src="10.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
     <li>It is possible to use a custom forecast on the <b>Advanced</b> tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. Refer to the user guide for more information.</li>
-    <br><br>
+    <br>
 
     <li>To see the results of the data that have been entered, refer to the <b>Outputs</b> tab.</li>
     <img src="11.svg" style="width:90%; max-width:100%; height:auto; display:block;">
@@ -412,6 +437,7 @@ recommended for optimal experience.</b><br>
     <li>Click <b>Download Summary Report</b> to get a PDF document with all of this information.</li>
     <img src="12.svg" style="width:20%; max-width:100%; height:auto; display:block;">
   </ol>
+  <br><br>
 ')
       ),
       
@@ -515,7 +541,7 @@ recommended for optimal experience.</b><br>
                                      tags$div(class = "well card-flex",
                                               tags$div(class = "half-card",
                                                        selectInput("scope_fuels",
-                                                                   HTML("<span>Emissions Scope: Include Upstream Fuels:</span> <br> <p>Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CPG"),
+                                                                   HTML("<span>Emissions Scope: Include Upstream Fuels:</span> <br> <p>Upstream Fuels refer to emissions associated with the production, extraction, and transportation of liquid and gaseous fuels including gasoline, diesel and CNG."),
                                                                    choices = c("Yes" = 1, "No" = 0),
                                                                    selected = "No")
                                               ),
@@ -530,7 +556,7 @@ recommended for optimal experience.</b><br>
                                      tags$div(class = "well card-flex",
                                               tags$div(class = "half-card",
                                                        selectInput("land_use_factor",
-                                                                   HTML("<span>Apply Land Use Multiplier to Transit Investment:</span> <br> <p>This multiplier represents total VMT reduction, including reductions related to more efficient land use patterns supported by transit, relative to the direct VMT reduction from increased transit ridership."),
+                                                                   HTML("<span>Apply Land Use Multiplier to Transit Investment:</span> <br> <p>This multiplier represents total VMT reduction, including reductions related to more efficient land use patterns supported by transit, relative to the direct VMT reduction from increased transit ridership. See the User Guide and Methodology Documentation for further discussion."),
                                                                    choices = c("Yes" = 1, "No" = 0),
                                                                    selected = 0)
                                               ),
@@ -556,6 +582,10 @@ recommended for optimal experience.</b><br>
                                    i) All projects are assumed to be “constructed” or “in operation” by the corresponding horizon year. For example, if the user inputs 2 miles of new bicycle lanes under the first horizon year (e.g., 2025) in the “New” category of additions / replacements, it is assumed that those bike lanes will be fully constructed by 2025.<br>
                                    <p>
                                    ii) Project inputs from one year are automatically coded to “carry over” into future years (i.e., miles of new bike lane constructed in 2010 are “carried over” into future years and continue to operate past their construction year).<br>
+                                   <p>
+                                   To see cumulative project totals (based on user inputs in this tab) see the Cumulative Projects Totals tab under Outputs.
+                                   <p>
+                                   <b>Alternatively, go to the Budget tab</b> if you would like to provide <i>budget-level</i> inputs instead.
                                    <p>
                                    
                                    "
@@ -986,7 +1016,9 @@ recommended for optimal experience.</b><br>
                         ii) Spending estimates are assumed to be averages 
                         based on historical data.<br>
                         <br>
-                        Outputs are not generated automatically. After filling out the budget <b> press the <i>Fill Project Tab with Budget Inputs</i> button below in order to generate outputs</b>. 
+                        Outputs are not generated automatically. After filling out the budget <b> press the <i>Fill Project Tab with Budget Inputs</i> button below in order to generate outputs</b>.
+                        <p>
+                        <b>Alternatively, go to the Projects tab</b> if you would like to provide <i>project-level</i> inputs instead.
                        ")
                                      
                             ),
@@ -1470,7 +1502,12 @@ recommended for optimal experience.</b><br>
                   nav_panel(title = "Costs",
                             fluidRow(HTML("<p>This tab provides information on 
                               the <b>cost inputs</b> for the project categories 
-                              shown below. Please click on the different fields 
+                              shown below. 
+                              <br><br>
+                              All costs are already populated with default values. 
+                              <b>Users do not need to edit this tab in order for the tool to work.</b>
+                              <br><br>
+                              <b>To edit cost information</b>, please click on the different fields 
                               to overwrite the default values with any custom 
                               values provided by the user.<br>
                                           <br>
@@ -1825,9 +1862,16 @@ recommended for optimal experience.</b><br>
                   nav_panel(title = "Assumptions",
                             fluidRow(HTML("<p>This tab provides information on 
                                           the <b>input assumptions</b> for the 
-                                          categories shown below. These inputs 
+                                          categories shown below. These assumptions 
                                           affect the GHG impact and effectiveness of 
-                                          each strategy category. Please click on the 
+                                          each strategy category. To better understand which 
+                                          assumptions relate to which strategies, refer to 
+                                          the User Guide & Methodology Documentation.
+                                          <br><br>
+                                          All assumptions are already populated with default values. 
+                                          <b>Users do not need to edit this tab in order for the tool to work.</b>
+                                          <br><br>
+                                          <b>To edit assumptions</b>, please click on the 
                                           different fields to overwrite the default 
                                           values with any custom values provided by the user.<br>
                                           <br>")
@@ -2072,17 +2116,16 @@ recommended for optimal experience.</b><br>
                   
                   # scenarios tab ui --------------------------------------------------------
                   nav_panel(title = "Scenarios",
-                            fluidRow(HTML("<p>This tab provides the different 
-                              possible strategies provided in the 
-                              TEA-CART analysis. Please select the 
-                              desired combination of strategies 
-                              to be used as forecast “scenarios.” 
-                              The resulting output can be used to 
-                              compare up to two different scenarios.")),
+                            fluidRow(HTML("<p>This tab enables the user to select different 
+                              combinations of strategies – based on <i>Project</i> or <i>Budget</i> 
+                              inputs – to include in the results displayed on the Outputs tabs. 
+                              <br><br>
+                              The user can select up to two “scenarios” 
+                              with different combinations of project or budget inputs.<br>
+                              <br>")),
                             fluidRow(
                               p(""),
                               h3("Scenario Selections"),
-                              p(""),
                               DT::DTOutput("scenario_tbl")
                             ),
                             fluidRow(
@@ -2302,11 +2345,12 @@ recommended for optimal experience.</b><br>
                                  equivalent or MT CO2e); vehicle miles traveled 
                                  (VMT); local pollution from oxides of nitrogen 
                                  (NOx) and fine particulate matter (PM2.5); 
-                                 and daily active trips.<br>
-                                 <p>
-                                 For the Scenario Summary, please select 
+                                 and daily active trips.
+                                 <br><br>
+                                 <p>For the Scenario Summary, please select 
                                  an indicator from the dropdown below to compare your selected scenarios 
-                                 with the baseline GHG forecast."),
+                                 with the baseline GHG forecast.</p>
+                                 <br>"),
                             fluidRow(
                               p(""),
                               title = "Select Indicator",
@@ -2335,15 +2379,17 @@ recommended for optimal experience.</b><br>
                   
                   
                   nav_panel(title = "Strategy Summary",
-                            HTML("<p>This tab reports the strategy-level outputs for greenhouse gas 
+                            HTML("<p>This tab reports the annual strategy-level outputs for greenhouse gas 
                                  emissions (metric tons of carbon dioxide 
                                  equivalent or MT CO2e); vehicle miles traveled 
                                  (VMT); local pollution from oxides of nitrogen 
                                  (NOx) and fine particulate matter (PM2.5); 
                                  and daily active trips.</p>
+                                 <br>
                                  <p>For the Strategy Summary, please select the 
                                  desired scenario and indicator to view the 
-                                 changes at the strategy level.</p>"),
+                                 changes at the strategy level.</p>
+                                 <br>"),
                             fluidRow(
                               p(""),
                               title = "Select Indicator",
@@ -2377,8 +2423,9 @@ recommended for optimal experience.</b><br>
                   nav_panel(title = "Cost-Effectiveness",
                             HTML("This tab allows users to review the cost-effectiveness of each strategy as 
                                  measured by the change in annual output of the indicator (e.g. MT CO2e) per 
-                                 $1 million of investment. All cost-effectiveness outputs are calculated based  
-                                 on values entered in the Inputs tab.<br>"),
+                                 $1 million of investment. All cost-effectiveness outputs are calculated based 
+                                 on values entered in the Baseline, Costs and Assumptions Inputs tabs (user-provided 
+                                 inputs in the project or budget tabs do not affect cost-effectiveness).<br>"),
                             fluidRow(
                               radioButtons(inputId = "cost_view",
                                            "Level of detail:",
@@ -2386,7 +2433,7 @@ recommended for optimal experience.</b><br>
                             fluidRow(
                               p("All results are reported in terms of annual reduction per $M investment."),
                               fluidRow( class = 'cost-table search',
-                                        h3("Bicycle & Pedestrian"),
+                                        h4("Cost-Effectiveness 1 | Bicycle & Pedestrian"),
                                         DT::dataTableOutput("bikeped_costs_outputs_tbl"),
                                         p(""),
                                         
@@ -2395,101 +2442,101 @@ recommended for optimal experience.</b><br>
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("Transit: Increased Fixed Route Service"),
+                                      h4("Cost-Effectiveness 2 | Transit: Increased Fixed Route Service"),
                                       DT::dataTableOutput("transit_fixed_costs_outputs_tbl"),
                                       p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("Transit: Increased Demand Response Service"),
+                                      h4("Cost-Effectiveness 3 | Transit: Increased Demand Response Service"),
                                       DT::dataTableOutput("transit_dr_costs_outputs_tbl"),
                                       p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("Public Transportation: Bus Priority Treatment"),
+                                      h4("Cost-Effectiveness 4 | Public Transportation: Bus Priority Treatment"),
                                       DT::dataTableOutput("pub_trans_priority_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("Transit: Fleet Electrification"),
+                                      h4("Cost-Effectiveness 5 | Transit: Fleet Electrification"),
                                       DT::dataTableOutput("transit_zeb_costs_outputs_tbl"),
                                       p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("Public Transportation: Rail"),
+                                      h4("Cost-Effectiveness 6 | Public Transportation: Rail"),
                                       DT::dataTableOutput("pub_trans_rail_costs_outputs_tbl"),
                                       p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("Travel Demand Management"),
+                                      h4("Cost-Effectiveness 7 | Travel Demand Management"),
                                       DT::dataTableOutput("tdm_costs_outputs_tbl"),
                                       p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("Micromobility"),
+                                      h4("Cost-Effectiveness 8 | Micromobility"),
                                       DT::dataTableOutput("micro_costs_outputs_tbl"),
                                       p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("Traffic Operations: Intersections"),
+                                      h4("Cost-Effectiveness 9 | Traffic Operations: Intersections"),
                                       DT::dataTableOutput("traffic_ops_costs_outputs_tbl"),
                                       p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("Medium- and Heavy-Duty Vehicle Replacement (Electrification)"),
+                                      h4("Cost-Effectiveness 10 | Medium- and Heavy-Duty Vehicle Replacement (Electrification)"),
                                       DT::dataTableOutput("mhdev_costs_outputs_tbl"),
                                       p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("Park & Ride"),
+                                      h4("Cost-Effectiveness 11 | Park & Ride"),
                                       DT::dataTableOutput("pnr_costs_outputs_tbl"),
                                       p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("EV Charging Infrastructure"),
+                                      h4("Cost-Effectiveness 12 | EV Charging Infrastructure"),
                                       DT::dataTableOutput("evsi_costs_outputs_tbl"),
                                       p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Freight Intermodal Facilities"),
+                                      h4("Cost-Effectiveness 13 | Freight Intermodal Facilities"),
                                       p(""),
                                       DT::dataTableOutput("intermodal_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
                                       p(""),
-                                      h3("Roadway Expansion"),
+                                      h4("Cost-Effectiveness 14 | Roadway Expansion"),
                                       DT::dataTableOutput("roadway_expand_costs_outputs_tbl"),
                                       p("")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Roadway Resurfacing"),
+                                      h4("Cost-Effectiveness 15 | Roadway Resurfacing"),
                                       p(""),
                                       DT::dataTableOutput("roadwayresurf_cuts_costs_outputs_tbl")
                             ),
                             fluidRow( class = 'cost-table',
                                       p(""),
-                                      h3("Land Use"),
+                                      h4("Cost-Effectiveness 16 | Land Use"),
                                       p(""),
                                       DT::dataTableOutput("landuse_costs_outputs_tbl")
                             ),
@@ -2499,7 +2546,8 @@ recommended for optimal experience.</b><br>
 # cumulative projects ui -------------------------------------
 nav_panel(title = "Cumulative Project Totals",
           fluidRow(
-            HTML("<p>These tables represent the cumulative project totals based on user inputs in the project tab.<br>
+            HTML("<p>These tables represent the cumulative project totals based on user inputs in the <b>Projects</b> tab.
+            These totals are provided solely for the purpose of displaying these numbers as a point of reference.<br>
             <p>
             
                                    "
