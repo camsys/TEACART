@@ -287,6 +287,7 @@ div.dataTables_wrapper div.dataTables_info {
 }
 .tab-pane[data-value=Outputs] table.dataTable tr.dtrg-level-0 {
   color: var(--bs-dark);
+  font-weight: normal !important;
 }
 .tab-pane[data-value=Outputs] table.dataTable tr.dtrg-level-0 th {
   background-color: var(--bs-primary-bg-subtle);
