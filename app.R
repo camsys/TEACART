@@ -219,11 +219,12 @@ ui <- function(request) {
                                   placement = "right"),
                         h4('Save My Work'),
                         downloadButton("user_inputs_download", "Download User Inputs"),
-                        HTML("<p>When you are done entering data, remember to press <b>CTRL + Enter</b> on your keyboard to initiate the calculations.</p>"),
+                        # HTML("<p>When you are done entering data, remember to press <b>CTRL + Enter</b> on your keyboard to initiate the calculations.</p>"),
 
                         # nav_spacer(),
                         # nav_spacer(),
                         # nav_spacer(),
+                        downloadButton("result_data","Download Estimated Result Data"),
                         downloadButton("pdf_report","Download Summary Report"),
                         HTML("<p>More information can be found in the <b>How-to</b> tab.</p>")),
       
@@ -508,12 +509,11 @@ and potential applications.<br><br>
                                                                    selected = "No")
                                               ),
                                               tags$div(class = "half-card",
-                                                       numericInput("grid_emissions_input",
+                                                       selectInput("grid_emissions_input",
                                                                     HTML("<span>Electricity Grid Emissions Net-Zero Year:</span> <br> <p>The target year for achieving net-zero electricity grid emissions.<br>"),
-                                                                    value = 2025,
-                                                                    min = 2021,
-                                                                    max = 2050,
-                                                                    step = 1)),
+                                                                    choices = c("No Change", 2021:2050),
+                                                                    selected= 2050)
+                                                       ),
                                      ),
                                      tags$div(class = "well card-flex",
                                               tags$div(class = "half-card",
@@ -527,8 +527,16 @@ and potential applications.<br><br>
                                                                     HTML("<span>Include Rail Emission:</span> <br> <p>Include rail in emissions evaluation.<br>"),
                                                                     choices = c("Yes" = 1, "No" = 0),
                                                                    selected = 0)),
+                                              ),
+                                     tags$div(class = "well card-flex",
+                                              tags$div(class = "half-card",
+                                                       selectInput("mode_choice",
+                                                                   HTML("<span>Select Mode: </span> <br> <p>Select either Capital Projects mode or Budget mode to start the estimation. <br>"),
+                                                                   choices = c("Capital Projects",
+                                                                               "Budget"),
+                                                                   selected = "Capital Projects")
                                               )
-                                     
+                                     )
                               )),
                   ),
                   
@@ -548,7 +556,10 @@ and potential applications.<br><br>
                                    
                                    "
                               ),),
-                            
+                            fluidRow(class = "budget-buttons",
+                                     actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
+                                     # actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")
+                                     ),
                             # bike ped
                             
                             fluidRow(
@@ -979,7 +990,7 @@ and potential applications.<br><br>
                                      
                             ),
                             fluidRow(class = "budget-buttons",
-                                     actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
+                                     # actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
                                      actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")),
                             fluidRow( class = "budget-inputs",
                               numericInput("budget_start_year",
@@ -1449,8 +1460,31 @@ and potential applications.<br><br>
                               DT::dataTableOutput("resurfacing_budget_tbl")
 
                             ),
+
                             p(),
-                            
+
+#                           land use - 16
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         HTML(paste('Budget 16 | Land Use ',
+                                                    as.character(tags$i(class = "fa fa-info-circle",
+                                                                        title = "Budget spending on Land Use")),
+                                                    sep = "")),
+                                                    HTML("This category includes spending to <b>land use incentives,</b> expressed as a percentage (%) of the total budget (shown at the top of this tab)."),
+                                         ),
+                                       open = TRUE
+                                       ),
+                                     ),
+                              column(2,
+                                     actionButton("reset_land_use_budget_tbl",
+                                                  "Reset Budget 16", class = "btn-custom"),
+                                     ),
+                              ),
+                              fluidRow(DT::dataTableOutput("land_use_budget_tbl")),
+                              p(),
+  
                   ),
                   
                   
@@ -2971,7 +3005,8 @@ server <- function(input, output, session) {
          input$budget_start_year,
          input$budget_years_covered,
          input$budget_total,
-         input$include_rail)
+         input$include_rail,
+         input$mode_choice)
   })
   
 
@@ -3013,8 +3048,8 @@ server <- function(input, output, session) {
       if(is.na(input$grid_emissions_input)|
          (input$grid_emissions_input<2021)|
          input$grid_emissions_input>2050){
-        warning = c(warning, "Due to an inncorect input, a default value for Electricity Grid Emissions Net-Zero Year has been assumed.")
-        updateNumericInput(inputId = "grid_emissions_input",value=2030)
+        warning = c(warning, "Due to an inncorrect input, a default value for Electricity Grid Emissions Net-Zero Year has been assumed.")
+        updateSelectInput(inputId = "grid_emissions_input",value=2050)
         rvs$Baseline$elec_grid_emissions_net_zero = input$grid_emissions_input
       }
       
@@ -3111,7 +3146,8 @@ server <- function(input, output, session) {
                                include_rail = input$include_rail,
                                budget_start_year = input$budget_start_year,
                                budget_years_covered = input$budget_years_covered,
-                               budget_total = input$budget_total
+                               budget_total = input$budget_total,
+                               mode_choice = input$mode_choice
     )
     
     updateSelectInput(inputId = "pie_graph_year",
@@ -3122,6 +3158,26 @@ server <- function(input, output, session) {
                                   input$horizon_year_3))
   })
 
+  ## Add warnings message for Projects mode and budget mode
+  observeEvent(input$INPUTS_TABS,{
+   if(input$INPUTS_TABS == 'Projects' & input$mode_choice == 'Budget'){
+     shinyalert(
+       title = "Warning",
+       text = 
+         paste0(
+           "Currently under ", input$mode_choice, " mode, no edits allowed on the Project tab. ",
+           "Please change mode selection under Baseline to Budget to make edits."),
+       type = "info"
+     )
+   } else if (input$INPUTS_TABS == 'Budget' & input$mode_choice == 'Capital Projects'){
+     shinyalert(title = "Warning",
+                text  = paste0("Currently under ", input$mode_choice, " mode, no edits allowed on the Budget tab.",
+                               "Please change mode selection under Baseline to Capital Projects to make edits."))
+   }
+  },ignoreInit = T)
+  
+  
+  nav_select(id = "INPUTS_TABS",selected = "Projects")
   
   # Initiate or Upload User Inputs -------------------------------------------
   
@@ -3142,13 +3198,15 @@ server <- function(input, output, session) {
       check8 <- ifelse(is.character(user_inputs$Baseline$include_upstream_fuels),""," include upstream fuels input,")
       check9 <- ifelse(is.character(user_inputs$Baseline$vmt_forecast),""," VMT forecast input,")
       check10 <- ifelse(is.character(user_inputs$Baseline$veh_elec_baseline),""," electricity baseline input,")
-      check11 <- ifelse(is.numeric(user_inputs$Baseline$elec_grid_emissions_net_zero),""," net zero year input,")
+      check11 <- ifelse(is.character(user_inputs$Baseline$elec_grid_emissions_net_zero),""," net zero year input,")
       check12 <- ifelse(is.character(user_inputs$Baseline$land_use_factor),""," land use factor input,")
       check13 <- ifelse(is.character(user_inputs$Baseline$include_rail),""," rail emissions input,")
       check14 <- ifelse(is.numeric(user_inputs$Baseline$budget_start_year),""," budget start year input,")
       check15 <- ifelse(is.numeric(user_inputs$Baseline$budget_years_covered),""," budget years covered input,")
       check16 <- ifelse(is.numeric(user_inputs$Baseline$budget_total),""," budget total input,")
-      input_checks <- paste0(check1, check2, check3, check4, check5, check6, check7, check8, check9, check10, check11, check12, check13, check14, check15, check16, check16)
+      check_17 <- ifelse(is.character(user_inputs$Baseline$mode_choice),""," mode choice input,")
+      input_checks <- paste0(check1, check2, check3, check4, check5, check6, check7, check8, check9,
+                             check10, check11, check12, check13, check14, check15, check16, check16,check_17)
       
       if(input_checks == ""){warning <- ""} else {
         input_check <- input_checks |> str_sub(start = 0, end = nchar(input_check) - 1)
@@ -3156,70 +3214,70 @@ server <- function(input, output, session) {
         }
       
       #first we check that the non-editable parts are the same
-      check17 <- all_equal(user_inputs$Costs[,names(user_inputs$Costs) != 'value'],user_inputs_raw$Costs[,names(user_inputs_raw$Costs) != 'value'],ignore_row_order = T)
-      if(isTRUE(check17)){
-        check17 <- ""
-        #if they are the same we check if the value is the correct type
-        if(!is.numeric(user_inputs$Costs$value)){check17<-"Cost input values are non-numeric<br>"} 
-      } else {
-        check17 <- paste0("Issue with Cost table: ",check17,"<br>")
-      }
-      
-      #first we check that the non-editable parts are the same
-      check18 <- all_equal(user_inputs$Budget[,names(user_inputs$Budget) != 'value'],user_inputs_raw$Budget[,names(user_inputs_raw$Budget) != 'value'],ignore_row_order = T)
+      check18 <- all_equal(user_inputs$Costs[,names(user_inputs$Costs) != 'value'],user_inputs_raw$Costs[,names(user_inputs_raw$Costs) != 'value'],ignore_row_order = T)
       if(isTRUE(check18)){
         check18 <- ""
         #if they are the same we check if the value is the correct type
-        if(!is.numeric(user_inputs$Budget$value)){check18<-"Budget input values are non-numeric<br>"} 
-        } else {
-          check18 <- paste0("Issue with Budget table: ",check18,"<br>")
-        }
-      check19 <- all_equal(user_inputs$Funding[,1:3],user_inputs_raw$Funding[,1:3],ignore_row_order = T)
+        if(!is.numeric(user_inputs$Costs$value)){check18<-"Cost input values are non-numeric<br>"} 
+      } else {
+        check18 <- paste0("Issue with Cost table: ",check18,"<br>")
+      }
+      
+      #first we check that the non-editable parts are the same
+      check19 <- all_equal(user_inputs$Budget[,names(user_inputs$Budget) != 'value'],user_inputs_raw$Budget[,names(user_inputs_raw$Budget) != 'value'],ignore_row_order = T)
       if(isTRUE(check19)){
         check19 <- ""
         #if they are the same we check if the value is the correct type
-        if(!is.numeric(user_inputs$Funding[,4][[1]])|!is.numeric(user_inputs$Funding[,5][[1]])){check19<-"Funding input values are non-numeric<br>"} 
-      } else {
-        check19 <- paste0("Issue with Funding table: ",check19,"<br>")
-      }
-      
-      check20 <- all_equal(user_inputs$Assumptions[,names(user_inputs$Assumptions) != 'value'],user_inputs_raw$Assumptions[,names(user_inputs_raw$Assumptions) != 'value'],ignore_row_order = T)
+        if(!is.numeric(user_inputs$Budget$value)){check19<-"Budget input values are non-numeric<br>"} 
+        } else {
+          check19 <- paste0("Issue with Budget table: ",check19,"<br>")
+        }
+      check20 <- all_equal(user_inputs$Funding[,1:3],user_inputs_raw$Funding[,1:3],ignore_row_order = T)
       if(isTRUE(check20)){
         check20 <- ""
         #if they are the same we check if the value is the correct type
-        if(!is.numeric(user_inputs$Assumptions$value)){check20<-"Assumptions table input values are non-numeric<br>"} 
+        if(!is.numeric(user_inputs$Funding[,4][[1]])|!is.numeric(user_inputs$Funding[,5][[1]])){check20<-"Funding input values are non-numeric<br>"} 
       } else {
-        check20 <- paste0("Issue with Assumptions table: ",check20,"<br>")
+        check20 <- paste0("Issue with Funding table: ",check20,"<br>")
       }
       
-      check21 <- all_equal(user_inputs$Advanced[,names(user_inputs$Advanced) != 'value'],user_inputs_raw$Advanced[,names(user_inputs_raw$Advanced) != 'value'],ignore_row_order = T)
+      check21 <- all_equal(user_inputs$Assumptions[,names(user_inputs$Assumptions) != 'value'],user_inputs_raw$Assumptions[,names(user_inputs_raw$Assumptions) != 'value'],ignore_row_order = T)
       if(isTRUE(check21)){
         check21 <- ""
         #if they are the same we check if the value is the correct type
-        #if(!is.numeric(user_inputs$Advanced$value)){check21<-"Advanced table input values are non-numeric<br>"} 
+        if(!is.numeric(user_inputs$Assumptions$value)){check21<-"Assumptions table input values are non-numeric<br>"} 
       } else {
-        check21 <- paste0("Issue with Advanced table: ",check21,"<br>")
+        check21 <- paste0("Issue with Assumptions table: ",check21,"<br>")
       }
       
-      check22 <- all_equal(user_inputs$Projects[,names(user_inputs$Projects) != 'value'],user_inputs_raw$Projects[,names(user_inputs_raw$Projects) != 'value'],ignore_row_order = T)
+      check22 <- all_equal(user_inputs$Advanced[,names(user_inputs$Advanced) != 'value'],user_inputs_raw$Advanced[,names(user_inputs_raw$Advanced) != 'value'],ignore_row_order = T)
       if(isTRUE(check22)){
         check22 <- ""
         #if they are the same we check if the value is the correct type
-        if(!is.numeric(user_inputs$Projects$value)){check22<-"Projects table input values are non-numeric<br>"} 
+        #if(!is.numeric(user_inputs$Advanced$value)){check22<-"Advanced table input values are non-numeric<br>"} 
       } else {
-        check22 <- paste0("Issue with Projects table: ",check22,"<br>")
+        check22 <- paste0("Issue with Advanced table: ",check22,"<br>")
       }
-      check23 <- all_equal(user_inputs$Scenarios[,!(names(user_inputs$Scenarios) %in% c("Scenario1","Scenario2"))],user_inputs_raw$Scenarios[,!(names(user_inputs_raw$Scenarios) %in% c("Scenario1","Scenario2"))],ignore_row_order = T)
+      
+      check23 <- all_equal(user_inputs$Projects[,names(user_inputs$Projects) != 'value'],user_inputs_raw$Projects[,names(user_inputs_raw$Projects) != 'value'],ignore_row_order = T)
       if(isTRUE(check23)){
         check23 <- ""
         #if they are the same we check if the value is the correct type
-        if(!is.logical(user_inputs$Scenarios$Scenario1)|!is.logical(user_inputs$Scenarios$Scenario2)){check23<-"Scenarios table input values are non-boolean (TRUE or FALSE)"} 
+        if(!is.numeric(user_inputs$Projects$value)){check23<-"Projects table input values are non-numeric<br>"} 
       } else {
-        check23 <- paste0("Issue with Scenarios table: ",check23)
+        check23 <- paste0("Issue with Projects table: ",check23,"<br>")
+      }
+      check24 <- all_equal(user_inputs$Scenarios[,!(names(user_inputs$Scenarios) %in% c("Scenario1","Scenario2"))],user_inputs_raw$Scenarios[,!(names(user_inputs_raw$Scenarios) %in% c("Scenario1","Scenario2"))],ignore_row_order = T)
+      if(isTRUE(check24)){
+        check24 <- ""
+        #if they are the same we check if the value is the correct type
+        if(!is.logical(user_inputs$Scenarios$Scenario1)|!is.logical(user_inputs$Scenarios$Scenario2)){check24<-"Scenarios table input values are non-boolean (TRUE or FALSE)"} 
+      } else {
+        check24 <- paste0("Issue with Scenarios table: ",check24)
       }
       
       #browser()
-      warning <- paste0(warning,check17,check18,check19,check20,check21,check22, check23)
+      warning <- paste0(warning,check18,check19,check20,check21,check22,check23, check24)
       if(warning != "") {
         showNotification(HTML(warning), type = 'error')
         user_inputs <- read_user_inputs_excel("data/2.User_Inputs.xlsx")
@@ -3256,7 +3314,7 @@ server <- function(input, output, session) {
     updateSelectInput(session, "budget_start_year", selected = rvs$Baseline$budget_start_year)
     updateSelectInput(session, "budget_years_covered", selected = rvs$Baseline$budget_years_covered)
     updateSelectInput(session, "budget_total", selected = rvs$Baseline$budget_total)
-    
+    updateSelectInput(session, "mode_choice", selected = rvs$Baseline$mode_choice)
     
   }, ignoreNULL = F, ignoreInit = F)
   
@@ -3288,7 +3346,88 @@ server <- function(input, output, session) {
     }
   )
   
+##
+  # Download result data -------------------------------------------------------
+  ## Qi working here
+  output$result_data <- downloadHandler(
+    filename = function() {
+      paste0("2.Estimated_Results_", format(Sys.time(), "%m-%d_%H-%M"), ".xlsx")
+    },
+    content = function(file) {
+      req(baseline_ghg_forecast())
+      
+      dt <- baseline_ghg_forecast()
+      
+      # browser()
+      
+      if (used_budget()) {
+        
+        include_budget <- 1
+      } else {
+        include_budget <- 0
+      }
+      
+      dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+        filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
+        summarise(across(where(is.numeric),sum)) %>%
+        mutate(veh_supertype = "Total (Onroad Vehicles)")
+      dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+        #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
+        summarise(across(where(is.numeric),sum))
+      growth <- dt_all[[1,1]]
+      dt_growth <- dt_all %>% 
+        mutate(across(where(is.numeric), ~(.x - growth)/growth, .names = "{.col}")) %>%
+        mutate(veh_supertype = "Total (All Transportation)")
+      dt_all <- dt_all %>% 
+        mutate(veh_supertype = "Total (All Transportation)")
+      ghg_data <- rbind(dt, dt_onroad, dt_all, dt_growth) %>%
+        rename("Emissions" = "veh_supertype")
+      
+      #get and modify the scen data: 
+      scen_data <- scenario_summary_results() %>%
+        filter(grepl("Reduction", table_title)|table_title == "New Daily Active Trips") %>%
+        filter(!grepl("%",table_title)) %>%
+        mutate(table_title = case_when(table_title == "Emissions Reduction (MT from Baseline)" ~ 'CO2',
+                                       table_title == "VMT Reduction (millions from Baseline)" ~ 'VMT',
+                                       table_title == "NOx Reduction (MT)" ~ 'NOx',
+                                       table_title == "PM2.5 Reduction (MT)" ~ 'PM2.5',
+                                       table_title == "New Daily Active Trips" ~ 'New Daily Active Trips')) %>%
+        rename(indicator = table_title) %>%
+        pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
+                                           rvs$Baseline$horizon_year_1,
+                                           rvs$Baseline$horizon_year_2,
+                                           rvs$Baseline$horizon_year_3)), 
+                     names_to = "Year",
+                     values_to = "mt_reduction") %>%
+        mutate(mt_reduction = ifelse(mt_reduction == "-","0",mt_reduction)) %>%
+        mutate(mt_reduction = as.numeric(mt_reduction)) %>%
+        mutate_if(is.numeric, ~round(., 1))
+      
+      cost_data <- all_costs_detail() 
 
+      # browser()
+      tab_list <- list(
+        "GHG Result" = ghg_data,
+        "Scenario Result" = scen_data)
+      
+      cost_tabs <- cost_data
+      names(cost_tabs) <- paste0("Cost - ", names(cost_data))
+      
+      tab_list <- c(tab_list, cost_tabs)
+      
+      tab_list <- lapply(tab_list, function(df) {
+        if ("table" %in% names(df)) {
+          df <- df[ , setdiff(names(df), "table"), drop = FALSE]
+        }
+        df
+      })
+      
+      return(openxlsx::write.xlsx(x = tab_list, 
+                                  file = file))
+    }
+  )
+  ## end of download result data
+  
 # UI tables ---------------------------------------------------------------
 
 UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
@@ -3355,6 +3494,8 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     req(rvs)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
      # browser()
+    
+    if (input$mode_choice == 'Capital Projects'){
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 1,
@@ -3363,7 +3504,18 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       comma_rows = 0:21,
       percent_rows = integer(0),
       currency_rows = integer(0),
-      decimal_rows = integer(0))
+      decimal_rows = integer(0))}
+    else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 1,
+        non_editable_cols = c(0:5),
+        page_length = 21,
+        comma_rows = 0:21,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+      }
   })
   
   output$transit_fixed_projs_tbl <- renderDT({
@@ -3371,6 +3523,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
+  if (input$mode_choice == 'Capital Projects'){
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 2,
@@ -3380,6 +3533,18 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+  } else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 2,
+      non_editable_cols = c(0:6),
+      page_length = 10,
+      comma_rows = 0:6,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+    }
+    
     
   })
   
@@ -3388,6 +3553,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
+  if (input$mode_choice == 'Capital Projects'){
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 3,
@@ -3397,6 +3563,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 3,
+        non_editable_cols = c(0:6),
+        page_length = 10,
+        comma_rows = 0:6,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+      }
     
   })
   
@@ -3405,6 +3582,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
+  if (input$mode_choice == 'Capital Projects'){
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 4,
@@ -3414,6 +3592,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+  } else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 4,
+      non_editable_cols = c(0:6),
+      page_length = 10,
+      comma_rows = 0:8,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  }
     
   })
   
@@ -3421,7 +3610,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){ 
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 5,
@@ -3431,6 +3620,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    }else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 5,
+        non_editable_cols = c(0:3),
+        page_length = 10,
+        comma_rows = integer(1),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
     
   })
   
@@ -3438,7 +3638,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
 
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){ 
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 6,
@@ -3448,6 +3648,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+  } else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 6,
+      non_editable_cols = c(0:6),
+      page_length = 8,
+      comma_rows = 0:3,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  }
     
   })
   
@@ -3455,7 +3666,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){ 
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 7,
@@ -3465,6 +3676,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+  } else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 7,
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = 0,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  }
     
   })
   
@@ -3472,7 +3694,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){ 
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 8,
@@ -3482,6 +3704,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+  } else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 8,
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = 0,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  }
     
   })
   
@@ -3489,7 +3722,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){     
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 9,
@@ -3499,6 +3732,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+  } else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 9,
+      non_editable_cols = c(0:5),
+      page_length = 10,
+      comma_rows = 0:3,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  }
     
   })
   
@@ -3506,7 +3750,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){     
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 10,
@@ -3516,14 +3760,24 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
-    
+  } else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 10,
+      non_editable_cols = c(0:5),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  }
   })
   
   output$pnr_projs_tbl <- renderDT({
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){    
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 11,
@@ -3533,6 +3787,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    }else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 11,
+        non_editable_cols = c(0:3),
+        page_length = 1,
+        comma_rows = 0,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
     
   })
   
@@ -3541,7 +3806,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){    
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 12,
@@ -3551,6 +3816,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+  }else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 12,
+      non_editable_cols = c(0:4),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  }
     
   })
   
@@ -3559,7 +3835,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){     
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 13,
@@ -3569,6 +3845,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+  } else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 13,
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0)) 
+  }
     
   })
   
@@ -3577,7 +3864,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){     
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 14,
@@ -3587,6 +3874,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+  } else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 14,
+      non_editable_cols = c(0:5),
+      page_length = 10,
+      comma_rows = 0:4,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  }
     
   })
   
@@ -3596,6 +3894,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     req(rvs$Projects)
     temp_send <- rvs$Projects
     #browser()
+  if (input$mode_choice == 'Capital Projects'){  
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 17,#slchanged
@@ -3605,6 +3904,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+  } else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 17,#slchanged
+      non_editable_cols = c(0:5),
+      page_length = 10,
+      comma_rows = 0:7,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0))
+  }
     
   })
 
@@ -3612,7 +3922,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){  
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 16,
@@ -3622,6 +3932,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 16,
+        non_editable_cols = c(0:4),
+        page_length = 10,
+        comma_rows = 0:15,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
     
   })
 
@@ -3630,7 +3951,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    
+  if (input$mode_choice == 'Capital Projects'){    
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 15,#slchanged
@@ -3639,7 +3960,19 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       comma_rows = 0:2,
       percent_rows = integer(0),
       currency_rows = integer(0),
-      decimal_rows = integer(0))
+      decimal_rows = integer(0)) 
+  } else {
+    render_custom_datatable(
+      data_reactive = temp_send,
+      table_number = 15,#slchanged
+      non_editable_cols = c(0:3),
+      page_length = 10,
+      comma_rows = 0:2,
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0)) 
+    }
+    
     
   })
 
@@ -4291,6 +4624,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   output$bikeped_budget_tbl <- renderDT({
     req(rvs$Budget)
 
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 1,
@@ -4303,13 +4637,29 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = integer(0),
-      decimal_rows = integer(0))
+      decimal_rows = integer(0))}
+    else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 1,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:2),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   
   output$transit_fr_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+   
+ if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 2,
@@ -4324,12 +4674,29 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       currency_rows = integer(0),
       decimal_rows = integer(0),
       pivot_col = c("transit_mode"))
+ } else {
+   render_custom_datatable(
+     data_reactive = rvs$Budget,
+     table_number = 2,
+     is_year_table = FALSE,
+     is_cost_table = FALSE,
+     is_advanced_table = FALSE,
+     is_budget_table = TRUE,
+     non_editable_cols = c(0:2),#c(0:3),
+     page_length = 21,
+     comma_rows = integer(0),
+     percent_rows = integer(0),
+     currency_rows = integer(0),
+     decimal_rows = integer(0),
+     pivot_col = c("transit_mode"))
+ }
   })
   
   
   output$transit_dr_budget_tbl <- renderDT({
     req(rvs$Budget)
     
+  if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 3,
@@ -4344,11 +4711,27 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       currency_rows = integer(0),
       decimal_rows = integer(0),
       pivot_col = c("transit_mode"))
+  }else{
+    render_custom_datatable(
+      data_reactive = rvs$Budget,
+      table_number = 3,
+      is_year_table = FALSE,
+      is_cost_table = FALSE,
+      is_advanced_table = FALSE,
+      is_budget_table = TRUE,
+      non_editable_cols = c(0:2),#c(0:3),
+      page_length = 21,
+      comma_rows = integer(0),
+      percent_rows = integer(0),
+      currency_rows = integer(0),
+      decimal_rows = integer(0),
+      pivot_col = c("transit_mode"))
+  }
   })
   
   output$transit_elec_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 4,
@@ -4362,11 +4745,26 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 4,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:3),#c(0:4),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   output$transit_bus_priority_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 5,
@@ -4380,11 +4778,27 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 5,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   output$rail_budget_tbl <- renderDT({
     req(rvs$Budget)
     
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 6,
@@ -4398,13 +4812,29 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0),
-      
       pivot_col = c("area_type"))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 6,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:2),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0),
+        pivot_col = c("area_type"))
+    }
   })
   
   output$tdm_budget_tbl <- renderDT({
     req(rvs$Budget)
     #browser()
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 7,
@@ -4418,11 +4848,26 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 7,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   output$micromobility_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 8,
@@ -4436,11 +4881,27 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 8,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+      }
+    
   })
   
   output$traffic_ops_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 9,
@@ -4455,12 +4916,29 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       currency_rows = integer(0),
       decimal_rows = integer(0)#,
       #pivot_col = c("road_class")
+      ) 
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 9,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:3),#c(0:2),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0)#,
+        #pivot_col = c("road_class")
       )
+    }
   })
   
   output$mdhd_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 10,
@@ -4474,11 +4952,26 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 10,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:2),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   output$pnr_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 11,
@@ -4492,11 +4985,26 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 11,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   output$ev_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 12,
@@ -4510,11 +5018,26 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 12,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:2),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   output$freight_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 13,
@@ -4528,11 +5051,26 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 13,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   output$expansion_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 14,
@@ -4546,11 +5084,26 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 14,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:2),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   output$land_use_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 16, #slchanged
@@ -4558,17 +5111,32 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       is_cost_table = FALSE,
       is_advanced_table = FALSE,
       is_budget_table = TRUE,
-      non_editable_cols = c(0),#c(0:2),
+      non_editable_cols = c(0:1),#c(0:2),
       page_length = 21,
       comma_rows = integer(0),
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 16, #slchanged
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:2),#c(0:2),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   output$transit_cuts_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 17, #slchanged
@@ -4582,11 +5150,26 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 17, #slchanged
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:2),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   output$resurfacing_budget_tbl <- renderDT({
     req(rvs$Budget)
-    
+    if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
       table_number = 15, #slchanged
@@ -4600,6 +5183,21 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
       percent_rows = integer(0),
       currency_rows = integer(0),
       decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 15, #slchanged
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
 
   # BUDGET: Editable --------------------------------------------------------
@@ -4795,7 +5393,8 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     rvs$Budget[rvs$Budget$table_no_ui == 16,] <- reshaping_budget(input$land_use_budget_tbl_cell_edit, #slchanged
                                                                          rvs$Budget,
                                                                          tbl_no = 16,
-                                                                         col1 = 'land_use')
+                                                                         col1 = 'land_use',
+                                                                         col2 = 'unit')
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -6091,7 +6690,7 @@ table.on('draw', function(){
                       "Park-and-Ride",
                       "Transit Electrification",
                       "MD/HD Truck Replacement",
-                      "Electric Vehicle Charging Infraucture",
+                      "Electric Vehicle Charging Infrastructure",
                       "Intermodal Freight Investment",
                       "Traffic Operations",
                       "Roadway Expansion",
@@ -7471,7 +8070,7 @@ table.on('draw', function(){
         rename(scen = Scenario2)
     }
     #browser()
-    colors <- data.frame(Strategy = c("Bicycle and Pedestrian", "Electric Vehicle Charging Infraucture", 
+    colors <- data.frame(Strategy = c("Bicycle and Pedestrian", "Electric Vehicle Charging Infrastructure", 
                                       "Intermodal Freight Investment", "Land Use", 
                                       "MD/HD Truck Replacement", "Micromobility", 
                                       "Park-and-Ride", "Roadway Expansion",                    
@@ -7580,7 +8179,7 @@ table.on('draw', function(){
       
       dt <- baseline_ghg_forecast()
       
-      # browser()
+     browser()
       
       if (used_budget()) {
         
@@ -7626,32 +8225,6 @@ table.on('draw', function(){
         mutate_if(is.numeric, ~round(., 1))
       
       
-      replace_underscores <- function(df) {
-        names(df) <- gsub("_", " ", names(df))
-        return(df)
-      }
-      
-      replace_na_with_string <- function(df) {
-        return(replace(df, is.na(df), "NA"))
-      }
-      
-      remove_year_column <- function(df) {
-        if ("Year" %in% colnames(df) || "year" %in% colnames(df)) {
-          return(df[, !colnames(df) %in% c("Year", "year")])
-        } else {
-          return(df)
-        }
-      }
-      
-      
-      make_column_names_proper <- function(list_of_dfs) {
-        updated_list <- lapply(list_of_dfs, function(df) {
-          colnames(df) <- toTitleCase(colnames(df))
-          return(df)
-        })
-        return(updated_list)
-      }
-      
       cost_data <- all_costs() %>%
         lapply(., replace_underscores) %>%
         lapply(., replace_na_with_string) %>%
@@ -7659,7 +8232,7 @@ table.on('draw', function(){
         make_column_names_proper(.)
       
       Sys.sleep(1)
-      # browser()
+       # browser()
       
       # check # of columns
       # for (name in names(cost_data)) {

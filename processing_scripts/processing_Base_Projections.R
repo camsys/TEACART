@@ -454,27 +454,36 @@ inflate_values <- function(yr){
 #between base year and the user input net_zero_year
 electricity_emrate_projecter <- function(eemrate_df, net_zero_year = 2100){
 
-  eemrate_return <-eemrate_temp<- eemrate_df %>% select(-CO2eq_lbs_MWh) %>%
-    mutate(linear_eq = (-1*CO2eq_g_kWh)/(net_zero_year-2021),
-           intercept = -1*linear_eq*2021+CO2eq_g_kWh)
-  
-  for(n in 2022:2100){
-    eemrate_return <- rbind(eemrate_return, mutate(eemrate_temp, year = n))
+  if(net_zero_year == "No Change"){
+    eemrate_return <- data.frame(year = 2021:2100) %>%
+      mutate(electricity_carbon_content = eemrate_df$CO2eq_g_kWh )
+  } else {
+    net_zero_year <- as.numeric(net_zero_year)
+    eemrate_return <-eemrate_temp<- eemrate_df %>% select(-CO2eq_lbs_MWh) %>%
+      mutate(linear_eq = (-1*CO2eq_g_kWh)/(net_zero_year-2021),
+             intercept = -1*linear_eq*2021+CO2eq_g_kWh)
+    
+    for(n in 2022:2100){
+      eemrate_return <- rbind(eemrate_return, mutate(eemrate_temp, year = n))
+    }
+    
+    eemrate_return<-eemrate_return %>%
+      mutate(electricity_carbon_content = linear_eq*year+intercept)
+    
+    eemrate_return$electricity_carbon_content[eemrate_return$year >= net_zero_year] <- 0
+    
   }
   
-  eemrate_return<-eemrate_return %>%
-    mutate(electricity_carbon_content = linear_eq*year+intercept)
   
-  eemrate_return$electricity_carbon_content[eemrate_return$year >= net_zero_year] <- 0
   eemrate_return_fin<-eemrate_return %>% filter(year <= 2050) %>%
     select(year, electricity_carbon_content) %>%
     expand(nesting(year, electricity_carbon_content), veh_subtype = c("EV100","EV200","EV300","SI PHEV 10","SI PHEV 40", "FCV", "EV", "Gasoline PHEV", "Diesel PHEV"))
 
-  
+  # browser()
   return(eemrate_return_fin)
 }
 
-#Electricity Emmission Rates for the state
+#Electricity Emission Rates for the state
 electricity_emrate <- reactive({ #this is electricity emission rate
   #browser()
   req(rvs$Baseline$elec_grid_emissions_net_zero)

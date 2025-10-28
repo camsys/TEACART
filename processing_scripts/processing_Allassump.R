@@ -45,7 +45,7 @@ TDM <- filter_columns(output_TDM(),selected_columns,"Travel Demand Management")
 transitElec <- filter_columns(output_transitElec(),selected_columns,"Transit Electrification")  
 TransitService <- filter_columns(output_TransitService(),selected_columns,"Transit Service Expansion")  
 OPS <- filter_columns(output_OPS(),selected_columns,"Traffic Operations")  
-EVSE <- filter_columns(output_EVSE(),selected_columns,"Electric Vehicle Charging Infraucture")  
+EVSE <- filter_columns(output_EVSE(),selected_columns,"Electric Vehicle Charging Infrastructure")  
 freight <- filter_columns(output_freight(),selected_columns,"Intermodal Freight Investment")  
 #browser()
 transit_cuts <- filter_columns(output_transitservice_cuts(),selected_columns,"Transit Service Cuts")
@@ -213,3 +213,188 @@ all_costs <- reactive({
                      )
    return(all_costs)
        })
+### 
+
+all_costs_detail <- reactive({
+  bikeped <- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==1,],
+    output_table = cost_output_bikeped(),
+    col_sel = c('area_type','cap_proj_type'),
+    proj_life = 30,
+    #val1_scalar = ,
+    #val2_scalar = ,
+    style = 'detail'
+  ) 
+  
+  
+  transit_fixed <- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
+    output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
+    col_sel = c('area_type','fuel_type','transit_mode'),
+    proj_life = 12,
+    scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
+    style = 'detail'
+  )
+  
+  transit_dr <- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==3,],
+    output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Demand Response Service (VOMS)"),
+    col_sel = c('area_type','fuel_type','transit_mode'),
+    proj_life = 12,
+    scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')] %>% rename("scalar_1" = "value"),
+    style = 'detail'
+  )
+  
+  pub_trans_bus <- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==5,], #slchanged
+    output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Bus Priority Treatment"),
+    col_sel = c(),
+    proj_life = 5, 
+    style = 'detail'
+  )
+  
+  transit_zeb <- cost_function(
+    ini_cost_table =  public_elec_replacement_cost_table(), #%>% filter(table %in% c("Transit: Increased Demand Response Service (VOMS)","Transit: Increased Fixed Route Service (VOMS)")),
+    output_table = cost_output_transitselect(),
+    col_sel = c('area_type','fuel_type','transit_mode'),
+    proj_life = 12,
+    #scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('area_type','transit_mode','value')],
+    style = 'detail'
+  )
+  
+  pub_trans_rail <- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==6,], #slchanged
+    output_table = cost_output_transitservice() %>% filter(table == "Public Transportation: Rail (VOMS)"),
+    col_sel = c('fuel_type','transit_mode'),
+    proj_life = 30,
+    #BEN: val 1 is only referencing light rail revenue miles 
+    scalar_list = rvs$Assumptions[rvs$Assumptions$table_no_ui==2 & rvs$Assumptions$unit =='rev_mi_per_veh',c('transit_mode','value')]%>% rename("scalar_1" = "value"),      
+    style = 'detail'
+  )
+  
+  tdm <- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==7,], #slchanged
+    output_table = cost_output_TDM(),
+    col_sel = c(),
+    proj_life = 1,
+    style = 'detail'
+  )
+  
+  micro <- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==8,], #slchanged
+    output_table = cost_output_micro(),
+    col_sel = c(),
+    proj_life = 6,
+    style = 'detail'
+  )
+  
+  traffic_ops <-cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==9,]%>% #slchanged 
+      left_join(data.frame(cap_proj_type = c("New roundabouts","New or retimed signal"),
+                           proj_life = c(30,5))),
+    output_table = output_cost_OPS(),
+    col_sel = c('road_class','area_type','cap_proj_type'),
+    proj_life = NA,#needs to project lifes actually :(
+    style = 'detail'
+  )
+  
+  mhdev<-cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==10,] %>% rename('veh_subtype' = 'fuel_type'), #slchanged
+    output_table = cost_effectiveness_MDHD(),
+    col_sel = c('veh_type','veh_subtype'),
+    proj_life = 12,
+    style = 'detail'
+  )
+  
+  pnr<- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==11,], #slchanged
+    output_table = cost_output_pnr(),
+    col_sel = c(),
+    proj_life = 30,
+    style = 'detail'
+  )
+  
+  evsi<-cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==12,], #slchanged
+    output_table = cost_effectiveness_EVSE(),
+    col_sel = c('charge_port_detail'), #Change to port detail?
+    proj_life = 10,
+    style = 'detail'
+  )
+  roadway<- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==14,], #slchanged
+    output_table = cost_output_RoadwayExp(),
+    col_sel = c('road_class','area_type'),
+    proj_life = 30,#needs to project lifes actually :(
+    style = 'detail'
+  )
+  intermodal<- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==13,], #slchanged
+    output_table = cost_effectiveness_freight(),
+    col_sel = c(),
+    proj_life = 30,
+    style ='detail')
+  #browser()
+  
+  roadway_resurf<- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==15,],
+    output_table = cost_output_roadway_resurf(),
+    col_sel = c(),
+    proj_life = 1,
+    style ='detail')
+  
+  
+  land_use<- cost_function(
+    ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==16,],
+    output_table = cost_output_land_use(),
+    col_sel = c(),
+    proj_life = 1,
+    style ='detail')
+  # 
+  # browser()
+  
+  # strategy_names <- c("Bicycle and Pedestrian",
+  #                     "Transit: Increased Fixed Route Service",
+  #                     "Transit: Increased Demand Response Service",
+  #                     "Public Transportation: Bus Priority Treatment",
+  #                     "Transit Electrification",
+  #                     "Public Transportation: Rail",
+  #                     "Travel Demand Management",
+  #                     "Micromobility",
+  #                     "Traffic Operations",
+  #                     "MD/HD Truck Replacement",
+  #                     "Park-and-Ride",
+  #                     "Electric Vehicle Charging Infrastructure",
+  #                     "Intermodal Freight Investment",
+  #                     "Roadway Expansion",
+  #                     "Roadway Resurfacing",
+  #                     "Land Use" 
+  #                     )
+
+  all_costs_detail <- list(bikeped = bikeped,
+                    transit_fixed = transit_fixed,
+                    transit_dr = transit_dr,
+                    pub_trans_bus = pub_trans_bus,
+                    transit_zeb = transit_zeb,
+                    pub_trans_rail=pub_trans_rail,
+                    tdm=tdm,
+                    micro=micro,
+                    traffic_ops=traffic_ops,
+                    mhdev=mhdev,
+                    pnr=pnr,
+                    evsi=evsi,
+                    intermodal=intermodal,
+                    roadway=roadway,
+                    roadway_resurf = roadway_resurf,
+                    land_use = land_use
+                    )
+  
+  
+  # all_costs_tbl <- bind_rows(
+  #   Map(function(df, id) {
+  #     df$Strategy <- id
+  #     df
+  #   }, all_costs_detail, strategy_names)
+  # )
+  return(all_costs_detail)
+})

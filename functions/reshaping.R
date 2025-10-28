@@ -96,6 +96,7 @@ reshaping_budget <- function(user_data,
   if(is_empty(x_names)){
     updated_data <- cbind(rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']], modified_data)
   } else {
+    browser()
   updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']] %>%
     left_join(modified_data, by = setNames(y_names,x_names)) %>% # setNames(y,x) 
     select(-contains("var"))
@@ -282,3 +283,28 @@ reshaping_advanced <- function(user_data,
   return(updated_data)
 }
 
+replace_underscores <- function(df) {
+  names(df) <- gsub("_", " ", names(df))
+  return(df)
+}
+
+replace_na_with_string <- function(df) {
+  return(replace(df, is.na(df), "NA"))
+}
+
+remove_year_column <- function(df) {
+  if ("Year" %in% colnames(df) || "year" %in% colnames(df)) {
+    return(df[, !colnames(df) %in% c("Year", "year")])
+  } else {
+    return(df)
+  }
+}
+
+
+make_column_names_proper <- function(list_of_dfs) {
+  updated_list <- lapply(list_of_dfs, function(df) {
+    colnames(df) <- toTitleCase(colnames(df))
+    return(df)
+  })
+  return(updated_list)
+}

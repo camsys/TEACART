@@ -130,7 +130,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
              newtrips_per_1m = ifelse(total_change_newtrips == 0, NA, total_change_newtrips/(annual_cost/1000000)))
   } else {
     
-  #this is a particulary splat on edit - the units are for a single truck in the cost table and else where we use a more general plural ... 
+  #this is a particular splat on edit - the units are for a single truck in the cost table and else where we use a more general plural ... 
   if("veh_type" %in% names(cost_table)){
     cost_table$veh_type[cost_table$veh_type %in% c('Heavy-Duty Truck', 'Light-Duty Truck', 'Medium-Duty Truck')] <- paste0(cost_table$veh_type[cost_table$veh_type %in% c('Heavy-Duty Truck', 'Light-Duty Truck', 'Medium-Duty Truck')],'s')
   }
