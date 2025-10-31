@@ -272,12 +272,16 @@ recommended for optimal experience.</b><br>
 "),
 
       actionLink("sources_btn", "View Sources"),
-      HTML("<br><br>"),
+      HTML("<br>"),
       actionLink("guide_btn", "View User Guide and Methodology Documentation"),
       p(),
       HTML("<i>To report a problem in the tool, please send an email to 
            <u>climate@georgetown.edu</u> with “TEA-CART Help” in the subject line.</i>
-           <br><br>
+           <br>
+           The following blog posts illustrate scenario-specific use of the tool:
+           <ul><li>'Business-as-usual budget scenario' <i>Link coming soon</i></li>
+           <li>'Multi-modal budget scenario <i>Link coming soon</i></li>
+           </ul>
            ")
 
 ),
@@ -369,6 +373,7 @@ recommended for optimal experience.</b><br>
   </ul>
   <p>
   To learn more about how to use the tool and how it works, please see the <a href="https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf">User Guide and Methodology Documentation.</a><br>
+  For a PDF version of this guide, please download <a href="TEA-CART How-to Guide.pdf">this guide.</a><br>
   <p>
   <i>To report a problem in the tool, please send an email to climate@georgetown.edu 
   with “TEA-CART Help” in the subject line.</i>
