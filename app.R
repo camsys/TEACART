@@ -226,7 +226,7 @@ ui <- function(request) {
                         # nav_spacer(),
                         # nav_spacer(),
                         downloadButton("result_data","Download Estimated Result Data"),
-                        downloadButton("pdf_report","Download Summary Report"),
+                        # downloadButton("pdf_report","Download Summary Report"),
                         HTML("<p>More information can be found in the <b>How-to</b> tab.</p>
                              <p>
                              For more detailed guidance, please refer to the <a href='https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf'>the User Guide and Methodology Documentation.</a>")),
@@ -586,7 +586,7 @@ recommended for optimal experience.</b><br>
                   
                   # projects tab ui ---------------------------------------------------------
                   nav_panel(title = "Projects",
-                            fluidRow(
+                            fluidRow(column(9,
                               HTML("<p>Please select <b>project-level inputs</b> for 
                                    one or more of the project categories shown 
                                    below, keeping in mind the following two 
@@ -602,11 +602,18 @@ recommended for optimal experience.</b><br>
                                    <p>
                                    
                                    "
-                              ),),
-                            fluidRow(class = "budget-buttons",
-                                     actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
-                                     # actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")
-                                     ),
+                              )),
+                              column(3,
+                                     actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", 
+                                                   class = "btn-custom",
+                                                   style = "width:100%; height:90%;"
+                                                  ))
+                              
+                              ),
+                            # fluidRow(class = "budget-buttons",
+                            #          #actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
+                            #           actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")
+                            #          ),
                             # bike ped
                             
                             fluidRow(
@@ -1021,7 +1028,9 @@ recommended for optimal experience.</b><br>
                   # budget tab ui -----------------------------------------------------------
                   
                   nav_panel(title = "Budget",
-                            fluidRow(HTML("<p>Please provide <b>budget-level inputs</b> for one 
+                            fluidRow(
+                              column(9,
+                            HTML("<p>Please provide <b>budget-level inputs</b> for one 
                         or more of the project categories shown below, keeping 
                         in mind the following two rules when entering 
                         project-level inputs:<br>
@@ -1038,9 +1047,16 @@ recommended for optimal experience.</b><br>
                        ")
                                      
                             ),
-                            fluidRow(class = "budget-buttons",
-                                     # actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
-                                     actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")),
+                            column(3,
+                                   actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs",
+                                                class = "btn-custom",
+                                                style = "width:100%; height:90%;")
+                                   )
+                            ),
+                            # fluidRow(class = "budget-buttons",
+                            #          actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom")#,
+                            #          #actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")
+                            #          ),
                             fluidRow( class = "budget-inputs",
                               numericInput("budget_start_year",
                                            HTML(paste('Funding Start Year: ',
@@ -2113,7 +2129,7 @@ recommended for optimal experience.</b><br>
                               column(10,
                                      accordion(
                                        accordion_panel(
-                                         "Assumptions 8 | Electric Vehicle Charging Infrastructure Parameters",
+                                         "Assumptions 8 | Charging Infrastructure and EV Incentives Parameters",
                                          HTML("This category represents the <b>elasticity of the number of vehicle sales with respect to the number of charging ports</b>."),
                                        ),
                                        open = TRUE
@@ -2468,7 +2484,8 @@ recommended for optimal experience.</b><br>
                             fluidRow(
                               radioButtons(inputId = "cost_view",
                                            "Level of detail:",
-                                           c("Detailed results" = "detail", "Summary results" = "summary"))),
+                                           c("Detailed results" = "detail", "Summary results" = "summary"),
+                                           selected = "summary")),
                             fluidRow(
                               p("All results are reported in terms of annual reduction per $M investment."),
                               fluidRow( class = 'cost-table search',
@@ -2611,8 +2628,10 @@ nav_panel(title = "Cumulative Project Totals",
             # ),
           ),
           fluidRow(
-            DT::dataTableOutput("bikeped_projscumu_tbl")
-            
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("bikeped_projscumu_tbl")
+            ))
           ),
           
           
@@ -2632,12 +2651,12 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_transit_fixed_projscumu_tbl", "Reset Projects 2", class = "btn-custom")
-            # ),
           ),
           fluidRow(
-            DT::dataTableOutput("transit_fixed_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("transit_fixed_projscumu_tbl")
+                   ))
           ),
           
           
@@ -2657,10 +2676,6 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_transit_dr_projscumu_tbl", "Reset Projects 3", class = "btn-custom")
-            # ),
-            # 
           ),
           fluidRow(
             DT::dataTableOutput("transit_dr_projscumu_tbl")
@@ -2679,13 +2694,12 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_transit_el_projscumu_tbl", "Reset Projects 4", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("transit_el_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("transit_el_projscumu_tbl")
+                   ))
           ),
           
           # bus priority
@@ -2704,13 +2718,12 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_transit_bus_projscumu_tbl", "Reset Projects 5", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("transit_bus_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("transit_bus_projscumu_tbl")
+                   ))
           ),
           
           # public transportation - rail
@@ -2724,21 +2737,20 @@ nav_panel(title = "Cumulative Project Totals",
                                               <b>new rail vehicles operating in maximum 
                                               service (VOMS)</b>, including service on 
                                               light rail or streetcar lines, heavy 
-                                              rail, and commuter rail.",),
+                                              rail, and commuter rail."#,
+                            ),
                        
                      ),
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_public_rail_projscumu_tbl", "Reset Projects 6", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("public_rail_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("public_rail_projscumu_tbl")
+                   ))
           ),
-          
           
           # TDM
           
@@ -2755,13 +2767,12 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_tdm_projscumu_tbl", "Reset Projects 7", class = "btn-custom")
-            # ),
-            # 
           ),
           fluidRow(
-            DT::dataTableOutput("tdm_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("tdm_projscumu_tbl")
+                   ))
           ),
           
           # Micromobility
@@ -2777,13 +2788,12 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_micro_projscumu_tbl", "Reset Projects 8", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("micro_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("micro_projscumu_tbl")
+                   ))
           ),
           
           # traffic ops
@@ -2798,13 +2808,12 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_traffic_ops_projscumu_tbl", "Reset Projects 9", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("traffic_ops_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("traffic_ops_projscumu_tbl")
+                   ))
           ),
           
           # MHDEV
@@ -2820,15 +2829,13 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_mhdev_projscumu_tbl", "Reset Projects 10", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("mhdev_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("mhdev_projscumu_tbl")
+                   ))
           ),
-          
           
           # Park & Ride
           
@@ -2843,14 +2850,14 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_pnr_projscumu_tbl", "Reset Projects 11", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("pnr_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("pnr_projscumu_tbl")
+                   ))
           ),
+      
           
           # EVSI
           
@@ -2865,13 +2872,12 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_evsi_projscumu_tbl", "Reset Projects 12", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("evsi_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("evsi_projscumu_tbl")
+                   ))
           ),
           
           # freight intermodal facilities
@@ -2891,15 +2897,13 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_freight_projscumu_tbl", "Reset Projects 13", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("freight_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("freight_projscumu_tbl")
+                   ))
           ),
-          
           
           # Roadway expansion
           
@@ -2915,13 +2919,12 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_expansion_projscumu_tbl", "Reset Projects 14", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("expansion_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("expansion_projscumu_tbl")
+                   ))
           ),
           
           #Roadway Surfacing
@@ -2935,15 +2938,13 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_road_resurf_projscumu_tbl", "Reset Projects 15", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("road_resurf_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("road_resurf_projscumu_tbl")
+                   ))
           ),
-          
           
           #Transit Cuts
           fluidRow(
@@ -2963,14 +2964,14 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_transit_cuts_projscumu_tbl", "Reset Projects 17", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("transit_cuts_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("transit_cuts_projscumu_tbl")
+                   ))
           ),
+         
           #Land Use
           fluidRow(
             column(10,
@@ -2984,14 +2985,16 @@ nav_panel(title = "Cumulative Project Totals",
                      open = TRUE
                    ),
             ),
-            # column(2,
-            #        actionButton("reset_land_use_projscumu_tbl", "Reset Projects 18", class = "btn-custom")
-            # ),
-            
           ),
           fluidRow(
-            DT::dataTableOutput("land_use_projscumu_tbl")
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("land_use_projscumu_tbl")
+                   ))
           ),
+          # fluidRow(
+          #   DT::dataTableOutput("land_use_projscumu_tbl")
+          # ),
 
           
           
@@ -3265,7 +3268,7 @@ server <- function(input, output, session) {
       check8 <- ifelse(is.character(user_inputs$Baseline$include_upstream_fuels),""," include upstream fuels input,")
       check9 <- ifelse(is.character(user_inputs$Baseline$vmt_forecast),""," VMT forecast input,")
       check10 <- ifelse(is.character(user_inputs$Baseline$veh_elec_baseline),""," electricity baseline input,")
-      check11 <- ifelse(is.character(user_inputs$Baseline$elec_grid_emissions_net_zero),""," net zero year input,")
+      check11 <- ifelse(is.character(user_inputs$Baseline$elec_grid_emissions_net_zero)|is.numeric(user_inputs$Baseline$elec_grid_emissions_net_zero),""," net zero year input,")
       check12 <- ifelse(is.character(user_inputs$Baseline$land_use_factor),""," land use factor input,")
       check13 <- ifelse(is.character(user_inputs$Baseline$include_rail),""," rail emissions input,")
       check14 <- ifelse(is.numeric(user_inputs$Baseline$budget_start_year),""," budget start year input,")
@@ -3343,7 +3346,6 @@ server <- function(input, output, session) {
         check24 <- paste0("Issue with Scenarios table: ",check24)
       }
       
-      #browser()
       warning <- paste0(warning,check18,check19,check20,check21,check22,check23, check24)
       if(warning != "") {
         showNotification(HTML(warning), type = 'error')
@@ -3425,8 +3427,6 @@ server <- function(input, output, session) {
       
       dt <- baseline_ghg_forecast()
       
-      # browser()
-      
       if (used_budget()) {
         
         include_budget <- 1
@@ -3472,7 +3472,6 @@ server <- function(input, output, session) {
       
       cost_data <- all_costs_detail() 
 
-      # browser()
       tab_list <- list(
         "GHG Result" = ghg_data,
         "Scenario Result" = scen_data)
@@ -3560,8 +3559,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   output$bikeped_projs_tbl <- renderDT({
     req(rvs)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
-     # browser()
-    
+
     if (input$mode_choice == 'Capital Projects'){
     render_custom_datatable(
       data_reactive = temp_send,
@@ -3960,7 +3958,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-    #browser()
+    
   if (input$mode_choice == 'Capital Projects'){  
     render_custom_datatable(
       data_reactive = temp_send,
@@ -4089,7 +4087,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   # observe edits to the transit_el_projs_tbl
   observeEvent(input$transit_el_projs_tbl_cell_edit, {
     req(rvs$Projects)
-    #browser()
+    
     rvs$Projects[rvs$Projects$table_no_ui == 4,] <- reshaping_projects2(input$transit_el_projs_tbl_cell_edit,
                                                                         rvs$Projects,
                                                                         tbl_no = 4,
@@ -4119,7 +4117,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   
   # observe edits to the public_rail_projs table
   observeEvent(input$public_rail_projs_tbl_cell_edit, {
-    #browser()
+    
     rvs$Projects[rvs$Projects$table_no_ui == 6,] <- reshaping_projects2(input$public_rail_projs_tbl_cell_edit,
                                                                         rvs$Projects,
                                                                         tbl_no = 6,
@@ -4268,7 +4266,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   })
   
   observeEvent(input$transit_cuts_projs_tbl_cell_edit, {
-    #browser()
+    
     rvs$Projects[rvs$Projects$table_no_ui == 17,] <- reshaping_projects2(input$transit_cuts_projs_tbl_cell_edit, #slchanged
                                                                          rvs$Projects,
                                                                          tbl_no = 17,
@@ -4396,7 +4394,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   output$bikeped_projscumu_tbl <- renderDT({
     req(rvs)
     temp_send <- rvs$Projectscumu[rvs$Projectscumu$table_no_ui == 1,]
-    # browser()
+ 
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 1,
@@ -4416,7 +4414,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 2,
-      non_editable_cols = c(0:5),
+      non_editable_cols = c(0:6),
       page_length = 10,
       comma_rows = 0:6,
       percent_rows = integer(0),
@@ -4433,7 +4431,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 3,
-      non_editable_cols =c(0:5),
+      non_editable_cols =c(0:6),
       page_length = 10,
       comma_rows = 0:6,
       percent_rows = integer(0),
@@ -4450,7 +4448,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 4,
-      non_editable_cols = c(0:5),
+      non_editable_cols = c(0:6),
       page_length = 10,
       comma_rows = 0:8,
       percent_rows = integer(0),
@@ -4484,7 +4482,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 6,
-      non_editable_cols = c(0:5),
+      non_editable_cols = c(0:6),
       page_length = 8,
       comma_rows = 0:3,
       percent_rows = integer(0),
@@ -4637,7 +4635,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projectscumu)
     temp_send <- rvs$Projectscumu
-    #browser()
+ 
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 17, #slchanged
@@ -4900,7 +4898,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   
   output$tdm_budget_tbl <- renderDT({
     req(rvs$Budget)
-    #browser()
+
     if (input$mode_choice == 'Budget'){
     render_custom_datatable(
       data_reactive = rvs$Budget,
@@ -5272,8 +5270,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   
   observeEvent(input$bikeped_budget_tbl_cell_edit, {
     req(rvs$Budget)
-    #print('here')
-    #browser()
+
     rvs$Budget[rvs$Budget$table_no_ui == 1,] <- reshaping_budget(input$bikeped_budget_tbl_cell_edit,
                                                                         rvs$Budget,
                                                                         tbl_no = 1,
@@ -5308,8 +5305,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   # observe edits to the transit_el_projs_tbl
   observeEvent(input$transit_elec_budget_tbl_cell_edit, {
     req(rvs$Budget)
-    # check dup
-    #browser()
+
     rvs$Budget[rvs$Budget$table_no_ui == 4,] <- reshaping_budget(input$transit_elec_budget_tbl_cell_edit,
                                                                         rvs$Budget,
                                                                         tbl_no = 4,
@@ -5320,7 +5316,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   
   # observe edits to the transit_bus_projs_tbl  
   observeEvent(input$transit_bus_priority_budget_tbl_cell_edit, {
-    #browser()
+
     rvs$Budget[rvs$Budget$table_no_ui == 5,] <- reshaping_budget(input$transit_bus_priority_budget_tbl_cell_edit,
                                                                         rvs$Budget,
                                                                         tbl_no = 5,
@@ -5362,7 +5358,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   
   # observe edits to the traffic_ops_projs_tbl table
   observeEvent(input$traffic_ops_budget_tbl_cell_edit, {
-    #browser()
+
     rvs$Budget[rvs$Budget$table_no_ui == 9,] <- reshaping_budget(input$traffic_ops_budget_tbl_cell_edit,
                                                                         rvs$Budget,
                                                                         tbl_no = 9,
@@ -5468,7 +5464,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
   })
   observeEvent(input$resurfacing_budget_tbl_cell_edit, {
-    #browser()
+    
     rvs$Budget[rvs$Budget$table_no_ui == 15,] <- reshaping_budget(input$resurfacing_budget_tbl_cell_edit, #slchanged
                                                                          rvs$Budget,
                                                                          tbl_no = 15,
@@ -5482,7 +5478,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   
   #BUDGET - PROJECT IO --------------------------------------------------
   observeEvent(input$fill_projects_bttn,{
-    #browser()
+    
     if(!isTruthy(input$budget_start_year)|!isTruthy(input$budget_years_covered)|!isTruthy(input$budget_total)){
       warning <- "Input(s) in the budget tab have been set to a value that is not usable by the tool:"
       warning_add_1 <- ifelse(!isTruthy(input$budget_start_year), " Budget start year,","")
@@ -5611,7 +5607,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     foobar[foobar == "NA"] <- NA
     foobar[is.na(foobar$value),"value"]<-0
     #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
-    #browser()
+    # browser()
     
     ### at the step above, the projects value are cumulative values, however, under the project mode, the cumulative step is done afterward, so we need to de-cumulate the value. 
     foobar_discum <- foobar %>% 
@@ -6757,7 +6753,7 @@ table.on('draw', function(){
                       "Park-and-Ride",
                       "Transit Electrification",
                       "MD/HD Truck Replacement",
-                      "Electric Vehicle Charging Infrastructure",
+                      "Charging Infrastructure and EV Incentives",
                       "Intermodal Freight Investment",
                       "Traffic Operations",
                       "Roadway Expansion",
@@ -6787,7 +6783,7 @@ table.on('draw', function(){
     #browser()
     datatable(
       reactive_scenario(),
-      escape = FALSE,
+      escape = FALSE, 
       #editable = list(target = c(2,3)),
       options = list(
         pageLength =15,
@@ -7978,7 +7974,6 @@ table.on('draw', function(){
   })
   
   output$scenario_line_graph <- renderPlotly({
-    #browser()
     table_filt <- input$scenario_indicator
     results <- scenario_summary_results() %>%
       filter(table_title == table_filt) %>%
@@ -8011,8 +8006,6 @@ table.on('draw', function(){
   })
   
   output$scenario_bar_graph <- renderPlotly({
-    #browser()
-    
     table_filt <- input$scenario_indicator
     results <- scenario_summary_results() %>%
       filter(table_title == table_filt) %>%
@@ -8075,7 +8068,6 @@ table.on('draw', function(){
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-       # browser() #not done
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     
@@ -8090,7 +8082,6 @@ table.on('draw', function(){
     strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
       select('year', Strategy,input$strategy_indicator)
     
-    # browser()
     total_row <- strategy_temp %>%
       pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
       mutate(across(where(is.numeric), ~round(., 3))) %>%
@@ -8103,6 +8094,25 @@ table.on('draw', function(){
         mutate(across(where(is.numeric), ~round(., 2))),
       total_row
     ) %>% mutate(across(where(is.numeric), ~ prettyNum(., big.mark = ",")))
+    
+    rank_list <- c("Bicycle and Pedestrian",
+                   "Transit Service Expansion",
+                   "Transit Electrification",
+                   "Travel Demand Management",
+                   "Micromobility",
+                   "Traffic Operations",
+                   "MD/HD Truck Replacement",
+                   "Park-and-Ride",
+                   "Charging Infrastructure and EV Incentives",
+                   "Intermodal Freight Investment",
+                   "Roadway Expansion",
+                   "Transit Service Cuts",
+                   "Land Use",
+                   "Roadway Resurfacing",
+                   "Total")
+    
+    # browser()
+    data_temp <- data_temp[order(match(data_temp$Strategy, rank_list)), ]
     
     data_temp %>%
       DT::datatable(
@@ -8126,7 +8136,6 @@ table.on('draw', function(){
   
   
   output$strategy_summary_graph <- renderPlotly({
-    #browser()
     scen_filter <-  reactive_scenario()
     req( scenario_sum())
     if (input$strategy_scen_select == 'scen_1' ){
@@ -8136,8 +8145,7 @@ table.on('draw', function(){
       scen_select <-   scen_filter %>% select(-'Scenario1') %>% 
         rename(scen = Scenario2)
     }
-    #browser()
-    colors <- data.frame(Strategy = c("Bicycle and Pedestrian", "Electric Vehicle Charging Infrastructure", 
+    colors <- data.frame(Strategy = c("Bicycle and Pedestrian", "Charging Infrastructure and EV Incentives", 
                                       "Intermodal Freight Investment", "Land Use", 
                                       "MD/HD Truck Replacement", "Micromobility", 
                                       "Park-and-Ride", "Roadway Expansion",                    
@@ -8153,10 +8161,8 @@ table.on('draw', function(){
       select('year', Strategy,input$strategy_indicator) %>%
       arrange(year, Strategy)
     strategy_temp <- left_join(strategy_temp, colors)
-    #browser()
     p <- plot_ly()
     for (i in unique(strategy_temp$Strategy)) {
-      #browser()
       rows <- strategy_temp$Strategy == i
     p<-add_trace(p,data = strategy_temp[rows,], 
                  x = ~factor(year), 
@@ -8167,7 +8173,7 @@ table.on('draw', function(){
             hoverinfo = 'text',
             textposition = 'none',
             marker = list(color = strategy_temp$colors[rows][[1]]),
-            hovertemplate = paste0('%{text} %{x}:<br>', 
+            hovertemplate = paste0(strategy_temp$Strategy[rows],'<br>',#'%{x}:<br>', 
                                    'Emissions: %{y:.4s}<extra></extra>')
     ) |>
       layout(
@@ -8233,126 +8239,122 @@ table.on('draw', function(){
   })
   
   
-  output$pdf_report <- downloadHandler(
-    
-    filename = function(){
-      paste("Summary Report",
-            Sys.Date(),
-            ".pdf",
-            sep="")},
-    content = function(file) {
-      
-      req(baseline_ghg_forecast())
-      
-      dt <- baseline_ghg_forecast()
-      
-     browser()
-      
-      if (used_budget()) {
-        
-        include_budget <- 1
-      } else {
-        include_budget <- 0
-      }
-
-      dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-        filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
-        summarise(across(where(is.numeric),sum)) %>%
-        mutate(veh_supertype = "Total (Onroad Vehicles)")
-      dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
-        #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
-        summarise(across(where(is.numeric),sum))
-      growth <- dt_all[[1,1]]
-      dt_growth <- dt_all %>% 
-        mutate(across(where(is.numeric), ~(.x - growth)/growth, .names = "{.col}")) %>%
-        mutate(veh_supertype = "Total (All Transportation)")
-      dt_all <- dt_all %>% 
-        mutate(veh_supertype = "Total (All Transportation)")
-      ghg_data <- rbind(dt, dt_onroad, dt_all, dt_growth) %>%
-        rename("Emissions" = "veh_supertype")
-      
-      #get and modify the scen data: 
-      scen_data <- scenario_summary_results() %>%
-        filter(grepl("Reduction", table_title)|table_title == "New Daily Active Trips") %>%
-        filter(!grepl("%",table_title)) %>%
-        mutate(table_title = case_when(table_title == "Emissions Reduction (MT from Baseline)" ~ 'CO2',
-                                       table_title == "VMT Reduction (millions from Baseline)" ~ 'VMT',
-                                       table_title == "NOx Reduction (MT)" ~ 'NOx',
-                                       table_title == "PM2.5 Reduction (MT)" ~ 'PM2.5',
-                                       table_title == "New Daily Active Trips" ~ 'New Daily Active Trips')) %>%
-        rename(indicator = table_title) %>%
-        pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
-                                           rvs$Baseline$horizon_year_1,
-                                           rvs$Baseline$horizon_year_2,
-                                           rvs$Baseline$horizon_year_3)), 
-                     names_to = "Year",
-                     values_to = "mt_reduction") %>%
-        mutate(mt_reduction = ifelse(mt_reduction == "-","0",mt_reduction)) %>%
-        mutate(mt_reduction = as.numeric(mt_reduction)) %>%
-        mutate_if(is.numeric, ~round(., 1))
-      
-      
-      cost_data <- all_costs() %>%
-        lapply(., replace_underscores) %>%
-        lapply(., replace_na_with_string) %>%
-        lapply(., remove_year_column) %>%
-        make_column_names_proper(.)
-      
-      Sys.sleep(1)
-       # browser()
-      
-      # check # of columns
-      # for (name in names(cost_data)) {
-      #    cat(name, "has", ncol(cost_data[[name]]), "columns\n")}
-
-      # Render the R Markdown file to PDF
-      shiny::withProgress(
-        message = paste0("Downloading", input$dataset, " Data"),
-        value = 0,
-        {
-          shiny::incProgress(1/10)
-          Sys.sleep(1)
-          shiny::incProgress(5/10)
-          unloadNamespace("kableExtra")
-          # browser()
-          rmarkdown::render(input = paste0(getwd(),"/Report_Template.qmd"),
-                            output_file = file,
-                            params = list(
-                              ghg_data = ghg_data,
-                              scen_data = scen_data,
-                              cost_data = cost_data,
-                              state = input$state_input,
-                              bsae_year = input$base_year,
-                              horizon_year_1 = input$horizon_year_1,
-                              horizon_year_2 = input$horizon_year_2,
-                              horizon_year_3 = input$horizon_year_3,
-                              trans_scope = input$transportation_scope,
-                              em_scope = input$scope_emissions,
-                              fuel_scope = input$scope_fuels,
-                              vmt = input$vmt_forecast_input,
-                              vmt_nhs = input$vmt_nhs,
-                              ev = input$ev_baseline_input,
-                              grid_em = input$grid_emissions_input,
-                              lu = input$land_use_factor,
-                              funding_tbl = rvs$Funding,
-                              funding_yr = input$funding_start_year,
-                              funding_dur = input$funding_years,
-                              funding_bgt = rvs$Funding,
-                              rail = input$include_rail,
-                              include_bgt = include_budget
-                            ),
-                            output_format = "pdf_document",
-                            output_options = list(
-                              keep_tex = TRUE,
-                              verbose = TRUE#,
-                              #latex_engine = 'xelatex'
-                            )
-          )
-        }
-      )
-      
-    }
-  )
+  # output$pdf_report <- downloadHandler(
+  #   
+  #   filename = function(){
+  #     paste("Summary Report",
+  #           Sys.Date(),
+  #           ".pdf",
+  #           sep="")},
+  #   content = function(file) {
+  #     
+  #     req(baseline_ghg_forecast())
+  #     
+  #     dt <- baseline_ghg_forecast()
+  #     
+  #     if (used_budget()) {
+  #       
+  #       include_budget <- 1
+  #     } else {
+  #       include_budget <- 0
+  #     }
+  # 
+  #     dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+  #       filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
+  #       summarise(across(where(is.numeric),sum)) %>%
+  #       mutate(veh_supertype = "Total (Onroad Vehicles)")
+  #     dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
+  #       #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
+  #       summarise(across(where(is.numeric),sum))
+  #     growth <- dt_all[[1,1]]
+  #     dt_growth <- dt_all %>% 
+  #       mutate(across(where(is.numeric), ~(.x - growth)/growth, .names = "{.col}")) %>%
+  #       mutate(veh_supertype = "Total (All Transportation)")
+  #     dt_all <- dt_all %>% 
+  #       mutate(veh_supertype = "Total (All Transportation)")
+  #     ghg_data <- rbind(dt, dt_onroad, dt_all, dt_growth) %>%
+  #       rename("Emissions" = "veh_supertype")
+  #     
+  #     #get and modify the scen data: 
+  #     scen_data <- scenario_summary_results() %>%
+  #       filter(grepl("Reduction", table_title)|table_title == "New Daily Active Trips") %>%
+  #       filter(!grepl("%",table_title)) %>%
+  #       mutate(table_title = case_when(table_title == "Emissions Reduction (MT from Baseline)" ~ 'CO2',
+  #                                      table_title == "VMT Reduction (millions from Baseline)" ~ 'VMT',
+  #                                      table_title == "NOx Reduction (MT)" ~ 'NOx',
+  #                                      table_title == "PM2.5 Reduction (MT)" ~ 'PM2.5',
+  #                                      table_title == "New Daily Active Trips" ~ 'New Daily Active Trips')) %>%
+  #       rename(indicator = table_title) %>%
+  #       pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
+  #                                          rvs$Baseline$horizon_year_1,
+  #                                          rvs$Baseline$horizon_year_2,
+  #                                          rvs$Baseline$horizon_year_3)), 
+  #                    names_to = "Year",
+  #                    values_to = "mt_reduction") %>%
+  #       mutate(mt_reduction = ifelse(mt_reduction == "-","0",mt_reduction)) %>%
+  #       mutate(mt_reduction = as.numeric(mt_reduction)) %>%
+  #       mutate_if(is.numeric, ~round(., 1))
+  #     
+  #     
+  #     cost_data <- all_costs() %>%
+  #       lapply(., replace_underscores) %>%
+  #       lapply(., replace_na_with_string) %>%
+  #       lapply(., remove_year_column) %>%
+  #       make_column_names_proper(.)
+  #     
+  #     Sys.sleep(1)
+  # 
+  #     # check # of columns
+  #     # for (name in names(cost_data)) {
+  #     #    cat(name, "has", ncol(cost_data[[name]]), "columns\n")}
+  # 
+  #     # Render the R Markdown file to PDF
+  #     shiny::withProgress(
+  #       message = paste0("Downloading", input$dataset, " Data"),
+  #       value = 0,
+  #       {
+  #         shiny::incProgress(1/10)
+  #         Sys.sleep(1)
+  #         shiny::incProgress(5/10)
+  #         unloadNamespace("kableExtra")
+  #         rmarkdown::render(input = paste0(getwd(),"/Report_Template.qmd"),
+  #                           output_file = file,
+  #                           params = list(
+  #                             ghg_data = ghg_data,
+  #                             scen_data = scen_data,
+  #                             cost_data = cost_data,
+  #                             state = input$state_input,
+  #                             bsae_year = input$base_year,
+  #                             horizon_year_1 = input$horizon_year_1,
+  #                             horizon_year_2 = input$horizon_year_2,
+  #                             horizon_year_3 = input$horizon_year_3,
+  #                             trans_scope = input$transportation_scope,
+  #                             em_scope = input$scope_emissions,
+  #                             fuel_scope = input$scope_fuels,
+  #                             vmt = input$vmt_forecast_input,
+  #                             vmt_nhs = input$vmt_nhs,
+  #                             ev = input$ev_baseline_input,
+  #                             grid_em = input$grid_emissions_input,
+  #                             lu = input$land_use_factor,
+  #                             funding_tbl = rvs$Funding,
+  #                             funding_yr = input$funding_start_year,
+  #                             funding_dur = input$funding_years,
+  #                             funding_bgt = rvs$Funding,
+  #                             rail = input$include_rail,
+  #                             include_bgt = include_budget
+  #                           ),
+  #                           output_format = "pdf_document",
+  #                           output_options = list(
+  #                             keep_tex = TRUE,
+  #                             verbose = TRUE#,
+  #                             #latex_engine = 'xelatex'
+  #                           )
+  #         )
+  #       }
+  #     )
+  #     
+  #   }
+  # )
   
   
   #footer buttons-------------------------
