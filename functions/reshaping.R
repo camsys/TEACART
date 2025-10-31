@@ -96,7 +96,7 @@ reshaping_budget <- function(user_data,
   if(is_empty(x_names)){
     updated_data <- cbind(rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']], modified_data)
   } else {
-    browser()
+    # browser()
   updated_data <- rvs[rvs$table_no_ui == tbl_no,colnames(rvs)[colnames(rvs) != 'value']] %>%
     left_join(modified_data, by = setNames(y_names,x_names)) %>% # setNames(y,x) 
     select(-contains("var"))

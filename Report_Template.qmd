@@ -316,6 +316,10 @@ data_temp <- scenarioresults %>%
   mutate(Year = as.factor(Year)) %>%
   mutate(Scenario = ifelse(Scenario == 'Scenario1', 'Scenario 1', 'Scenario 2'))
 
+unit_dis <- ifelse(i == 'VMT', "(Mile)", 
+                   ifelse(i == 'New Daily Active Trips', "",
+                          "(Metric Tons)"))
+
 cat(paste0("\n\n####"))  ## added to avoid title to show on the same line as the headers.
 cat(paste0("\n\n","Figure ", fig_num,": Reduction in ", i, " (From Baseline) ", "\n\n"))
 
@@ -325,7 +329,7 @@ cat(paste0("\n\n","Figure ", fig_num,": Reduction in ", i, " (From Baseline) ", 
                    x = Year))+
     geom_bar(position="dodge", stat="identity")+
        scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) +
-      ylab(paste0(i," Change")) +
+      ylab(paste0(i," Change ", unit_dis)) +
       # ggtitle(paste0("Figure ",fig_num, ": Reduction in ", i, " (From Baseline)")) +
             theme_classic(base_family = "Arial") +
           xlab(NULL)
