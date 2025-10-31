@@ -3246,8 +3246,17 @@ server <- function(input, output, session) {
   
   # Initiate or Upload User Inputs -------------------------------------------
   
+  # Qi testing, try to force go to the input pages.     
+  observeEvent(input$user_inputs_upload, {
+    if (isTruthy(input$user_inputs_upload)) {
+     bslib::nav_select(id = "INPUTS_TABS", selected = "Baseline")
+      }
+    
+  })
+  
   observeEvent(input$user_inputs_upload, {
     if(isTruthy(input$user_inputs_upload)){
+      
 
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
       #everything below is used in error checking
@@ -3379,6 +3388,9 @@ server <- function(input, output, session) {
     updateSelectInput(session, "budget_years_covered", selected = rvs$Baseline$budget_years_covered)
     updateSelectInput(session, "budget_total", selected = rvs$Baseline$budget_total)
     updateSelectInput(session, "mode_choice", selected = rvs$Baseline$mode_choice)
+    
+    
+
     
   }, ignoreNULL = F, ignoreInit = F)
   
@@ -4224,7 +4236,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
-    
+    # browser()
   })
   
   # observe edits to the freight_projs_tbl table
@@ -4375,6 +4387,52 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   })  
   
   
+
+# Project Mode - reset all if user select Budget Mode ---------------------
+## new added by Qi, this is aiming to ensure user made edits under both mode by switch between modes.
+observeEvent(input$mode_choice,{
+  if(input$mode_choice == 'Budget'){
+    rvs$Projects[rvs$Projects$table_no_ui == 1,] <- initial_projects[initial_projects$table_no_ui == 1, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 2,] <- initial_projects[initial_projects$table_no_ui == 2, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 3,] <- initial_projects[initial_projects$table_no_ui == 3, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 4,] <- initial_projects[initial_projects$table_no_ui == 4, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 5,] <- initial_projects[initial_projects$table_no_ui == 5, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 6,] <- initial_projects[initial_projects$table_no_ui == 6, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 7,] <- initial_projects[initial_projects$table_no_ui == 7, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 8,] <- initial_projects[initial_projects$table_no_ui == 8, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 9,] <- initial_projects[initial_projects$table_no_ui == 9, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 10,] <- initial_projects[initial_projects$table_no_ui == 10, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 11,] <- initial_projects[initial_projects$table_no_ui == 11, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 12,] <- initial_projects[initial_projects$table_no_ui == 12, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 13,] <- initial_projects[initial_projects$table_no_ui == 13, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 14,] <- initial_projects[initial_projects$table_no_ui == 14, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 17,] <- initial_projects[initial_projects$table_no_ui == 17, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 16,] <- initial_projects[initial_projects$table_no_ui == 16, ]
+    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
+  } else if (input$mode_choice =="Capital Projects"){
+      rvs$Budget[rvs$Budget$table_no_ui == 1,] <- initial_budget[initial_budget$table_no_ui == 1, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 2,] <- initial_budget[initial_budget$table_no_ui == 2, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 3,] <- initial_budget[initial_budget$table_no_ui == 3, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 4,] <- initial_budget[initial_budget$table_no_ui == 4, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 5,] <- initial_budget[initial_budget$table_no_ui == 5, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 6,] <- initial_budget[initial_budget$table_no_ui == 6, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 7,] <- initial_budget[initial_budget$table_no_ui == 7, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 8,] <- initial_budget[initial_budget$table_no_ui == 8, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 9,] <- initial_budget[initial_budget$table_no_ui == 9, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 10,] <- initial_budget[initial_budget$table_no_ui == 10, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 11,] <- initial_budget[initial_budget$table_no_ui == 11, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 12,] <- initial_budget[initial_budget$table_no_ui == 12, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 13,] <- initial_budget[initial_budget$table_no_ui == 13, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 14,] <- initial_budget[initial_budget$table_no_ui == 14, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 16,] <- initial_budget[initial_budget$table_no_ui == 16, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 17,] <- initial_budget[initial_budget$table_no_ui == 17, ]
+      rvs$Budget[rvs$Budget$table_no_ui == 15,] <- initial_budget[initial_budget$table_no_ui == 15, ]
+    
+    
+    }
+  }, ignoreInit = TRUE)
+  
+    
   
   # Project Cumulative Tables: Render ------------------------------------------
   observe({
@@ -6747,14 +6805,15 @@ table.on('draw', function(){
                       "Travel Demand Management",
                       "Park-and-Ride",
                       "Transit Electrification",
-                      "MD/HD Truck Replacement",
+                      "Medium- and Heavy-duty Vehicle Replacement",
                       "Charging Infrastructure and EV Incentives",
                       "Intermodal Freight Investment",
                       "Traffic Operations",
                       "Roadway Expansion",
-                      "Transit Service Cuts", 
+                      "Roadway Resurfacing",
                       "Land Use", 
-                      "Roadway Resurfacing")
+                      "Transit Service Cuts"
+                      )
   
   rowName <- function(scenario) {
     as.character(
@@ -8096,14 +8155,14 @@ table.on('draw', function(){
                    "Travel Demand Management",
                    "Micromobility",
                    "Traffic Operations",
-                   "MD/HD Truck Replacement",
+                   "Medium- and Heavy-duty Vehicle Replacement",
                    "Park-and-Ride",
                    "Charging Infrastructure and EV Incentives",
                    "Intermodal Freight Investment",
                    "Roadway Expansion",
-                   "Transit Service Cuts",
-                   "Land Use",
                    "Roadway Resurfacing",
+                   "Land Use",
+                   "Transit Service Cuts",
                    "Total")
     
     # browser()
@@ -8142,7 +8201,7 @@ table.on('draw', function(){
     }
     colors <- data.frame(Strategy = c("Bicycle and Pedestrian", "Charging Infrastructure and EV Incentives", 
                                       "Intermodal Freight Investment", "Land Use", 
-                                      "MD/HD Truck Replacement", "Micromobility", 
+                                      "Medium- and Heavy-duty Vehicle Replacement", "Micromobility", 
                                       "Park-and-Ride", "Roadway Expansion",                    
                                       "Roadway Resurfacing", "Traffic Operations",
                                       "Transit Electrification", "Transit Service Cuts",             

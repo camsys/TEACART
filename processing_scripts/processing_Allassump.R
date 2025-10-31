@@ -37,7 +37,7 @@ scenario_sum <- reactive({
 selected_columns <- c("year", "total_change_newtrips",'total_change_mtnox','total_change_pm25','total_change_VMT','total_change_MTCO2')
 
 bikeped <- filter_columns(output_bikped(),selected_columns,"Bicycle and Pedestrian")
-MDHD <- filter_columns(output_MDHD(),selected_columns,"MD/HD Truck Replacement")  
+MDHD <- filter_columns(output_MDHD(),selected_columns,"Medium- and Heavy-duty Vehicle Replacement")  
 Micro <- filter_columns(output_micro(),selected_columns,"Micromobility")  
 pnr <- filter_columns(output_pnr(),selected_columns,"Park-and-Ride")  
 RoadwayExp <- filter_columns(output_RoadwayExp(),selected_columns,"Roadway Expansion")  %>% mutate(year = as.numeric(year))
@@ -362,7 +362,7 @@ all_costs_detail <- reactive({
   #                     "Travel Demand Management",
   #                     "Micromobility",
   #                     "Traffic Operations",
-  #                     "MD/HD Truck Replacement",
+  #                     "Medium- and Heavy-duty Vehicle Replacement",
   #                     "Park-and-Ride",
   #                     "Electric Vehicle Charging Infrastructure",
   #                     "Intermodal Freight Investment",

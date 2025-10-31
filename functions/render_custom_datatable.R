@@ -215,6 +215,10 @@ render_custom_datatable <- function(#input_reactives,
                       formatter = function(d) { return Number(d).toLocaleString('en-US', {maximumFractionDigits: 2}); };
                     }
                     
+                    if (!formatter && !isNaN(data) && data !== null && data !== '') {
+                      formatter = function(d) { return Number(d).toLocaleString('en-US'); };
+                      }
+                    
                 //console.log('the data: ' + data)
                 //console.log('the type: '+ type)
                 //console.log('the row: ' + row)
