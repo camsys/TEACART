@@ -372,7 +372,7 @@ recommended for optimal experience.</b><br>
     <li>When you are ready to see the results of your analysis, proceed to the <b>Scenarios</b> tab and select scenarios for analysis. Either choose groups of projects (to support a comparison) or click the button to select all projects for each scenario.</li>
   </ul>
   <p>
-  To learn more about how to use the tool and how it works, please see the <a href="https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf">User Guide and Methodology Documentation.</a><br>
+  To learn more about how to use the tool and how it works, please see the <a href="TEACART User Guide and Methodology v.1.10.3.pdf">User Guide and Methodology Documentation.</a><br>
   For a PDF version of this guide, please download <a href="TEA-CART How-to Guide.pdf">this guide.</a><br>
   <p>
   <i>To report a problem in the tool, please send an email to climate@georgetown.edu 
@@ -885,7 +885,7 @@ recommended for optimal experience.</b><br>
                                        accordion_panel(
                                          "Projects 12 | Charging Infrastructure and EV Incentives ",
                                          HTML("This category represents any <b>new addition or expansion of EV charging ports and EV purchase incentives</b>. 
-                   EV charging ports supply electric power for recharging electric vehicles. EV incentives offset the cost of EVs for purchasers. All dollar values should be in <b>current year dollars.</b>"),
+                   EV charging ports supply electric power for recharging electric vehicles. EV incentives offset the cost of EVs for purchasers. All dollar values should be in <b>current year dollars.</b> Dedicated chargers (e.g., DCFC Dedicated truck/bus) are <i>not</i> for public use."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1235,7 +1235,8 @@ recommended for optimal experience.</b><br>
                                               lane, which assigns exclusive street 
                                               space to buses, and a bus approach lane, 
                                               which assigns exclusive street spaces to 
-                                              buses as they approach an intersection. "),
+                                              buses as they approach an intersection. In 
+                                              the table below, ‘unit’ refers to ‘investment strategy’"),
                                        ),
                                        open = TRUE
                                      ),
@@ -1283,7 +1284,11 @@ recommended for optimal experience.</b><br>
                                                     sep = "")),
                                          HTML("This category represents spending on <b>employment 
                                               covered through the TDM Program Outreach</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab). TDM programs 
-                                              are designed to shift travel demand and change traveler behavior, with the goal of reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. "),
+                                              are designed to shift travel demand and change traveler behavior, 
+                                              with the goal of reducing single-occupancy vehicle travel and 
+                                              encouraging the use of public transit, walking, biking, 
+                                              teleworking, and ridesharing.  In 
+                                              the table below, ‘unit’ refers to ‘investment strategy’."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1306,8 +1311,11 @@ recommended for optimal experience.</b><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on micromobility.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>e-bike subsidies</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab). 
-                                              An e-bike subsidy reimburses part of the cost of an e-bike."),
+                                         HTML("This category represents spending on <b>e-bike subsidies</b>, 
+                                         expressed as a percentage (%) of the total budget (shown at the 
+                                         top of this tab). 
+                                              An e-bike subsidy reimburses part of the cost of an e-bike. In 
+                                              the table below, ‘unit’ refers to ‘investment strategy’."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1385,7 +1393,14 @@ recommended for optimal experience.</b><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on Park-and-Ride projects.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>new addition or expansion of Park-and-Ride spaces</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab). A Park-and-Ride space allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
+                                         HTML("This category represents spending on <b>new 
+                                              addition or expansion of Park-and-Ride spaces</b>, 
+                                              expressed as a percentage (%) of the total budget 
+                                              (shown at the top of this tab). A Park-and-Ride 
+                                              space allows private transport users to park 
+                                              their vehicles at a large parking space and continue 
+                                              their commute via public transport.  In 
+                                              the table below, ‘unit’ refers to ‘investment strategy’."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1414,7 +1429,7 @@ recommended for optimal experience.</b><br>
                                               at the top of this tab). EV charging ports 
                                               supply electric power for recharging 
                                               electric vehicles. EV incentives 
-                                              offset the cost of EVs for purchasers."),
+                                              offset the cost of EVs for purchasers.  Dedicated chargers (e.g., DCFC Dedicated truck/bus) are <i>not</i> for public use."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1437,7 +1452,10 @@ recommended for optimal experience.</b><br>
                                                     as.character(tags$i(class = "fa fa-info-circle", 
                                                                         title = "Budget spending on freight intermodal facilities.")),
                                                     sep = "")),
-                                         HTML("This category represents spending on <b>intermodal freight investments</b>, expressed as a percentage (%) of the total budget (shown at the top of this tab)."),
+                                         HTML("This category represents spending on <b>intermodal 
+                                              freight investments</b>, expressed as a percentage (%) 
+                                              of the total budget (shown at the top of this tab). In 
+                                              the table below, ‘unit’ refers to ‘investment strategy’."),
                                        ),
                                        open = TRUE
                                      ),
@@ -1511,8 +1529,11 @@ recommended for optimal experience.</b><br>
                                                     as.character(tags$i(class = "fa fa-info-circle",
                                                                         title = "Budget spending on roadway resurfacing.")),
                                                     sep = "")),
-                                         HTML("This category includes spending to <b>reduce surface roughness
-                                              and decrease rolling resistance on roadways,</b> expressed as a percentage (%) of the total budget (shown at the top of this tab)."),
+                                         HTML("This category includes spending to <b>reduce surface 
+                                         roughness and decrease rolling resistance on 
+                                              roadways,</b> expressed as a percentage (%) of 
+                                              the total budget (shown at the top of this tab). In 
+                                              the table below, ‘unit’ refers to ‘investment strategy’."),
                                        ),
                                        open = TRUE
                                      ),
@@ -2288,7 +2309,12 @@ recommended for optimal experience.</b><br>
                                      accordion(
                                        accordion_panel(
                                          "Advanced 5 | Freight Rail",
-                                         HTML("This represents the assumed annual growth rate of freight rail and the energy intensity as measured in British thermal units (BTU) per ton-mile."),
+                                         HTML("This represents the assumed annual 
+                                              growth rate of freight rail, the energy 
+                                              intensity as measured in British 
+                                              thermal units (BTU) per ton-mile, and 
+                                              the change in annual VMT or ton-miles 
+                                              per unit of investment."),
                                          
                                        ),
                                        open = TRUE
