@@ -2972,6 +2972,30 @@ nav_panel(title = "Cumulative Project Totals",
                    ))
           ),
           
+          
+          #Land Use  - this used to be cumulative projects 18
+          fluidRow(
+            column(10,
+                   accordion(
+                     accordion_panel(
+                       "Cumulative Projects 16 | Land Use",
+                       HTML("This category represents spending and 
+                                         rezoned acres in support of <b>walkable, 
+                                              transit-oriented development (TOD) areas</b>, using land use strategies such as placing destinations closer together and in environments more conducive to transit and non-motorized travel."),
+                     ),
+                     open = TRUE
+                   ),
+            ),
+          ),
+          fluidRow(
+            column(12,
+                   div(style = "font-weight: normal;",
+                       DT::dataTableOutput("land_use_projscumu_tbl")
+                   ))
+          ),
+          
+          
+          
           #Transit Cuts
           fluidRow(
             column(10,
@@ -2998,26 +3022,7 @@ nav_panel(title = "Cumulative Project Totals",
                    ))
           ),
          
-          #Land Use
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 18 | Land Use",
-                       HTML("This category represents spending and 
-                                         rezoned acres in support of <b>walkable, 
-                                              transit-oriented development (TOD) areas</b>, using land use strategies such as placing destinations closer together and in environments more conducive to transit and non-motorized travel."),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("land_use_projscumu_tbl")
-                   ))
-          ),
+
           # fluidRow(
           #   DT::dataTableOutput("land_use_projscumu_tbl")
           # ),
