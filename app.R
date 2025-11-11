@@ -221,7 +221,7 @@ ui <- function(request) {
                         h4('Save My Work'),
                         downloadButton("user_inputs_download", "Download User Inputs"),
                         # HTML("<p>When you are done entering data, remember to press <b>CTRL + Enter</b> on your keyboard to initiate the calculations.</p>"),
-
+                        
                         # nav_spacer(),
                         # nav_spacer(),
                         # nav_spacer(),
@@ -231,7 +231,7 @@ ui <- function(request) {
                              <p>
                              For more detailed guidance, please refer to the <a href='https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf'>the User Guide and Methodology Documentation.</a>")),
       
-  
+      
       # welcome page ------------------------------------------------------------
       nav_panel(title = "TEA-CART",
                 p(),
@@ -270,12 +270,12 @@ browsers in a Windows (PC) environment. This is
 recommended for optimal experience.</b><br>
 <br>
 "),
-
-      actionLink("sources_btn", "View Sources"),
-      HTML("<br>"),
-      actionLink("guide_btn", "View User Guide and Methodology Documentation"),
-      p(),
-      HTML("<i>To report a problem in the tool, please send an email to 
+                
+                actionLink("sources_btn", "View Sources"),
+                HTML("<br>"),
+                actionLink("guide_btn", "View User Guide and Methodology Documentation"),
+                p(),
+                HTML("<i>To report a problem in the tool, please send an email to 
            <u>climate@georgetown.edu</u> with “TEA-CART Help” in the subject line.</i>
            <br>
            The following blog posts illustrate scenario-specific use of the tool:
@@ -283,8 +283,8 @@ recommended for optimal experience.</b><br>
            <li>'Multi-modal budget scenario <i>Link coming soon</i></li>
            </ul>
            ")
-
-),
+                
+      ),
       
       # about page --------------------------------------------------------------
       
@@ -456,7 +456,7 @@ recommended for optimal experience.</b><br>
                   # baseline inputs ---------------------------------------------------------                  
                   nav_panel(title = "Baseline",
                             fluidRow(HTML("<p>Please enter <b>key inputs</b> below to define the timing and scope of your TEA-CART analysis, including: State, Base Year, Horizon Years, Geographic Scope, and Emissions Scope.</p><br>"
-                                          )),
+                            )),
                             # fluidRow(
                             #   DT::dataTableOutput("test_data")
                             # ),
@@ -553,10 +553,10 @@ recommended for optimal experience.</b><br>
                                               ),
                                               tags$div(class = "half-card",
                                                        selectInput("grid_emissions_input",
-                                                                    HTML("<span>Electricity Grid Emissions Net-Zero Year:</span> <br> <p>The target year for achieving net-zero electricity grid emissions.<br>"),
-                                                                    choices = c("No Change", 2021:2050),
-                                                                    selected= 2050)
-                                                       ),
+                                                                   HTML("<span>Electricity Grid Emissions Net-Zero Year:</span> <br> <p>The target year for achieving net-zero electricity grid emissions.<br>"),
+                                                                   choices = c("No Change", 2021:2050),
+                                                                   selected= 2050)
+                                              ),
                                      ),
                                      tags$div(class = "well card-flex",
                                               tags$div(class = "half-card",
@@ -567,10 +567,10 @@ recommended for optimal experience.</b><br>
                                               ),
                                               tags$div(class = "half-card",
                                                        selectInput("include_rail",
-                                                                    HTML("<span>Include Rail Emission:</span> <br> <p>Include rail in emissions evaluation.<br>"),
-                                                                    choices = c("Yes" = 1, "No" = 0),
+                                                                   HTML("<span>Include Rail Emission:</span> <br> <p>Include rail in emissions evaluation.<br>"),
+                                                                   choices = c("Yes" = 1, "No" = 0),
                                                                    selected = 0)),
-                                              ),
+                                     ),
                                      tags$div(class = "well card-flex",
                                               tags$div(class = "half-card",
                                                        selectInput("mode_choice",
@@ -587,7 +587,7 @@ recommended for optimal experience.</b><br>
                   # projects tab ui ---------------------------------------------------------
                   nav_panel(title = "Projects",
                             fluidRow(column(9,
-                              HTML("<p>Please select <b>project-level inputs</b> for 
+                                            HTML("<p>Please select <b>project-level inputs</b> for 
                                    one or more of the project categories shown 
                                    below, keeping in mind the following two 
                                    rules when entering project-level inputs:<br>
@@ -602,14 +602,14 @@ recommended for optimal experience.</b><br>
                                    <p>
                                    
                                    "
-                              )),
-                              column(3,
-                                     actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", 
-                                                   class = "btn-custom",
-                                                   style = "width:100%; height:90%;"
-                                                  ))
-                              
-                              ),
+                                            )),
+                                     column(3,
+                                            actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", 
+                                                         class = "btn-custom",
+                                                         style = "width:100%; height:90%;"
+                                            ))
+                                     
+                            ),
                             # fluidRow(class = "budget-buttons",
                             #          #actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom"),
                             #           actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")
@@ -652,7 +652,7 @@ recommended for optimal experience.</b><br>
                                          HTML("This category represents additions of <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
                Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
                                          ),
-
+                                         
                                        ),
                                        open = TRUE
                                      ),
@@ -677,7 +677,7 @@ recommended for optimal experience.</b><br>
               Demand response service vehicles include non-fixed route services that are initiated by customers and require advanced scheduling, 
                         such as vehicles provided by public entities, nonprofits, and private providers."
                                          ),
-                                        
+                                         
                                        ),
                                        open = TRUE
                                      ),
@@ -724,7 +724,7 @@ recommended for optimal experience.</b><br>
                         to the improvement of transit speed and reliability between stops by changing the designation of street space. 
                         Some examples include a bus-only lane, which assigns exclusive street space to buses, and a bus approach lane, 
                         which assigns exclusive street spaces to buses as they approach an intersection."),
-
+                                         
                                        ),
                                        open = TRUE
                                      ),
@@ -750,7 +750,7 @@ recommended for optimal experience.</b><br>
                                               service (VOMS)</b>, including service on 
                                               light rail or streetcar lines, heavy 
                                               rail, and commuter rail.",),
-
+                                         
                                        ),
                                        open = TRUE
                                      ),
@@ -775,7 +775,7 @@ recommended for optimal experience.</b><br>
                                          HTML("This category represents the <b>number of employees covered through the TDM Program Outreach</b>. 
                    TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
                    reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",),
-
+                                         
                                        ),
                                        open = TRUE
                                      ),
@@ -1019,7 +1019,7 @@ recommended for optimal experience.</b><br>
                             ),
                             
                             
-
+                            
                             
                   ),
                   
@@ -1030,7 +1030,7 @@ recommended for optimal experience.</b><br>
                   nav_panel(title = "Budget",
                             fluidRow(
                               column(9,
-                            HTML("<p>Please provide <b>budget-level inputs</b> for one 
+                                     HTML("<p>Please provide <b>budget-level inputs</b> for one 
                         or more of the project categories shown below, keeping 
                         in mind the following two rules when entering 
                         project-level inputs:<br>
@@ -1046,59 +1046,59 @@ recommended for optimal experience.</b><br>
                         <b>Alternatively, go to the Projects tab</b> if you would like to provide <i>project-level</i> inputs instead.
                        ")
                                      
-                            ),
-                            column(3,
-                                   actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs",
-                                                class = "btn-custom",
-                                                style = "width:100%; height:90%;")
-                                   )
+                              ),
+                              column(3,
+                                     actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs",
+                                                  class = "btn-custom",
+                                                  style = "width:100%; height:90%;")
+                              )
                             ),
                             # fluidRow(class = "budget-buttons",
                             #          actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs", class = "btn-custom")#,
                             #          #actionButton("fill_budget_bttn", "Fill Budget Tab with Project Inputs", class = "btn-custom")
                             #          ),
                             fluidRow( class = "budget-inputs",
-                              numericInput("budget_start_year",
-                                           HTML(paste('Funding Start Year: ',
-                                                      as.character(tags$i(class = "fa fa-info-circle", 
-                                                                          title = "The first year of spending.")),
-                                                      sep = " ")
-                                           ),
-                                           value = 2026,
-                                           min = 2020,
-                                           max = 2050,
-                                           step = 1
-                              ),
-                              numericInput("budget_years_covered",
-                                           HTML(paste('Total Years Covered: ',
-                                                      as.character(tags$i(class = "fa fa-info-circle", 
-                                                                          title = "The total years over which spending occurs.")),
-                                                      sep = " ")
-                                           ),
-                                           value = 5,
-                                           min = 1,
-                                           max = 20,
-                                           step = 1
-                              ),
-                              
-                              numericInput("budget_total",
-                                           HTML(paste0('Allocated Budget: ',
-                                                      as.character(tags$i(class = "fa fa-info-circle",
-                                                                          title = "This number should be equal to 100.")),
-                                                      sep = " ")
-                                           ),
-                                           value = 100
-                              ),
-                            ## FUNDING SUMMARY
-                            
+                                      numericInput("budget_start_year",
+                                                   HTML(paste('Funding Start Year: ',
+                                                              as.character(tags$i(class = "fa fa-info-circle", 
+                                                                                  title = "The first year of spending.")),
+                                                              sep = " ")
+                                                   ),
+                                                   value = 2026,
+                                                   min = 2020,
+                                                   max = 2050,
+                                                   step = 1
+                                      ),
+                                      numericInput("budget_years_covered",
+                                                   HTML(paste('Total Years Covered: ',
+                                                              as.character(tags$i(class = "fa fa-info-circle", 
+                                                                                  title = "The total years over which spending occurs.")),
+                                                              sep = " ")
+                                                   ),
+                                                   value = 5,
+                                                   min = 1,
+                                                   max = 20,
+                                                   step = 1
+                                      ),
+                                      
+                                      numericInput("budget_total",
+                                                   HTML(paste0('Allocated Budget: ',
+                                                               as.character(tags$i(class = "fa fa-info-circle",
+                                                                                   title = "This number should be equal to 100.")),
+                                                               sep = " ")
+                                                   ),
+                                                   value = 100
+                                      ),
+                                      ## FUNDING SUMMARY
+                                      
                             ),
                             fluidRow(
                               DT::dataTableOutput("funding_summary_tbl"),
                               p(),
                               p(),
-
+                              
                             ),
-
+                            
                             
                             
                             ## BUDGET TABLES
@@ -1519,8 +1519,8 @@ recommended for optimal experience.</b><br>
                             #   
                             # ),
                             # p(),
-
-#                           roadway resurfacing - 15
+                            
+                            #                           roadway resurfacing - 15
                             fluidRow(
                               column(10,
                                      accordion(
@@ -1544,12 +1544,12 @@ recommended for optimal experience.</b><br>
                             ),
                             fluidRow(
                               DT::dataTableOutput("resurfacing_budget_tbl")
-
+                              
                             ),
-
+                            
                             p(),
-
-#                           land use - 16
+                            
+                            #                           land use - 16
                             fluidRow(
                               column(10,
                                      accordion(
@@ -1558,19 +1558,19 @@ recommended for optimal experience.</b><br>
                                                     as.character(tags$i(class = "fa fa-info-circle",
                                                                         title = "Budget spending on Land Use")),
                                                     sep = "")),
-                                                    HTML("This category includes spending to <b>land use incentives,</b> expressed as a percentage (%) of the total budget (shown at the top of this tab)."),
-                                         ),
-                                       open = TRUE
+                                         HTML("This category includes spending to <b>land use incentives,</b> expressed as a percentage (%) of the total budget (shown at the top of this tab)."),
                                        ),
+                                       open = TRUE
                                      ),
+                              ),
                               column(2,
                                      actionButton("reset_land_use_budget_tbl",
                                                   "Reset Budget 16", class = "btn-custom"),
-                                     ),
                               ),
-                              fluidRow(DT::dataTableOutput("land_use_budget_tbl")),
-                              p(),
-  
+                            ),
+                            fluidRow(DT::dataTableOutput("land_use_budget_tbl")),
+                            p(),
+                            
                   ),
                   
                   
@@ -2164,26 +2164,26 @@ recommended for optimal experience.</b><br>
                             fluidRow(
                               DT::dataTableOutput("evsi_assmps_tbl")
                             ),
-          
-          # land use parameters
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Assumptions 9 | Land Use (Smart Growth) Incentives Parameters",
-                       HTML("This category represents <b>new spending per household shifted to a 'smart growth' area.</b>"),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-            column(2,
-                   actionButton("reset_landuse_assmps_tbl", "Reset Assumptions 9", class = "btn-custom")
-            ),
-            
-          ),
-          fluidRow(
-            DT::dataTableOutput("landuse_assmps_tbl")
-          )
+                            
+                            # land use parameters
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Assumptions 9 | Land Use (Smart Growth) Incentives Parameters",
+                                         HTML("This category represents <b>new spending per household shifted to a 'smart growth' area.</b>"),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                              column(2,
+                                     actionButton("reset_landuse_assmps_tbl", "Reset Assumptions 9", class = "btn-custom")
+                              ),
+                              
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("landuse_assmps_tbl")
+                            )
                             
                             
                             
@@ -2622,417 +2622,417 @@ recommended for optimal experience.</b><br>
                                       p(""),
                                       DT::dataTableOutput("landuse_costs_outputs_tbl")
                             ),
-
+                            
                   ),
-
-# cumulative projects ui -------------------------------------
-nav_panel(title = "Cumulative Project Totals",
-          fluidRow(
-            HTML("<p>These tables represent the cumulative project totals based on user inputs in the <b>Projects</b> tab.
+                  
+                  # cumulative projects ui -------------------------------------
+                  nav_panel(title = "Cumulative Project Totals",
+                            fluidRow(
+                              HTML("<p>These tables represent the cumulative project totals based on user inputs in the <b>Projects</b> tab.
             These totals are provided solely for the purpose of displaying these numbers as a point of reference.<br>
             <p>
             
                                    "
-            ),),
-          
-          # bike ped
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       'Cumulative Projects 1 | Bicycle & Pedestrian Lane Miles of New Infrastructure ',
-                       HTML("This category represents implementation of any <b>two-way miles of new 
+                              ),),
+                            
+                            # bike ped
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         'Cumulative Projects 1 | Bicycle & Pedestrian Lane Miles of New Infrastructure ',
+                                         HTML("This category represents implementation of any <b>two-way miles of new 
            bicycle or pedestrian facility."),
-                     ),
-                     id = "acc1",
-                     open = TRUE
-                   ),
-            ),
-            # column(2,
-            #        actionButton("reset_bikeped_projscumu_tbl", "Reset Projects 1", class = "btn-custom"),
-            # ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("bikeped_projscumu_tbl")
-            ))
-          ),
-          
-          
-          
-          # transit fixed route
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 2 | Transit: Increased Fixed Route Service",
-                       HTML("This category represents additions of <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
+                                       ),
+                                       id = "acc1",
+                                       open = TRUE
+                                     ),
+                              ),
+                              # column(2,
+                              #        actionButton("reset_bikeped_projscumu_tbl", "Reset Projects 1", class = "btn-custom"),
+                              # ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("bikeped_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            
+                            
+                            # transit fixed route
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 2 | Transit: Increased Fixed Route Service",
+                                         HTML("This category represents additions of <b>new fixed route service <a href = 'https://www.transit.dot.gov/ntd/national-transit-database-ntd-glossary'>vehicles operated in maximum service (VOMS)</a>.</b> 
                Fixed route service vehicles include vehicles operated along a prescribed route according to a fixed schedule."
-                       ),
-                       
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("transit_fixed_projscumu_tbl")
-                   ))
-          ),
-          
-          
-          # transit DR
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 3 | Transit: Increased Demand Response Service",
-                       HTML("This category represents addition of any <b>new demand response service vehicles operated in maximum service (VOMS).</b> 
+                                         ),
+                                         
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("transit_fixed_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            
+                            # transit DR
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 3 | Transit: Increased Demand Response Service",
+                                         HTML("This category represents addition of any <b>new demand response service vehicles operated in maximum service (VOMS).</b> 
               Demand response service vehicles include non-fixed route services that are initiated by customers and require advanced scheduling, 
                         such as vehicles provided by public entities, nonprofits, and private providers."
-                       ),
-                       
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            DT::dataTableOutput("transit_dr_projscumu_tbl")
-          ),
-          
-          # fleet electrification
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 4 | Transit: Fleet Electrification",
-                       HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
+                                         ),
+                                         
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              DT::dataTableOutput("transit_dr_projscumu_tbl")
+                            ),
+                            
+                            # fleet electrification
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 4 | Transit: Fleet Electrification",
+                                         HTML("This category represents the <b>replacement of any fossil-fueled vehicles with an electric vehicle</b>, 
                         with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle. "),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("transit_el_projscumu_tbl")
-                   ))
-          ),
-          
-          # bus priority
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 5 | Public Transportation: Bus Priority Treatment",
-                       HTML("This category represents addition of miles of <b>new bus priority treatment</b>. Bus priority treatment refers 
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("transit_el_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            # bus priority
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 5 | Public Transportation: Bus Priority Treatment",
+                                         HTML("This category represents addition of miles of <b>new bus priority treatment</b>. Bus priority treatment refers 
                         to the improvement of transit speed and reliability between stops by changing the designation of street space. 
                         Some examples include a bus-only lane, which assigns exclusive street space to buses, and a bus approach lane, 
                         which assigns exclusive street spaces to buses as they approach an intersection."),
-                       
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("transit_bus_projscumu_tbl")
-                   ))
-          ),
-          
-          # public transportation - rail
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 6 | Public Transportation: Rail",
-                       HTML("This category represents addition of any 
+                                         
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("transit_bus_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            # public transportation - rail
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 6 | Public Transportation: Rail",
+                                         HTML("This category represents addition of any 
                                               <b>new rail vehicles operating in maximum 
                                               service (VOMS)</b>, including service on 
                                               light rail or streetcar lines, heavy 
                                               rail, and commuter rail."#,
+                                         ),
+                                         
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
                             ),
-                       
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("public_rail_projscumu_tbl")
-                   ))
-          ),
-          
-          # TDM
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 7 | Travel Demand Management (TDM)",
-                       HTML("This category represents the <b>number of employees covered through the TDM Program Outreach</b>. 
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("public_rail_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            # TDM
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 7 | Travel Demand Management (TDM)",
+                                         HTML("This category represents the <b>number of employees covered through the TDM Program Outreach</b>. 
                    TDM programs are designed to shift travel demand and change traveler behavior, with the goal of 
                    reducing single-occupancy vehicle travel and encouraging the use of public transit, walking, biking, teleworking, and ridesharing. ",),
-                       
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("tdm_projscumu_tbl")
-                   ))
-          ),
-          
-          # Micromobility
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 8 | Micromobility",
-                       HTML("This category represents the <b>number of e-bikes funded</b> through the implementation of <b> e-bike subsidies</b>. 
+                                         
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("tdm_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            # Micromobility
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 8 | Micromobility",
+                                         HTML("This category represents the <b>number of e-bikes funded</b> through the implementation of <b> e-bike subsidies</b>. 
                    An e-bike subsidy reimburses part of the cost of an e-bike."),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("micro_projscumu_tbl")
-                   ))
-          ),
-          
-          # traffic ops
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Projects 9 | Traffic Operations - Intersection Improvements ",
-                       HTML("This category represents any <b>improvements made to traffic operations at intersections</b>, such as new or retimed signals or new traffic-flow roundabouts."),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("traffic_ops_projscumu_tbl")
-                   ))
-          ),
-          
-          # MHDEV
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
-                       HTML("This category represents <b>replacement of any fossil fuel medium- or heavy-duty vehicles with electric vehicles</b>, 
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("micro_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            # traffic ops
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Projects 9 | Traffic Operations - Intersection Improvements ",
+                                         HTML("This category represents any <b>improvements made to traffic operations at intersections</b>, such as new or retimed signals or new traffic-flow roundabouts."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("traffic_ops_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            # MHDEV
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 10 | Medium- and Heavy-Duty Vehicle (MHDV) Replacement",
+                                         HTML("This category represents <b>replacement of any fossil fuel medium- or heavy-duty vehicles with electric vehicles</b>, 
                    with the assumption that any new vehicle is again replaced by the new technology type at the end of its life cycle."),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("mhdev_projscumu_tbl")
-                   ))
-          ),
-          
-          # Park & Ride
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 11 | Park-and-Ride",
-                       HTML("This category represents any <b>new addition or expansion of Park-and-Ride spaces</b>. A Park-and-Ride space 
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("mhdev_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            # Park & Ride
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 11 | Park-and-Ride",
+                                         HTML("This category represents any <b>new addition or expansion of Park-and-Ride spaces</b>. A Park-and-Ride space 
                    allows private transport users to park their vehicles at a large parking space and continue their commute via public transport."),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("pnr_projscumu_tbl")
-                   ))
-          ),
-      
-          
-          # EVSI
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 12 | Charging Infrastructure and EV Incentives ",
-                       HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("pnr_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            
+                            # EVSI
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 12 | Charging Infrastructure and EV Incentives ",
+                                         HTML("This category represents any <b>new addition or expansion of EV charging ports</b>. 
                    EV charging ports supply electric power for recharging electric vehicles. EV incentives offset the cost of EVs for purchasers."),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("evsi_projscumu_tbl")
-                   ))
-          ),
-          
-          # freight intermodal facilities
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 13 | Freight Intermodal Facilities",
-                       HTML("This category represents the assumed 
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("evsi_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            # freight intermodal facilities
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 13 | Freight Intermodal Facilities",
+                                         HTML("This category represents the assumed 
                                          annual growth rate 
                                               of freight rail, the energy intensity as 
                                               measured in British Thermal Units (BTU) 
                                               per ton-mile, and the change in annual 
                                               VMT or ton-miles per unit of investment."),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("freight_projscumu_tbl")
-                   ))
-          ),
-          
-          # Roadway expansion
-          
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 14 | Roadway Expansion",
-                       HTML("This category represents addition of any <b>new lane-miles of roadways,</b> 
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("freight_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            # Roadway expansion
+                            
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 14 | Roadway Expansion",
+                                         HTML("This category represents addition of any <b>new lane-miles of roadways,</b> 
                                               based  on the facility type of the roadway 
                                               and the area type of the facility."),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("expansion_projscumu_tbl")
-                   ))
-          ),
-          
-          #Roadway Surfacing
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 15 | Roadway Resurfacing",
-                       HTML("This category indicates lane miles resurfaced to <b>reduce surface roughness and decrease rolling resistance</b> on roadways."),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("road_resurf_projscumu_tbl")
-                   ))
-          ),
-          
-          
-          #Land Use  - this used to be cumulative projects 18
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 16 | Land Use",
-                       HTML("This category represents spending and 
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("expansion_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            #Roadway Surfacing
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 15 | Roadway Resurfacing",
+                                         HTML("This category indicates lane miles resurfaced to <b>reduce surface roughness and decrease rolling resistance</b> on roadways."),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("road_resurf_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            
+                            #Land Use  - this used to be cumulative projects 18
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 16 | Land Use",
+                                         HTML("This category represents spending and 
                                          rezoned acres in support of <b>walkable, 
                                               transit-oriented development (TOD) areas</b>, using land use strategies such as placing destinations closer together and in environments more conducive to transit and non-motorized travel."),
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("land_use_projscumu_tbl")
-                   ))
-          ),
-          
-          
-          
-          #Transit Cuts
-          fluidRow(
-            column(10,
-                   accordion(
-                     accordion_panel(
-                       "Cumulative Projects 17 | Transit Service Cuts",
-                       HTML("This category represents <b>cuts to transit service</b> from current service levels, resulting from funding cuts.</b>"),
-                       # bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
-                       #                            title = "Cumulative View",
-                       #                            placement = "bottom",
-                       #                            options = list(container = "body"),
-                       #                            DTOutput(outputId = "cumul_transit_cuts_projscumu_tbl")
-                       # ))
-                       # FLAG this is the only place the cumulative calculation still exists
-                     ),
-                     open = TRUE
-                   ),
-            ),
-          ),
-          fluidRow(
-            column(12,
-                   div(style = "font-weight: normal;",
-                       DT::dataTableOutput("transit_cuts_projscumu_tbl")
-                   ))
-          ),
-         
-
-          # fluidRow(
-          #   DT::dataTableOutput("land_use_projscumu_tbl")
-          # ),
-
-          
-          
-),
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("land_use_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            
+                            
+                            #Transit Cuts
+                            fluidRow(
+                              column(10,
+                                     accordion(
+                                       accordion_panel(
+                                         "Cumulative Projects 17 | Transit Service Cuts",
+                                         HTML("This category represents <b>cuts to transit service</b> from current service levels, resulting from funding cuts.</b>"),
+                                         # bslib::card_footer(popover(trigger = tags$span("See Cumulative", style = "color: blue; text-decoration: underline;"), 
+                                         #                            title = "Cumulative View",
+                                         #                            placement = "bottom",
+                                         #                            options = list(container = "body"),
+                                         #                            DTOutput(outputId = "cumul_transit_cuts_projscumu_tbl")
+                                         # ))
+                                         # FLAG this is the only place the cumulative calculation still exists
+                                       ),
+                                       open = TRUE
+                                     ),
+                              ),
+                            ),
+                            fluidRow(
+                              column(12,
+                                     div(style = "font-weight: normal;",
+                                         DT::dataTableOutput("transit_cuts_projscumu_tbl")
+                                     ))
+                            ),
+                            
+                            
+                            # fluidRow(
+                            #   DT::dataTableOutput("land_use_projscumu_tbl")
+                            # ),
+                            
+                            
+                            
+                  ),
                 )),
-
-
+      
+      
       # sources tab ui ----------------------------------------------------------
       
       
@@ -3083,7 +3083,7 @@ server <- function(input, output, session) {
   #set reactiveValues ----------------------------------------------------------
   rv <- reactiveValues()
   rvs <- read_user_inputs_version2("data/2.User_Inputs.xlsx")
-
+  
   rvs_out <- read_output_tables("data/3.Model_Outputs.xlsx")
   
   #update and record 
@@ -3110,9 +3110,9 @@ server <- function(input, output, session) {
          input$mode_choice)
   })
   
-
-
-
+  
+  
+  
   #page error checker ----------------------------------------------------------
   
   #these define which tab/page the users was on
@@ -3127,7 +3127,7 @@ server <- function(input, output, session) {
     
   })
   
-
+  
   
   which_page <- reactiveValues(curr_page = "ini",
                                prev_page = "")
@@ -3258,42 +3258,35 @@ server <- function(input, output, session) {
                                   input$horizon_year_2,
                                   input$horizon_year_3))
   })
-
+  
   ## Add warnings message for Projects mode and budget mode
   observeEvent(input$INPUTS_TABS,{
-   if(input$INPUTS_TABS == 'Projects' & input$mode_choice == 'Budget'){
-     shinyalert(
-       title = "Warning",
-       text = 
-         paste0(
-           "Currently under ", input$mode_choice, " mode, no edits allowed on the Project tab. ",
-           "Please change mode selection under Baseline to Budget to make edits."),
-       type = "info"
-     )
-   } else if (input$INPUTS_TABS == 'Budget' & input$mode_choice == 'Capital Projects'){
-     shinyalert(title = "Warning",
-                text  = paste0("Currently under ", input$mode_choice, " mode, no edits allowed on the Budget tab.",
-                               "Please change mode selection under Baseline to Capital Projects to make edits."))
-   }
+    if(input$INPUTS_TABS == 'Projects' & input$mode_choice == 'Budget'){
+      shinyalert(
+        title = "Warning",
+        text = 
+          paste0(
+            "Currently under ", input$mode_choice, " mode, no edits allowed on the Project tab. ",
+            "Please change mode selection under Baseline to Budget to make edits."),
+        type = "info"
+      )
+    } else if (input$INPUTS_TABS == 'Budget' & input$mode_choice == 'Capital Projects'){
+      shinyalert(title = "Warning",
+                 text  = paste0("Currently under ", input$mode_choice, " mode, no edits allowed on the Budget tab.",
+                                "Please change mode selection under Baseline to Capital Projects to make edits."))
+    }
   },ignoreInit = T)
   
   
   nav_select(id = "INPUTS_TABS",selected = "Projects")
   
-  # Initiate or Upload User Inputs -------------------------------------------
+  # Initiate or Upload User Inputs -----------------------------------------
   
-  # Qi testing, try to force go to the input pages.     
-  observeEvent(input$user_inputs_upload, {
-    if (isTruthy(input$user_inputs_upload)) {
-     bslib::nav_select(id = "INPUTS_TABS", selected = "Baseline")
-      }
-    
-  })
   
   observeEvent(input$user_inputs_upload, {
     if(isTruthy(input$user_inputs_upload)){
       
-
+      
       user_inputs <- read_user_inputs_excel(input$user_inputs_upload$datapath)
       #everything below is used in error checking
       user_inputs_raw <- read_user_inputs_excel("data/2.User_Inputs.xlsx")
@@ -3319,9 +3312,9 @@ server <- function(input, output, session) {
                              check10, check11, check12, check13, check14, check15, check16, check16,check_17)
       
       if(input_checks == ""){warning <- ""} else {
-        input_check <- input_checks |> str_sub(start = 0, end = nchar(input_check) - 1)
+        input_check <- input_checks |> str_sub(start = 0, end = nchar(input_checks) - 1)
         warning <- paste0("There was a problem with a user input:",input_check, "<br> Please check that the values for this input(s) are one of the allowable values and has the correct type e.g. 1 is saved as a number and not text<br>.")
-        }
+      }
       
       #first we check that the non-editable parts are the same
       check18 <- all_equal(user_inputs$Costs[,names(user_inputs$Costs) != 'value'],user_inputs_raw$Costs[,names(user_inputs_raw$Costs) != 'value'],ignore_row_order = T)
@@ -3339,9 +3332,9 @@ server <- function(input, output, session) {
         check19 <- ""
         #if they are the same we check if the value is the correct type
         if(!is.numeric(user_inputs$Budget$value)){check19<-"Budget input values are non-numeric<br>"} 
-        } else {
-          check19 <- paste0("Issue with Budget table: ",check19,"<br>")
-        }
+      } else {
+        check19 <- paste0("Issue with Budget table: ",check19,"<br>")
+      }
       check20 <- all_equal(user_inputs$Funding[,1:3],user_inputs_raw$Funding[,1:3],ignore_row_order = T)
       if(isTRUE(check20)){
         check20 <- ""
@@ -3390,16 +3383,16 @@ server <- function(input, output, session) {
       if(warning != "") {
         showNotification(HTML(warning), type = 'error')
         user_inputs <- read_user_inputs_excel("data/2.User_Inputs.xlsx")
-        }
+      }
       
-
+      
     } else{      #print('huh')
       user_inputs <- read_user_inputs_excel("data/2.User_Inputs.xlsx")
     }
     
-
-
-
+    
+    
+    
     for(name in names(user_inputs)) {
       rvs[[name]] <- user_inputs[[name]]
     }
@@ -3425,10 +3418,9 @@ server <- function(input, output, session) {
     updateSelectInput(session, "budget_total", selected = rvs$Baseline$budget_total)
     updateSelectInput(session, "mode_choice", selected = rvs$Baseline$mode_choice)
     
-    
 
     
-  }, ignoreNULL = F, ignoreInit = F)
+  }, ignoreNULL = F, ignoreInit = T)
   
   # Download user inputs -------------------------------------------------------
   
@@ -3437,12 +3429,16 @@ server <- function(input, output, session) {
       paste0("2.User_Inputs_", format(Sys.time(), "%m-%d_%H-%M"), ".xlsx")
     },
     content = function(file) {
-  
+      
       base_input <- data.frame(rvs$Baseline) %>%
         mutate(include_electricity = ifelse(include_electricity == 1,'TRUE','FALSE'),
                include_upstream_fuels = ifelse(include_upstream_fuels  == 1, 'TRUE','FALSE'),
                land_use_factor = ifelse(land_use_factor == 1, 'Yes','No'),
                include_rail = ifelse(include_rail == 1, 'Yes','No'))
+
+      ### to avoid any uploading issue - why these are character?? 
+      rvs$Budget$table_no_ui <- as.numeric(rvs$Budget$table_no_ui)
+      rvs$Costs$table_no_ui <- as.numeric(rvs$Costs$table_no_ui)
       
       references <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
@@ -3458,7 +3454,7 @@ server <- function(input, output, session) {
     }
   )
   
-##
+  ##
   # Download result data -------------------------------------------------------
   ## Qi working here
   output$result_data <- downloadHandler(
@@ -3470,12 +3466,6 @@ server <- function(input, output, session) {
       
       dt <- baseline_ghg_forecast()
       
-      if (used_budget()) {
-        
-        include_budget <- 1
-      } else {
-        include_budget <- 0
-      }
       
       dt_onroad <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
         filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
@@ -3514,10 +3504,27 @@ server <- function(input, output, session) {
         mutate_if(is.numeric, ~round(., 1))
       
       cost_data <- all_costs_detail() 
-
+      
+      strategy_data <- scenario_sum()
+      
+      ## add a tab showing the unit description
+      
+      reference_tab <- data.frame(
+        Header = c("MT GHG", "VMT", "MT NOx", "MT PM2.5","Daily Active Trips"),
+        Description = c(
+          "Annual GHG reductions (metric tons) per $1 million invested",
+          "Annual Vehicle Miles Traveled (VMT) reduction per $1 million invested",
+          "Annual NOx reductions (metric tons) per $1 million invested",
+          "Annual PM2.5 reductions (metric tons) per $1 million invested",
+          "Annual Daily Active Trips reductions (metric tons) per $1 million invested"
+        )
+      )
+      
       tab_list <- list(
+        "Reference" = reference_tab,
         "GHG Result" = ghg_data,
-        "Scenario Result" = scen_data)
+        "Scenario Result" = scen_data,
+        "Strategy Result" = strategy_data)
       
       cost_tabs <- cost_data
       names(cost_tabs) <- paste0("Cost - ", names(cost_data))
@@ -3537,9 +3544,9 @@ server <- function(input, output, session) {
   )
   ## end of download result data
   
-# UI tables ---------------------------------------------------------------
-
-UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
+  # UI tables ---------------------------------------------------------------
+  
+  UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   
   output$UI_tables <- renderDT({
     datatable(
@@ -3550,8 +3557,8 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
         paging = FALSE,
         columnDefs = list(
           list(
-          targets = 2:4,
-          className = "dt-center"
+            targets = 2:4,
+            className = "dt-center"
           )
         )
       )
@@ -3576,11 +3583,11 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
                   rownames = FALSE)
   })
   
-
-
-# Budget Inputs: Render ---------------------------------------------------
-
-
+  
+  
+  # Budget Inputs: Render ---------------------------------------------------
+  
+  
   observe({
     req(rvs$Baseline$budget_start_year)
     req(rvs$Baseline$budget_years_covered)
@@ -3591,9 +3598,9 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     updateNumericInput(
       inputId = "budget_total",
       label = HTML(paste0("Total Budget ($M) for ", start_year, " - ", end_year,":"),
-                          sep = " ")
-      )
-      
+                   sep = " ")
+    )
+    
     
   })
   
@@ -3602,17 +3609,17 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   output$bikeped_projs_tbl <- renderDT({
     req(rvs)
     temp_send <- rvs$Projects[rvs$Projects$table_no_ui == 1,]
-
+    
     if (input$mode_choice == 'Capital Projects'){
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 1,
-      non_editable_cols = c(0, 1, 2),
-      page_length = 21,
-      comma_rows = 0:21,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))}
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 1,
+        non_editable_cols = c(0, 1, 2),
+        page_length = 21,
+        comma_rows = 0:21,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))}
     else {
       render_custom_datatable(
         data_reactive = temp_send,
@@ -3623,7 +3630,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
         percent_rows = integer(0),
         currency_rows = integer(0),
         decimal_rows = integer(0))
-      }
+    }
   })
   
   output$transit_fixed_projs_tbl <- renderDT({
@@ -3631,26 +3638,26 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-  if (input$mode_choice == 'Capital Projects'){
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 2,
-      non_editable_cols = c(0, 1, 2, 3),
-      page_length = 10,
-      comma_rows = 0:6,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  } else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 2,
-      non_editable_cols = c(0:6),
-      page_length = 10,
-      comma_rows = 0:6,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+    if (input$mode_choice == 'Capital Projects'){
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 2,
+        non_editable_cols = c(0, 1, 2, 3),
+        page_length = 10,
+        comma_rows = 0:6,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 2,
+        non_editable_cols = c(0:6),
+        page_length = 10,
+        comma_rows = 0:6,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     }
     
     
@@ -3661,16 +3668,16 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-  if (input$mode_choice == 'Capital Projects'){
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 3,
-      non_editable_cols = c(0, 1, 2, 3),
-      page_length = 10,
-      comma_rows = 0:6,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+    if (input$mode_choice == 'Capital Projects'){
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 3,
+        non_editable_cols = c(0, 1, 2, 3),
+        page_length = 10,
+        comma_rows = 0:6,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = temp_send,
@@ -3681,7 +3688,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
         percent_rows = integer(0),
         currency_rows = integer(0),
         decimal_rows = integer(0))
-      }
+    }
     
   })
   
@@ -3690,27 +3697,27 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-  if (input$mode_choice == 'Capital Projects'){
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 4,
-      non_editable_cols = c(0, 1, 2, 3),
-      page_length = 10,
-      comma_rows = 0:8,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  } else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 4,
-      non_editable_cols = c(0:6),
-      page_length = 10,
-      comma_rows = 0:8,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  }
+    if (input$mode_choice == 'Capital Projects'){
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 4,
+        non_editable_cols = c(0, 1, 2, 3),
+        page_length = 10,
+        comma_rows = 0:8,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 4,
+        non_editable_cols = c(0:6),
+        page_length = 10,
+        comma_rows = 0:8,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
     
   })
   
@@ -3718,16 +3725,16 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){ 
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 5,
-      non_editable_cols = c(0),
-      page_length = 10,
-      comma_rows = integer(1),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+    if (input$mode_choice == 'Capital Projects'){ 
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 5,
+        non_editable_cols = c(0),
+        page_length = 10,
+        comma_rows = integer(1),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     }else {
       render_custom_datatable(
         data_reactive = temp_send,
@@ -3743,30 +3750,30 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   })
   
   output$public_rail_projs_tbl <- renderDT({
-
+    
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){ 
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 6,
-      non_editable_cols = c(0,1,2,3),
-      page_length = 8,
-      comma_rows = 0:3,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  } else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 6,
-      non_editable_cols = c(0:6),
-      page_length = 8,
-      comma_rows = 0:3,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  }
+    if (input$mode_choice == 'Capital Projects'){ 
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 6,
+        non_editable_cols = c(0,1,2,3),
+        page_length = 8,
+        comma_rows = 0:3,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 6,
+        non_editable_cols = c(0:6),
+        page_length = 8,
+        comma_rows = 0:3,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
     
   })
   
@@ -3774,27 +3781,27 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){ 
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 7,
-      non_editable_cols = c(0),
-      page_length = 10,
-      comma_rows = 0,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  } else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 7,
-      non_editable_cols = c(0:3),
-      page_length = 10,
-      comma_rows = 0,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  }
+    if (input$mode_choice == 'Capital Projects'){ 
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 7,
+        non_editable_cols = c(0),
+        page_length = 10,
+        comma_rows = 0,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 7,
+        non_editable_cols = c(0:3),
+        page_length = 10,
+        comma_rows = 0,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
     
   })
   
@@ -3802,27 +3809,27 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){ 
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 8,
-      non_editable_cols = c(0),
-      page_length = 10,
-      comma_rows = 0,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  } else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 8,
-      non_editable_cols = c(0:3),
-      page_length = 10,
-      comma_rows = 0,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  }
+    if (input$mode_choice == 'Capital Projects'){ 
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 8,
+        non_editable_cols = c(0),
+        page_length = 10,
+        comma_rows = 0,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 8,
+        non_editable_cols = c(0:3),
+        page_length = 10,
+        comma_rows = 0,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
     
   })
   
@@ -3830,27 +3837,27 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){     
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 9,
-      non_editable_cols = c(0,1,2),
-      page_length = 10,
-      comma_rows = 0:3,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  } else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 9,
-      non_editable_cols = c(0:5),
-      page_length = 10,
-      comma_rows = 0:3,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  }
+    if (input$mode_choice == 'Capital Projects'){     
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 9,
+        non_editable_cols = c(0,1,2),
+        page_length = 10,
+        comma_rows = 0:3,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 9,
+        non_editable_cols = c(0:5),
+        page_length = 10,
+        comma_rows = 0:3,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
     
   })
   
@@ -3858,43 +3865,43 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){     
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 10,
-      non_editable_cols = c(0,1,2),
-      page_length = 10,
-      comma_rows = 0:4,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  } else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 10,
-      non_editable_cols = c(0:5),
-      page_length = 10,
-      comma_rows = 0:4,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  }
+    if (input$mode_choice == 'Capital Projects'){     
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 10,
+        non_editable_cols = c(0,1,2),
+        page_length = 10,
+        comma_rows = 0:4,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 10,
+        non_editable_cols = c(0:5),
+        page_length = 10,
+        comma_rows = 0:4,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
   })
   
   output$pnr_projs_tbl <- renderDT({
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){    
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 11,
-      non_editable_cols = c(0),
-      page_length = 1,
-      comma_rows = 0,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+    if (input$mode_choice == 'Capital Projects'){    
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 11,
+        non_editable_cols = c(0),
+        page_length = 1,
+        comma_rows = 0,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     }else {
       render_custom_datatable(
         data_reactive = temp_send,
@@ -3914,56 +3921,56 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){    
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 12,
-      non_editable_cols = c(0,1),
-      page_length = 10,
-      comma_rows = 0:4,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  }else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 12,
-      non_editable_cols = c(0:4),
-      page_length = 10,
-      comma_rows = 0:4,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  }
+    if (input$mode_choice == 'Capital Projects'){    
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 12,
+        non_editable_cols = c(0,1),
+        page_length = 10,
+        comma_rows = 0:4,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 12,
+        non_editable_cols = c(0:4),
+        page_length = 10,
+        comma_rows = 0:4,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
     
   })
   
-
+  
   output$freight_projs_tbl <- renderDT({
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){     
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 13,
-      non_editable_cols = c(0),
-      page_length = 10,
-      comma_rows = 0:4,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  } else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 13,
-      non_editable_cols = c(0:3),
-      page_length = 10,
-      comma_rows = 0:4,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0)) 
-  }
+    if (input$mode_choice == 'Capital Projects'){     
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 13,
+        non_editable_cols = c(0),
+        page_length = 10,
+        comma_rows = 0:4,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 13,
+        non_editable_cols = c(0:3),
+        page_length = 10,
+        comma_rows = 0:4,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0)) 
+    }
     
   })
   
@@ -3972,74 +3979,74 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){     
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 14,
-      non_editable_cols = c(0,1,2),
-      page_length = 10,
-      comma_rows = 0:4,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  } else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 14,
-      non_editable_cols = c(0:5),
-      page_length = 10,
-      comma_rows = 0:4,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  }
+    if (input$mode_choice == 'Capital Projects'){     
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 14,
+        non_editable_cols = c(0,1,2),
+        page_length = 10,
+        comma_rows = 0:4,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 14,
+        non_editable_cols = c(0:5),
+        page_length = 10,
+        comma_rows = 0:4,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
     
   })
   
-
+  
   output$transit_cuts_projs_tbl <- renderDT({
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
     
-  if (input$mode_choice == 'Capital Projects'){  
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 17,#slchanged
-      non_editable_cols = c(0, 1, 2),
-      page_length = 10,
-      comma_rows = 0:7,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  } else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 17,#slchanged
-      non_editable_cols = c(0:5),
-      page_length = 10,
-      comma_rows = 0:7,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
-  }
+    if (input$mode_choice == 'Capital Projects'){  
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 17,#slchanged
+        non_editable_cols = c(0, 1, 2),
+        page_length = 10,
+        comma_rows = 0:7,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 17,#slchanged
+        non_editable_cols = c(0:5),
+        page_length = 10,
+        comma_rows = 0:7,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
+    }
     
   })
-
+  
   output$land_use_projs_tbl <- renderDT({
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){  
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 16,
-      non_editable_cols = c(0, 1),
-      page_length = 10,
-      comma_rows = 0:15,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+    if (input$mode_choice == 'Capital Projects'){  
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 16,
+        non_editable_cols = c(0, 1),
+        page_length = 10,
+        comma_rows = 0:15,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = temp_send,
@@ -4053,37 +4060,37 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     }
     
   })
-
+  
   
   output$road_resurf_projs_tbl <- renderDT({
     
     req(rvs$Projects)
     temp_send <- rvs$Projects
-  if (input$mode_choice == 'Capital Projects'){    
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 15,#slchanged
-      non_editable_cols = c(0),
-      page_length = 10,
-      comma_rows = 0:2,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0)) 
-  } else {
-    render_custom_datatable(
-      data_reactive = temp_send,
-      table_number = 15,#slchanged
-      non_editable_cols = c(0:3),
-      page_length = 10,
-      comma_rows = 0:2,
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0)) 
+    if (input$mode_choice == 'Capital Projects'){    
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 15,#slchanged
+        non_editable_cols = c(0),
+        page_length = 10,
+        comma_rows = 0:2,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0)) 
+    } else {
+      render_custom_datatable(
+        data_reactive = temp_send,
+        table_number = 15,#slchanged
+        non_editable_cols = c(0:3),
+        page_length = 10,
+        comma_rows = 0:2,
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0)) 
     }
     
     
   })
-
+  
   # Project Tables: Observe and update edits to projects ------------------------
   # observe edits to the bikeped_projs
   observeEvent(input$bikeped_projs_tbl_cell_edit, {
@@ -4351,7 +4358,7 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
     
   })
-
+  
   # Project Tables: Reset buttons on projects ---------------------------------------------------
   
   observeEvent(input$reset_bikeped_projs_tbl, {
@@ -4423,29 +4430,29 @@ UI_tables <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "UI_Tables")
   })  
   
   
-
-# Project Mode - reset all if user select Budget Mode ---------------------
-## new added by Qi, this is aiming to ensure user made edits under both mode by switch between modes.
-observeEvent(input$mode_choice,{
-  if(input$mode_choice == 'Budget'){
-    rvs$Projects[rvs$Projects$table_no_ui == 1,] <- initial_projects[initial_projects$table_no_ui == 1, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 2,] <- initial_projects[initial_projects$table_no_ui == 2, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 3,] <- initial_projects[initial_projects$table_no_ui == 3, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 4,] <- initial_projects[initial_projects$table_no_ui == 4, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 5,] <- initial_projects[initial_projects$table_no_ui == 5, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 6,] <- initial_projects[initial_projects$table_no_ui == 6, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 7,] <- initial_projects[initial_projects$table_no_ui == 7, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 8,] <- initial_projects[initial_projects$table_no_ui == 8, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 9,] <- initial_projects[initial_projects$table_no_ui == 9, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 10,] <- initial_projects[initial_projects$table_no_ui == 10, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 11,] <- initial_projects[initial_projects$table_no_ui == 11, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 12,] <- initial_projects[initial_projects$table_no_ui == 12, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 13,] <- initial_projects[initial_projects$table_no_ui == 13, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 14,] <- initial_projects[initial_projects$table_no_ui == 14, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 17,] <- initial_projects[initial_projects$table_no_ui == 17, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 16,] <- initial_projects[initial_projects$table_no_ui == 16, ]
-    rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
-  } else if (input$mode_choice =="Capital Projects"){
+  
+  # Project Mode - reset all if user select Budget Mode ---------------------
+  ## new added by Qi, this is aiming to ensure user made edits under both mode by switch between modes.
+  observeEvent(input$mode_choice,{
+    if(input$mode_choice == 'Budget'){
+      rvs$Projects[rvs$Projects$table_no_ui == 1,] <- initial_projects[initial_projects$table_no_ui == 1, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 2,] <- initial_projects[initial_projects$table_no_ui == 2, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 3,] <- initial_projects[initial_projects$table_no_ui == 3, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 4,] <- initial_projects[initial_projects$table_no_ui == 4, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 5,] <- initial_projects[initial_projects$table_no_ui == 5, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 6,] <- initial_projects[initial_projects$table_no_ui == 6, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 7,] <- initial_projects[initial_projects$table_no_ui == 7, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 8,] <- initial_projects[initial_projects$table_no_ui == 8, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 9,] <- initial_projects[initial_projects$table_no_ui == 9, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 10,] <- initial_projects[initial_projects$table_no_ui == 10, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 11,] <- initial_projects[initial_projects$table_no_ui == 11, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 12,] <- initial_projects[initial_projects$table_no_ui == 12, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 13,] <- initial_projects[initial_projects$table_no_ui == 13, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 14,] <- initial_projects[initial_projects$table_no_ui == 14, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 17,] <- initial_projects[initial_projects$table_no_ui == 17, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 16,] <- initial_projects[initial_projects$table_no_ui == 16, ]
+      rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
+    } else if (input$mode_choice =="Capital Projects"){
       rvs$Budget[rvs$Budget$table_no_ui == 1,] <- initial_budget[initial_budget$table_no_ui == 1, ]
       rvs$Budget[rvs$Budget$table_no_ui == 2,] <- initial_budget[initial_budget$table_no_ui == 2, ]
       rvs$Budget[rvs$Budget$table_no_ui == 3,] <- initial_budget[initial_budget$table_no_ui == 3, ]
@@ -4463,12 +4470,12 @@ observeEvent(input$mode_choice,{
       rvs$Budget[rvs$Budget$table_no_ui == 16,] <- initial_budget[initial_budget$table_no_ui == 16, ]
       rvs$Budget[rvs$Budget$table_no_ui == 17,] <- initial_budget[initial_budget$table_no_ui == 17, ]
       rvs$Budget[rvs$Budget$table_no_ui == 15,] <- initial_budget[initial_budget$table_no_ui == 15, ]
-    
-    
+      
+      
     }
   }, ignoreInit = TRUE)
   
-    
+  
   
   # Project Cumulative Tables: Render ------------------------------------------
   observe({
@@ -4483,7 +4490,7 @@ observeEvent(input$mode_choice,{
   output$bikeped_projscumu_tbl <- renderDT({
     req(rvs)
     temp_send <- rvs$Projectscumu[rvs$Projectscumu$table_no_ui == 1,]
- 
+    
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 1,
@@ -4724,7 +4731,7 @@ observeEvent(input$mode_choice,{
     
     req(rvs$Projectscumu)
     temp_send <- rvs$Projectscumu
- 
+    
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 17, #slchanged
@@ -4741,7 +4748,7 @@ observeEvent(input$mode_choice,{
     
     req(rvs$Projectscumu)
     temp_send <- rvs$Projectscumu
-    
+    # temp_send$value[temp_send$table_no_ui == 16]<- temp_send$value[temp_send$table_no_ui  ==16]/1000000 
     render_custom_datatable(
       data_reactive = temp_send,
       table_number = 16,
@@ -4777,21 +4784,21 @@ observeEvent(input$mode_choice,{
   
   output$bikeped_budget_tbl <- renderDT({
     req(rvs$Budget)
-
+    
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 1,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0:1),#c(0:3),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))}
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 1,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))}
     else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -4812,93 +4819,93 @@ observeEvent(input$mode_choice,{
   
   output$transit_fr_budget_tbl <- renderDT({
     req(rvs$Budget)
-   
- if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 2,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0:1),#c(0:3),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0),
-      pivot_col = c("transit_mode"))
- } else {
-   render_custom_datatable(
-     data_reactive = rvs$Budget,
-     table_number = 2,
-     is_year_table = FALSE,
-     is_cost_table = FALSE,
-     is_advanced_table = FALSE,
-     is_budget_table = TRUE,
-     non_editable_cols = c(0:2),#c(0:3),
-     page_length = 21,
-     comma_rows = integer(0),
-     percent_rows = integer(0),
-     currency_rows = integer(0),
-     decimal_rows = integer(0),
-     pivot_col = c("transit_mode"))
- }
+    
+    if (input$mode_choice == 'Budget'){
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 2,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0),
+        pivot_col = c("transit_mode"))
+    } else {
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 2,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:2),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0),
+        pivot_col = c("transit_mode"))
+    }
   })
   
   
   output$transit_dr_budget_tbl <- renderDT({
     req(rvs$Budget)
     
-  if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 3,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0:1),#c(0:3),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0),
-      pivot_col = c("transit_mode"))
-  }else{
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 3,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0:2),#c(0:3),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0),
-      pivot_col = c("transit_mode"))
-  }
+    if (input$mode_choice == 'Budget'){
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 3,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0),
+        pivot_col = c("transit_mode"))
+    }else{
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 3,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:2),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0),
+        pivot_col = c("transit_mode"))
+    }
   })
   
   output$transit_elec_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 4,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0:2),#c(0:4),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 4,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:2),#c(0:4),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -4919,19 +4926,19 @@ observeEvent(input$mode_choice,{
   output$transit_bus_priority_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 5,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0),#c(0:1),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 5,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -4953,20 +4960,20 @@ observeEvent(input$mode_choice,{
     req(rvs$Budget)
     
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 6,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0:1),#c(0:3),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0),
-      pivot_col = c("area_type"))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 6,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0),
+        pivot_col = c("area_type"))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -4987,21 +4994,21 @@ observeEvent(input$mode_choice,{
   
   output$tdm_budget_tbl <- renderDT({
     req(rvs$Budget)
-
+    
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 7,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0),#c(0:1),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 7,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -5022,19 +5029,19 @@ observeEvent(input$mode_choice,{
   output$micromobility_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 8,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0),#c(0:1),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 8,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -5049,27 +5056,27 @@ observeEvent(input$mode_choice,{
         percent_rows = integer(0),
         currency_rows = integer(0),
         decimal_rows = integer(0))
-      }
+    }
     
   })
   
   output$traffic_ops_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 9,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0:2),#c(0:2),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0)#,
-      #pivot_col = c("road_class")
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 9,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:2),#c(0:2),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0)#,
+        #pivot_col = c("road_class")
       ) 
     } else {
       render_custom_datatable(
@@ -5093,19 +5100,19 @@ observeEvent(input$mode_choice,{
   output$mdhd_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 10,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0:1),#c(0:3),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 10,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -5126,19 +5133,19 @@ observeEvent(input$mode_choice,{
   output$pnr_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 11,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0),#c(0:1),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 11,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -5159,19 +5166,19 @@ observeEvent(input$mode_choice,{
   output$ev_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 12,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0),#c(0:2),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 12,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0),#c(0:2),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -5192,19 +5199,19 @@ observeEvent(input$mode_choice,{
   output$freight_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 13,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0),#c(0:1),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 13,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -5225,19 +5232,19 @@ observeEvent(input$mode_choice,{
   output$expansion_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 14,
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0:1),#c(0:3),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 14,
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -5258,19 +5265,20 @@ observeEvent(input$mode_choice,{
   output$land_use_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 16, #slchanged
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0:1),#c(0:2),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      # browser()
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 16, #slchanged
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0),#c(0:2),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -5291,19 +5299,19 @@ observeEvent(input$mode_choice,{
   output$transit_cuts_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 17, #slchanged
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0:1),#c(0:3),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 17, #slchanged
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0:1),#c(0:3),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -5324,19 +5332,19 @@ observeEvent(input$mode_choice,{
   output$resurfacing_budget_tbl <- renderDT({
     req(rvs$Budget)
     if (input$mode_choice == 'Budget'){
-    render_custom_datatable(
-      data_reactive = rvs$Budget,
-      table_number = 15, #slchanged
-      is_year_table = FALSE,
-      is_cost_table = FALSE,
-      is_advanced_table = FALSE,
-      is_budget_table = TRUE,
-      non_editable_cols = c(0),#c(0:1),
-      page_length = 21,
-      comma_rows = integer(0),
-      percent_rows = integer(0),
-      currency_rows = integer(0),
-      decimal_rows = integer(0))
+      render_custom_datatable(
+        data_reactive = rvs$Budget,
+        table_number = 15, #slchanged
+        is_year_table = FALSE,
+        is_cost_table = FALSE,
+        is_advanced_table = FALSE,
+        is_budget_table = TRUE,
+        non_editable_cols = c(0),#c(0:1),
+        page_length = 21,
+        comma_rows = integer(0),
+        percent_rows = integer(0),
+        currency_rows = integer(0),
+        decimal_rows = integer(0))
     } else {
       render_custom_datatable(
         data_reactive = rvs$Budget,
@@ -5353,18 +5361,18 @@ observeEvent(input$mode_choice,{
         decimal_rows = integer(0))
     }
   })
-
+  
   # BUDGET: Editable --------------------------------------------------------
   # observe edits to the bikeped_projs
   
   observeEvent(input$bikeped_budget_tbl_cell_edit, {
     req(rvs$Budget)
-
+    
     rvs$Budget[rvs$Budget$table_no_ui == 1,] <- reshaping_budget(input$bikeped_budget_tbl_cell_edit,
-                                                                        rvs$Budget,
-                                                                        tbl_no = 1,
-                                                                        col1 = 'area_type',
-                                                                        col2 = 'facility_type')
+                                                                 rvs$Budget,
+                                                                 tbl_no = 1,
+                                                                 col1 = 'area_type',
+                                                                 col2 = 'facility_type')
   })
   
   # observe edits to the transit_fixed_projs
@@ -5372,10 +5380,10 @@ observeEvent(input$mode_choice,{
     req(rvs$Budget)
     
     rvs$Budget[rvs$Budget$table_no_ui == 2,] <- reshaping_budget(input$transit_fr_budget_tbl_cell_edit,
-                                                                        rvs$Budget,
-                                                                        tbl_no = 2,
-                                                                        col1 = 'area_type',
-                                                                        col2 = 'fuel_type',
+                                                                 rvs$Budget,
+                                                                 tbl_no = 2,
+                                                                 col1 = 'area_type',
+                                                                 col2 = 'fuel_type',
                                                                  col3 = 'transit_mode')
   })
   
@@ -5384,51 +5392,51 @@ observeEvent(input$mode_choice,{
     req(rvs$Budget)
     
     rvs$Budget[rvs$Budget$table_no_ui == 3,] <- reshaping_budget(input$transit_dr_budget_tbl_cell_edit,
-                                                                        rvs$Budget,
-                                                                        tbl_no = 3,
-                                                                        col1 = 'area_type',
-                                                                        col2 = 'fuel_type',
+                                                                 rvs$Budget,
+                                                                 tbl_no = 3,
+                                                                 col1 = 'area_type',
+                                                                 col2 = 'fuel_type',
                                                                  col3 = 'transit_mode')
   })
   
   # observe edits to the transit_el_projs_tbl
   observeEvent(input$transit_elec_budget_tbl_cell_edit, {
     req(rvs$Budget)
-
+    
     rvs$Budget[rvs$Budget$table_no_ui == 4,] <- reshaping_budget(input$transit_elec_budget_tbl_cell_edit,
-                                                                        rvs$Budget,
-                                                                        tbl_no = 4,
-                                                                        col1 = 'area_type',
-                                                                        col2 = 'fuel_type',
-                                                                        col3 = 'transit_mode')
+                                                                 rvs$Budget,
+                                                                 tbl_no = 4,
+                                                                 col1 = 'area_type',
+                                                                 col2 = 'fuel_type',
+                                                                 col3 = 'transit_mode')
   })
   
   # observe edits to the transit_bus_projs_tbl  
   observeEvent(input$transit_bus_priority_budget_tbl_cell_edit, {
-
+    
     rvs$Budget[rvs$Budget$table_no_ui == 5,] <- reshaping_budget(input$transit_bus_priority_budget_tbl_cell_edit,
-                                                                        rvs$Budget,
-                                                                        tbl_no = 5,
-                                                                        col1 = 'unit')
+                                                                 rvs$Budget,
+                                                                 tbl_no = 5,
+                                                                 col1 = 'unit')
   })
   
   # observe edits to the public_rail_projs table
   observeEvent(input$rail_budget_tbl_cell_edit, {
     
     rvs$Budget[rvs$Budget$table_no_ui == 6,] <- reshaping_budget(input$rail_budget_tbl_cell_edit,
-                                                                        rvs$Budget,
-                                                                        tbl_no = 6,
-                                                                        col1 = 'fuel_type',
-                                                                        col2 = 'transit_mode')
+                                                                 rvs$Budget,
+                                                                 tbl_no = 6,
+                                                                 col1 = 'fuel_type',
+                                                                 col2 = 'transit_mode')
   })
   
   # observe edits to the tdm_projs_tbl table
   observeEvent(input$tdm_budget_tbl_cell_edit, {
     
     rvs$Budget[rvs$Budget$table_no_ui == 7,] <- reshaping_budget(input$tdm_budget_tbl_cell_edit,
-                                                                        rvs$Budget,
-                                                                        tbl_no = 7,
-                                                                        col1 = 'unit')
+                                                                 rvs$Budget,
+                                                                 tbl_no = 7,
+                                                                 col1 = 'unit')
     
   })
   
@@ -5436,9 +5444,9 @@ observeEvent(input$mode_choice,{
   observeEvent(input$micromobility_budget_tbl_cell_edit, {
     
     rvs$Budget[rvs$Budget$table_no_ui == 8,] <- reshaping_budget(input$micromobility_budget_tbl_cell_edit,
-                                                                        rvs$Budget,
-                                                                        tbl_no = 8,
-                                                                        col1 = 'unit')
+                                                                 rvs$Budget,
+                                                                 tbl_no = 8,
+                                                                 col1 = 'unit')
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -5447,14 +5455,14 @@ observeEvent(input$mode_choice,{
   
   # observe edits to the traffic_ops_projs_tbl table
   observeEvent(input$traffic_ops_budget_tbl_cell_edit, {
-
+    
     rvs$Budget[rvs$Budget$table_no_ui == 9,] <- reshaping_budget(input$traffic_ops_budget_tbl_cell_edit,
-                                                                        rvs$Budget,
-                                                                        tbl_no = 9,
-                                                                        col1 = 'area_type',
-                                                                        col2 = 'road_class',
-                                                                        col3 = 'unit'
-                                                                 )
+                                                                 rvs$Budget,
+                                                                 tbl_no = 9,
+                                                                 col1 = 'area_type',
+                                                                 col2 = 'road_class',
+                                                                 col3 = 'unit'
+    )
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -5465,10 +5473,10 @@ observeEvent(input$mode_choice,{
   observeEvent(input$mdhd_budget_tbl_cell_edit, {
     
     rvs$Budget[rvs$Budget$table_no_ui == 10,] <- reshaping_budget(input$mdhd_budget_tbl_cell_edit,
-                                                                         rvs$Budget,
-                                                                         tbl_no = 10,
-                                                                         col1 = 'veh_type',
-                                                                         col2 = 'fuel_type')
+                                                                  rvs$Budget,
+                                                                  tbl_no = 10,
+                                                                  col1 = 'veh_type',
+                                                                  col2 = 'fuel_type')
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -5479,9 +5487,9 @@ observeEvent(input$mode_choice,{
   observeEvent(input$pnr_budget_tbl_cell_edit, {
     
     rvs$Budget[rvs$Budget$table_no_ui == 11,] <- reshaping_budget(input$pnr_budget_tbl_cell_edit,
-                                                                         rvs$Budget,
-                                                                         tbl_no = 11,
-                                                                         col1 = 'unit')
+                                                                  rvs$Budget,
+                                                                  tbl_no = 11,
+                                                                  col1 = 'unit')
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -5492,9 +5500,9 @@ observeEvent(input$mode_choice,{
   observeEvent(input$ev_budget_tbl_cell_edit, {
     
     rvs$Budget[rvs$Budget$table_no_ui == 12,] <- reshaping_budget(input$ev_budget_tbl_cell_edit,
-                                                                         rvs$Budget,
-                                                                         tbl_no = 12,
-                                                                         col1 = 'charge_port_detail')
+                                                                  rvs$Budget,
+                                                                  tbl_no = 12,
+                                                                  col1 = 'charge_port_detail')
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -5505,9 +5513,9 @@ observeEvent(input$mode_choice,{
   observeEvent(input$freight_budget_tbl_cell_edit, {
     
     rvs$Budget[rvs$Budget$table_no_ui == 13,] <- reshaping_budget(input$freight_budget_tbl_cell_edit,
-                                                                         rvs$Budget,
-                                                                         tbl_no = 13,
-                                                                         col1 = 'unit')
+                                                                  rvs$Budget,
+                                                                  tbl_no = 13,
+                                                                  col1 = 'unit')
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -5518,10 +5526,10 @@ observeEvent(input$mode_choice,{
   observeEvent(input$expansion_budget_tbl_cell_edit, {
     
     rvs$Budget[rvs$Budget$table_no_ui == 14,] <- reshaping_budget(input$expansion_budget_tbl_cell_edit,
-                                                                         rvs$Budget,
-                                                                         tbl_no = 14,
-                                                                         col1 = 'area_type',
-                                                                         col2 = 'road_class')
+                                                                  rvs$Budget,
+                                                                  tbl_no = 14,
+                                                                  col1 = 'area_type',
+                                                                  col2 = 'road_class')
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -5531,9 +5539,9 @@ observeEvent(input$mode_choice,{
   observeEvent(input$transit_cuts_budget_tbl_cell_edit, {
     
     rvs$Budget[rvs$Budget$table_no_ui == 17,] <- reshaping_budget(input$transit_cuts_budget_tbl_cell_edit, #slchanged
-                                                                         rvs$Budget,
-                                                                         tbl_no = 17,
-                                                                         col1 = 'area_type',
+                                                                  rvs$Budget,
+                                                                  tbl_no = 17,
+                                                                  col1 = 'area_type',
                                                                   col2 ='transit_mode')
     
     
@@ -5543,10 +5551,10 @@ observeEvent(input$mode_choice,{
   observeEvent(input$land_use_budget_tbl_cell_edit, {
     
     rvs$Budget[rvs$Budget$table_no_ui == 16,] <- reshaping_budget(input$land_use_budget_tbl_cell_edit, #slchanged
-                                                                         rvs$Budget,
-                                                                         tbl_no = 16,
-                                                                         col1 = 'land_use',
-                                                                         col2 = 'unit')
+                                                                  rvs$Budget,
+                                                                  tbl_no = 16,
+                                                                  col1 = 'land_use',
+                                                                  col2 = 'unit')
     
     
     #updated_table[user_data$row,"value"] <- as.numeric(user_data$value)
@@ -5555,8 +5563,8 @@ observeEvent(input$mode_choice,{
   observeEvent(input$resurfacing_budget_tbl_cell_edit, {
     
     rvs$Budget[rvs$Budget$table_no_ui == 15,] <- reshaping_budget(input$resurfacing_budget_tbl_cell_edit, #slchanged
-                                                                         rvs$Budget,
-                                                                         tbl_no = 15,
+                                                                  rvs$Budget,
+                                                                  tbl_no = 15,
                                                                   col1 = 'unit')
     
     
@@ -5641,7 +5649,7 @@ observeEvent(input$mode_choice,{
     year1 <- input$horizon_year_1
     year2 <- ifelse (input$horizon_year_2 <= 2040, input$horizon_year_2, 2040)
     year3 <- ifelse (input$horizon_year_3 <= 2040, input$horizon_year_3, 2040)
-
+    
     foo <- temp_join |>
       dplyr::mutate(horizon_year_1_cnt = 
                       case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
@@ -5696,8 +5704,9 @@ observeEvent(input$mode_choice,{
     foobar[foobar == "NA"] <- NA
     foobar[is.na(foobar$value),"value"]<-0
     #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
-    # browser()
-    
+
+    ## the landuse $ is different, it need special treat as it is $Million. 
+    foobar$value[foobar$table_no_ui == 16]<- foobar$value[foobar$table_no_ui  ==16]/1000000 
     ### at the step above, the projects value are cumulative values, however, under the project mode, the cumulative step is done afterward, so we need to de-cumulate the value. 
     foobar_discum <- foobar %>% 
       pivot_wider(names_from = year, values_from = value) %>%
@@ -5711,7 +5720,7 @@ observeEvent(input$mode_choice,{
     
     rvs$Projects <- foobar_discum
   })
-
+  
   observeEvent(input$fill_budget_bttn,{
     #browser()
     if(!isTruthy(input$budget_total)){
@@ -5751,22 +5760,22 @@ observeEvent(input$mode_choice,{
     temp_projects <- rvs$Projects
     temp_join[is.na(temp_join)] <- "NA"
     temp_projects[is.na(temp_projects)] <- "NA"
-
+    
     temp_projects <- temp_projects |> group_by_all() |> ungroup(c(year,value)) |> summarise(value = sum(value)) |> select(-table_no_ui)
     foo <- left_join(temp_join, temp_projects) |> 
       mutate(value = 100*(value*cost_parameter/total)) |>#View()
       select(-cost_parameter)
     foo[foo == "NA"] <- NA
     foo[is.na(foo$value),"value"]<-0
-
-
+    
+    
     #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
     #browser()
-
+    
     
     rvs$Budget <- foo
   })
-# FUNDING: Render ---------------------------------------------------------
+  # FUNDING: Render ---------------------------------------------------------
   #warning_count_funding <- 0 
   observe({
     req(input$budget_total)
@@ -5793,12 +5802,12 @@ observeEvent(input$mode_choice,{
         # category == "Land Use" ~ "Land Use", 
         # category == "Transit Service Cuts" ~ "Transit Service Cuts",
         TRUE ~ "zzzERROR")
-        ) |> 
+      ) |> 
       group_by(category) |> 
       summarise(perc_allocated = sum(value, na.rm = T)) |>
       add_row(category = "Total","perc_allocated" = total)
     
-
+    
     
     temp <- left_join(tempf, tempb, by = c("funding_summary" = "category"))
     #browser()
@@ -5811,7 +5820,7 @@ observeEvent(input$mode_choice,{
       showNotification(HTML(warning), type = "warning")
     }# else {warning_count_funding <<- 0}
     rvs$Funding <- temp
-    })
+  })
   
   output$funding_summary_tbl <- renderDataTable({
     #browser()
@@ -5889,9 +5898,9 @@ table.on('draw', function(){
   #                        "pnr_assmps",
   #                        "evsi_assmps",
   #                        "landuse_assmpts")
-
+  
   # read_static_tables("data/assumptions.xlsx", assumptions_names)
-
+  
   
   ## create assumption tables -----------------------------------------------------------
   
@@ -6096,8 +6105,8 @@ table.on('draw', function(){
     req(rvs$Assumptions)
     
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 10,] <- reshaping_assmp(input$mhdv_assmps_tbl_cell_edit, #slchanged
-                                                                          rvs$Assumptions,
-                                                                          tbl_no = 10)
+                                                                           rvs$Assumptions,
+                                                                           tbl_no = 10)
   })
   
   #observe edits to pnr_assmps
@@ -6105,8 +6114,8 @@ table.on('draw', function(){
     req(rvs$Assumptions)
     
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 11,] <- reshaping_assmp(input$pnr_assmps_tbl_cell_edit, #slchanged
-                                                                          rvs$Assumptions,
-                                                                          tbl_no = 11)
+                                                                           rvs$Assumptions,
+                                                                           tbl_no = 11)
   })
   
   #observe edits to evsi_assmps
@@ -6114,8 +6123,8 @@ table.on('draw', function(){
     req(rvs$Assumptions)
     
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 12,] <- reshaping_assmp(input$evsi_assmps_tbl_cell_edit, #slchanged
-                                                                          rvs$Assumptions,
-                                                                          tbl_no = 12)
+                                                                           rvs$Assumptions,
+                                                                           tbl_no = 12)
   })
   
   #observe edits to landuse_assmps
@@ -6123,14 +6132,14 @@ table.on('draw', function(){
     req(rvs$Assumptions)
     
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 16,] <- reshaping_assmp(input$landuse_assmps_tbl_cell_edit,#slchanged
-                                                                          rvs$Assumptions,
-                                                                          tbl_no = 16)
+                                                                           rvs$Assumptions,
+                                                                           tbl_no = 16)
   })
   
-
-
-# observe reset button on budget ------------------------------------------
-
+  
+  
+  # observe reset button on budget ------------------------------------------
+  
   # adrienne here
   
   observeEvent(input$reset_bikeped_budget_tbl, {
@@ -6202,8 +6211,8 @@ table.on('draw', function(){
     rvs$Budget[rvs$Budget$table_no_ui == 15,] <- initial_budget[initial_budget$table_no_ui == 15, ] #slchanged
   })
   
-
-
+  
+  
   # observe reset buttons on assumptions ---------------------------------------------------
   
   
@@ -6258,7 +6267,7 @@ table.on('draw', function(){
   
   output$bikeped_costs_tbl <- renderDT({
     req(rvs$Costs)
-  
+    
     render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 1,
@@ -6400,7 +6409,7 @@ table.on('draw', function(){
       decimal_rows = integer(0))
   })
   
-
+  
   output$pnr_costs_tbl <- renderDT({
     req(rvs$Costs)
     
@@ -6642,15 +6651,15 @@ table.on('draw', function(){
     req(rvs$Costs)
     
     rvs$Costs[rvs$Costs$table_no_ui == 10,] <- reshaping_cost(input$mhdev_costs_tbl_cell_edit, #slchanged
-                                                             rvs$Costs,
-                                                             tbl_no = 10,
-                                                             num_col = 3, # how many numeric columns,
-                                                             unit1 = 'per_VRM_fuel_cost',
-                                                             unit2 = 'per_mile_onm_cost',
-                                                             unit3 = 'per_veh_cap_cost',
-                                                             col_list = c('fuel_type',
-                                                                          'veh_type',
-                                                                          'unit'))
+                                                              rvs$Costs,
+                                                              tbl_no = 10,
+                                                              num_col = 3, # how many numeric columns,
+                                                              unit1 = 'per_VRM_fuel_cost',
+                                                              unit2 = 'per_mile_onm_cost',
+                                                              unit3 = 'per_veh_cap_cost',
+                                                              col_list = c('fuel_type',
+                                                                           'veh_type',
+                                                                           'unit'))
   })
   
   
@@ -6746,7 +6755,7 @@ table.on('draw', function(){
     rvs$Costs[rvs$Costs$table_no_ui == 1,] <- initial_costs[initial_costs$table_no_ui == 1, ]
     #browser()
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
-    })  
+  })  
   
   observeEvent(input$reset_transit_fixed_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 2,] <- initial_costs[initial_costs$table_no_ui == 2, ]
@@ -6815,7 +6824,7 @@ table.on('draw', function(){
   observeEvent(input$reset_fuel_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 18,] <- initial_costs[initial_costs$table_no_ui == 18, ] #slchanged
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
-    })  
+  })  
   
   observeEvent(input$reset_intermodal_costs_tbl, {
     rvs$Costs[rvs$Costs$table_no_ui == 13,] <- initial_costs[initial_costs$table_no_ui == 13, ] #slchanged
@@ -6830,8 +6839,8 @@ table.on('draw', function(){
     rvs$Costs[rvs$Costs$table_no_ui == 16,] <- initial_costs[initial_costs$table_no_ui == 16, ]
     updateSelectInput(inputId = 'state_input',selected = rvs$Baseline$state[[1]])
   })  
-
-
+  
+  
   # SCENARIOS: inputs -------------------------------------------------
   
   
@@ -6849,7 +6858,7 @@ table.on('draw', function(){
                       "Roadway Resurfacing",
                       "Land Use", 
                       "Transit Service Cuts"
-                      )
+  )
   
   rowName <- function(scenario) {
     as.character(
@@ -7179,7 +7188,7 @@ table.on('draw', function(){
       vals <- temp$value[!(temp$value %in% c("Diesel","Electric"))]
       warning = paste0("Please input either Diesel or Electric (case sensative) for Advanced Table 4, you imputed the value(s): ", vals)
       
-
+      
       rvs$Advanced[rvs$Advanced$table_no_ui == 4,] <- old
       showNotification(HTML(warning), type = "error")
       print('next')
@@ -7259,7 +7268,7 @@ table.on('draw', function(){
   # BASELINE GHG FORECAST -------------------------------------------------
   
   output$baseline_outputs <- renderDT({
-     #browser()
+    #browser()
     req(baseline_ghg_forecast())
     
     dt <- baseline_ghg_forecast()
@@ -7268,7 +7277,7 @@ table.on('draw', function(){
       filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
       summarise(across(where(is.numeric),sum))  %>%
       mutate(veh_supertype = "Total (OnRoad)")
-      
+    
     dt_all <- dt %>% ungroup() %>%# select(-veh_supertype) %>%
       #filter(veh_supertype %in% c("Light-Duty Vehicles","Medium-/Heavy-Duty Vehicles")) %>%
       summarise(across(where(is.numeric),sum))
@@ -7466,7 +7475,7 @@ table.on('draw', function(){
   
   output$transit_fixed_costs_outputs_tbl <- renderDT({
     print("RENDERING: Transit Fixed Bus Costs Outputs")
-      # browser()
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==2,],
       output_table = cost_output_transitservice() %>% filter(table == "Transit: Increased Fixed Route Service (VOMS)"),
@@ -7687,7 +7696,7 @@ table.on('draw', function(){
       style = input$cost_view)%>% 
       rename(any_of(references_vector)) %>%
       mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) #%>% # to show NA in table
-      #mutate(year = as.character(year)) %>% rename(Year = year)
+    #mutate(year = as.character(year)) %>% rename(Year = year)
     
     x<-datatable(temp,
                  rownames = FALSE,
@@ -7813,8 +7822,8 @@ table.on('draw', function(){
     temp <- temp%>%
       rename(any_of(references_vector)) %>%
       mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) #%>% # to show NA in table
-      #mutate(year = as.character(year)) %>% rename(Year = year)
-
+    #mutate(year = as.character(year)) %>% rename(Year = year)
+    
     x<-datatable(temp,
                  rownames = FALSE,
                  selection = "none",
@@ -7841,7 +7850,7 @@ table.on('draw', function(){
       style = input$cost_view)%>% 
       rename(any_of(references_vector)) %>%
       mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) #%>% # to show NA in table
-      #mutate(year = as.character(year)) %>% rename(Year = year)
+    #mutate(year = as.character(year)) %>% rename(Year = year)
     
     x<-datatable(temp,
                  rownames = FALSE,
@@ -7856,7 +7865,7 @@ table.on('draw', function(){
     return(x %>% formatStyle(names(temp), color = styleEqual("-", "red")))
   })
   
- 
+  
   output$landuse_costs_outputs_tbl <- renderDT({
     print("RENDERING: Land Use Costs Outputs")
     # browser()
@@ -7868,8 +7877,8 @@ table.on('draw', function(){
       style = input$cost_view)%>%
       rename(any_of(references_vector)) %>%
       mutate(across(everything(), ~ ifelse(is.na(.), "-", .))) #%>% # to show NA in table
-      #mutate(year = as.character(year)) %>% rename(Year = year)
-
+    #mutate(year = as.character(year)) %>% rename(Year = year)
+    
     x<-datatable(temp,
                  rownames = FALSE,
                  selection = "none",
@@ -7885,116 +7894,120 @@ table.on('draw', function(){
   
   # server scenarios outputs ------------------------------------------------
   ## Qi adding a condition when user click on the Outputs, and all the scenario are 0s.- considering force the fill project with budget. 
-  ## testing: consider converting to a function in the future. 
+  
   observeEvent(input$OUTPUTS_TABS, {
 
-        if (input$OUTPUTS_TABS %in% c("Strategy Summary",
-                                  "Scenario Summary")) {
-
-      check_tbl <- scenario_sum()
+            if (input$OUTPUTS_TABS %in% c("Strategy Summary",
+                                      "Scenario Summary",
+                                      "Cumulative Project Totals")) {
+    
+    check_tbl <- scenario_sum()
+    # browser()
+    if (all(check_tbl[, 3:ncol(check_tbl)] == 0, na.rm = TRUE) &&
+        input$fill_projects_bttn == 0 && 
+        all(rvs$Projects$value == 0)) {
       # browser()
-      if (all(check_tbl[, 3:ncol(check_tbl)] == 0, na.rm = TRUE) &&
-          input$fill_projects_bttn == 0 && 
-          all(rvs$Projects$value == 0)) {
-        # browser()
-        # Simulate a click on the budget button
-        req(input$budget_start_year)
-        req(input$budget_years_covered)
-        req(input$budget_total)
-
-        temp_budget <- rvs$Budget |>
-          mutate(value = value/100)
-        temp_budget$table_no_ui_revised = as.character(temp_budget$table_no_ui_revised)
-
-        temp_costs <- rvs$Costs
-        temp_costs$table_no_ui_revised = as.character(temp_costs$table_no_ui_revised)
-        temp_costs <- temp_costs |>
-          filter(table_no_ui_revised != "-1") |>
-          group_by(table_no_ui_revised) |>
-          summarise(cost_parameter = sum(value)) |> ungroup()
-
-        temp_join <- left_join(temp_budget,temp_costs) |>
-          mutate(cost_parameter = case_when(!is.na(land_use) ~ 1,
-                                            !is.na(land_use)&land_use == "Land Use Incentives"~1000000,
-                                            TRUE ~ cost_parameter)) #|> mutate(value = 1)
-        #start <- input$horizon_year_1
-        #total <- input$budget_total
-        start <- input$budget_start_year
-        end <- start + input$budget_years_covered -1
-        total <- input$budget_total*1000000
-        total_years <- input$budget_years_covered #+ 1 # qi commented out +1
-        
-        year1 <- input$horizon_year_1
-        year2 <- ifelse (input$horizon_year_2 <= 2040, input$horizon_year_2, 2040)
-        year3 <- ifelse (input$horizon_year_3 <= 2040, input$horizon_year_3, 2040)
-        
-        foo <- temp_join |>
-          dplyr::mutate(horizon_year_1_cnt = 
-                          case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
-                                                                   "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
-                                                                   "Park-and-Ride") ~ ifelse(year1 - start < input$budget_years_covered, ifelse(year1 - start >0, year1 - start, 0),  input$budget_years_covered),
-                                                       category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
-                                                                       "Public Transportation: Rail", "Bus Priority Treatment",
-                                                                       "Travel Demand Management", "EV Charging Infrastructure",
-                                                                       "Transit Service Cuts", "Micromobility",
-                                                                       "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year1)  <= input$budget_years_covered, sum(c(start:end) <= year1),  input$budget_years_covered),
-                                                       TRUE ~ ifelse(year1 - (start+2) < input$budget_years_covered, ifelse(year1 - (start+2) >0, year1 - (start+2), 0),  input$budget_years_covered)
-                                                       ),
-                        horizon_year_2_cnt = 
-                          case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
-                                                    "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
-                                                    "Park-and-Ride") ~ ifelse(year2 - start < input$budget_years_covered, ifelse(year2 - start >0, year2 - start, 0),  input$budget_years_covered),
-                                    category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
-                                                    "Public Transportation: Rail", "Bus Priority Treatment",
-                                                    "Travel Demand Management", "EV Charging Infrastructure",
-                                                    "Transit Service Cuts", "Micromobility",
-                                                    "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year2)  <= input$budget_years_covered, sum(c(start:end) <= year2),  input$budget_years_covered),
-                                    TRUE ~ ifelse(year2 - (start+2) < input$budget_years_covered, ifelse(year2 - (start+2) >0, year2 - (start+2), 0),  input$budget_years_covered)
-                          ),
-                        horizon_year_3_cnt = 
-                          case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
-                                                    "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
-                                                    "Park-and-Ride") ~ ifelse(year3 - start < input$budget_years_covered, ifelse(year3 - start >0, year3 - start, 0),  input$budget_years_covered),
-                                    category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
-                                                    "Public Transportation: Rail", "Bus Priority Treatment",
-                                                    "Travel Demand Management", "EV Charging Infrastructure",
-                                                    "Transit Service Cuts", "Micromobility",
-                                                    "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year3)  <= input$budget_years_covered, sum(c(start:end) <= year3),  input$budget_years_covered),
-                                    TRUE ~ ifelse(year3 - (start+2) < input$budget_years_covered, ifelse(year3 - (start+2) >0, year3 - (start+2), 0),  input$budget_years_covered)
-                          )
-                        ) |>
-        dplyr::mutate(horizon_year_1_budget = total*value*(horizon_year_1_cnt/total_years),
-                        horizon_year_2_budget = total*value*(horizon_year_2_cnt/total_years),
-                        horizon_year_3_budget = total*value*(horizon_year_3_cnt/total_years),
-                        horizon_year_1 = horizon_year_1_budget/cost_parameter,
-                        horizon_year_2 = horizon_year_2_budget/cost_parameter,
-                        horizon_year_3 = horizon_year_3_budget/cost_parameter) |> select(-c(table_no_ui,value,table_no_ui_revised)) |>
-          pivot_longer(cols = c(horizon_year_1, horizon_year_2, horizon_year_3), names_to = "year", values_to = "value") |>
-          #mutate(value = value_new) |>
-          select(any_of(names(rvs$Projects)))
-        temp_projects <- rvs$Projects |> select(-value)
-
-        # foo[is.na(foo)] <- "NA"  # Qi: comment out?
-        # temp_projects[is.na(temp_projects)] <- "NA"  # Qi: comment out?
-        foobar <- left_join(temp_projects, foo)
-        foobar[foobar == "NA"] <- NA
-        foobar[is.na(foobar$value),"value"]<-0
-
-        ### at the step above, the projects value are cumulative values, however, under the project mode, the cumulative step is done afterward, so we need to de-cumulate the value. 
-       foobar_discum <- foobar %>% 
-         pivot_wider(names_from = year, values_from = value) %>%
-         mutate(horizon_year_1 = horizon_year_1, 
-                horizon_year_3 = horizon_year_3- horizon_year_2,
-                horizon_year_2 = horizon_year_2 - horizon_year_1) %>%
-         pivot_longer(cols = starts_with("horizon_year_"),
-                      names_to = "year", 
-                      values_to = 'value')
+      # Simulate a click on the budget button
+      req(input$budget_start_year)
+      req(input$budget_years_covered)
+      req(input$budget_total)
       
-        
-        rvs$Projects <- foobar_discum
-        
-      }
+      temp_budget <- rvs$Budget |>
+        mutate(value = value/100)
+      temp_budget$table_no_ui_revised = as.character(temp_budget$table_no_ui_revised)
+      
+      temp_costs <- rvs$Costs
+      temp_costs$table_no_ui_revised = as.character(temp_costs$table_no_ui_revised)
+      temp_costs <- temp_costs |>
+        filter(table_no_ui_revised != "-1") |>
+        group_by(table_no_ui_revised) |>
+        summarise(cost_parameter = sum(value)) |> ungroup()
+      
+      temp_join <- left_join(temp_budget,temp_costs) |>
+        mutate(cost_parameter = case_when(!is.na(land_use) ~ 1,
+                                          !is.na(land_use)&land_use == "Land Use Incentives"~1000000,
+                                          TRUE ~ cost_parameter)) #|> mutate(value = 1)
+      #start <- input$horizon_year_1
+      #total <- input$budget_total
+      start <- input$budget_start_year
+      end <- start + input$budget_years_covered -1
+      total <- input$budget_total*1000000
+      total_years <- input$budget_years_covered #+ 1 # qi commented out +1
+      
+      year1 <- input$horizon_year_1
+      year2 <- ifelse (input$horizon_year_2 <= 2040, input$horizon_year_2, 2040)
+      year3 <- ifelse (input$horizon_year_3 <= 2040, input$horizon_year_3, 2040)
+      
+      foo <- temp_join |>
+        dplyr::mutate(horizon_year_1_cnt = 
+                        case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
+                                                  "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
+                                                  "Park-and-Ride") ~ ifelse(year1 - start < input$budget_years_covered, ifelse(year1 - start >0, year1 - start, 0),  input$budget_years_covered),
+                                  category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
+                                                  "Public Transportation: Rail", "Bus Priority Treatment",
+                                                  "Travel Demand Management", "EV Charging Infrastructure",
+                                                  "Transit Service Cuts", "Micromobility",
+                                                  "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year1)  <= input$budget_years_covered, sum(c(start:end) <= year1),  input$budget_years_covered),
+                                  TRUE ~ ifelse(year1 - (start+2) < input$budget_years_covered, ifelse(year1 - (start+2) >0, year1 - (start+2), 0),  input$budget_years_covered)
+                        ),
+                      horizon_year_2_cnt = 
+                        case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
+                                                  "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
+                                                  "Park-and-Ride") ~ ifelse(year2 - start < input$budget_years_covered, ifelse(year2 - start >0, year2 - start, 0),  input$budget_years_covered),
+                                  category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
+                                                  "Public Transportation: Rail", "Bus Priority Treatment",
+                                                  "Travel Demand Management", "EV Charging Infrastructure",
+                                                  "Transit Service Cuts", "Micromobility",
+                                                  "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year2)  <= input$budget_years_covered, sum(c(start:end) <= year2),  input$budget_years_covered),
+                                  TRUE ~ ifelse(year2 - (start+2) < input$budget_years_covered, ifelse(year2 - (start+2) >0, year2 - (start+2), 0),  input$budget_years_covered)
+                        ),
+                      horizon_year_3_cnt = 
+                        case_when(category %in% c("Bicycle and Pedestrian","Transit: Fleet Electrification",
+                                                  "Traffic Operations", "Medium- and Heavy-Duty Vehicle Replacement",
+                                                  "Park-and-Ride") ~ ifelse(year3 - start < input$budget_years_covered, ifelse(year3 - start >0, year3 - start, 0),  input$budget_years_covered),
+                                  category %in% c("Transit: Increased Fixed Route Service","Transit: Increased Demand Response Service",
+                                                  "Public Transportation: Rail", "Bus Priority Treatment",
+                                                  "Travel Demand Management", "EV Charging Infrastructure",
+                                                  "Transit Service Cuts", "Micromobility",
+                                                  "Roadway Resurfacing") ~ ifelse(sum(c(start:end) <= year3)  <= input$budget_years_covered, sum(c(start:end) <= year3),  input$budget_years_covered),
+                                  TRUE ~ ifelse(year3 - (start+2) < input$budget_years_covered, ifelse(year3 - (start+2) >0, year3 - (start+2), 0),  input$budget_years_covered)
+                        )
+        ) |>
+        dplyr::mutate(horizon_year_1_budget = total*value*(horizon_year_1_cnt/total_years),
+                      horizon_year_2_budget = total*value*(horizon_year_2_cnt/total_years),
+                      horizon_year_3_budget = total*value*(horizon_year_3_cnt/total_years),
+                      horizon_year_1 = horizon_year_1_budget/cost_parameter,
+                      horizon_year_2 = horizon_year_2_budget/cost_parameter,
+                      horizon_year_3 = horizon_year_3_budget/cost_parameter) |> select(-c(table_no_ui,value,table_no_ui_revised)) |>
+        pivot_longer(cols = c(horizon_year_1, horizon_year_2, horizon_year_3), names_to = "year", values_to = "value") |>
+        #mutate(value = value_new) |>
+        select(any_of(names(rvs$Projects)))
+      temp_projects <- rvs$Projects |> select(-value)
+      
+      # foo[is.na(foo)] <- "NA"  # Qi: comment out?
+      # temp_projects[is.na(temp_projects)] <- "NA"  # Qi: comment out?
+      foobar <- left_join(temp_projects, foo)
+      foobar[foobar == "NA"] <- NA
+      foobar[is.na(foobar$value),"value"]<-0
+      
+      ## the landuse $ is different, it need special treat as it is $Million. 
+      foobar$value[foobar$table_no_ui == 16]<- foobar$value[foobar$table_no_ui  ==16]/1000000 
+      
+      ### at the step above, the projects value are cumulative values, however, under the project mode, the cumulative step is done afterward, so we need to de-cumulate the value. 
+      foobar_discum <- foobar %>% 
+        pivot_wider(names_from = year, values_from = value) %>%
+        mutate(horizon_year_1 = horizon_year_1, 
+               horizon_year_3 = horizon_year_3- horizon_year_2,
+               horizon_year_2 = horizon_year_2 - horizon_year_1) %>%
+        pivot_longer(cols = starts_with("horizon_year_"),
+                     names_to = "year", 
+                     values_to = 'value')
+      
+      
+      rvs$Projects <- foobar_discum
+      
     }
+     }
   }#, ignoreInit = TRUE
   )
   
@@ -8135,7 +8148,7 @@ table.on('draw', function(){
   #                 values_from = mt_reduction)
   #   
   # })
-
+  
   
   # 
   # output$downloadscenario_result <- downloadHandler(
@@ -8158,6 +8171,7 @@ table.on('draw', function(){
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
+    # browser()
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     
@@ -8254,36 +8268,36 @@ table.on('draw', function(){
     p <- plot_ly()
     for (i in unique(strategy_temp$Strategy)) {
       rows <- strategy_temp$Strategy == i
-    p<-add_trace(p,data = strategy_temp[rows,], 
-                 x = ~factor(year), 
-                 y = ~get(input$strategy_indicator),
-            #color = strategy_temp$Strategy,
-            name = strategy_temp$Strategy[rows],
-            type = "bar",
-            hoverinfo = 'text',
-            textposition = 'none',
-            marker = list(color = strategy_temp$colors[rows][[1]]),
-            hovertemplate = paste0(strategy_temp$Strategy[rows],'<br>',#'%{x}:<br>', 
-                                   'Emissions: %{y:.4s}<extra></extra>')
-    ) |>
-      layout(
-        xaxis =list(title = ""), #list(title = "Year"),
-        yaxis = list(title = "Total Change"),
-        margin = list(b = 80),
-        barmode = "relative",
-        legend = list(
-          orientation = 'h',
-          x = 0.5,
-          xanchor = 'center',
-          y = -0.3,
-          yanchor = 'top')) |> 
-      config(displaylogo = FALSE, 
-             modeBarButtonsToRemove = c("toImage","zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d", "toggleSpikelines", "hoverCompareCartesian", "hoverClosestGeo", "hoverClosest3d", "hoverClosestGeo", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "hoverClosestCartesian"))
+      p<-add_trace(p,data = strategy_temp[rows,], 
+                   x = ~factor(year), 
+                   y = ~get(input$strategy_indicator),
+                   #color = strategy_temp$Strategy,
+                   name = strategy_temp$Strategy[rows],
+                   type = "bar",
+                   hoverinfo = 'text',
+                   textposition = 'none',
+                   marker = list(color = strategy_temp$colors[rows][[1]]),
+                   hovertemplate = paste0(strategy_temp$Strategy[rows],'<br>',#'%{x}:<br>', 
+                                          'Emissions: %{y:.4s}<extra></extra>')
+      ) |>
+        layout(
+          xaxis =list(title = ""), #list(title = "Year"),
+          yaxis = list(title = "Total Change"),
+          margin = list(b = 80),
+          barmode = "relative",
+          legend = list(
+            orientation = 'h',
+            x = 0.5,
+            xanchor = 'center',
+            y = -0.3,
+            yanchor = 'top')) |> 
+        config(displaylogo = FALSE, 
+               modeBarButtonsToRemove = c("toImage","zoom2d", "pan2d", "select2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d", "toggleSpikelines", "hoverCompareCartesian", "hoverClosestGeo", "hoverClosest3d", "hoverClosestGeo", "hoverClosestGl2d", "hoverClosestPie", "toggleHover", "hoverClosestCartesian"))
     }
     
     return(p)
-  
-    })
+    
+  })
   
   
   
@@ -8302,11 +8316,11 @@ table.on('draw', function(){
   source("processing_scripts/processing_freight.R", local = T) 
   source("processing_scripts/processing_EVSE.R", local = T) 
   source("processing_scripts/processing_RoadwayExp.R", local = TRUE) 
-    
+  
   source("processing_scripts/processing_TransitService_Cuts.R",local = T) #in progress
   source("processing_scripts/processing_LandUse.R",local = T) #in progress
   source("processing_scripts/processing_roadway_resurfacing.R",local = T) #in progress
-    
+  
   source("functions/cost_maker.R", local = TRUE)
   source("processing_scripts/processing_Allassump.R", local = TRUE) #Finished
   
@@ -8314,7 +8328,7 @@ table.on('draw', function(){
   
   ## capture if user ever update the budget inputs
   
-  used_budget <- reactiveVal(FALSE)
+  # used_budget <- reactiveVal(FALSE)
   
   # observeEvent(input$INPUTS_TABS , {
   #   if (input$INPUTS_TABS  == "Budget") {
@@ -8322,11 +8336,11 @@ table.on('draw', function(){
   #   }
   # })
   
-  used_budget <- reactive({
-    input$budget_start_year != 2025 ||
-      input$budget_years_covered != 5 ||
-      input$budget_total != 100
-  })
+  # used_budget <- reactive({
+  #   input$budget_start_year != 2025 ||
+  #     input$budget_years_covered != 5 ||
+  #     input$budget_total != 100
+  # })
   
   
   # output$pdf_report <- downloadHandler(

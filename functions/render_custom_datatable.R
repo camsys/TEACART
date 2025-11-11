@@ -100,8 +100,8 @@ render_custom_datatable <- function(#input_reactives,
     
     if(is_budget_table){
       #if(table_number %in% c(5)){browser()}
-      if(table_number %in% c(5, 7,8,9,11,13,16,15)){
-        #browser()
+      if(table_number %in% c(5, 7,8,9,11,13,15)){
+        # browser()
         select_list <- c("description", "category")
         } else {select_list <- c("description","category","unit")}
       reshaped_table <- data_reactive  %>%

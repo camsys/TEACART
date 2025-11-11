@@ -45,7 +45,7 @@ TDM <- filter_columns(output_TDM(),selected_columns,"Travel Demand Management")
 transitElec <- filter_columns(output_transitElec(),selected_columns,"Transit Electrification")  
 TransitService <- filter_columns(output_TransitService(),selected_columns,"Transit Service Expansion")  
 OPS <- filter_columns(output_OPS(),selected_columns,"Traffic Operations")  
-EVSE <- filter_columns(output_EVSE(),selected_columns,"Electric Vehicle Charging Infrastructure")  
+EVSE <- filter_columns(output_EVSE(),selected_columns,"Charging Infrastructure and EV Incentives")  
 freight <- filter_columns(output_freight(),selected_columns,"Intermodal Freight Investment")  
 #browser()
 transit_cuts <- filter_columns(output_transitservice_cuts(),selected_columns,"Transit Service Cuts")
@@ -364,7 +364,7 @@ all_costs_detail <- reactive({
   #                     "Traffic Operations",
   #                     "Medium- and Heavy-duty Vehicle Replacement",
   #                     "Park-and-Ride",
-  #                     "Electric Vehicle Charging Infrastructure",
+  #                     "Charging Infrastructure and EV Incentives",
   #                     "Intermodal Freight Investment",
   #                     "Roadway Expansion",
   #                     "Roadway Resurfacing",
