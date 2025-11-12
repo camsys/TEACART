@@ -224,7 +224,6 @@ print(tagList(cat("  \n\n  ")))
 
 ### 3.3 Cost Effectiveness
 
-```{r, results="asis",fig.align = 'left'}
 #| echo: false
 #| warning: false
 
