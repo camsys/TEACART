@@ -1043,7 +1043,7 @@ recommended for optimal experience.</b><br>
                         <br>
                         Outputs are not generated automatically. After filling out the budget <b> press the <i>Fill Project Tab with Budget Inputs</i> button below in order to generate outputs</b>.
                         <p>
-                        <b>Alternatively, go to the Projects tab</b> if you would like to provide <i>project-level</i> inputs instead.
+                        <b>Alternatively, go to the Projects tab</b> if you would like to provide <i>project-level</i> inputs instead.<br>
                        ")
                                      
                               ),
@@ -3266,14 +3266,14 @@ server <- function(input, output, session) {
         title = "Warning",
         text = 
           paste0(
-            "Currently under ", input$mode_choice, " mode, no edits allowed on the Project tab. ",
-            "Please change mode selection under Baseline to Budget to make edits."),
+            "Currently in ", input$mode_choice, " mode. No edits are allowed on the Project tab. ",
+            "Please change the mode selection in the Baseline tab to 'Budget' to make edits here."),
         type = "info"
       )
     } else if (input$INPUTS_TABS == 'Budget' & input$mode_choice == 'Capital Projects'){
       shinyalert(title = "Warning",
-                 text  = paste0("Currently under ", input$mode_choice, " mode, no edits allowed on the Budget tab.",
-                                "Please change mode selection under Baseline to Capital Projects to make edits."))
+                 text  = paste0("Currently in ", input$mode_choice, " mode. No edits are allowed on the Budget tab. ",
+                                "Please change the mode selection in the Baseline tab to 'Capital Projects' to make edits here."))
     }
   },ignoreInit = T)
   
@@ -5799,7 +5799,7 @@ server <- function(input, output, session) {
         category == "Freight Intermodal Facilities" ~ "Freight Intermodal Facilities",
         category == "Roadway expansion" ~ "Roadway Expansion",
         category == "Roadway Resurfacing"~"Roadway Resurfacing",
-        # category == "Land Use" ~ "Land Use", 
+        category == "Land Use" ~ "Land Use", 
         # category == "Transit Service Cuts" ~ "Transit Service Cuts",
         TRUE ~ "zzzERROR")
       ) |> 
