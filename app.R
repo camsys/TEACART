@@ -132,11 +132,11 @@ ui <- function(request) {
                           column(width = 12,
                                  tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                         href = "https://www.georgetownclimate.org/", target = "_blank"),
-                                 tags$p("Adapted from TEA-CART Excel Model Version 1.14"),
-                                 tags$p("Shiny App last updated November 3, 2025"),
-                                 tags$p("Prototype under development by Cambridge Systematics, Inc."),
+                                 #tags$p("Adapted from TEA-CART Excel Model Version 1.14"),
+                                 tags$p("Last updated November 3, 2025"),
+                                 tags$p("Developed by Cambridge Systematics, Inc."),
                                  tags$p("under contract to Georgetown Climate Center"),
-                                 tags$p("© Georgetown Climate Center")
+                                 tags$p("©2025 Georgetown Climate Center (All Rights Reserved)")
                           ),
                           #column(width = 2,),
                           # column(width = 2,
@@ -230,7 +230,7 @@ ui <- function(request) {
                         # downloadButton("pdf_report","Download Summary Report"),
                         HTML("<p>More information can be found in the <b>How-to</b> tab.</p>
                              <p>
-                             For more detailed guidance, please refer to the <a href='https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf'>the User Guide and Methodology Documentation</a>.")),
+                             For more detailed guidance, please refer to the <a href='https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf'>User Guide and Methodology Documentation</a>.")),
       
       
       # welcome page ------------------------------------------------------------
@@ -325,6 +325,12 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                   data, when available, so it can also be used by local or 
                   regional governments (e.g., Metropolitan Planning 
                   Organizations). </p>
+                  <p>It is important to reiterate that TEA-CART is designed to 
+                  inform planning-stage decision making, before highly specific, 
+                  project-level information is available. For project-level 
+                  analysis <a href='https://crp.trb.org/nchrpwebresource1/10-0transportation-systems-planning/'>
+                  other tools</a> are available, like the 
+                  <a href='https://www.fhwa.dot.gov/environment/air_quality/cmaq/toolkit/'> CMAQ Toolkit</a>.
                   <p><b>Inputs:</b> Inputs to the tool typically include those 
                   available during the state or MPO transportation capital 
                   program planning process. For example:</p>
@@ -374,7 +380,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
     <li>Data are entered in tables. To begin entering (or editing) data, double click anywhere in the table using your mouse. When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.</li>
     <li>When you are ready to see the results of your analysis, proceed to the <b>Scenarios</b> tab and select scenarios for analysis. Either choose groups of projects (to support a comparison) or click the button to select all projects for each scenario.</li>
   </ul>
-  <p>Click <a href="TEA-CART How-to Guide.pdf">here</a> to download a PDF copy of this guide.<br>
+  <p>Click <a href="TEA-CART How-to Guide_Final.pdf">here</a> to download a PDF copy of this guide.<br>
   <p>
   To learn more about how to use the tool and how it works, please see the <a href="TEACART User Guide and Methodology v.1.10.3.pdf">User Guide and Methodology Documentation</a>.<br>
   <p>
@@ -386,67 +392,76 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
   <ol class="spaced-images">
     <li>Use the navigation panel at the top to select <b>Inputs</b>.</li>
     <br>
-    <img src="1.svg" style="width:90%; max-width:intrinsic; height:auto;">
+    <img src="how_to_step_1.svg" style="width:90%; max-width:intrinsic; height:auto;">
     <br><br><br>
 
     <li>Within <b>Inputs</b>, select <b>Baseline</b> to choose your state and enter the years used for the planning forecast. You may also change some parameters for the forecast, the scope of emissions to include (for example, whether to include certain upstream emissions), and other assumptions.
     Advanced users may choose to edit the downloaded data file directly, as an alternative method for generating user inputs to upload.</li>
     <br>
-    <img src="2.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <img src="how_to_step_2.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <br><br>
+    
+    <li>At the bottom of the <b>Baseline</b> tab, if you would like to provide project-level inputs, click on <b>Capital Projects</b> under the <b>Select Mode</b> dropdown, and proceed to <i>step 4</i>. 
+    Alternatively, if you would like to provide budget-level inputs, click on <b>Budget</b> under the dropdown, and skip to <i>step 6</i> below.</li>
+    <br>
+    <img src="how_to_step_3.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
-    <li>Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse. Alternatively, if you would like to provide budget-level inputs, skip to <i>step 5</i> below.</li>
+    <li>Within <b>Projects</b>, enter information about each project. To begin entering (or editing) data, double click in the table using your mouse.</li>
     <br>
-    <img src="3.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <img src="how_to_step_4.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
     <li>When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (note, your cursor must be in a cell, inside the table, when you do this). Data can only be entered for one table at a time.</li>
     <br>
-    <img src="4.svg" style="width:90%; max-width:intrinsic; height:auto; display:block;">
+    <img src="how_to_step_5.svg" style="width:90%; max-width:intrinsic; height:auto; display:block;">
     <br><br>
 
-    <li>In the <b>Budget</b> tab, data can be entered in the same way as in the <b>Projects</b> tab. If you already entered data in the <b>Projects</b> tab, go to <i>step 7</i> below. If, instead, you would like 
-    to provide budget-level inputs, double click with your mouse in the Budget tables to begin entering values. Once you are done, press <b>CTRL + ENTER</b> on your keyboard to initiate the calculation. As a reminder, data can only be entered one table at a time.</li>
+    <li>In the <b>Budget</b> tab, data can be entered in the same way as in the <b>Projects</b> tab. If you already entered data in the <b>Projects</b> tab, go to <i>step 8</i> below. If, instead, you would like 
+    to provide budget-level inputs, double click with your mouse in the Budget tables to begin entering values. Once you are done, press <b>CTRL + ENTER</b> on your keyboard (note, again, your cursor must be in a cell, 
+    inside the table, when you do this). As a reminder, data can only be entered one table at a time.</li>
     <br>
-    <img src="5.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <img src="how_to_step_6.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
-    <li>When entering <b>Budget</b> values, you must also update the <b>Projects</b> before beginning the calculation. Or, fill <b>Budget</b> values by updating from Projects.</li>
+    <li>After you are done entering <b>Budget</b> values, you must click on <b>Fill Projects Tab with Budget Inputs</b> (at the top of the <b>Budget</b> tab), to initiate the calculation.</li>
     <br>
-    <img src="6.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <img src="how_to_step_7.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
     <li>Regularly download the data that you have entered. You can download it by clicking the <b>Download User Inputs</b> button on the sidebar.</li>
     <br>
-    <img src="7.svg" style="width:20%; max-width:intrinsic; height:auto; display:block;">
+    <img src="how_to_step_8.svg" style="width:20%; max-width:intrinsic; height:auto; display:block;">
     <br><br>
 
     <li>If desired, within <b>Costs</b>, enter custom unit costs for the project type. Note that default values have already been provided.</li>
     <br>
-    <img src="8.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <img src="how_to_step_9.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
-    <li>Further <b>Assumptions</b> for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, please refer to the user guide.</li>
+    <li>Further <b>Assumptions</b> for the analysis are for advanced users. Data can be changed similar to the previous tabs. For more information about changing assumptions, 
+    please refer to the User Guide and Methodology Documentation.</li>
     <br>
-    <img src="9.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <img src="how_to_step_10.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
     <li>In the <b>Scenarios</b> tab, click the boxes to choose which groups of projects to include in the scenario analysis.</li>
     <br>
-    <img src="10.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <img src="how_to_step_11.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
-    <li>It is possible to use a custom forecast on the <b>Advanced</b> tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. Refer to the user guide for more information.</li>
+    <li>It is possible to use a custom forecast on the <b>Advanced</b> tab for the number of EVs on the road (for example, for states that have a goal to add one million EVs to the road by a certain deadline), future VMT, and other advanced parameters. 
+    Refer to the User Guide and Methodology Documentation for more information.</li>
     <br>
 
     <li>To see the results of the data that have been entered, refer to the <b>Outputs</b> tab.</li>
     <br>
-    <img src="11.svg" style="width:90%; max-width:100%; height:auto; display:block;">
+    <img src="how_to_step_13.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
-    <li>Click <b>Download Summary Report</b> to get a PDF document with all of this information.</li>
+    <li>Click <b>Download Output Tables</b> in the sidebar to get an Excel file with all of this information.</li>
     <br>
-    <img src="12.svg" style="width:20%; max-width:100%; height:auto; display:block;">
+    <img src="how_to_step_14.svg" style="width:20%; max-width:100%; height:auto; display:block;">
   </ol>
   <br><br>
 ')
@@ -1058,7 +1073,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                                      
                               ),
                               column(3,
-                                     actionButton("fill_projects_bttn", "Fill Project Tab with Budget Inputs",
+                                     actionButton("fill_projects_bttn", "Fill Projects Tab with Budget Inputs",
                                                   class = "btn-custom",
                                                   style = "width:100%; height:90%;")
                               )
@@ -2395,9 +2410,9 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                   nav_panel(title = "Baseline GHG Forecast",
                             
                             HTML("This tab provides a projection 
-                                 of baseline emissions for the time 
-                                 horizons selected in the Baseline 
-                                 tab.<br>
+                                 of baseline greenhouse gas emissions 
+                                 (metric tons of carbon dioxide equivalent or MT CO2e) 
+                                 for the time horizons selected in the Baseline tab.<br>
                                  <br>"),
                             p(),
                             h3("Baseline Transportation GHG Forecast"),
@@ -3040,7 +3055,8 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
       
       
       
-      nav_panel(title = "Sources",
+      nav_panel(p(),
+                title = "Sources",
                 h2("Sources"),
                 p("The following resources were used in developing the TEA-CART tool."),
                 
