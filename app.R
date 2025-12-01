@@ -270,7 +270,8 @@ and potential applications.<br>
 browsers in a Windows (PC) environment. This is 
 recommended for optimal experience.</b><br>
 <p>
-Follow <i>[this link]</i> to access illustrative investment scenarios
+Follow <a href='https://www.georgetownclimate.org/blog/tea-cart-landing.html'>
+                  this link</a> to access illustrative investment scenarios
 and a related discussion to help TEA-CART users get oriented. This includes:</p>
 <ul>
   <li>A business-as-usual budget scenario, and</li>
@@ -1059,7 +1060,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                         <p><b>Alternatively, go to the Projects tab</b> if you would like to provide <i>project-level</i> inputs instead.
                         <p>Outputs are not generated automatically. After filling out the budget <b> click on the <i>Fill Project Tab 
                         with Budget Inputs</i> button in order to generate outputs</b>.
-                        <p>Keep in mind the following two rules when entering 
+                        <p>Keep in mind the following three rules when entering 
                         budget-level inputs:<br>
                         <p>
                         i) All spending is assumed to be equally distributed 
@@ -1067,6 +1068,8 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                         horizon year.<br>
                         ii) Spending estimates are assumed to be averages 
                         based on historical data.<br>
+                        iii) For some strategies there is a multi-year lag between the first year of investment and the first year in 
+                        which the tool will estimate changes in emissions or other outputs.<br>
                         <br>
                         
                        ")
@@ -2412,7 +2415,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                             HTML("This tab provides a projection 
                                  of baseline greenhouse gas emissions 
                                  (metric tons of carbon dioxide equivalent or MT CO2e) 
-                                 for the time horizons selected in the Baseline tab.<br>
+                                 for the time horizons selected in the <b>Baseline</b> tab.<br>
                                  <br>"),
                             p(),
                             h3("Baseline Transportation GHG Forecast"),
