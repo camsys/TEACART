@@ -647,9 +647,8 @@ Em_OnRoad_Base <- reactive({
     mutate(MT_CO2e_upstream = value*MT_CO2e_direct) %>% select(-value)
   
   return(em_on_road_base)
-  }) #Check if Qi is using this
+  }) 
 Em_OnRoad_Base_up <- reactive({
-  #browser()
   temp_eob<- left_join(VMT_Type_Tech_Base()[,c('veh_type','veh_subtype','year','mmt_by_subtype')],
                        EmRate_by_Tech()[,c('veh_type','veh_subtype','year','emission_rate')]) %>%
     left_join(PHEV_Em_Apportionment()[,c('veh_type','year','PHEV_elc_per_em')])
@@ -699,9 +698,60 @@ e_emmissions_apportionment <- reactive({
 
 #Tech_Frac_Vision ---- 
 Tech_Frac_Vision <- reactive({ #this is electiric vehicle projections
+  EV_Forecast <- EV_Forecast %>%
+    left_join(rvs$Advanced %>%
+                filter(table_no_ui == 1)%>%
+                select(veh_type, year, value) %>%
+                mutate(value = as.numeric(value)/100),
+              by = c("veh_type", "year")) %>%
+    rename(percEVstock_custom = value)
+  
+  TechFrac <- Stock_Type_Tech_BASE %>% left_join(EV_Forecast, by = c("veh_type", "year")) %>%
+    group_by(year, veh_type) %>%
+    #Baseline vision 2022 I think aka AEO
+    mutate(AEO_Tech_Frac = stock_millions/sum(stock_millions)) %>%
+    #select(year, veh_type, fuel_type, AEO_Tech_Frac) %>%
+    ungroup() %>%
+    mutate(is_ev_type = ifelse(veh_subtype %in% ev_fuel_types,1,0)) %>%
+    group_by(year, veh_type, is_ev_type) %>%
+    mutate(per_ev_nonev = AEO_Tech_Frac/sum(AEO_Tech_Frac)) %>%
+    #ACC Forecasting
+    ungroup() %>%
+    group_by(year, veh_type) %>%
+    mutate(ACC_Tech_Fractemp = percEVstock_ACC*per_ev_nonev*is_ev_type) %>%
+    mutate(ACC_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACC_Tech_Fractemp)), ACC_Tech_Fractemp)) %>%
+    mutate(ACC_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), AEO_Tech_Frac, ACC_Tech_Frac)) %>%
+    select(-ACC_Tech_Fractemp) %>%
+    ungroup() %>%
+    #ACCII Version
+    ungroup() %>%
+    group_by(year, veh_type) %>%
+    mutate(ACCII_Tech_Fractemp = percEVstock_ACCII*per_ev_nonev*is_ev_type) %>%
+    mutate(ACCII_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCII_Tech_Fractemp)), ACCII_Tech_Fractemp)) %>%
+    mutate(ACCII_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), AEO_Tech_Frac, ACCII_Tech_Frac)) %>%
+    select(-ACCII_Tech_Fractemp) %>%
+    ungroup() %>%
+    #ACC + ACT
+    group_by(year, veh_type) %>%
+    mutate(ACCACT_Tech_Fractemp = percEVstock_ACCACT*per_ev_nonev*is_ev_type) %>%
+    mutate(ACCACT_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCACT_Tech_Fractemp)), ACCACT_Tech_Fractemp)) %>%
+    mutate(ACCACT_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), ACCACT_Tech_Frac, ACC_Tech_Frac)) %>%
+    select(-ACCACT_Tech_Fractemp) %>%
+    ungroup() %>%
+    #ACCII + ACT
+    mutate(ACCIIACT_Tech_Frac = ifelse(veh_type %in% c("Passenger Car","Light-Duty Truck"), ACCII_Tech_Frac, ACCACT_Tech_Frac)) %>%
+    #custom
+    ungroup() %>%
+    group_by(year, veh_type) %>%
+    mutate(Custom_Tech_Fractemp = percEVstock_custom*per_ev_nonev*is_ev_type) %>%
+    mutate(Custom_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(Custom_Tech_Fractemp)), Custom_Tech_Fractemp)) %>%
+    mutate(Custom_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), AEO_Tech_Frac, Custom_Tech_Frac)) %>%
+    select(-Custom_Tech_Fractemp) %>%
+    ungroup()
+    
+  Tech_Frac_Vision_temp <- TechFrac 
   
   col <- case_match(rvs$Baseline$veh_elec_baseline, !!!ev_forecast_mapping)
-  Tech_Frac_Vision_temp <- TechFrac #dont think i need to reassign this to protect the original names
   
   names(Tech_Frac_Vision_temp)[names(Tech_Frac_Vision_temp) == col] <- "tech_frac_forecast" #this was the old aeo_tech_frac
   Tech_Frac_Vision_temp <- Tech_Frac_Vision_temp %>% select(veh_type, veh_subtype, year, stock_millions, tech_frac_forecast)
@@ -712,7 +762,7 @@ Tech_Frac_Vision <- reactive({ #this is electiric vehicle projections
 #passenger rail ----
 passenger_rail_miles <- reactive({ #not sure where we need this so I'm leaving it in this indeterminate form for now
   #req('')
-  #The data for the amtrak riders is wronge NOTE gonna ask Qi about this
+  #The data for the amtrak riders is wrong NOTE gonna ask Qi about this
   state_ch <- rvs$Baseline$state
   #browser()
   #passenger rail inputs
@@ -1010,7 +1060,6 @@ baseline_ghg_forecast <- reactive({
     mutate(veh_supertype = "Medium-/Heavy-Duty Vehicles") %>%
     mutate(subtract = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% #View()
     select(veh_supertype,year, subtract)
- #browser()
   temp<- Em_OnRoad_Base_up() %>%
     filter(year %in% c(rvs$Baseline$base_year, 
                        rvs$Baseline$horizon_year_1,

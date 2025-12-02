@@ -276,38 +276,52 @@ Tech_Frac_Vision <-
 
 #TechFrac object----
 
-TechFrac <- Stock_Type_Tech_BASE %>% left_join(EV_Forecast, by = c("veh_type", "year")) %>%
-  group_by(year, veh_type) %>%
-  #Baseline vision 2022 I think aka AEO
-  mutate(AEO_Tech_Frac = stock_millions/sum(stock_millions)) %>%
-  #select(year, veh_type, fuel_type, AEO_Tech_Frac) %>%
-  ungroup() %>%
-  mutate(is_ev_type = ifelse(veh_subtype %in% ev_fuel_types,1,0)) %>%
-  group_by(year, veh_type, is_ev_type) %>%
-  mutate(per_ev_nonev = AEO_Tech_Frac/sum(AEO_Tech_Frac)) %>%
-  #ACC Forecasting
-  ungroup() %>%
-  group_by(year, veh_type) %>%
-  mutate(ACC_Tech_Fractemp = percEVstock_ACC*per_ev_nonev*is_ev_type) %>%
-  mutate(ACC_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACC_Tech_Fractemp)), ACC_Tech_Fractemp)) %>%
-  mutate(ACC_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), AEO_Tech_Frac, ACC_Tech_Frac)) %>%
-  select(-ACC_Tech_Fractemp) %>%
-  ungroup() %>%
-  #ACCII Version
-  ungroup() %>%
-  group_by(year, veh_type) %>%
-  mutate(ACCII_Tech_Fractemp = percEVstock_ACCII*per_ev_nonev*is_ev_type) %>%
-  mutate(ACCII_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCII_Tech_Fractemp)), ACCII_Tech_Fractemp)) %>%
-  mutate(ACCII_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), AEO_Tech_Frac, ACCII_Tech_Frac)) %>%
-  select(-ACCII_Tech_Fractemp) %>%
-  ungroup() %>%
-  #ACC + ACT
-  group_by(year, veh_type) %>%
-  mutate(ACCACT_Tech_Fractemp = percEVstock_ACCACT*per_ev_nonev*is_ev_type) %>%
-  mutate(ACCACT_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCACT_Tech_Fractemp)), ACCACT_Tech_Fractemp)) %>%
-  mutate(ACCACT_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), ACCACT_Tech_Frac, ACC_Tech_Frac)) %>%
-  select(-ACCACT_Tech_Fractemp) %>%
-  ungroup() %>%
-  #ACCII + ACT
-  mutate(ACCIIACT_Tech_Frac = ifelse(veh_type %in% c("Passenger Car","Light-Duty Truck"), ACCII_Tech_Frac, ACCACT_Tech_Frac))
+# EV_Forecast_new <- EV_Forecast %>%
+#   left_join(rvs$Advanced %>%
+#               filter(table_no_ui == 1)%>%
+#               select(veh_type, year, value) %>%
+#               mutate(value = as.numeric(value)/100),
+#             by = c("veh_type", "year")) %>%
+#   rename(percEVstock_custom = value)
 
+# TechFrac <- Stock_Type_Tech_BASE %>% left_join(EV_Forecast, by = c("veh_type", "year")) %>%
+#   group_by(year, veh_type) %>%
+#   #Baseline vision 2022 I think aka AEO
+#   mutate(AEO_Tech_Frac = stock_millions/sum(stock_millions)) %>%
+#   #select(year, veh_type, fuel_type, AEO_Tech_Frac) %>%
+#   ungroup() %>%
+#   mutate(is_ev_type = ifelse(veh_subtype %in% ev_fuel_types,1,0)) %>%
+#   group_by(year, veh_type, is_ev_type) %>%
+#   mutate(per_ev_nonev = AEO_Tech_Frac/sum(AEO_Tech_Frac)) %>%
+#   #ACC Forecasting
+#   ungroup() %>%
+#   group_by(year, veh_type) %>%
+#   mutate(ACC_Tech_Fractemp = percEVstock_ACC*per_ev_nonev*is_ev_type) %>%
+#   mutate(ACC_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACC_Tech_Fractemp)), ACC_Tech_Fractemp)) %>%
+#   mutate(ACC_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), AEO_Tech_Frac, ACC_Tech_Frac)) %>%
+#   select(-ACC_Tech_Fractemp) %>%
+#   ungroup() %>%
+#   #ACCII Version
+#   ungroup() %>%
+#   group_by(year, veh_type) %>%
+#   mutate(ACCII_Tech_Fractemp = percEVstock_ACCII*per_ev_nonev*is_ev_type) %>%
+#   mutate(ACCII_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCII_Tech_Fractemp)), ACCII_Tech_Fractemp)) %>%
+#   mutate(ACCII_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), AEO_Tech_Frac, ACCII_Tech_Frac)) %>%
+#   select(-ACCII_Tech_Fractemp) %>%
+#   ungroup() %>%
+#   #ACC + ACT
+#   group_by(year, veh_type) %>%
+#   mutate(ACCACT_Tech_Fractemp = percEVstock_ACCACT*per_ev_nonev*is_ev_type) %>%
+#   mutate(ACCACT_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(ACCACT_Tech_Fractemp)), ACCACT_Tech_Fractemp)) %>%
+#   mutate(ACCACT_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), ACCACT_Tech_Frac, ACC_Tech_Frac)) %>%
+#   select(-ACCACT_Tech_Fractemp) %>%
+#   ungroup() %>%
+#   #ACCII + ACT
+#   mutate(ACCIIACT_Tech_Frac = ifelse(veh_type %in% c("Passenger Car","Light-Duty Truck"), ACCII_Tech_Frac, ACCACT_Tech_Frac)) %>%
+#   #custom
+#   # ungroup() %>%
+#   # group_by(year, veh_type) %>%
+#   # mutate(Custom_Tech_Fractemp = percEVstock_custom*per_ev_nonev*is_ev_type) %>%
+#   # mutate(Custom_Tech_Frac = ifelse(is_ev_type == 0, per_ev_nonev*(1-sum(Custom_Tech_Fractemp)), Custom_Tech_Fractemp)) %>%
+#   # mutate(Custom_Tech_Frac = ifelse(veh_type %in% c("Medium-Duty Truck","Heavy-Duty Truck"), AEO_Tech_Frac, Custom__Tech_Frac)) %>%
+#   # select(-Custom_Tech_Fractemp)

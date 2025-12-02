@@ -127,14 +127,13 @@ ui <- function(request) {
       
       # footer -----------------------------------------------------------------------
       footer =  fluidRow( class="footer",
-                          #SLBOOKMARK
                           useShinyjs(),
                           column(width = 12,
                                  tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                         href = "https://www.georgetownclimate.org/", target = "_blank"),
-                                 #tags$p("Adapted from TEA-CART Excel Model Version 1.14"),
-                                 tags$p("Last updated November 3, 2025"),
-                                 tags$p("Developed by Cambridge Systematics, Inc."),
+                                 tags$p("Adapted from TEA-CART Excel Model Version 1.14"),
+                                 tags$p("Shiny App last updated November 26, 2025"),
+                                 tags$p("Prototype under development by Cambridge Systematics, Inc."),
                                  tags$p("under contract to Georgetown Climate Center"),
                                  tags$p("©2025 Georgetown Climate Center (All Rights Reserved)")
                           ),
@@ -230,7 +229,8 @@ ui <- function(request) {
                         # downloadButton("pdf_report","Download Summary Report"),
                         HTML("<p>More information can be found in the <b>How-to</b> tab.</p>
                              <p>
-                             For more detailed guidance, please refer to the <a href='https://camsys.shinyapps.io/TEA-CART/_w_5d75c74185704a68841983641c922643/_w_926631baafd6430185a4724987bec338/TEACART%20User%20Guide%20and%20Methodology%20v.1.10.3.pdf'>User Guide and Methodology Documentation</a>.")),
+                             For more detailed guidance, please refer to the <a href='TEACART User Guide and Methodology v.1.10.3.pdf' target='_blank'>the User Guide and Methodology Documentation</a>.")),
+
       
       
       # welcome page ------------------------------------------------------------
@@ -272,6 +272,7 @@ recommended for optimal experience.</b><br>
 <p>
 Follow <a href='https://www.georgetownclimate.org/blog/tea-cart-landing.html'>
                   this link</a> to access illustrative investment scenarios
+
 and a related discussion to help TEA-CART users get oriented. This includes:</p>
 <ul>
   <li>A business-as-usual budget scenario, and</li>
@@ -381,9 +382,9 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
     <li>Data are entered in tables. To begin entering (or editing) data, double click anywhere in the table using your mouse. When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.</li>
     <li>When you are ready to see the results of your analysis, proceed to the <b>Scenarios</b> tab and select scenarios for analysis. Either choose groups of projects (to support a comparison) or click the button to select all projects for each scenario.</li>
   </ul>
-  <p>Click <a href="TEA-CART How-to Guide_Final.pdf">here</a> to download a PDF copy of this guide.<br>
+  <p>Click <a href="TEA-CART How-to Guide.pdf" target="_blank">here</a> to download a PDF copy of this guide.<br>
   <p>
-  To learn more about how to use the tool and how it works, please see the <a href="TEACART User Guide and Methodology v.1.10.3.pdf">User Guide and Methodology Documentation</a>.<br>
+  To learn more about how to use the tool and how it works, please see the <a href="TEACART User Guide and Methodology v.1.10.3.pdf" target="_blank">User Guide and Methodology Documentation</a>.<br>
   <p>
   <i>To report a problem in the tool, please send an email to <u>climate@georgetown.edu</u> 
   with “TEA-CART Help” in the subject line.</i>
@@ -578,7 +579,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                                               tags$div(class = "half-card",
                                                        selectInput("grid_emissions_input",
                                                                    HTML("<span>Electricity Grid Emissions Net-Zero Year:</span> <br> <p>The target year for achieving net-zero electricity grid emissions.<br>"),
-                                                                   choices = c("No Change", 2021:2050),
+                                                                   choices = c(2021:2050),
                                                                    selected= 2050)
                                               ),
                                      ),
@@ -597,11 +598,14 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                                      ),
                                      tags$div(class = "well card-flex",
                                               tags$div(class = "half-card",
+                                                       tags$div(
+                                                         style = "margin-bottom: 3rem;",
                                                        selectInput("mode_choice",
                                                                    HTML("<span>Select Mode: </span> <br> <p>Choose between Capital Projects or Budget, to indicate whether you plan to input data under the Projects tab (using project-level information) or the Budget tab (i.e., dollar values).<br>"),
                                                                    choices = c("Capital Projects",
                                                                                "Budget"),
                                                                    selected = "Capital Projects")
+                                                       )
                                               )
                                      )
                               )),
