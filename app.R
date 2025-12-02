@@ -3536,8 +3536,38 @@ server <- function(input, output, session) {
       ## add a tab showing the unit description
       
       reference_tab <- data.frame(
-        Header = c("MT GHG", "VMT", "MT NOx", "MT PM2.5","Daily Active Trips"),
+        Tab = c("GHG Result",
+                "Scenario Result",
+                "Scenario Result",
+                "Scenario Result",
+                "Scenario Result",
+                "Strategy Result", # 6
+                "Strategy Result",
+                "Cost Effectiveness",
+                "Cost Effectiveness",
+                "Cost Effectiveness",
+                "Cost Effectiveness",
+                "Cost Effectiveness"),
+        Header = c("Overview",
+                   "Overview",
+                   "MT_Reduction",
+                   "Indicator",
+                   "Indicator",
+                   "Overview", #6
+                   "total_change",
+                   "MT GHG",
+                   "VMT",
+                   "MT NOx",
+                   "MT PM2.5",
+                   "Daily Active Trips"),
         Description = c(
+          "Projected greenhouse gas emisisons (metric tons of carbon dioxide equivalent, or MT CO2e.",
+          "Results indicate a change in conditions, relative to baseline, for each horizon year.",
+          "Metric tons or MT",
+          "VMT: Vehicle Miles Traveled (Millions)",
+          "New Daily Active Trips: Additional trips made using an active mode of transportation",
+          "Results indicate a change in conditions, relative to baseline, for each strategy included in the analysis and for each horizon year.", #6
+          "Total change is measured by change in emissions measured in metric tons (MT) unless otherwise specified, as in: total_change_newtrips (equal to the total change in new daily active trips), total_change_VMT (equal to the total change in million Vehicle Miles Traveled).",
           "Annual GHG reductions (metric tons) per $1 million invested",
           "Annual Vehicle Miles Traveled (VMT) reduction per $1 million invested",
           "Annual NOx reductions (metric tons) per $1 million invested",
