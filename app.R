@@ -132,7 +132,7 @@ ui <- function(request) {
                                  tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                         href = "https://www.georgetownclimate.org/", target = "_blank"),
                                  tags$p("Adapted from TEA-CART Excel Model Version 1.14"),
-                                 tags$p("Shiny App last updated November 26, 2025"),
+                                 tags$p("Shiny App last updated December 1, 2025"),
                                  tags$p("Prototype under development by Cambridge Systematics, Inc."),
                                  tags$p("under contract to Georgetown Climate Center"),
                                  tags$p("©2025 Georgetown Climate Center (All Rights Reserved)")
@@ -229,7 +229,7 @@ ui <- function(request) {
                         # downloadButton("pdf_report","Download Summary Report"),
                         HTML("<p>More information can be found in the <b>How-to</b> tab.</p>
                              <p>
-                             For more detailed guidance, please refer to the <a href='TEACART User Guide and Methodology v.1.10.3.pdf' target='_blank'>the User Guide and Methodology Documentation</a>.")),
+                             For more detailed guidance, please refer to the <a href='TEACART User Guide and Methodology v.1.14_Nov-2025.pdf' target='_blank'>the User Guide and Methodology Documentation</a>.")),
 
       
       
@@ -270,7 +270,7 @@ and potential applications.<br>
 browsers in a Windows (PC) environment. This is 
 recommended for optimal experience.</b><br>
 <p>
-Follow <a href='https://www.georgetownclimate.org/blog/tea-cart-landing.html'>
+Follow <a href='https://www.georgetownclimate.org/blog/tea-cart-landing.html' target='_blank'>
                   this link</a> to access illustrative investment scenarios
 
 and a related discussion to help TEA-CART users get oriented. This includes:</p>
@@ -330,9 +330,9 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                   <p>It is important to reiterate that TEA-CART is designed to 
                   inform planning-stage decision making, before highly specific, 
                   project-level information is available. For project-level 
-                  analysis <a href='https://crp.trb.org/nchrpwebresource1/10-0transportation-systems-planning/'>
+                  analysis <a href='https://crp.trb.org/nchrpwebresource1/10-0transportation-systems-planning/' target ='_blank>
                   other tools</a> are available, like the 
-                  <a href='https://www.fhwa.dot.gov/environment/air_quality/cmaq/toolkit/'> CMAQ Toolkit</a>.
+                  <a href='https://www.fhwa.dot.gov/environment/air_quality/cmaq/toolkit/' target ='_blank'> CMAQ Toolkit</a>.
                   <p><b>Inputs:</b> Inputs to the tool typically include those 
                   available during the state or MPO transportation capital 
                   program planning process. For example:</p>
@@ -384,7 +384,6 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
   </ul>
   <p>Click <a href="TEA-CART How-to Guide.pdf" target="_blank">here</a> to download a PDF copy of this guide.<br>
   <p>
-  To learn more about how to use the tool and how it works, please see the <a href="TEACART User Guide and Methodology v.1.10.3.pdf" target="_blank">User Guide and Methodology Documentation</a>.<br>
   <p>
   <i>To report a problem in the tool, please send an email to <u>climate@georgetown.edu</u> 
   with “TEA-CART Help” in the subject line.</i>
@@ -3304,7 +3303,7 @@ server <- function(input, output, session) {
   },ignoreInit = T)
   
   
-  nav_select(id = "INPUTS_TABS",selected = "Projects")
+  nav_select(id = "INPUTS_TABS",selected = "Baseline")
   
   # Initiate or Upload User Inputs -----------------------------------------
   
@@ -8569,7 +8568,7 @@ table.on('draw', function(){
     nav_select(id = "APP_PAGE",selected = "How-to")
   },ignoreInit = T)
   observeEvent(input$guide_btn,{
-    shinyjs::runjs("window.open('TEACART User Guide and Methodology v.1.10.3.pdf', '_blank')")
+    shinyjs::runjs("window.open('TEACART User Guide and Methodology v.1.14_Nov-2025.pdf', '_blank')")
   },ignoreInit = T)
   observeEvent(input$sources_btn,{
     nav_select(id = "APP_PAGE",selected = "Sources")
