@@ -1382,7 +1382,7 @@ scenario_summary_results <- reactive({    #req('')
               Scenario2 = sum(total_change_mtnox*Scenario2,na.rm=T)) %>%
     pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")%>% 
     pivot_wider(names_from= year, values_from = value)  %>%
-    mutate(table_title = "NOx Reduction (MT)")
+    mutate(table_title = "NOx Change (MT)")
   
   scen_NOX[,as.character(rvs$Baseline$base_year)]<-0
   
@@ -1392,7 +1392,7 @@ scenario_summary_results <- reactive({    #req('')
               Scenario2 = sum(total_change_pm25*Scenario2,na.rm=T)) %>%
     pivot_longer(cols = c(Scenario1,Scenario2), names_to = "Scenario")%>% 
     pivot_wider(names_from= year, values_from = value)  %>%
-    mutate(table_title = "PM2.5 Reduction (MT)")
+    mutate(table_title = "PM2.5 Change (MT)")
   
   scen_PM25[,as.character(rvs$Baseline$base_year)]<-0
   
@@ -1416,7 +1416,7 @@ scenario_summary_results <- reactive({    #req('')
   
   fin_emissions_reduction_table <- scen_co2 %>%
     pivot_wider(names_from = year) %>% 
-    mutate(table_title = "Emissions Reduction (MT from Baseline)")
+    mutate(table_title = "Emissions Change (MT from Baseline)")
   
   fin_emissions_reduction_table[,as.character(rvs$Baseline$base_year)]<-0
   
@@ -1425,7 +1425,7 @@ scenario_summary_results <- reactive({    #req('')
                                                                               ifelse(year == rvs$Baseline$horizon_year_2, (value)/base_year_3_co2,
                                                                                      ifelse(year == rvs$Baseline$horizon_year_3,(value)/base_year_4_co2, NA)))) %>%
     pivot_wider(names_from = year) %>% 
-    mutate(table_title = "Emissions Reduction (% from Baseline)")
+    mutate(table_title = "Emissions Change (% from Baseline)")
   
   fin_emissions_per_change_table[,as.character(rvs$Baseline$base_year)]<-0
   
@@ -1441,7 +1441,7 @@ scenario_summary_results <- reactive({    #req('')
   
   fin_vmt_reduction_table <- scen_VMT  %>%
     pivot_wider(names_from = year)%>%
-    mutate(table_title = "VMT Reduction (millions from Baseline)")
+    mutate(table_title = "VMT Change (Millions of Trips from Baseline)")
   
   fin_vmt_reduction_table[,as.character(rvs$Baseline$base_year)]<-0
   #browser()
@@ -1450,7 +1450,7 @@ scenario_summary_results <- reactive({    #req('')
                                                                         ifelse(year == rvs$Baseline$horizon_year_2, (value)/base_year_3_VMT,
                                                                                ifelse(year == rvs$Baseline$horizon_year_3,(value)/base_year_4_VMT, NA))))) %>% 
     pivot_wider(names_from = year) %>%
-    mutate(table_title = "VMT Reduction (% from Baseline)")
+    mutate(table_title = "VMT Change (% from Baseline)")
  #browser()
   fin_vmt_per_change_table[,as.character(rvs$Baseline$base_year)]<-0
   

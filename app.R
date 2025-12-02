@@ -330,7 +330,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                   <p>It is important to reiterate that TEA-CART is designed to 
                   inform planning-stage decision making, before highly specific, 
                   project-level information is available. For project-level 
-                  analysis <a href='https://crp.trb.org/nchrpwebresource1/10-0transportation-systems-planning/' target ='_blank>
+                  analysis <a href='https://crp.trb.org/nchrpwebresource1/10-0transportation-systems-planning/' target ='_blank'>
                   other tools</a> are available, like the 
                   <a href='https://www.fhwa.dot.gov/environment/air_quality/cmaq/toolkit/' target ='_blank'> CMAQ Toolkit</a>.
                   <p><b>Inputs:</b> Inputs to the tool typically include those 
@@ -2466,8 +2466,8 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                                              choices = c( 
                                                'MT CO2e' = 'Emissions (MT CO2e)',
                                                'VMT' = 'VMT (millions)',
-                                               'MT NOx' = 'NOx Reduction (MT)',
-                                               'MT PM2.5' = 'PM2.5 Reduction (MT)',
+                                               'MT NOx' = 'NOx Change (MT)',
+                                               'MT PM2.5' = 'PM2.5 Change (MT)',
                                                'Daily Active Trips' = 'New Daily Active Trips')
                               )),
                             fluidRow(
@@ -3513,10 +3513,10 @@ server <- function(input, output, session) {
       scen_data <- scenario_summary_results() %>%
         filter(grepl("Reduction", table_title)|table_title == "New Daily Active Trips") %>%
         filter(!grepl("%",table_title)) %>%
-        mutate(table_title = case_when(table_title == "Emissions Reduction (MT from Baseline)" ~ 'CO2',
-                                       table_title == "VMT Reduction (millions from Baseline)" ~ 'VMT',
-                                       table_title == "NOx Reduction (MT)" ~ 'NOx',
-                                       table_title == "PM2.5 Reduction (MT)" ~ 'PM2.5',
+        mutate(table_title = case_when(table_title == "Emissions Change (MT from Baseline)" ~ 'CO2',
+                                       table_title == "VMT Change (millions from Baseline)" ~ 'VMT',
+                                       table_title == "NOx Change (MT)" ~ 'NOx',
+                                       table_title == "PM2.5 Change (MT)" ~ 'PM2.5',
                                        table_title == "New Daily Active Trips" ~ 'New Daily Active Trips')) %>%
         rename(indicator = table_title) %>%
         pivot_longer(cols = as.character(c(rvs$Baseline$base_year,
@@ -3561,7 +3561,7 @@ server <- function(input, output, session) {
                    "MT PM2.5",
                    "Daily Active Trips"),
         Description = c(
-          "Projected greenhouse gas emisisons (metric tons of carbon dioxide equivalent, or MT CO2e.",
+          "Projected greenhouse gas emisisons (metric tons of carbon dioxide equivalent, or MT CO2e).",
           "Results indicate a change in conditions, relative to baseline, for each horizon year.",
           "Metric tons or MT",
           "VMT: Vehicle Miles Traveled (Millions)",
@@ -7438,7 +7438,7 @@ table.on('draw', function(){
                 name = "") %>%
       layout(showlegend = FALSE,
              xaxis = list(title = 'Year'),
-             yaxis = list(title = "Emisions", separatethousands= TRUE)) %>%
+             yaxis = list(title = "Emissions", separatethousands= TRUE)) %>%
       config(displayModeBar = FALSE) 
     
     return(lplot)
