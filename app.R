@@ -384,6 +384,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
   </ul>
   <p>Click <a href="TEA-CART How-to Guide.pdf" target="_blank">here</a> to download a PDF copy of this guide.<br>
   <p>
+  To learn more about how to use the tool and how it works, please see the <a href="TEACART User Guide and Methodology v.1.14_Nov-2025.pdf" target="_blank">User Guide and Methodology Documentation.</a><br>
   <p>
   <i>To report a problem in the tool, please send an email to <u>climate@georgetown.edu</u> 
   with “TEA-CART Help” in the subject line.</i>
