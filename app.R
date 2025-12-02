@@ -7323,7 +7323,7 @@ table.on('draw', function(){
   # BASELINE GHG FORECAST -------------------------------------------------
   
   output$baseline_outputs <- renderDT({
-    #browser()
+    browser()
     req(baseline_ghg_forecast())
     
     dt <- baseline_ghg_forecast()

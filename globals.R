@@ -19,7 +19,7 @@ ev_forecast_mapping <- c("AEO Baseline" ~ "AEO_Tech_Frac",
                          "ACC" ~ "ACC_Tech_Frac",
                          "ACC II" ~ "ACCII_Tech_Frac",
                          "ACC II + ACT" ~ "ACCACT_Tech_Frac",
-                         "Custom" ~ "Custom")
+                         "Custom" ~ "Custom_Tech_Frac")
 
 veh_subtype_to_fuel_type_mapping <- c("Gasoline ICE" ~ "Gasoline",
                                       "EV100" ~ "Electricity",
