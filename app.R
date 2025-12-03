@@ -132,7 +132,7 @@ ui <- function(request) {
                                  tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                         href = "https://www.georgetownclimate.org/", target = "_blank"),
                                  tags$p("Adapted from TEA-CART Excel Model Version 1.14"),
-                                 tags$p("Shiny App last updated December 1, 2025"),
+                                 tags$p("Shiny App last updated December 3, 2025"),
                                  tags$p("Prototype under development by Cambridge Systematics, Inc."),
                                  tags$p("under contract to Georgetown Climate Center"),
                                  tags$p("©2025 Georgetown Climate Center (All Rights Reserved)")
@@ -382,7 +382,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
     <li>Data are entered in tables. To begin entering (or editing) data, double click anywhere in the table using your mouse. When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.</li>
     <li>When you are ready to see the results of your analysis, proceed to the <b>Scenarios</b> tab and select scenarios for analysis. Either choose groups of projects (to support a comparison) or click the button to select all projects for each scenario.</li>
   </ul>
-  <p>Click <a href="TEA-CART How-to Guide.pdf" target="_blank">here</a> to download a PDF copy of this guide.<br>
+  <p>Click <a href="TEA-CART How-to Guide_Final.pdf" target="_blank">here</a> to download a PDF copy of this guide.<br>
   <p>
   To learn more about how to use the tool and how it works, please see the <a href="TEACART User Guide and Methodology v.1.14_Nov-2025.pdf" target="_blank">User Guide and Methodology Documentation.</a><br>
   <p>
@@ -2272,7 +2272,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                                      accordion(
                                        accordion_panel(
                                          "Advanced 2 | Custom Forecast: Vehicle Miles Traveled (VMT)",
-                                         HTML("This represents the vehicle miles traveled (VMT) forecast used for baseline projections."),
+                                         HTML("This represents the vehicle miles traveled (VMT) forecast used for baseline projections (units: annual vehicle miles traveled, million)."),
                                          
                                        ),
                                        open = TRUE
@@ -3192,7 +3192,7 @@ server <- function(input, output, session) {
                   input$base_year >= input$horizon_year_1|
                   input$base_year >= input$horizon_year_2|
                   input$base_year >= input$horizon_year_3)){
-        warning = c(warning, "Base Year is higher than ")
+        warning = c(warning, "Base Year is higher than future horizon years.")
       }
       
       if(is.na(input$horizon_year_1)){
@@ -3213,7 +3213,7 @@ server <- function(input, output, session) {
         rvs$Baseline$horizon_year_2 = input$horizon_year_2
         
       } else  if(!is.na(input$horizon_year_3)&(input$horizon_year_2 >= input$horizon_year_3)){
-        warning = c(warning,"Horizon Year 2 is higher than Horizon Year 3")
+        warning = c(warning,"Horizon Year 2 is higher than Horizon Year 3.")
       }
       
       if(is.na(input$horizon_year_3)){
@@ -3513,8 +3513,8 @@ server <- function(input, output, session) {
       scen_data <- scenario_summary_results() %>%
         filter(grepl("Reduction", table_title)|table_title == "New Daily Active Trips") %>%
         filter(!grepl("%",table_title)) %>%
-        mutate(table_title = case_when(table_title == "Emissions Change (MT from Baseline)" ~ 'CO2',
-                                       table_title == "VMT Change (millions from Baseline)" ~ 'VMT',
+        mutate(table_title = case_when(table_title == "Emissions Change (MT CO2e from Baseline)" ~ 'CO2',
+                                       table_title == "VMT Change (Millions of Trips from Baseline)" ~ 'VMT',
                                        table_title == "NOx Change (MT)" ~ 'NOx',
                                        table_title == "PM2.5 Change (MT)" ~ 'PM2.5',
                                        table_title == "New Daily Active Trips" ~ 'New Daily Active Trips')) %>%
