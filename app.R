@@ -8227,7 +8227,7 @@ table.on('draw', function(){
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-    # browser()
+     # browser()
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     
