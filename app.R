@@ -7897,7 +7897,7 @@ table.on('draw', function(){
   
   output$intermodal_costs_outputs_tbl <- renderDT({
     print("RENDERING: Freight Intermodal cuts Costs Outputs")
-    #browser()
+     # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==13,], #slchanged
       output_table = cost_effectiveness_freight(),

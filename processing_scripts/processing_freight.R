@@ -105,8 +105,8 @@ cost_effectiveness_freight <- reactive({
   #  total_change_gGHG = emissions_avg*
     
   #  emrate_frieght() |> View()
-  mdhd <- emrate_freight()$emissions_avg[emrate_freight()$year == input$horizon_year_1][[1]]*as.numeric(rvs$Advanced$value[rvs$Advanced$unit == "intermodal_investment_factor_truck"&!is.na(rvs$Advanced$value)][[1]])
-  fr_rail <- emissions_avg_rail()*as.numeric(rvs$Advanced$value[rvs$Advanced$unit == "intermodal_investment_factor_rail"&!is.na(rvs$Advanced$value)][[1]])
+  mdhd <- emrate_freight()$emissions_avg[emrate_freight()$year == input$horizon_year_1][[1]]*as.numeric(rvs$Advanced$value[rvs$Advanced$table_no_ui==5 & rvs$Advanced$unit == "intermodal_investment_factor_truck"&!is.na(rvs$Advanced$value)][[1]])
+  fr_rail <- emissions_avg_rail()*as.numeric(rvs$Advanced$value[rvs$Advanced$table_no_ui==5&rvs$Advanced$unit == "intermodal_investment_factor_rail"&!is.na(rvs$Advanced$value)][[1]])
   
   ret <- data.frame(total_change_gGHG = mdhd + fr_rail,
                 total_change_VMT =  as.numeric(pull(filter(rvs$Advanced, unit == "intermodal_investment_factor_truck"), value))) |> 

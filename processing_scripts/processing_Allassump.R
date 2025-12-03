@@ -328,6 +328,7 @@ all_costs_detail <- reactive({
     proj_life = 30,#needs to project lifes actually :(
     style = 'detail'
   )
+  #browser()
   intermodal<- cost_function(
     ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==13,], #slchanged
     output_table = cost_effectiveness_freight(),
