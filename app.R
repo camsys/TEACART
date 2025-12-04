@@ -7021,7 +7021,23 @@ table.on('draw', function(){
       decimal_rows = integer(0),
       pivot_col = c('year','veh_type','value'))
   })
-  
+  # qi working here
+  # observeEvent(input$state_input, {
+  #   browser()
+  #                base_vmt <- VMT_Type_Tech_Base() %>%
+  #                  filter(veh_subtype == 'Gasoline ICE') %>%
+  #                  select('veh_type', 'year', 'state_vmt_AEO')
+  #                advanced_vmt <- rvs$Advanced[rvs$Advanced$table_no_ui==2,]
+  #                advanced_vmt <- advanced_vmt %>%
+  #                  left_join(base_vmt, by = c('veh_type' = 'veh_type',
+  #                                             'year' = 'year')) %>%
+  #                  # mutate(value = ifelse(is.na(value)|value =="", state_vmt_AEO,value),
+  #                  mutate(value =  state_vmt_AEO,
+  #                         value = as.character(value)) %>%
+  #                  select(-'state_vmt_AEO')
+  #                
+  #                rvs$Advanced[rvs$Advanced$table_no_ui == 2,] <- advanced_vmt
+  #              })
   output$vmt_forecast_sheet_tbl <- renderDT({
     render_custom_datatable(
       data_reactive = rvs$Advanced,
@@ -7214,7 +7230,6 @@ table.on('draw', function(){
   # reshaping vmt_forecast_sheet_tbl
   observeEvent(input$vmt_forecast_sheet_tbl_cell_edit, {
     req(rvs$Advanced)
-    
     rvs$Advanced[rvs$Advanced$table_no_ui == 2,] <- reshaping_advanced(input$vmt_forecast_sheet_tbl_cell_edit,
                                                                        rvs$Advanced,
                                                                        tbl_no = 2,
@@ -8227,7 +8242,6 @@ table.on('draw', function(){
   
   
   output$strategy_summary_tbl <- DT::renderDataTable({
-     # browser()
     scen_filter <- reactive_scenario()
     req( scenario_sum())
     

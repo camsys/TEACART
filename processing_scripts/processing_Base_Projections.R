@@ -437,6 +437,23 @@ observeEvent(input$state_input, {
    
   #EV Time Series as well
   
+  # qi work here 12/4/2025
+  ## process the VMT Forecast - custom 
+  # browser()
+  base_vmt <- VMT_Forecast() %>%
+                     filter(year != 2020) %>%
+                     select('veh_type', 'year', 'state_vmt_AEO')
+                   advanced_vmt <- rvs$Advanced[rvs$Advanced$table_no_ui==2,]
+                   advanced_vmt <- advanced_vmt %>%
+                     left_join(base_vmt, by = c('veh_type' = 'veh_type',
+                                                'year' = 'year')) %>%
+                     mutate(value = ifelse(is.na(value)|value =="", state_vmt_AEO,value)) %>%
+                     mutate(#value =  state_vmt_AEO,
+                            value = as.character(value)) %>%
+                     select(-'state_vmt_AEO')
+                   
+    rvs$Advanced[rvs$Advanced$table_no_ui == 2,] <- advanced_vmt
+    
   
   
   })
@@ -659,10 +676,10 @@ Em_OnRoad_Base <- reactive({
   return(em_on_road_base)
   }) 
 Em_OnRoad_Base_up <- reactive({
+
   temp_eob<- left_join(VMT_Type_Tech_Base()[,c('veh_type','veh_subtype','year','mmt_by_subtype')],
                        EmRate_by_Tech()[,c('veh_type','veh_subtype','year','emission_rate')]) %>%
     left_join(PHEV_Em_Apportionment()[,c('veh_type','year','PHEV_elc_per_em')])
-  
   temp_eob<-temp_eob %>% 
     mutate(fuel_type = case_match(veh_subtype, !!!veh_subtype_to_fuel_type_mapping)) %>%
     mutate(phev_bin = !(veh_subtype %in% PHEV_fuel_types)) %>%
@@ -1070,6 +1087,7 @@ baseline_ghg_forecast <- reactive({
     mutate(veh_supertype = "Medium-/Heavy-Duty Vehicles") %>%
     mutate(subtract = MT_CO2e_direct + use_e*MT_CO2e_electricity+use_up*MT_CO2e_upstream) %>% #View()
     select(veh_supertype,year, subtract)
+  
   temp<- Em_OnRoad_Base_up() %>%
     filter(year %in% c(rvs$Baseline$base_year, 
                        rvs$Baseline$horizon_year_1,
@@ -1210,13 +1228,29 @@ output$baseline_line_graph <- renderPlotly({
 ### these tables don't have to be show to the user, but it is helpful to have them as reactive tables
 
 #VMT Type Tech Base ----
-VMT_Type_Tech_Base <- reactive({ #this is VMT 
+VMT_Type_Tech_Base <- reactive({ #this is VMT  NOT TECH_BASE
   #browser()
 
   state_ch <- rvs$Baseline$state
   nhs_ch <- rvs$Baseline$trans_system_scope
-  #browser()
-  VMT_VehType<-VMT_Forecast() #name is a bit historic probably should be changed
+
+  if (input$vmt_forecast_input == 'Default'){
+  VMT_VehType<-VMT_Forecast()
+  
+  } else{
+    edited_val <- rvs$Advanced[rvs$Advanced$table_no_ui==2,] %>% 
+      select('value','veh_type','year') 
+      
+    VMT_VehType <- VMT_Forecast() %>%
+      select(-"state_vmt_AEO") %>%
+      left_join(edited_val, by = c('veh_type' = 'veh_type',
+                                 'year' = 'year')) %>%
+      mutate(value = as.numeric(value)) %>%
+      rename(state_vmt_AEO = value)
+      
+  } #name is a bit historic probably should be changed
+  
+  
   nhs_vals <- filter(NHS_VMT, state == state_ch)
   tech_frac_temp <- Tech_Frac_Vision()
   
@@ -1240,13 +1274,13 @@ VMT_Type_Tech_Base <- reactive({ #this is VMT
   
 })
 
+
 VMT_Forecast <- reactive({
   
   AEO_VMT %>%
     left_join(filter(VMT_State_Allocation, state == rvs$Baseline$state) %>% select(year, state_vmt_pct_of_national), 
               by = join_by(year)) %>%
     mutate(state_vmt_AEO = VMT_AEO * state_vmt_pct_of_national) # state VMT forecast 
-  
 })
 
 ### category breakouts needed for EVSE -------

@@ -77,14 +77,34 @@ render_custom_datatable <- function(#input_reactives,
       select(where(select_fun)) %>% #NOTE: This will delete columns with NAs so if you send it empty data watch out
       #mutate(unit = map_chr(unit, ~ references_vector[.x] %||% .x)) %>%
       rename(any_of(references_vector))
-    } else if (is_advanced_table == TRUE & is_year_table == TRUE){
+    } else if (is_advanced_table == TRUE & is_year_table == TRUE 
+               # & table_number == 1
+               ){
       reshaped_table <- data_reactive  %>%
         filter(table_no_ui == table_number) %>% 
         conditionally_transform() %>% 
         ungroup() %>%
         #select(where(select_fun)) %>% #NOTE: This will delete columns with NAs so if you send it empty data watch out
         rename(any_of(references_vector))
-    } else {
+    } 
+    # else if (is_advanced_table == TRUE & is_year_table == TRUE & table_number == 2){
+    #   
+    #   base_vmt <- VMT_Type_Tech_Base() %>% filter(veh_subtype == 'Gasoline ICE') %>% select('veh_type', 'year', 'state_vmt_AEO')
+    #   browser()
+    #   
+    #   reshaped_table <- data_reactive  %>%
+    #     filter(table_no_ui == table_number) %>%
+    #     left_join(base_vmt, by = c('veh_type' = 'veh_type',
+    #                                'year' = 'year')) %>%
+    #     mutate(value = ifelse(is.na(value)|value =="", state_vmt_AEO,value)) %>%
+    #     select(-'state_vmt_AEO') %>%
+    #     conditionally_transform() %>% 
+    #     ungroup() %>%
+    #     #select(where(select_fun)) %>% #NOTE: This will delete columns with NAs so if you send it empty data watch out
+    #     rename(any_of(references_vector))
+# 
+#     }      
+    else {
       reshaped_table <- data_reactive  %>%
         filter(table_no_ui == table_number) %>% 
         conditionally_transform() %>% 
