@@ -123,16 +123,25 @@ cost_effectiveness_EVSE <- reactive({
     group_by(veh_supertype) %>% 
     summarize(emrate_diff = sum(emrate_Electric, na.rm = T) - sum(emrate_Conventional, na.rm = T))
   
+  browser()
   fin<-elasticities_by_port_type() %>%
     mutate(veh_supertype = if_else(str_detect(charge_port_detail, "General public"), "Light-Duty Vehicles", "Medium-/Heavy-Duty Vehicles")) %>%
     left_join(select(filter(Stock_filtered(), year == input$horizon_year_1), veh_supertype, MT_per_vehtype), by = join_by(veh_supertype)) %>%
     left_join(emrate_diff, by = join_by(veh_supertype)) %>%
-    left_join(Fuel_Factors_Weighted() %>% filter(veh_subtype == "All") %>% select(-veh_subtype) %>% rename(veh_supertype = veh_type)) %>%
+    left_join(Fuel_Factors_Weighted() %>% filter(veh_subtype == "All") %>% select(-veh_subtype) %>% rename(veh_supertype = veh_type))
+  
+  incentive <- fin %>% filter(charge_port_detail == 'Level 2: General public') %>%
+    mutate(charge_port_detail = 'EV Incentive',
+           veh_sales_elasticity_wrt_ports  = 1,
+           veh_supertype = "")
+  fin <- fin %>%
+    bind_rows(incentive) %>%
     mutate(GHG = MT_per_vehtype*veh_sales_elasticity_wrt_ports*emrate_diff,
            VMT = 0,
            NOX = -MT_per_vehtype*veh_sales_elasticity_wrt_ports*NOx_g_per_veh_mi,
            PM25 = -MT_per_vehtype*veh_sales_elasticity_wrt_ports*PM25_exhaust_per_veh_mi,
-           ACTIVE = 0) %>%
+           ACTIVE = 0
+           ) %>%
     rename(total_change_gGHG = GHG,
            total_change_VMT = VMT,
            total_change_gnox = NOX,

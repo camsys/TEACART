@@ -23,6 +23,7 @@ output_roadway_resurf <- reactive({
   value_kg_per_gal <- 8.10
   em_rate_weight <- value_kg_per_gal/value_mi_per_gal*1000
   ghg_per_m <- value_kg_per_gal*(TIST_Delta_Fuel_Costs/25/Gas_Price*1000)*1000/322.5
+  # browser()
   cost_per_lane_mile <- rvs$Costs$value[rvs$Costs$table_no_ui == 15]
   emrate_by_tech <- CO2e_Category_Averages() |> 
     mutate(veh_pivot = case_when(veh_supertype == "Light-Duty Vehicles" ~ "light", 
@@ -32,7 +33,7 @@ output_roadway_resurf <- reactive({
     summarise(across(where(is.numeric), ~sum(.x, na.rm = T))) |>
     mutate(weighted_avg = light*(1-percent_truck_traffic)+heavy*percent_truck_traffic) |> 
     mutate(d2014 = weighted_avg/em_rate_weight) |> 
-    mutate(ghg_per_lane_mile = d2014*ghg_per_m*cost_per_lane_mile/1000000)
+    mutate(ghg_per_lane_mile = d2014*ghg_per_m*cost_per_lane_mile/1000000/12) # here added a hard-coded adjustment factor
   
   resurf <- rvs$Projects[rvs$Projects$table_no_ui == 15,] %>% #slchanged
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
@@ -106,7 +107,7 @@ cost_output_roadway_resurf <- reactive({
     summarise(across(where(is.numeric), ~sum(.x, na.rm = T))) |>
     mutate(weighted_avg = light*(1-percent_truck_traffic)+heavy*percent_truck_traffic) |> 
     mutate(d2014 = weighted_avg/em_rate_weight) |> 
-    mutate(ghg_per_lane_mile = d2014*ghg_per_m*cost_per_lane_mile/1000000) |> 
+    mutate(ghg_per_lane_mile = d2014*ghg_per_m*cost_per_lane_mile/1000000/12) |>  # here added a hard-coded adjustment factor.
     filter(year == rvs$Baseline$horizon_year_1)
   temp <- output_roadway_resurf() |>  filter(year == rvs$Baseline$horizon_year_1)
   

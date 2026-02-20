@@ -495,7 +495,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                                               selectInput("state_input",
                                                           HTML("<span>State:</span><br><p>The state for which you are conducting analysis.</p>"),
                                                           selected = "Maryland",
-                                                          c(state.name,"United States")),
+                                                          c(state.name,'District of Columbia',"United States")),
                                               numericInput("base_year",
                                                            HTML(paste('<span>Base Year:</span> ',
                                                                       p("The first year of analysis and the reference point for assessing baseline trends."),
@@ -4509,6 +4509,7 @@ server <- function(input, output, session) {
       rvs$Projects[rvs$Projects$table_no_ui == 16,] <- initial_projects[initial_projects$table_no_ui == 16, ]
       rvs$Projects[rvs$Projects$table_no_ui == 15,] <- initial_projects[initial_projects$table_no_ui == 15, ]
     } else if (input$mode_choice =="Capital Projects"){
+      rvs$Budget$table_no_ui = as.numeric(rvs$Budget$table_no_ui)
       rvs$Budget[rvs$Budget$table_no_ui == 1,] <- initial_budget[initial_budget$table_no_ui == 1, ]
       rvs$Budget[rvs$Budget$table_no_ui == 2,] <- initial_budget[initial_budget$table_no_ui == 2, ]
       rvs$Budget[rvs$Budget$table_no_ui == 3,] <- initial_budget[initial_budget$table_no_ui == 3, ]
@@ -6484,7 +6485,6 @@ table.on('draw', function(){
   
   output$evsi_costs_tbl <- renderDT({
     req(rvs$Costs)
-    
     render_custom_datatable(
       data_reactive = rvs$Costs,
       table_number = 12, #slchange
@@ -7834,6 +7834,7 @@ table.on('draw', function(){
   
   output$evsi_costs_outputs_tbl <- renderDT({  
     print("RENDERING: EVSI Costs Outputs")
+    browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==12,],#slchanged
       output_table = cost_effectiveness_EVSE(),
