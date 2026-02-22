@@ -123,7 +123,7 @@ cost_effectiveness_EVSE <- reactive({
     group_by(veh_supertype) %>% 
     summarize(emrate_diff = sum(emrate_Electric, na.rm = T) - sum(emrate_Conventional, na.rm = T))
   
-  browser()
+  # browser()
   fin<-elasticities_by_port_type() %>%
     mutate(veh_supertype = if_else(str_detect(charge_port_detail, "General public"), "Light-Duty Vehicles", "Medium-/Heavy-Duty Vehicles")) %>%
     left_join(select(filter(Stock_filtered(), year == input$horizon_year_1), veh_supertype, MT_per_vehtype), by = join_by(veh_supertype)) %>%

@@ -7651,7 +7651,7 @@ table.on('draw', function(){
   
   output$transit_zeb_costs_outputs_tbl <- renderDT({   
     print("RENDERING: Transit Electric Bus Costs Outputs")
-    #browser()
+    # browser()
     temp <- cost_function(
       ini_cost_table =  public_elec_replacement_cost_table() |> arrange(area_type, transit_mode, fuel_type), #%>% filter(table %in% c("Transit: Increased Demand Response Service (VOMS)","Transit: Increased Fixed Route Service (VOMS)")),
       output_table = cost_output_transitselect() |> arrange(area_type, transit_mode, fuel_type),
@@ -7834,7 +7834,7 @@ table.on('draw', function(){
   
   output$evsi_costs_outputs_tbl <- renderDT({  
     print("RENDERING: EVSI Costs Outputs")
-    browser()
+    # browser()
     temp <- cost_function(
       ini_cost_table = rvs$Costs[rvs$Costs$table_no_ui==12,],#slchanged
       output_table = cost_effectiveness_EVSE(),

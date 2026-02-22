@@ -252,7 +252,7 @@ all_costs_detail <- reactive({
     proj_life = 5, 
     style = 'detail'
   )
-  browser()
+  
   transit_zeb <- cost_function(
     ini_cost_table =  public_elec_replacement_cost_table(), #%>% filter(table %in% c("Transit: Increased Demand Response Service (VOMS)","Transit: Increased Fixed Route Service (VOMS)")),
     output_table = cost_output_transitselect(),

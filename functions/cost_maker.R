@@ -135,6 +135,14 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
     cost_table$veh_type[cost_table$veh_type %in% c('Heavy-Duty Truck', 'Light-Duty Truck', 'Medium-Duty Truck')] <- paste0(cost_table$veh_type[cost_table$veh_type %in% c('Heavy-Duty Truck', 'Light-Duty Truck', 'Medium-Duty Truck')],'s')
   }
     
+    if ("table_no_ui" %in% names(ini_cost_table) &&
+        any(ini_cost_table$table_no_ui == 12, na.rm = TRUE)) {
+      evse_incentive <- data.frame(charge_port_detail = 'EV Incentive',
+                                   cap = 0,
+                                   annual_cost = costtimeseries$cumulative_avg[costtimeseries$year == rvs$Baseline$horizon_year_1])
+      cost_table <- rbind(cost_table, evse_incentive)
+    }
+    
   temp_table <- left_join(output_table, cost_table) %>%
     filter(!is.na(annual_cost)) %>%
     mutate(gGHG_per_1m = ifelse(total_change_gGHG == 0, NA, -1*total_change_gGHG/annual_cost),
