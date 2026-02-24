@@ -25,7 +25,7 @@ output_EVSE <- reactive({
   #browser()
   
   emrate_by_tech_ldv <- CO2e_Category_Averages() %>% filter(veh_supertype == 'Light-Duty Vehicles')
-  
+ # browser()
   capital_inputs <-
     rvs$Projects %>%
     filter(category == "EV Charging Infrastructure") %>%
@@ -51,17 +51,17 @@ output_EVSE <- reactive({
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                             year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
                             year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%
-  #    arrange(year) %>%
-  # mutate(
-  #   cumulative_raw = cumsum(value),
-  #   value = if_else(
-  #     year > 2040,
-  #     cumulative_raw[year == 2040][1],
-  #     cumulative_raw
-  #   )
-  # ) %>%
-  # select(-cumulative_raw) %>%
-    #group_by(charge_port_detail) %>%
+     arrange(year) %>%
+  mutate(
+    cumulative_raw = cumsum(value),
+    value = if_else(
+      year > 2040,
+      cumulative_raw[year == 2040][1],
+      cumulative_raw
+    )
+  ) %>%
+  select(-cumulative_raw) %>%
+  group_by(charge_port_detail) %>%
     arrange(year) %>%
     ungroup() 
   
@@ -93,14 +93,15 @@ output_EVSE <- reactive({
   
   incentive<-incentive0 |> left_join(cpi) |>
     left_join(Stock_filtered() |> filter(veh_supertype == "Light-Duty Vehicles")) |>
-    left_join(emrate_by_tech_ldv) |> 
+    # left_join(emrate_by_tech_ldv) |>  # maybe should use the emrate_evse not this one? 
     left_join(emrate_evse() |> filter(veh_category == "Electric LDV") |> select(year, emrate_Electric)) |>
+    left_join(emrate_evse() |> filter(veh_category == "Conventional LDV") |> select(year, emrate_Conventional)) |>
     mutate(incent = value) |>  
     arrange(year) |> 
-    mutate(incent = case_when(year > rvs$Baseline$horizon_year_1 ~ cumsum(incent), 
-                                    TRUE ~ incent)) %>% 
+    # mutate(incent = case_when(year > rvs$Baseline$horizon_year_1 ~ cumsum(incent), 
+    #                                 TRUE ~ incent)) %>% 
     mutate(VMT_affected = MT_per_vehtype*incent) |>
-    mutate(displaced_conventional_emissions = -1*VMT_affected*CO2e_millions / 1000000) |> 
+    mutate(displaced_conventional_emissions = -1*VMT_affected*emrate_Conventional / 1000000) |> 
     mutate(added_electricity_emissions = VMT_affected * emrate_Electric / 1000000) |> 
     mutate(veh_supertype = "Light-Duty Vehicles") |> 
     group_by(year) %>%

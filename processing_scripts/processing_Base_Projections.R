@@ -579,7 +579,6 @@ CO2e_Category_Averages <- reactive({
   
   temp_Conventional_MDHD <- VMT_Type_Tech_Conventional_MDHD() 
   
-  
   all_cats_temp<-temp_all %>% left_join(EmRate_by_Tech()) %>% 
     select(emission_rate, veh_supertype, year, veh_type, veh_subtype, pct_supertype) %>%
     mutate(CO2e_millions = pct_supertype*emission_rate) %>% 
@@ -605,7 +604,6 @@ CO2e_Category_Averages <- reactive({
   mhdv_2022 <- all_cats_temp$CO2e_millions[all_cats_temp$year == 2022 & all_cats_temp$veh_supertype == "Medium-/Heavy-Duty Vehicles"]
   
   
-  
   all_cats_temp <- all_cats_temp %>% 
     mutate(base_impf = ifelse(veh_supertype == "Light-Duty Vehicles", CO2e_millions/ldv_2022,
                               CO2e_millions/mhdv_2022)) %>%
@@ -615,6 +613,7 @@ CO2e_Category_Averages <- reactive({
   return(all_cats_temp)
   
 })
+
 
 #This is PHEV Emission Apportionment ex-rows 59 - 86
 PHEV_Em_Apportionment <- reactive({
