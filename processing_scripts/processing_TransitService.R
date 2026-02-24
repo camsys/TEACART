@@ -50,7 +50,7 @@ output_TransitService <- reactive({
   # get assumptions input
 
   
-  # get captial project tables: 
+  # get capital project tables: 
   Inputs_busprior <- rvs$Projects[rvs$Projects$table_no_ui == 5,] %>%
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                             year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
@@ -110,7 +110,10 @@ output_TransitService <- reactive({
     select(area_type,transit_mode,value) |> 
     rename(avg_trip_miles = value)
   
-  if(rvs$Baseline$land_use_factor == 1){lu_factor <- rvs$Assumptions[rvs$Assumptions$transit_category == "Land Use Multiplier" & !is.na(rvs$Assumptions$transit_category),"value"][[1]]} else {lu_factor =1}
+  if(rvs$Baseline$land_use_factor == 1|rvs$Baseline$land_use_factor == 'Yes'){
+    lu_factor <- rvs$Assumptions[rvs$Assumptions$transit_category == "Land Use Multiplier" & !is.na(rvs$Assumptions$transit_category),"value"][[1]]
+  } else {
+      lu_factor =1}
   
   
   transitservice_output <- Inputs_transit %>%

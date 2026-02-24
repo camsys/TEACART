@@ -3422,7 +3422,7 @@ server <- function(input, output, session) {
     for(name in names(user_inputs)) {
       rvs[[name]] <- user_inputs[[name]]
     }
-    
+
     # Assign each table in user_inputs to rv
     
     ## update baseline page options & now budget options
@@ -3455,7 +3455,7 @@ server <- function(input, output, session) {
       paste0("2.User_Inputs_", format(Sys.time(), "%m-%d_%H-%M"), ".xlsx")
     },
     content = function(file) {
-      
+      # browser()
       base_input <- data.frame(rvs$Baseline) %>%
         mutate(include_electricity = ifelse(include_electricity == 1,'TRUE','FALSE'),
                include_upstream_fuels = ifelse(include_upstream_fuels  == 1, 'TRUE','FALSE'),
@@ -3465,6 +3465,16 @@ server <- function(input, output, session) {
       ### to avoid any uploading issue - why these are character?? 
       rvs$Budget$table_no_ui <- as.numeric(rvs$Budget$table_no_ui)
       rvs$Costs$table_no_ui <- as.numeric(rvs$Costs$table_no_ui)
+      
+      # colnames(rvs$Projects)
+      projects_col_order <-  c(
+        "category", "table_no_ui", "table", "year", "area_type",
+        "facility_type", "charge_port_detail", "veh_type",
+        "fuel_type", "road_class", "transit_mode",
+        "custom_project", "land_use", "unit", "value"
+      )
+      
+      rvs$Projects <- rvs$Projects[, projects_col_order]
       
       references <- read_xlsx("data/2.User_Inputs.xlsx", sheet = "References") #read in a copy, will be included in the download user inputs
       return(openxlsx::write.xlsx(x = list("Costs" = rvs$Costs,
@@ -5697,7 +5707,7 @@ server <- function(input, output, session) {
     # #foobar <- foobar |> mutate(value = value_new) |> select(-value_new)
     # #browser()
     # rvs$Projects <- foobar
-    
+    # browser()
     start <- input$budget_start_year
     end <- start + input$budget_years_covered -1
     total <- input$budget_total*1000000
@@ -5706,6 +5716,31 @@ server <- function(input, output, session) {
     year1 <- input$horizon_year_1
     year2 <- ifelse (input$horizon_year_2 <= 2040, input$horizon_year_2, 2040)
     year3 <- ifelse (input$horizon_year_3 <= 2040, input$horizon_year_3, 2040)
+    
+    incentive_timeseries_yr1 <- costtimeseries$incentive_per_inc_EV [costtimeseries$year == year1]
+    incentive_timeseries_yr2 <- costtimeseries$incentive_per_inc_EV [costtimeseries$year == year2]
+    incentive_timeseries_yr3 <- costtimeseries$incentive_per_inc_EV [costtimeseries$year == year3]
+    
+    incentive_budget <- total*temp_budget$value[temp_budget$charge_port_detail =='Light-Duty EV Incentives' & !is.na(temp_budget$charge_port_detail)]/total_years
+    incentive_cum <- costtimeseries %>%
+      select(year, incentive_per_inc_EV) %>%
+      arrange(year) %>%
+      mutate(
+        annual = if_else(
+          year >= year1,
+          incentive_budget / incentive_per_inc_EV,
+          0
+        ),
+        cumulative_raw = cumsum(annual),
+        
+        # cap at 2040
+        incentive_cumulative = if_else(
+          year > 2040,
+          cumulative_raw[year == 2040][1],
+          cumulative_raw
+        )
+      ) %>%
+      select(-cumulative_raw)
     
     foo <- temp_join |>
       dplyr::mutate(horizon_year_1_cnt = 
@@ -5747,7 +5782,15 @@ server <- function(input, output, session) {
                     horizon_year_3_budget = total*value*(horizon_year_3_cnt/total_years),
                     horizon_year_1 = horizon_year_1_budget/cost_parameter,
                     horizon_year_2 = horizon_year_2_budget/cost_parameter,
-                    horizon_year_3 = horizon_year_3_budget/cost_parameter) |> select(-c(table_no_ui,value,table_no_ui_revised)) |>
+                    horizon_year_3 = horizon_year_3_budget/cost_parameter) %>%
+      dplyr::mutate(
+        horizon_year_1 = if_else(!is.na(charge_port_detail) & charge_port_detail == "Light-Duty EV Incentives",
+                                 incentive_cum$incentive_cumulative[incentive_cum$year == year1],horizon_year_1),
+        horizon_year_2 = if_else(!is.na(charge_port_detail) & charge_port_detail == "Light-Duty EV Incentives",
+                                 incentive_cum$incentive_cumulative[incentive_cum$year == year2],horizon_year_2),
+        horizon_year_3 = if_else(!is.na(charge_port_detail) & charge_port_detail == "Light-Duty EV Incentives",
+                                 incentive_cum$incentive_cumulative[incentive_cum$year == year3],horizon_year_3))|> # deal with special calculation for incentive
+      select(-c(table_no_ui,value,table_no_ui_revised)) |>
       pivot_longer(cols = c(horizon_year_1, horizon_year_2, horizon_year_3), names_to = "year", values_to = "value") |>
       #mutate(value = value_new) |>
       select(any_of(names(rvs$Projects)))
@@ -8009,6 +8052,30 @@ table.on('draw', function(){
       year1 <- input$horizon_year_1
       year2 <- ifelse (input$horizon_year_2 <= 2040, input$horizon_year_2, 2040)
       year3 <- ifelse (input$horizon_year_3 <= 2040, input$horizon_year_3, 2040)
+      incentive_timeseries_yr1 <- costtimeseries$incentive_per_inc_EV [costtimeseries$year == year1]
+      incentive_timeseries_yr2 <- costtimeseries$incentive_per_inc_EV [costtimeseries$year == year2]
+      incentive_timeseries_yr3 <- costtimeseries$incentive_per_inc_EV [costtimeseries$year == year3]
+      
+      incentive_budget <- total*temp_budget$value[temp_budget$charge_port_detail =='Light-Duty EV Incentives' & !is.na(temp_budget$charge_port_detail)]/total_years
+      incentive_cum <- costtimeseries %>%
+        select(year, incentive_per_inc_EV) %>%
+        arrange(year) %>%
+        mutate(
+          annual = if_else(
+            year >= year1,
+            incentive_budget / incentive_per_inc_EV,
+            0
+          ),
+          cumulative_raw = cumsum(annual),
+          
+          # cap at 2040
+          incentive_cumulative = if_else(
+            year > 2040,
+            cumulative_raw[year == 2040][1],
+            cumulative_raw
+          )
+        ) %>%
+        select(-cumulative_raw)
       
       foo <- temp_join |>
         dplyr::mutate(horizon_year_1_cnt = 
@@ -8050,7 +8117,15 @@ table.on('draw', function(){
                       horizon_year_3_budget = total*value*(horizon_year_3_cnt/total_years),
                       horizon_year_1 = horizon_year_1_budget/cost_parameter,
                       horizon_year_2 = horizon_year_2_budget/cost_parameter,
-                      horizon_year_3 = horizon_year_3_budget/cost_parameter) |> select(-c(table_no_ui,value,table_no_ui_revised)) |>
+                      horizon_year_3 = horizon_year_3_budget/cost_parameter) %>%
+        dplyr::mutate(
+          horizon_year_1 = if_else(!is.na(charge_port_detail) & charge_port_detail == "Light-Duty EV Incentives",
+                                   incentive_cum$incentive_cumulative[incentive_cum$year == year1],horizon_year_1),
+          horizon_year_2 = if_else(!is.na(charge_port_detail) & charge_port_detail == "Light-Duty EV Incentives",
+                                   incentive_cum$incentive_cumulative[incentive_cum$year == year2],horizon_year_2),
+          horizon_year_3 = if_else(!is.na(charge_port_detail) & charge_port_detail == "Light-Duty EV Incentives",
+                                   incentive_cum$incentive_cumulative[incentive_cum$year == year3],horizon_year_3))|> # deal with special calculation for incentive
+        select(-c(table_no_ui,value,table_no_ui_revised)) |>
         pivot_longer(cols = c(horizon_year_1, horizon_year_2, horizon_year_3), names_to = "year", values_to = "value") |>
         #mutate(value = value_new) |>
         select(any_of(names(rvs$Projects)))
@@ -8256,7 +8331,7 @@ table.on('draw', function(){
     
     strategy_temp <- scenario_sum() %>% left_join(scen_select,by= c('Strategy' = 'Grouped Projects')) %>% filter(scen == TRUE) %>%
       select('year', Strategy,input$strategy_indicator)
-    
+     
     total_row <- strategy_temp %>%
       pivot_wider(names_from = year, values_from = input$strategy_indicator) %>%
       mutate(across(where(is.numeric), ~round(., 3))) %>%

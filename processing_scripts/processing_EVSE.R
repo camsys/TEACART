@@ -51,6 +51,16 @@ output_EVSE <- reactive({
     mutate(year = case_when(year == "horizon_year_1" ~ rvs$Baseline$horizon_year_1,
                             year == "horizon_year_2" ~ rvs$Baseline$horizon_year_2,
                             year == "horizon_year_3" ~ rvs$Baseline$horizon_year_3)) %>%
+  #    arrange(year) %>%
+  # mutate(
+  #   cumulative_raw = cumsum(value),
+  #   value = if_else(
+  #     year > 2040,
+  #     cumulative_raw[year == 2040][1],
+  #     cumulative_raw
+  #   )
+  # ) %>%
+  # select(-cumulative_raw) %>%
     #group_by(charge_port_detail) %>%
     arrange(year) %>%
     ungroup() 
@@ -85,7 +95,7 @@ output_EVSE <- reactive({
     left_join(Stock_filtered() |> filter(veh_supertype == "Light-Duty Vehicles")) |>
     left_join(emrate_by_tech_ldv) |> 
     left_join(emrate_evse() |> filter(veh_category == "Electric LDV") |> select(year, emrate_Electric)) |>
-    mutate(incent = value/vmt_factor) |> 
+    mutate(incent = value) |>  
     arrange(year) |> 
     mutate(incent = case_when(year > rvs$Baseline$horizon_year_1 ~ cumsum(incent), 
                                     TRUE ~ incent)) %>% 
@@ -100,7 +110,7 @@ output_EVSE <- reactive({
               light_vmt_affected = sum(unique(VMT_affected[veh_supertype == "Light-Duty Vehicles"]), na.rm = T)) 
     
     
-  #browser()
+  # browser()
   fin<-evse_by_year_supertype %>% 
     group_by(year) %>%
     summarize(total_change_direct = sum(displaced_conventional_emissions, na.rm = T),
