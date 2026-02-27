@@ -203,7 +203,7 @@ ui <- function(request) {
                         HTML("<ol>
                             <li>Navigate to the <b>Inputs</b> tab.</li>
                             <li>Input your values in the <b>Baseline, Projects / Budget, Costs,</b> and <b>Assumptions</b> tabs.</li>
-                            <li>When you are done entering data, press <b>CTRL + Enter</b> on your keyboard to initiate the calculations.</li>
+                            <li>When you are done entering data, press <b>CTRL + Enter</b> (with your cursor in a cell inside the table).</li>
                             <li>Select the desired combination of strategies in the <b>Scenarios</b> tab.</li>
                             <li>Navigate to the <b>Outputs</b> tab to view your results.</li>
                             </ol>"),
@@ -248,8 +248,8 @@ ui <- function(request) {
 …calculate how a proposed set  of transportation investments might  reduce 
 -- or increase --  greenhouse gas emissions from cars and trucks?<br>
 <p>
-…estimate how adding 10 miles of new bike lanes will affect driver behavior 
-and the number of vehicle-miles traveled?<br>
+…estimate how adding 10 miles of new bike lanes will affect the 
+number of vehicle-miles traveled?<br>
 <p>
 …compare the air emissions outcomes of one potential portfolio of 
 investments with another?  For example, which would do more to reduce 
@@ -382,7 +382,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
     <li>Data are entered in tables. To begin entering (or editing) data, double click anywhere in the table using your mouse. When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.</li>
     <li>When you are ready to see the results of your analysis, proceed to the <b>Scenarios</b> tab and select scenarios for analysis. Either choose groups of projects (to support a comparison) or click the button to select all projects for each scenario.</li>
   </ul>
-  <p>Click <a href="TEA-CART How-to Guide.pdf" target="_blank">here</a> to download a PDF copy of this guide.<br>
+  <p>Click <a href="TEA-CART How-to Guide.pdf" target="_blank">here</a> to download a PDF copy of this guide. To watch the TEA-CART user demonstration recording, follow this link</a>.</br>
   <p>
   To learn more about how to use the tool and how it works, please see the <a href="TEACART User Guide and Methodology v.1.10.3.pdf" target="_blank">User Guide and Methodology Documentation</a>.<br>
   <p>
@@ -414,7 +414,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
     <img src="how_to_step_4.svg" style="width:90%; max-width:100%; height:auto; display:block;">
     <br><br>
 
-    <li>When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (note, your cursor must be in a cell, inside the table, when you do this). Data can only be entered for one table at a time.</li>
+    <li>When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (<b>note, your cursor must be in a cell, inside the table, when you do this</b>). Data can only be entered for one table at a time.</li>
     <br>
     <img src="how_to_step_5.svg" style="width:90%; max-width:intrinsic; height:auto; display:block;">
     <br><br>
@@ -620,7 +620,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                                     below. Make sure that <b><i>Capital Projects</i></b>
                                     is selected under <b><i>Select Mode</i></b>, in the <b>Baseline</b> tab.
                                     <p><b>Alternatively, go to the Budget tab</b> if you would like to provide <i>budget-level</i> inputs instead.
-                                    <p>Keeping in mind the following two rules when entering project-level inputs:<br>
+                                    <p>Keep in mind the following two rules when entering project-level inputs:<br>
                                     <p>
                                     i) All projects are assumed to be “constructed” or “in operation” by the corresponding horizon year. For example, if the user inputs 2 miles of new bicycle lanes under the first horizon year (e.g., 2025) in the “New” category of additions / replacements, it is assumed that those bike lanes will be fully constructed by 2025.<br>
                                     <p>
