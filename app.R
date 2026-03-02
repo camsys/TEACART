@@ -382,7 +382,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
     <li>Data are entered in tables. To begin entering (or editing) data, double click anywhere in the table using your mouse. When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.</li>
     <li>When you are ready to see the results of your analysis, proceed to the <b>Scenarios</b> tab and select scenarios for analysis. Either choose groups of projects (to support a comparison) or click the button to select all projects for each scenario.</li>
   </ul>
-  <p>Click <a href="TEA-CART How-to Guide.pdf" target="_blank">here</a> to download a PDF copy of this guide. To watch the TEA-CART user demonstration recording, follow this link</a>.</br>
+  <p>Click <a href="TEA-CART How-to Guide.pdf" target="_blank">here</a> to download a PDF copy of this guide. To watch the TEA-CART user demonstration recording, follow this <a href="https://georgetown.zoom.us/rec/play/_ZUxItlDhiuzPqNmSzNANtkPLCIg3VHzQi7-tDqoCK_G7P2870NU4MwgAn6K2UKZbS--ujNXQQUjLgi0.kouv1XBSFHuQDWBO?autoplay=true&startTime=1765907206000"> link</a>.</br>
   <p>
   To learn more about how to use the tool and how it works, please see the <a href="TEACART User Guide and Methodology v.1.14_Nov-2025.pdf" target="_blank">User Guide and Methodology Documentation.</a><br>
   <p>
@@ -2539,6 +2539,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                                            selected = "summary")),
                             fluidRow(
                               p("All results are reported in terms of annual reduction per $M investment."),
+                              p("Note: *** indicates a negative reduction."),
                               fluidRow( class = 'cost-table search',
                                         h4("Cost-Effectiveness 1 | Bicycle & Pedestrian"),
                                         DT::dataTableOutput("bikeped_costs_outputs_tbl"),
@@ -7578,6 +7579,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>%
@@ -7609,6 +7612,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE))  
     
     if(input$cost_view == "detail"){
@@ -7639,6 +7644,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -7667,6 +7674,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>%DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -7712,6 +7721,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -7739,6 +7750,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -7764,6 +7777,8 @@ table.on('draw', function(){
                      pageLength = 50,
                      searching = FALSE,
                      paging = FALSE,
+                     columnDefs = list(
+                       list(className = 'dt-center', targets = "_all")),
                      info = FALSE))
     
     if(input$cost_view == "detail"){
@@ -7791,6 +7806,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -7819,6 +7836,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>%DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -7845,6 +7864,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -7869,6 +7890,8 @@ table.on('draw', function(){
                     pageLength = 50,
                     searching = FALSE,
                     paging = FALSE,
+                    columnDefs = list(
+                      list(className = 'dt-center', targets = "_all")),
                     info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -7894,6 +7917,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>%DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -7919,6 +7944,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -7946,6 +7973,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE))
     if(input$cost_view == "detail"){
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -7974,6 +8003,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE)) 
     if(input$cost_view == "detail"){
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}
@@ -8001,6 +8032,8 @@ table.on('draw', function(){
                    pageLength = 50,
                    searching = FALSE,
                    paging = FALSE,
+                   columnDefs = list(
+                     list(className = 'dt-center', targets = "_all")),
                    info = FALSE))
     if(input$cost_view == "detail"){
       x <- x %>% DT::formatRound(which(sapply(temp, is.numeric)), digits = 3)}

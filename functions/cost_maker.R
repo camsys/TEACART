@@ -216,11 +216,11 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
              'nox_per_1m',
              'pm25_per_1m',
              'newtrips_per_1m')) %>%
-      mutate(gGHG_per_1m = ifelse(gGHG_per_1m < 0, 0, gGHG_per_1m),
-             VMT_per_1m = ifelse(VMT_per_1m < 0, 0, VMT_per_1m),
-             nox_per_1m = ifelse(nox_per_1m < 0, 0, nox_per_1m),
-             pm25_per_1m = ifelse(pm25_per_1m < 0, 0, pm25_per_1m),
-             newtrips_per_1m = ifelse(newtrips_per_1m < 0, 0, newtrips_per_1m)) %>%
+      mutate(gGHG_per_1m = ifelse(gGHG_per_1m < 0, "***", round(gGHG_per_1m,3)),
+             VMT_per_1m = ifelse(VMT_per_1m < 0, "***", round(VMT_per_1m,3)),
+             nox_per_1m = ifelse(nox_per_1m < 0, "***", round(nox_per_1m,3)),
+             pm25_per_1m = ifelse(pm25_per_1m < 0, "***", round(pm25_per_1m,3)),
+             newtrips_per_1m = ifelse(newtrips_per_1m < 0, "***", round(newtrips_per_1m,3))) %>%
       #rename(type_name = "cap_proj_type") %>%
       rename("MT GHG" = 'gGHG_per_1m',
              "VMT" = 'VMT_per_1m',
