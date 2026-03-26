@@ -382,9 +382,13 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
     <li>Data are entered in tables. To begin entering (or editing) data, double click anywhere in the table using your mouse. When you are done entering data, press <b>CTRL + ENTER</b> on your keyboard (this initiates the calculation). Data can only be entered for one table at a time.</li>
     <li>When you are ready to see the results of your analysis, proceed to the <b>Scenarios</b> tab and select scenarios for analysis. Either choose groups of projects (to support a comparison) or click the button to select all projects for each scenario.</li>
   </ul>
-  <p>Click <a href="TEA-CART How-to Guide.pdf" target="_blank">here</a> to download a PDF copy of this guide. To watch the TEA-CART user demonstration recording, follow this <a href="https://georgetown.zoom.us/rec/play/_ZUxItlDhiuzPqNmSzNANtkPLCIg3VHzQi7-tDqoCK_G7P2870NU4MwgAn6K2UKZbS--ujNXQQUjLgi0.kouv1XBSFHuQDWBO?autoplay=true&startTime=1765907206000"> link</a>.</br>
+  <h2>Resources</h2>
   <p>
-  To learn more about how to use the tool and how it works, please see the <a href="TEACART User Guide and Methodology v.1.14_Nov-2025.pdf" target="_blank">User Guide and Methodology Documentation.</a><br>
+  <b>PDF of steps below</b>: Click <a href="TEA-CART How-to Guide.pdf" target="_blank">here</a> to download a PDF copy of this guide.</br>
+  <p>
+  <b>Video tutorial</b>: To watch the TEA-CART user demonstration recording, follow this <a href="https://georgetown.zoom.us/rec/play/_ZUxItlDhiuzPqNmSzNANtkPLCIg3VHzQi7-tDqoCK_G7P2870NU4MwgAn6K2UKZbS--ujNXQQUjLgi0.kouv1XBSFHuQDWBO?autoplay=true&startTime=1765907206000" target="_blank"> link</a>.
+  <p>
+  <b>User Guide</b>: To learn more about how to use the tool and how it works, please see the <a href="TEACART User Guide and Methodology v.1.10.3.pdf" target="_blank">User Guide and Methodology Documentation</a>.<br>
   <p>
   <i>To report a problem in the tool, please send an email to <u>climate@georgetown.edu</u> 
   with “TEA-CART Help” in the subject line.</i>
