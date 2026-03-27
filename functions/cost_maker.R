@@ -35,6 +35,23 @@ sum_fun <- function(x,meas,val,high,med,low,prefix){
 
 }
 
+
+sum_fun_num <- function(x,meas,reduction,val){
+  #browser()
+  me <- x[meas] %>% as.numeric()
+  me_red <- x[reduction]%>% as.numeric()
+  va <- x[val] %>% as.numeric()
+  
+  if(me==0){
+    return(NA)
+  } else if(-1*me > 0 & va < 0){
+    return('***')
+  } else if(-1*me < 0){
+    return('+++')
+  }  else {return(round(me_red,3))}
+  
+}
+
 cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltered by table number
                           output_table, #this it the processing output
                           col_sel, #these are the columns of the rvs cost table that are necessary to get the individual rows e.g. road_class, area_type, etc
@@ -188,6 +205,7 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
                                    med = 5000/1000000,
                                    low = 1000/1000000,
                                    prefix = "Daily Trips")
+  ## apply same process for detailed table 
   
   if(style == "summary"){
     
@@ -207,26 +225,47 @@ cost_function <- function(ini_cost_table, #this is the rvs cost table prefiltere
              'Summary Daily Active Trips' = 'newtrips_sum')
     
   } else if(style == "detail"){
+     # browser()
+    temp_table$gGHG_per_num <- apply(temp_table,1, sum_fun_num,
+                                    meas = "total_change_gGHG",
+                                    reduction = 'gGHG_per_1m',
+                                    val = "annual_cost")
+    
+    temp_table$VMT_per_num <- apply(temp_table, 1, sum_fun_num,
+                                   meas = "total_change_VMT",
+                                   reduction = 'VMT_per_1m',
+                                   val = "annual_cost")
+    
+    temp_table$nox_per_num <- apply(temp_table, 1, sum_fun_num,
+                                   meas = "total_change_gnox",
+                                   reduction = 'nox_per_1m',
+                                   val = "annual_cost")
+    
+    temp_table$pm25_per_num <- apply(temp_table, 1, sum_fun_num,
+                                    meas = "total_change_gpm25",
+                                    reduction = 'pm25_per_1m',
+                                    val = "annual_cost")
+    temp_table$newtrips_per_num <- temp_table$newtrips_per_1m
     
     temp_table <- temp_table  %>% 
       #rename(type_name = cap_proj_type) %>%
       select(c(col_sel,
-             'gGHG_per_1m',
-             'VMT_per_1m',
-             'nox_per_1m',
-             'pm25_per_1m',
-             'newtrips_per_1m')) %>%
-      mutate(gGHG_per_1m = ifelse(gGHG_per_1m < 0, "***", round(gGHG_per_1m,3)),
-             VMT_per_1m = ifelse(VMT_per_1m < 0, "***", round(VMT_per_1m,3)),
-             nox_per_1m = ifelse(nox_per_1m < 0, "***", round(nox_per_1m,3)),
-             pm25_per_1m = ifelse(pm25_per_1m < 0, "***", round(pm25_per_1m,3)),
-             newtrips_per_1m = ifelse(newtrips_per_1m < 0, "***", round(newtrips_per_1m,3))) %>%
+             'gGHG_per_num',
+             'VMT_per_num',
+             'nox_per_num',
+             'pm25_per_num',
+             'newtrips_per_num')) %>%
+      # mutate(gGHG_per_1m =  round(gGHG_per_1m,3),
+      #        VMT_per_1m =  round(VMT_per_1m,3),
+      #        nox_per_1m = round(nox_per_1m,3),
+      #        pm25_per_1m =  round(pm25_per_1m,3),
+      #        newtrips_per_1m = round(newtrips_per_1m,3)) %>%
       #rename(type_name = "cap_proj_type") %>%
-      rename("MT GHG" = 'gGHG_per_1m',
-             "VMT" = 'VMT_per_1m',
-             "MT NOx" = 'nox_per_1m',
-             "MT PM2.5" = 'pm25_per_1m',
-             "Daily Active Trips" = 'newtrips_per_1m')
+      rename("MT GHG" = 'gGHG_per_num',
+             "VMT" = 'VMT_per_num',
+             "MT NOx" = 'nox_per_num',
+             "MT PM2.5" = 'pm25_per_num',
+             "Daily Active Trips" = 'newtrips_per_num')
     
   }
 

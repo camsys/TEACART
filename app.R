@@ -131,8 +131,8 @@ ui <- function(request) {
                           column(width = 12,
                                  tags$a(tags$img(src = "GCC_Logo_Contrast.svg", class="footer-logo gcc-logo"),
                                         href = "https://www.georgetownclimate.org/", target = "_blank"),
-                                 tags$p("Adapted from TEA-CART Excel Model Version 1.14"),
-                                 tags$p("Shiny App last updated December 3, 2025"),
+                                 tags$p("Adapted from TEA-CART Excel Model Version 1.15"),
+                                 tags$p("Shiny App last updated March 26, 2026"),
                                  tags$p("Prototype under development by Cambridge Systematics, Inc."),
                                  tags$p("under contract to Georgetown Climate Center"),
                                  tags$p("©2025 Georgetown Climate Center (All Rights Reserved)")
@@ -384,7 +384,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
   </ul>
   <h2>Resources</h2>
   <p>
-  <b>PDF of steps below</b>: Click <a href="TEA-CART How-to Guide.pdf" target="_blank">here</a> to download a PDF copy of this guide.</br>
+  <b>PDF of steps below</b>: Click <a href="TEA-CART How-to Guide_Final.pdf" target="_blank">here</a> to download a PDF copy of this guide.</br>
   <p>
   <b>Video tutorial</b>: To watch the TEA-CART user demonstration recording, follow this <a href="https://georgetown.zoom.us/rec/play/_ZUxItlDhiuzPqNmSzNANtkPLCIg3VHzQi7-tDqoCK_G7P2870NU4MwgAn6K2UKZbS--ujNXQQUjLgi0.kouv1XBSFHuQDWBO?autoplay=true&startTime=1765907206000" target="_blank"> link</a>.
   <p>
@@ -2543,7 +2543,10 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                                            selected = "summary")),
                             fluidRow(
                               p("All results are reported in terms of annual reduction per $M investment."),
-                              p("Note: *** indicates a negative reduction."),
+                              p("Note: *** indicates strategies that would both reduce emissions and have a negative cost over the lifetime of a typicalproject.",
+                                tags$br(),
+                                tags$span(style = "padding-left: 3em;", "+++ indicates strategies that would increase emissions or VMT over the lifetime of a typical project")
+                              ),
                               fluidRow( class = 'cost-table search',
                                         h4("Cost-Effectiveness 1 | Bicycle & Pedestrian"),
                                         DT::dataTableOutput("bikeped_costs_outputs_tbl"),
