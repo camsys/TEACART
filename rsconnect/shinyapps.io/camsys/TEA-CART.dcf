@@ -1,11 +1,11 @@
 name: TEA-CART
-title: TEACART
+title: TEA-CART
 username: camsys
 account: camsys
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 10756708
-bundleId: 11265077
+bundleId: 11801357
 url: https://camsys.shinyapps.io/TEA-CART/
 version: 1
 asMultiple: FALSE

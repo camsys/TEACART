@@ -2543,7 +2543,7 @@ and a related discussion to help TEA-CART users get oriented. This includes:</p>
                                            selected = "summary")),
                             fluidRow(
                               p("All results are reported in terms of annual reduction per $M investment."),
-                              p("Note: *** indicates strategies that would both reduce emissions and have a negative cost over the lifetime of a typicalproject.",
+                              p("Note: *** indicates strategies that would both reduce emissions and have a negative cost over the lifetime of a typical project.",
                                 tags$br(),
                                 tags$span(style = "padding-left: 3em;", "+++ indicates strategies that would increase emissions or VMT over the lifetime of a typical project")
                               ),
@@ -6137,7 +6137,6 @@ table.on('draw', function(){
   
   output$landuse_assmps_tbl <- renderDT({
     req(rvs$Assumptions)
-    
     render_custom_datatable(
       data_reactive = rvs$Assumptions,
       table_number = 16, #slchanged
@@ -6229,6 +6228,7 @@ table.on('draw', function(){
   #observe edits to evsi_assmps
   observeEvent(input$evsi_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
+    browser()
     
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 12,] <- reshaping_assmp(input$evsi_assmps_tbl_cell_edit, #slchanged
                                                                            rvs$Assumptions,
@@ -6238,7 +6238,6 @@ table.on('draw', function(){
   #observe edits to landuse_assmps
   observeEvent(input$landuse_assmps_tbl_cell_edit, {
     req(rvs$Assumptions)
-    
     rvs$Assumptions[rvs$Assumptions$table_no_ui == 16,] <- reshaping_assmp(input$landuse_assmps_tbl_cell_edit,#slchanged
                                                                            rvs$Assumptions,
                                                                            tbl_no = 16)
